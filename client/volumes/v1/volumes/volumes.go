@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"strings"
 
-	gcorecloud "github.com/G-Core/gcorelabscloud-go"
-	"github.com/G-Core/gcorelabscloud-go/client/flags"
-	"github.com/G-Core/gcorelabscloud-go/client/utils"
-	"github.com/G-Core/gcorelabscloud-go/client/volumes/v1/client"
-	"github.com/G-Core/gcorelabscloud-go/gcore/task/v1/tasks"
-	"github.com/G-Core/gcorelabscloud-go/gcore/volume/v1/volumes"
+	edgecloud "github.com/Edge-Center/edgecentercloud-go"
+	"github.com/Edge-Center/edgecentercloud-go/client/flags"
+	"github.com/Edge-Center/edgecentercloud-go/client/utils"
+	"github.com/Edge-Center/edgecentercloud-go/client/volumes/v1/client"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/volume/v1/volumes"
 	"github.com/urfave/cli/v2"
 )
 
@@ -151,7 +151,7 @@ var volumeDeleteCommand = cli.Command{
 				return nil, fmt.Errorf("cannot delete volume with ID: %s", volumeID)
 			}
 			switch err.(type) {
-			case gcorecloud.ErrDefault404:
+			case edgecloud.ErrDefault404:
 				return nil, nil
 			default:
 				return nil, err
@@ -465,7 +465,7 @@ var volumeRevertCommand = cli.Command{
 
 var Commands = cli.Command{
 	Name:  "volume",
-	Usage: "GCloud volumes API",
+	Usage: "EdgeCloud volumes API",
 	Subcommands: []*cli.Command{
 		&volumeListCommand,
 		&volumeGetCommand,

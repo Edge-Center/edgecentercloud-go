@@ -1,4 +1,4 @@
-package gcorecloud
+package edgecloud
 
 import (
 	"strconv"
@@ -10,7 +10,7 @@ import (
 // unambiguously identify one, and only one, endpoint within the catalog.
 //
 // Usually, these are passed to service client factory functions in a provider
-// package, like "gcore.NewClusterTemplateV1()".
+// package, like "edgecenter.NewClusterTemplateV1()".
 type EndpointOpts struct {
 	// Type [required] is the service type for the client (e.g., "cluster",
 	// "nodegroup", "clustertemplates"). Generally, this will be supplied by the service client

@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"testing"
 
-	gcorecloud "github.com/G-Core/gcorelabscloud-go"
-	th "github.com/G-Core/gcorelabscloud-go/testhelper"
+	edgecloud "github.com/Edge-Center/edgecentercloud-go"
+	th "github.com/Edge-Center/edgecentercloud-go/testhelper"
 )
 
 var singleResponse = `
@@ -102,7 +102,7 @@ func TestUnmarshalAnonymousStructs(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	var singleResult = gcorecloud.Result{
+	var singleResult = edgecloud.Result{
 		Body: dejson,
 	}
 
@@ -125,7 +125,7 @@ func TestUnmarshalSliceOfAnonymousStructs(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	var multiResult = gcorecloud.Result{
+	var multiResult = edgecloud.Result{
 		Body: dejson,
 	}
 
@@ -150,7 +150,7 @@ func TestUnmarshalSliceofStruct(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	var multiResult = gcorecloud.Result{
+	var multiResult = edgecloud.Result{
 		Body: dejson,
 	}
 
@@ -172,7 +172,7 @@ func TestUnmarshalNamedStructs(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	var singleResult = gcorecloud.Result{
+	var singleResult = edgecloud.Result{
 		Body: dejson,
 	}
 
@@ -194,7 +194,7 @@ func TestUnmarshalSliceOfNamedStructs(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	var multiResult = gcorecloud.Result{
+	var multiResult = edgecloud.Result{
 		Body: dejson,
 	}
 

@@ -3,10 +3,10 @@ package client
 import (
 	"github.com/urfave/cli/v2"
 
-	gcorecloud "github.com/G-Core/gcorelabscloud-go"
-	"github.com/G-Core/gcorelabscloud-go/client/common"
+	edgecloud "github.com/Edge-Center/edgecentercloud-go"
+	"github.com/Edge-Center/edgecentercloud-go/client/common"
 )
 
-func NewReservedFixedIPClientV1(c *cli.Context) (*gcorecloud.ServiceClient, error) {
+func NewReservedFixedIPClientV1(c *cli.Context) (*edgecloud.ServiceClient, error) {
 	return common.BuildClient(c, "reserved_fixed_ips", "v1")
 }

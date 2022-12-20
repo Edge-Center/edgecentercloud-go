@@ -1,4 +1,4 @@
-package gcorecloud
+package edgecloud
 
 import (
 	"bytes"
@@ -18,7 +18,7 @@ import (
 )
 
 // DefaultUserAgent is the default User-Agent string set in the request header.
-const DefaultUserAgent = "gcorecloud/0.0.1"
+const DefaultUserAgent = "edgecloud-go-client/0.3.0"
 
 // UserAgent represents a User-Agent header.
 type UserAgent struct {

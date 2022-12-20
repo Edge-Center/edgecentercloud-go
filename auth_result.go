@@ -1,4 +1,4 @@
-package gcorecloud
+package edgecloud
 
 // AuthResult interface
 type AuthResult interface {

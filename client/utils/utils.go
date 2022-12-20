@@ -11,8 +11,8 @@ import (
 	"strings"
 	"time"
 
-	gcorecloud "github.com/G-Core/gcorelabscloud-go"
-	"github.com/G-Core/gcorelabscloud-go/gcore/task/v1/tasks"
+	edgecloud "github.com/Edge-Center/edgecentercloud-go"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
 	"github.com/fatih/structs"
 	"github.com/mitchellh/go-homedir"
 	"github.com/olekukonko/tablewriter"
@@ -235,7 +235,7 @@ func StringSliceToMapInterface(slice []string) (map[string]interface{}, error) {
 
 func WaitTaskAndShowResult(
 	c *cli.Context,
-	client *gcorecloud.ServiceClient,
+	client *edgecloud.ServiceClient,
 	results *tasks.TaskResults,
 	stopOnTaskError bool,
 	infoRetriever tasks.RetrieveTaskResult,

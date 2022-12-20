@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/G-Core/gcorelabscloud-go/client/utils"
+	"github.com/Edge-Center/edgecentercloud-go/client/utils"
 
 	"github.com/urfave/cli/v2"
 )
@@ -24,25 +24,25 @@ var commonFlags = []cli.Flag{
 	&cli.StringFlag{
 		Name:        "api-version",
 		Usage:       "API version",
-		DefaultText: "In case absent parameter it would take if from environ: GCLOUD_API_VERSION",
+		DefaultText: "In case absent parameter it would take if from environ: EC_CLOUD_API_VERSION",
 		Required:    false,
 	},
 	&cli.UintFlag{
 		Name:        "region",
-		DefaultText: "In case absent parameter it would take if from environ: GCLOUD_REGION",
+		DefaultText: "In case absent parameter it would take if from environ: EC_CLOUD_REGION",
 		Usage:       "region ID",
 		Required:    false,
 	},
 	&cli.UintFlag{
 		Name:        "project",
-		DefaultText: "In case absent parameter it would take if from environ: GCLOUD_PROJECT",
+		DefaultText: "In case absent parameter it would take if from environ: EC_CLOUD_PROJECT",
 		Usage:       "project ID",
 		Required:    false,
 	},
 	&cli.StringFlag{
 		Name:        "api-url",
 		Usage:       "Api base url",
-		DefaultText: "In case absent parameter it would take if from environ: GCLOUD_API_URL",
+		DefaultText: "In case absent parameter it would take if from environ: EC_CLOUD_API_URL",
 		Required:    false,
 	},
 	&cli.GenericFlag{
@@ -53,7 +53,7 @@ var commonFlags = []cli.Flag{
 			Destination: &ClientType,
 		},
 		Hidden: true,
-		Usage:  "client type. Either use prepared token for gcloud API access, get an access token via gcloud platform or use an api token",
+		Usage:  "client type. Either use prepared token for edgecloud API access, get an access token via gcloud platform or use an api token",
 	},
 }
 
@@ -163,40 +163,40 @@ var APITokenClientFlags = buildAPITokenClientFlags()
 var TokenClientHelpText = `
    Environment variables example:
 
-   GCLOUD_API_URL=
-   GCLOUD_API_VERSION=v1
-   GCLOUD_ACCESS_TOKEN=
-   GCLOUD_REFRESH_TOKEN=
-   GCLOUD_REGION=
-   GCLOUD_PROJECT=
+   EC_CLOUD_API_URL=
+   EC_CLOUD_API_VERSION=v1
+   EC_CLOUD_ACCESS_TOKEN=
+   EC_CLOUD_REFRESH_TOKEN=
+   EC_CLOUD_REGION=
+   EC_CLOUD_PROJECT=
 `
 
 var PlatformClientHelpText = `
    Environment variables example:
 
-   GCLOUD_AUTH_URL=
-   GCLOUD_API_URL=
-   GCLOUD_API_VERSION=v1
-   GCLOUD_USERNAME=
-   GCLOUD_PASSWORD=
-   GCLOUD_REGION=
-   GCLOUD_PROJECT=
+   EC_CLOUD_AUTH_URL=
+   EC_CLOUD_API_URL=
+   EC_CLOUD_API_VERSION=v1
+   EC_CLOUD_USERNAME=
+   EC_CLOUD_PASSWORD=
+   EC_CLOUD_REGION=
+   EC_CLOUD_PROJECT=
 `
 
 var APITokenClientHelpText = `
    Environment variables example:
 
-   GCLOUD_API_URL=
-   GCLOUD_API_VERSION=v1
-   GCLOUD_API_TOKEN=
-   GCLOUD_REGION=
-   GCLOUD_PROJECT=
+   EC_CLOUD_API_URL=
+   EC_CLOUD_API_VERSION=v1
+   EC_CLOUD_API_TOKEN=
+   EC_CLOUD_REGION=
+   EC_CLOUD_PROJECT=
 `
 
 var MainClientHelpText = `
    Environment variables example:
 	
-   GCLOUD_CLIENT_TYPE=[platform,token,api-token]
+   EC_CLOUD_CLIENT_TYPE=[platform,token,api-token]
 `
 
 func AddFlags(commands []*cli.Command, flags ...cli.Flag) {

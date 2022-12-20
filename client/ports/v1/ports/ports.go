@@ -3,12 +3,12 @@ package ports
 import (
 	"errors"
 
-	"github.com/G-Core/gcorelabscloud-go/client/ports/v1/client"
-	"github.com/G-Core/gcorelabscloud-go/gcore/port/v1/ports"
-	"github.com/G-Core/gcorelabscloud-go/gcore/reservedfixedip/v1/reservedfixedips"
+	"github.com/Edge-Center/edgecentercloud-go/client/ports/v1/client"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/port/v1/ports"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/reservedfixedip/v1/reservedfixedips"
 
-	"github.com/G-Core/gcorelabscloud-go/client/flags"
-	"github.com/G-Core/gcorelabscloud-go/client/utils"
+	"github.com/Edge-Center/edgecentercloud-go/client/flags"
+	"github.com/Edge-Center/edgecentercloud-go/client/utils"
 	"github.com/urfave/cli/v2"
 )
 
@@ -131,7 +131,7 @@ func getAddressPairs(ips, macs []string) ([]reservedfixedips.AllowedAddressPairs
 
 var Commands = cli.Command{
 	Name:  "port",
-	Usage: "GCloud ports API",
+	Usage: "EdgeCloud ports API",
 	Subcommands: []*cli.Command{
 		&portSecurityEnableSubCommand,
 		&portSecurityDisableSubCommand,

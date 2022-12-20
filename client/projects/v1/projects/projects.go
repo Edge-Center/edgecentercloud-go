@@ -4,14 +4,14 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/G-Core/gcorelabscloud-go/gcore/task/v1/tasks"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
 
-	gcorecloud "github.com/G-Core/gcorelabscloud-go"
-	"github.com/G-Core/gcorelabscloud-go/client/flags"
-	"github.com/G-Core/gcorelabscloud-go/client/projects/v1/client"
-	"github.com/G-Core/gcorelabscloud-go/client/utils"
-	"github.com/G-Core/gcorelabscloud-go/gcore/project/v1/projects"
-	"github.com/G-Core/gcorelabscloud-go/gcore/project/v1/types"
+	edgecloud "github.com/Edge-Center/edgecentercloud-go"
+	"github.com/Edge-Center/edgecentercloud-go/client/flags"
+	"github.com/Edge-Center/edgecentercloud-go/client/projects/v1/client"
+	"github.com/Edge-Center/edgecentercloud-go/client/utils"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/project/v1/projects"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/project/v1/types"
 	"github.com/urfave/cli/v2"
 )
 
@@ -94,7 +94,7 @@ var projectUpdateCommand = cli.Command{
 			Description: c.String("description"),
 		}
 
-		err = gcorecloud.TranslateValidationError(opts.Validate())
+		err = edgecloud.TranslateValidationError(opts.Validate())
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "update")
 			return cli.NewExitError(err, 1)
@@ -145,7 +145,7 @@ var projectDeleteCommand = cli.Command{
 				return nil, fmt.Errorf("cannot delete project with ID: %d", projectID)
 			}
 			switch err.(type) {
-			case gcorecloud.ErrDefault404:
+			case edgecloud.ErrDefault404:
 				return nil, nil
 			default:
 				return nil, err
@@ -195,7 +195,7 @@ var projectCreateCommand = cli.Command{
 			Description: c.String("description"),
 		}
 
-		err := gcorecloud.TranslateValidationError(opts.Validate())
+		err := edgecloud.TranslateValidationError(opts.Validate())
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "create")
 			return cli.NewExitError(err, 1)
@@ -218,7 +218,7 @@ var projectCreateCommand = cli.Command{
 
 var Commands = cli.Command{
 	Name:  "project",
-	Usage: "GCloud projects API",
+	Usage: "EdgeCloud projects API",
 	Subcommands: []*cli.Command{
 		&projectListCommand,
 		&projectGetCommand,

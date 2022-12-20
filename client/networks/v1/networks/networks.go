@@ -3,13 +3,13 @@ package networks
 import (
 	"fmt"
 
-	gcorecloud "github.com/G-Core/gcorelabscloud-go"
-	"github.com/G-Core/gcorelabscloud-go/client/flags"
-	"github.com/G-Core/gcorelabscloud-go/client/networks/v1/client"
-	"github.com/G-Core/gcorelabscloud-go/client/utils"
-	"github.com/G-Core/gcorelabscloud-go/gcore/network/v1/availablenetworks"
-	"github.com/G-Core/gcorelabscloud-go/gcore/network/v1/networks"
-	"github.com/G-Core/gcorelabscloud-go/gcore/task/v1/tasks"
+	edgecenter "github.com/Edge-Center/edgecentercloud-go"
+	"github.com/Edge-Center/edgecentercloud-go/client/flags"
+	"github.com/Edge-Center/edgecentercloud-go/client/networks/v1/client"
+	"github.com/Edge-Center/edgecentercloud-go/client/utils"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/network/v1/availablenetworks"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/network/v1/networks"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
 
 	"github.com/urfave/cli/v2"
 )
@@ -137,7 +137,7 @@ var networkDeleteCommand = cli.Command{
 				return nil, fmt.Errorf("cannot delete network with ID: %s", networkID)
 			}
 			switch err.(type) {
-			case gcorecloud.ErrDefault404:
+			case edgecenter.ErrDefault404:
 				return nil, nil
 			default:
 				return nil, err
@@ -278,7 +278,7 @@ var networkInstancePortCommand = cli.Command{
 
 var Commands = cli.Command{
 	Name:  "network",
-	Usage: "GCloud networks API",
+	Usage: "EdgeCloud networks API",
 	Subcommands: []*cli.Command{
 		&networkListCommand,
 		&availableNetworkListCommand,

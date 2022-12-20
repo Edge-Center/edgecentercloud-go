@@ -1,7 +1,7 @@
-Gcore cloud API client
+EdgeCenter cloud API client
 ====================================
 
-Command line client to GCore cloud API.
+Command line client to EdgeCenter cloud API.
 
 Installation
 ------------------------------------
@@ -15,71 +15,71 @@ Getting started
 
 You will need to set the following env:
 ```bash
-export GCLOUD_USERNAME=username
-export GCLOUD_PASSWORD=secret
-export GCLOUD_PROJECT=1
-export GCLOUD_REGION=1
-export GCLOUD_AUTH_URL=https://api.edgecenter.ru
-export GCLOUD_API_URL=https://api.edgecenter.ru/cloud
-export GCLOUD_CLIENT_TYPE=platform
+export EC_CLOUD_USERNAME=username
+export EC_CLOUD_PASSWORD=secret
+export EC_CLOUD_PROJECT=1
+export EC_CLOUD_REGION=1
+export EC_CLOUD_AUTH_URL=https://api.edgecenter.ru
+export EC_CLOUD_API_URL=https://api.edgecenter.ru/cloud
+export EC_CLOUD_CLIENT_TYPE=platform
 ```
 
-* **GCLOUD_USERNAME** - username
-* **GCLOUD_PASSWORD** - user's password
-* **GCLOUD_PROJECT** - project id
-* **GCLOUD_REGION** - region id
-* **GCLOUD_AUTH_URL** - authentication url, you could use the same as in example above
-* **GCLOUD_API_URL** - api url, you could use the same as in example above
-* **GCLOUD_CLIENT_TYPE** - client type, you could use the same as in example above
+* **EC_CLOUD_USERNAME** - username
+* **EC_CLOUD_PASSWORD** - user's password
+* **EC_CLOUD_PROJECT** - project id
+* **EC_CLOUD_REGION** - region id
+* **EC_CLOUD_AUTH_URL** - authentication url, you could use the same as in example above
+* **EC_CLOUD_API_URL** - api url, you could use the same as in example above
+* **EC_CLOUD_CLIENT_TYPE** - client type, you could use the same as in example above
 
 After setting the env, use `-h` key to retrieve all available commands:
 ```bash
-./gcoreclient -h
+./ec_client -h
 
    NAME:
-   gcoreclient - GCloud API client
+   ec_client - EdgeCloud API client
 
    Environment variables example:
 
-   GCLOUD_AUTH_URL=
-   GCLOUD_API_URL=
-   GCLOUD_API_VERSION=v1
-   GCLOUD_USERNAME=
-   GCLOUD_PASSWORD=
-   GCLOUD_REGION=
-   GCLOUD_PROJECT=
+   EC_CLOUD_AUTH_URL=
+   EC_CLOUD_API_URL=
+   EC_CLOUD_API_VERSION=v1
+   EC_CLOUD_USERNAME=
+   EC_CLOUD_PASSWORD=
+   EC_CLOUD_REGION=
+   EC_CLOUD_PROJECT=
 
 USAGE:
-   gcoreclient [global options] command [command options] [arguments...]
+   ec_client [global options] command [command options] [arguments...]
 
 VERSION:
-   v0.3.45-3-gde7ea60
+   v0.3.00
 
 COMMANDS:
-   network        GCloud networks API
-   task           GCloud tasks API
-   keypair        GCloud keypairs V2 API
-   volume         GCloud volumes API
-   subnet         GCloud subnets API
-   flavor         GCloud flavors API
-   loadbalancer   GCloud loadbalancers API
-   instance       GCloud instances API
-   heat           Gcloud Heat API
-   securitygroup  GCloud security groups API
-   floatingip     GCloud floating ips API
-   port           GCloud ports API
-   snapshot       GCloud snapshots API
-   image          GCloud images API
-   region         GCloud regions API
-   project        GCloud projects API
-   keystone       GCloud keystones API
-   quota          GCloud quotas API
-   limit          GCloud limits API
-   cluster        Gcloud k8s cluster commands
-   pool           Gcloud K8s pool commands
-   l7policy       GCloud l7policy API
-   router         GCloud router API
-   fixed_ip       GCloud reserved fixed ip API
+   network        EdgeCloud networks API
+   task           EdgeCloud tasks API
+   keypair        EdgeCloud keypairs V2 API
+   volume         EdgeCloud volumes API
+   subnet         EdgeCloud subnets API
+   flavor         EdgeCloud flavors API
+   loadbalancer   EdgeCloud loadbalancers API
+   instance       EdgeCloud instances API
+   heat           EdgeCloud Heat API
+   securitygroup  EdgeCloud security groups API
+   floatingip     EdgeCloud floating ips API
+   port           EdgeCloud ports API
+   snapshot       EdgeCloud snapshots API
+   image          EdgeCloud images API
+   region         EdgeCloud regions API
+   project        EdgeCloud projects API
+   keystone       EdgeCloud keystones API
+   quota          EdgeCloud quotas API
+   limit          EdgeCloud limits API
+   cluster        EdgeCloud k8s cluster commands
+   pool           EdgeCloud K8s pool commands
+   l7policy       EdgeCloud l7policy API
+   router         EdgeCloud router API
+   fixed_ip       EdgeCloud reserved fixed ip API
    help, h        Shows a list of commands or help for one command
 
 ```

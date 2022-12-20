@@ -6,10 +6,10 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"github.com/G-Core/gcorelabscloud-go/client/flags"
-	"github.com/G-Core/gcorelabscloud-go/client/lifecyclepolicy/v1/client"
-	"github.com/G-Core/gcorelabscloud-go/client/utils"
-	"github.com/G-Core/gcorelabscloud-go/gcore/lifecyclepolicy/v1/lifecyclepolicy"
+	"github.com/Edge-Center/edgecentercloud-go/client/flags"
+	"github.com/Edge-Center/edgecentercloud-go/client/lifecyclepolicy/v1/client"
+	"github.com/Edge-Center/edgecentercloud-go/client/utils"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/lifecyclepolicy/v1/lifecyclepolicy"
 	"github.com/urfave/cli/v2"
 )
 
@@ -25,7 +25,7 @@ var (
 
 var Commands = cli.Command{
 	Name:  "lifecycle",
-	Usage: "GCloud lifecycle policy API",
+	Usage: "EdgeCloud lifecycle policy API",
 	Subcommands: []*cli.Command{ // TODO: quota
 		&getSubCommand,
 		&listSubCommand,
@@ -39,7 +39,7 @@ var Commands = cli.Command{
 
 var volumeSubCommands = cli.Command{
 	Name:  "volume",
-	Usage: "GCloud lifecycle policy volume API",
+	Usage: "EdgeCloud lifecycle policy volume API",
 	Subcommands: []*cli.Command{
 		&addVolumeSubCommand,
 		&removeVolumeSubCommand,
@@ -48,7 +48,7 @@ var volumeSubCommands = cli.Command{
 
 var scheduleSubCommands = cli.Command{
 	Name:  "schedule",
-	Usage: "GCloud lifecycle policy schedule API",
+	Usage: "EdgeCloud lifecycle policy schedule API",
 	Subcommands: []*cli.Command{
 		&addScheduleSubCommand,
 		&removeScheduleSubCommand,

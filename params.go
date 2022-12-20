@@ -1,4 +1,4 @@
-package gcorecloud
+package edgecloud
 
 import (
 	"encoding/json"
@@ -519,22 +519,22 @@ It accepts an arbitrary tagged structure and produces a string map that's
 suitable for use as the HTTP headers of an outgoing request. Field names are
 mapped to header names based in "h" tags.
 
-  type struct Something {
-    Bar string `h:"x_bar"`
-    Baz int    `h:"lorem_ipsum"`
-  }
+	type struct Something {
+	  Bar string `h:"x_bar"`
+	  Baz int    `h:"lorem_ipsum"`
+	}
 
-  instance := Something{
-    Bar: "AAA",
-    Baz: "BBB",
-  }
+	instance := Something{
+	  Bar: "AAA",
+	  Baz: "BBB",
+	}
 
 will be converted into:
 
-  map[string]string{
-    "x_bar": "AAA",
-    "lorem_ipsum": "BBB",
-  }
+	map[string]string{
+	  "x_bar": "AAA",
+	  "lorem_ipsum": "BBB",
+	}
 
 Untagged fields and fields left at their zero values are skipped. Integers,
 booleans and string values are supported.

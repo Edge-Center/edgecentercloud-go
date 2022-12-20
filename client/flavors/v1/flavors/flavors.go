@@ -1,10 +1,10 @@
 package flavors
 
 import (
-	gcorecloud "github.com/G-Core/gcorelabscloud-go"
-	"github.com/G-Core/gcorelabscloud-go/client/flavors/v1/client"
-	"github.com/G-Core/gcorelabscloud-go/client/utils"
-	"github.com/G-Core/gcorelabscloud-go/gcore/flavor/v1/flavors"
+	edgecloud "github.com/Edge-Center/edgecentercloud-go"
+	"github.com/Edge-Center/edgecentercloud-go/client/flavors/v1/client"
+	"github.com/Edge-Center/edgecentercloud-go/client/utils"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/flavor/v1/flavors"
 
 	"github.com/urfave/cli/v2"
 )
@@ -27,7 +27,7 @@ var flavorListCommand = cli.Command{
 	},
 	Action: func(c *cli.Context) error {
 		var err error
-		var cl *gcorecloud.ServiceClient
+		var cl *edgecloud.ServiceClient
 		cl, err = client.NewFlavorClientV1(c)
 
 		if c.Bool("baremetal") {
@@ -52,7 +52,7 @@ var flavorListCommand = cli.Command{
 
 var Commands = cli.Command{
 	Name:  "flavor",
-	Usage: "GCloud flavors API",
+	Usage: "EdgeCloud flavors API",
 	Subcommands: []*cli.Command{
 		&flavorListCommand,
 	},

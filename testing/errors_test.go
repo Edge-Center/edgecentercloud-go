@@ -3,12 +3,12 @@ package testing
 import (
 	"testing"
 
-	gcorecloud "github.com/G-Core/gcorelabscloud-go"
-	th "github.com/G-Core/gcorelabscloud-go/testhelper"
+	edgecloud "github.com/Edge-Center/edgecentercloud-go"
+	th "github.com/Edge-Center/edgecentercloud-go/testhelper"
 )
 
 func TestGetResponseCode(t *testing.T) {
-	respErr := gcorecloud.ErrUnexpectedResponseCode{
+	respErr := edgecloud.ErrUnexpectedResponseCode{
 		URL:      "http://example.com",
 		Method:   "GET",
 		Expected: []int{200},
@@ -16,9 +16,9 @@ func TestGetResponseCode(t *testing.T) {
 		Body:     nil,
 	}
 
-	var err404 error = gcorecloud.ErrDefault404{ErrUnexpectedResponseCode: respErr}
+	var err404 error = edgecloud.ErrDefault404{ErrUnexpectedResponseCode: respErr}
 
-	err, ok := err404.(gcorecloud.StatusCodeError)
+	err, ok := err404.(edgecloud.StatusCodeError)
 	th.AssertEquals(t, true, ok)
 	th.AssertEquals(t, err.GetStatusCode(), 404)
 }

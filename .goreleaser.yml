@@ -4,7 +4,7 @@ before:
 builds:
   - env:
       - CGO_ENABLED=0
-    main: ./cmd/gcoreclient/main.go
+    main: ./cmd/ec_client/main.go
     flags:
       - -trimpath
     ldflags:

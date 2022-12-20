@@ -32,7 +32,7 @@ func Endpoint() string {
 	return Server.URL + "/"
 }
 
-func GCoreRefreshTokenIdentifyEndpoint() string {
+func ECRefreshTokenIdentifyEndpoint() string {
 	return Endpoint()
 }
 

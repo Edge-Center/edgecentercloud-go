@@ -3,15 +3,15 @@ package loadbalancers
 import (
 	"fmt"
 
-	gcorecloud "github.com/G-Core/gcorelabscloud-go"
-	"github.com/G-Core/gcorelabscloud-go/client/flags"
-	"github.com/G-Core/gcorelabscloud-go/client/loadbalancers/v1/client"
-	"github.com/G-Core/gcorelabscloud-go/client/loadbalancers/v1/lbpools"
-	"github.com/G-Core/gcorelabscloud-go/client/loadbalancers/v1/listeners"
-	"github.com/G-Core/gcorelabscloud-go/client/utils"
-	"github.com/G-Core/gcorelabscloud-go/gcore/loadbalancer/v1/lbflavors"
-	"github.com/G-Core/gcorelabscloud-go/gcore/loadbalancer/v1/loadbalancers"
-	"github.com/G-Core/gcorelabscloud-go/gcore/task/v1/tasks"
+	edgecloud "github.com/Edge-Center/edgecentercloud-go"
+	"github.com/Edge-Center/edgecentercloud-go/client/flags"
+	"github.com/Edge-Center/edgecentercloud-go/client/loadbalancers/v1/client"
+	"github.com/Edge-Center/edgecentercloud-go/client/loadbalancers/v1/lbpools"
+	"github.com/Edge-Center/edgecentercloud-go/client/loadbalancers/v1/listeners"
+	"github.com/Edge-Center/edgecentercloud-go/client/utils"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/loadbalancer/v1/lbflavors"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/loadbalancer/v1/loadbalancers"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
 
 	"github.com/urfave/cli/v2"
 )
@@ -168,7 +168,7 @@ var loadBalancerDeleteSubCommand = cli.Command{
 				return nil, fmt.Errorf("cannot delete loadbalancer with ID: %s", loadBalancerID)
 			}
 			switch err.(type) {
-			case gcorecloud.ErrDefault404:
+			case edgecloud.ErrDefault404:
 				return nil, nil
 			default:
 				return nil, err
@@ -285,7 +285,7 @@ var listCustomSecurityGroup = cli.Command{
 
 var flavorSubCommand = cli.Command{
 	Name:  "flavor",
-	Usage: "GCloud loadbalancer flavor API",
+	Usage: "EdgeCloud loadbalancer flavor API",
 	Subcommands: []*cli.Command{
 		&flavorListSubCommand,
 	},
@@ -302,7 +302,7 @@ var securityGroupSubCommand = cli.Command{
 
 var Commands = cli.Command{
 	Name:  "loadbalancer",
-	Usage: "GCloud loadbalancers API",
+	Usage: "EdgeCloud loadbalancers API",
 	Subcommands: []*cli.Command{
 		&loadBalancerListSubCommand,
 		&loadBalancerGetSubCommand,

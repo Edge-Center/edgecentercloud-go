@@ -3,14 +3,14 @@ package testing
 import (
 	"testing"
 
-	gcorecloud "github.com/G-Core/gcorelabscloud-go"
+	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 	"github.com/stretchr/testify/require"
 )
 
 func TestEndpointLocationWithoutRegionAndProject(t *testing.T) {
 	baseEndpoint := "http://test.com"
 
-	eo := gcorecloud.EndpointOpts{
+	eo := edgecloud.EndpointOpts{
 		Type:    "test",
 		Name:    "test",
 		Region:  0,
@@ -18,7 +18,7 @@ func TestEndpointLocationWithoutRegionAndProject(t *testing.T) {
 		Version: "v1",
 	}
 
-	el := gcorecloud.DefaultEndpointLocator(baseEndpoint)
+	el := edgecloud.DefaultEndpointLocator(baseEndpoint)
 
 	url, err := el(eo)
 	require.NoError(t, err)

@@ -8,31 +8,31 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	gcorecloud "github.com/G-Core/gcorelabscloud-go"
-	th "github.com/G-Core/gcorelabscloud-go/testhelper"
+	edgecloud "github.com/Edge-Center/edgecentercloud-go"
+	th "github.com/Edge-Center/edgecentercloud-go/testhelper"
 )
 
 func TestMaybeString(t *testing.T) {
 	testString := ""
 	var expected *string
-	actual := gcorecloud.MaybeString(testString)
+	actual := edgecloud.MaybeString(testString)
 	th.CheckDeepEquals(t, expected, actual)
 
 	testString = "carol"
 	expected = &testString
-	actual = gcorecloud.MaybeString(testString)
+	actual = edgecloud.MaybeString(testString)
 	th.CheckDeepEquals(t, expected, actual)
 }
 
 func TestMaybeInt(t *testing.T) {
 	testInt := 0
 	var expected *int
-	actual := gcorecloud.MaybeInt(testInt)
+	actual := edgecloud.MaybeInt(testInt)
 	th.CheckDeepEquals(t, expected, actual)
 
 	testInt = 4
 	expected = &testInt
-	actual = gcorecloud.MaybeInt(testInt)
+	actual = edgecloud.MaybeInt(testInt)
 	th.CheckDeepEquals(t, expected, actual)
 }
 
@@ -58,8 +58,8 @@ func TestBuildQueryString(t *testing.T) {
 		F:  &iFalse,
 		M:  map[string]string{"k1": "success1"},
 	}
-	expected := &url.URL{RawQuery: "c=true&f=false&j=2&m=%7B%27k1%27%3A%27success1%27%7D&r=red&s=one&s=two&s=three&ti=1&ti=2&ts=a&ts=b"}
-	actual, err := gcorecloud.BuildQueryString(&opts)
+	expected := &url.URL{RawQuery: "c=true&f=false&j=2&m=%7B%22k1%22%3A%22success1%22%7D&r=red&s=one&s=two&s=three&ti=1&ti=2&ts=a&ts=b"}
+	actual, err := edgecloud.BuildQueryString(&opts)
 	if err != nil {
 		t.Errorf("Error building query string: %v", err)
 	}
@@ -78,13 +78,13 @@ func TestBuildQueryString(t *testing.T) {
 		J: 2,
 		C: true,
 	}
-	_, err = gcorecloud.BuildQueryString(&opts)
+	_, err = edgecloud.BuildQueryString(&opts)
 	if err == nil {
 		t.Errorf("Expected error: 'Required field not set'")
 	}
 	th.CheckDeepEquals(t, expected, actual)
 
-	_, err = gcorecloud.BuildQueryString(map[string]interface{}{"Number": 4})
+	_, err = edgecloud.BuildQueryString(map[string]interface{}{"Number": 4})
 	if err == nil {
 		t.Errorf("Expected error: 'Options type is not a struct'")
 	}
@@ -97,7 +97,7 @@ func TestBuildQueryCommaSeparatedString(t *testing.T) {
 		S: []string{"one", "two", "three"},
 	}
 	expected := &url.URL{RawQuery: "s=one%2Ctwo%2Cthree"}
-	actual, err := gcorecloud.BuildQueryString(&opts)
+	actual, err := edgecloud.BuildQueryString(&opts)
 	if err != nil {
 		t.Errorf("Error building query string: %v", err)
 	}
@@ -117,17 +117,17 @@ func TestBuildHeaders(t *testing.T) {
 		Style:         true,
 	}
 	expected := map[string]string{"Accept": "application/json", "Number": "4", "Style": "true", "Content-Length": "256"}
-	actual, err := gcorecloud.BuildHeaders(&testStruct)
+	actual, err := edgecloud.BuildHeaders(&testStruct)
 	th.CheckNoErr(t, err)
 	th.CheckDeepEquals(t, expected, actual)
 
 	testStruct.Num = 0
-	_, err = gcorecloud.BuildHeaders(&testStruct)
+	_, err = edgecloud.BuildHeaders(&testStruct)
 	if err == nil {
 		t.Errorf("Expected error: 'Required header not set'")
 	}
 
-	_, err = gcorecloud.BuildHeaders(map[string]interface{}{"Number": 4})
+	_, err = edgecloud.BuildHeaders(map[string]interface{}{"Number": 4})
 	if err == nil {
 		t.Errorf("Expected error: 'Options type is not a struct'")
 	}
@@ -141,7 +141,7 @@ func TestQueriesAreEscaped(t *testing.T) {
 
 	expected := &url.URL{RawQuery: "else=Triangl+e&something=blah%2B%3F%21%21foo"}
 
-	actual, err := gcorecloud.BuildQueryString(foo{Name: "blah+?!!foo", Shape: "Triangl e"})
+	actual, err := edgecloud.BuildQueryString(foo{Name: "blah+?!!foo", Shape: "Triangl e"})
 	th.AssertNoErr(t, err)
 
 	th.AssertDeepEquals(t, expected, actual)
@@ -163,7 +163,7 @@ func TestBuildRequestBody(t *testing.T) {
 		F2     int `json:"f2,omitempty" or:"F1"`
 	}
 
-	// AuthOptions wraps a gcorecloud AuthOptions in order to adhere to the AuthOptionsBuilder
+	// AuthOptions wraps a edgecloud AuthOptions in order to adhere to the AuthOptionsBuilder
 	// interface.
 	type AuthOptions struct {
 		PasswordCredentials *PasswordCredentials `json:"passwordCredentials,omitempty" xor:"TokenCredentials"`
@@ -219,7 +219,7 @@ func TestBuildRequestBody(t *testing.T) {
 	}
 
 	for _, successCase := range successCases {
-		actual, err := gcorecloud.BuildRequestBody(successCase.opts, "auth")
+		actual, err := edgecloud.BuildRequestBody(successCase.opts, "auth")
 		th.AssertNoErr(t, err)
 		th.AssertDeepEquals(t, successCase.expected, actual)
 	}
@@ -233,7 +233,7 @@ func TestBuildRequestBody(t *testing.T) {
 				TenantID:   "987654321",
 				TenantName: "me",
 			},
-			gcorecloud.ErrMissingInput{},
+			edgecloud.ErrMissingInput{},
 		},
 		{
 			AuthOptions{
@@ -245,7 +245,7 @@ func TestBuildRequestBody(t *testing.T) {
 					Password: "swordfish",
 				},
 			},
-			gcorecloud.ErrMissingInput{},
+			edgecloud.ErrMissingInput{},
 		},
 		{
 			AuthOptions{
@@ -253,7 +253,7 @@ func TestBuildRequestBody(t *testing.T) {
 					Password: "swordfish",
 				},
 			},
-			gcorecloud.ErrMissingInput{},
+			edgecloud.ErrMissingInput{},
 		},
 		{
 			AuthOptions{
@@ -265,12 +265,12 @@ func TestBuildRequestBody(t *testing.T) {
 					Filler: 2,
 				},
 			},
-			gcorecloud.ErrMissingInput{},
+			edgecloud.ErrMissingInput{},
 		},
 	}
 
 	for _, failCase := range failCases {
-		_, err := gcorecloud.BuildRequestBody(failCase.opts, "auth")
+		_, err := edgecloud.BuildRequestBody(failCase.opts, "auth")
 		th.AssertDeepEquals(t, reflect.TypeOf(failCase.expected), reflect.TypeOf(err))
 	}
 
@@ -287,7 +287,7 @@ func TestBuildRequestBody(t *testing.T) {
 		"username": "jdoe",
 	}
 
-	actual, err := gcorecloud.BuildRequestBody(complexFields, "")
+	actual, err := edgecloud.BuildRequestBody(complexFields, "")
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, expectedComplexFields, actual)
 
@@ -302,7 +302,7 @@ func TestZeroQueryOpts(t *testing.T) {
 	opts := Opts{
 		Value: true,
 	}
-	res, err := gcorecloud.BuildQueryString(opts)
+	res, err := edgecloud.BuildQueryString(opts)
 	require.NoError(t, err)
 	require.Equal(t, res.String(), "?value=true")
 
@@ -310,7 +310,7 @@ func TestZeroQueryOpts(t *testing.T) {
 		Value: false,
 	}
 
-	res, err = gcorecloud.BuildQueryString(opts)
+	res, err = edgecloud.BuildQueryString(opts)
 	require.NoError(t, err)
 	require.Equal(t, res.String(), "?value=false")
 }

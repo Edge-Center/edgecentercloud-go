@@ -4,17 +4,17 @@ import (
 	"fmt"
 	"net"
 
-	"github.com/G-Core/gcorelabscloud-go/client/floatingips/v1/availablefloatingips"
-	"github.com/G-Core/gcorelabscloud-go/client/floatingips/v1/client"
+	"github.com/Edge-Center/edgecentercloud-go/client/floatingips/v1/availablefloatingips"
+	"github.com/Edge-Center/edgecentercloud-go/client/floatingips/v1/client"
 
-	gcorecloud "github.com/G-Core/gcorelabscloud-go"
-	"github.com/G-Core/gcorelabscloud-go/gcore/volume/v1/volumes"
+	edgecloud "github.com/Edge-Center/edgecentercloud-go"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/volume/v1/volumes"
 
-	"github.com/G-Core/gcorelabscloud-go/gcore/task/v1/tasks"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
 
-	"github.com/G-Core/gcorelabscloud-go/client/flags"
-	"github.com/G-Core/gcorelabscloud-go/client/utils"
-	"github.com/G-Core/gcorelabscloud-go/gcore/floatingip/v1/floatingips"
+	"github.com/Edge-Center/edgecentercloud-go/client/flags"
+	"github.com/Edge-Center/edgecentercloud-go/client/utils"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/floatingip/v1/floatingips"
 	"github.com/urfave/cli/v2"
 )
 
@@ -156,7 +156,7 @@ var floatingIPDeleteSubCommand = cli.Command{
 				return nil, fmt.Errorf("cannot delete floating IP with ID: %s", floatingIPID)
 			}
 			switch err.(type) {
-			case gcorecloud.ErrDefault404:
+			case edgecloud.ErrDefault404:
 				return nil, nil
 			default:
 				return nil, err
@@ -246,7 +246,7 @@ var floatingIPUnAssignSubCommand = cli.Command{
 
 var Commands = cli.Command{
 	Name:  "floatingip",
-	Usage: "GCloud floating ips API",
+	Usage: "EdgeCloud floating ips API",
 	Subcommands: []*cli.Command{
 		&floatingIPListSubCommand,
 		&floatingIPGetSubCommand,

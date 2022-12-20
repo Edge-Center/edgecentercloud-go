@@ -1,4 +1,4 @@
-module github.com/G-Core/gcorelabscloud-go
+module github.com/Edge-Center/edgecentercloud-go
 
 go 1.14
 

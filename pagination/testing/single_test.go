@@ -7,8 +7,8 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/G-Core/gcorelabscloud-go/pagination"
-	"github.com/G-Core/gcorelabscloud-go/testhelper"
+	"github.com/Edge-Center/edgecentercloud-go/pagination"
+	"github.com/Edge-Center/edgecentercloud-go/testhelper"
 )
 
 // SinglePage sample and test cases.

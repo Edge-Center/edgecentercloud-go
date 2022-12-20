@@ -1,4 +1,4 @@
-package gcorecloud
+package edgecloud
 
 import (
 	"encoding/json"

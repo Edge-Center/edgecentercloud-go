@@ -5,20 +5,20 @@ import (
 
 	"github.com/urfave/cli/v2"
 
-	"github.com/G-Core/gcorelabscloud-go/client/flags"
-	"github.com/G-Core/gcorelabscloud-go/client/routers/v1/client"
-	"github.com/G-Core/gcorelabscloud-go/client/subnets/v1/subnets"
-	"github.com/G-Core/gcorelabscloud-go/client/utils"
-	"github.com/G-Core/gcorelabscloud-go/gcore/router/v1/routers"
-	"github.com/G-Core/gcorelabscloud-go/gcore/router/v1/types"
-	"github.com/G-Core/gcorelabscloud-go/gcore/task/v1/tasks"
+	"github.com/Edge-Center/edgecentercloud-go/client/flags"
+	"github.com/Edge-Center/edgecentercloud-go/client/routers/v1/client"
+	"github.com/Edge-Center/edgecentercloud-go/client/subnets/v1/subnets"
+	"github.com/Edge-Center/edgecentercloud-go/client/utils"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/router/v1/routers"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/router/v1/types"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
 )
 
 var routerIDText = "router_id is mandatory argument"
 
 var Commands = cli.Command{
 	Name:  "router",
-	Usage: "GCloud router API",
+	Usage: "EdgeCloud router API",
 	Subcommands: []*cli.Command{
 		&routerListSubCommand,
 		&routerGetSubCommand,

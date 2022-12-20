@@ -1,4 +1,4 @@
-# gcoreclient Makefile
+# ec_client Makefile
 
 PWD := $(shell pwd)
 BASE_DIR := $(shell basename $(PWD))
@@ -27,8 +27,8 @@ VERSION		?= $(shell git describe --tags 2> /dev/null || \
 GOARCH		?= $(shell go env GOARCH)
 TAGS		:=
 LDFLAGS		:= "-w -s -X 'main.AppVersion=${VERSION}'"
-CMD_PACKAGE := ./cmd/gcoreclient
-BINARY 		:= ./gcoreclient
+CMD_PACKAGE := ./cmd/ec_client
+BINARY 		:= ./ec_client
 
 # CTI targets
 

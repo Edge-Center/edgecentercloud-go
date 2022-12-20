@@ -3,10 +3,10 @@ package tasks
 import (
 	"fmt"
 
-	"github.com/G-Core/gcorelabscloud-go/client/tasks/v1/client"
+	"github.com/Edge-Center/edgecentercloud-go/client/tasks/v1/client"
 
-	"github.com/G-Core/gcorelabscloud-go/client/utils"
-	"github.com/G-Core/gcorelabscloud-go/gcore/task/v1/tasks"
+	"github.com/Edge-Center/edgecentercloud-go/client/utils"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
 
 	"github.com/urfave/cli/v2"
 )
@@ -66,7 +66,7 @@ var taskGetCommand = cli.Command{
 
 var Commands = cli.Command{
 	Name:  "task",
-	Usage: "GCloud tasks API",
+	Usage: "EdgeCloud tasks API",
 	Subcommands: []*cli.Command{
 		&taskListCommand,
 		&taskGetCommand,

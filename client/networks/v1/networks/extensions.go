@@ -1,11 +1,11 @@
 package networks
 
 import (
-	"github.com/G-Core/gcorelabscloud-go/gcore/network/v1/extensions"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/network/v1/extensions"
 
-	"github.com/G-Core/gcorelabscloud-go/client/flags"
-	"github.com/G-Core/gcorelabscloud-go/client/networks/v1/client"
-	"github.com/G-Core/gcorelabscloud-go/client/utils"
+	"github.com/Edge-Center/edgecentercloud-go/client/flags"
+	"github.com/Edge-Center/edgecentercloud-go/client/networks/v1/client"
+	"github.com/Edge-Center/edgecentercloud-go/client/utils"
 
 	"github.com/urfave/cli/v2"
 )
@@ -58,7 +58,7 @@ var extensionGetCommand = cli.Command{
 
 var extensionCommands = cli.Command{
 	Name:  "extension",
-	Usage: "GCloud neutron extensions API",
+	Usage: "EdgeCloud neutron extensions API",
 	Subcommands: []*cli.Command{
 		&extensionListCommand,
 		&extensionGetCommand,
