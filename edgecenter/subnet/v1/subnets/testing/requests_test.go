@@ -2,10 +2,11 @@ package testing
 
 import (
 	"fmt"
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/utils/metadata"
 	"net"
 	"net/http"
 	"testing"
+
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/utils/metadata"
 
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/subnet/v1/subnets"
 	fake "github.com/Edge-Center/edgecentercloud-go/testhelper/client"

@@ -1,9 +1,10 @@
 package metadata
 
 import (
+	"net/http"
+
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 	"github.com/Edge-Center/edgecentercloud-go/pagination"
-	"net/http"
 )
 
 func MetadataList(client *edgecloud.ServiceClient, id string) pagination.Pager {

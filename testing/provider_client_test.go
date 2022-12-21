@@ -3,7 +3,7 @@ package testing
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -138,7 +138,7 @@ func TestConcurrentReauth(t *testing.T) {
 					log.Error(err)
 				}
 			}()
-			actual, err := ioutil.ReadAll(resp.Body)
+			actual, err := io.ReadAll(resp.Body)
 			if err != nil {
 				t.Errorf("error reading response body: %s", err)
 				return
@@ -334,7 +334,7 @@ func TestRequestThatCameDuringReauthWaitsUntilItIsCompleted(t *testing.T) {
 					log.Error(err)
 				}
 			}()
-			actual, err := ioutil.ReadAll(resp.Body)
+			actual, err := io.ReadAll(resp.Body)
 			if err != nil {
 				t.Errorf("error reading response body: %s", err)
 				return
@@ -350,7 +350,7 @@ func TestRequestThatCameDuringReauthWaitsUntilItIsCompleted(t *testing.T) {
 }
 
 func TestRequestReauthsAtMostOnce(t *testing.T) {
-	// There was an issue where GCore cloud would go into an infinite
+	// There was an issue where EdgeCenter cloud would go into an infinite
 	// reauthentication loop with buggy services that send 401 even for fresh
 	// tokens. This test simulates such a service and checks that a call to
 	// ProviderClient.Request() will not try to reauthenticate more than once.
@@ -418,7 +418,7 @@ func TestRequestWithContext(t *testing.T) {
 
 	res, err := p.Request("GET", ts.URL, &edgecloud.RequestOpts{})
 	th.AssertNoErr(t, err)
-	_, err = ioutil.ReadAll(res.Body)
+	_, err = io.ReadAll(res.Body)
 	if err != nil {
 		log.Error(err)
 	}

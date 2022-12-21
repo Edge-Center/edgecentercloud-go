@@ -163,7 +163,7 @@ func TestBuildRequestBody(t *testing.T) {
 		F2     int `json:"f2,omitempty" or:"F1"`
 	}
 
-	// AuthOptions wraps a edgecloud AuthOptions in order to adhere to the AuthOptionsBuilder
+	// AuthOptions wraps an edgecloud AuthOptions in order to adhere to the AuthOptionsBuilder
 	// interface.
 	type AuthOptions struct {
 		PasswordCredentials *PasswordCredentials `json:"passwordCredentials,omitempty" xor:"TokenCredentials"`

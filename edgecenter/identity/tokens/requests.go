@@ -19,7 +19,7 @@ func Create(c *edgecloud.ServiceClient, opts edgecloud.AuthOptionsBuilder) (r To
 	return processToken(c, opts, tokenURL(c))
 }
 
-// RefreshPlatform token with GCore platform API
+// RefreshPlatform token with EdgeCenter platform API
 func RefreshPlatform(c *edgecloud.ServiceClient, opts edgecloud.TokenOptionsBuilder) (r TokenResult) {
 	return processToken(c, opts, refreshURL(c))
 }

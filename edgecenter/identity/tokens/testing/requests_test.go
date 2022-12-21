@@ -2,9 +2,10 @@ package testing
 
 import (
 	"fmt"
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter"
 	"net/http"
 	"testing"
+
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter"
 
 	"github.com/Edge-Center/edgecentercloud-go/testhelper/client"
 

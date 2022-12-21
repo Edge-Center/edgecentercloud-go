@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"strings"
 
-	gcorecloud "github.com/Edge-Center/edgecentercloud-go"
+	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 )
 
 // Template is a structure that represents OpenStack Heat templates
@@ -77,7 +77,7 @@ func (t *Template) getFileContents(te interface{}, ignoreIf igFunc, recurse bool
 				// initialize child template
 
 				// get the base location of the child template
-				baseURL, err := gcorecloud.NormalizePathURL(t.baseURL, value)
+				baseURL, err := edgecloud.NormalizePathURL(t.baseURL, value)
 				if err != nil {
 					return err
 				}
@@ -116,7 +116,7 @@ func (t *Template) getFileContents(te interface{}, ignoreIf igFunc, recurse bool
 	case string, bool, float64, nil, int:
 		return nil
 	default:
-		return gcorecloud.ErrUnexpectedType{Actual: fmt.Sprintf("%v", reflect.TypeOf(te))}
+		return edgecloud.ErrUnexpectedType{Actual: fmt.Sprintf("%v", reflect.TypeOf(te))}
 	}
 	return nil
 }

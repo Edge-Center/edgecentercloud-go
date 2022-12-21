@@ -3,7 +3,6 @@ package utils
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -286,7 +285,7 @@ func WriteToFile(filename string, content []byte) error {
 	if err != nil {
 		return err
 	}
-	err = ioutil.WriteFile(path, content, 0644) // nolint
+	err = os.WriteFile(path, content, 0644) // nolint
 	return err
 }
 
@@ -295,7 +294,7 @@ func ReadFile(filename string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	return ioutil.ReadFile(path)
+	return os.ReadFile(path)
 }
 
 func CheckYamlFile(filename string) (content []byte, err error) {

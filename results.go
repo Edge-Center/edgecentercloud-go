@@ -708,7 +708,7 @@ func (c Currency) MarshalJSON() ([]byte, error) {
 	return json.Marshal(c.String())
 }
 
-type GcoreErrorType struct {
+type ECErrorType struct {
 	ExceptionClass string `json:"exception_class"`
 	Message        string `json:"message"`
 	Traceback      string `json:"traceback"`

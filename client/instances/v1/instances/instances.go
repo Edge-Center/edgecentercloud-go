@@ -3,7 +3,7 @@ package instances
 import (
 	"encoding/base64"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"sort"
 	"strings"
 
@@ -114,7 +114,7 @@ func getUserData(c *cli.Context) (string, error) {
 	userDataContent := c.String("user-data")
 
 	if userDataFile != "" {
-		fileContent, err := ioutil.ReadFile(userDataFile)
+		fileContent, err := os.ReadFile(userDataFile)
 		if err != nil {
 			return "", err
 		}

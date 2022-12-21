@@ -6,7 +6,7 @@ import (
 )
 
 // EndpointOpts specifies search criteria used by queries against an
-// GCore service. The options must contain enough information to
+// EdgeCenter service. The options must contain enough information to
 // unambiguously identify one, and only one, endpoint within the catalog.
 //
 // Usually, these are passed to service client factory functions in a provider
@@ -27,7 +27,7 @@ type EndpointOpts struct {
 	// Required only for services that span multiple regions.
 	Region int
 
-	// Project [required] is GCloud project
+	// Project [required] is EdgeCenter project
 	Project int
 
 	// version

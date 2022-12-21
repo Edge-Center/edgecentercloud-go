@@ -2,6 +2,7 @@ package metadata
 
 import (
 	"fmt"
+
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 )
 

@@ -95,7 +95,7 @@ type Volume struct {
 	ProjectID        int                    `json:"project_id"`
 	RegionID         int                    `json:"region_id"`
 	Attachments      []Attachment           `json:"attachments"`
-	//Metadata            Metadata                `json:"metadata"`
+	// Metadata            Metadata                `json:"metadata"`
 	CreatorTaskID       string              `json:"creator_task_id"`
 	VolumeImageMetadata VolumeImageMetadata `json:"volume_image_metadata"`
 }

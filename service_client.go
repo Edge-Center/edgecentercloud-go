@@ -22,11 +22,11 @@ type ServiceClient struct {
 	ResourceBase string
 
 	// This is the service client type (e.g. cluster, clustertemplates, nodegroup).
-	// NOTE: FOR INTERNAL USE ONLY. DO NOT SET. GCORE CLOUD WILL SET THIS.
+	// NOTE: FOR INTERNAL USE ONLY. DO NOT SET. EDGECENTER CLOUD WILL SET THIS.
 	// It is only exported because it gets set in a different package.
 	Type string
 
-	// MoreHeaders allows users (or GCore cloud) to set service-wide headers on requests. Put another way,
+	// MoreHeaders allows users (or EdgeCenter cloud) to set service-wide headers on requests. Put another way,
 	// values set in this field will be set on all the HTTP requests the service client sends.
 	MoreHeaders map[string]string
 

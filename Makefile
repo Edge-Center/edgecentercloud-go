@@ -14,7 +14,7 @@ PKG := $(shell awk '/^module/ { print $$2 }' go.mod)
 DEST := $(GOPATH)/src/$(GIT_HOST)/$(BASE_DIR)
 SOURCES := $(shell find $(DEST) -name '*.go' 2>/dev/null)
 HAS_GOLANGCI := $(shell command -v golangci-lint;)
-HAS_GOIMPORTS := $(shell command -v goimports;)
+HAS_GOIMPORTS := $(shell command -v $(GOBIN)/goimports;)
 
 TARGETS		?= darwin/amd64 linux/amd64 linux/386 linux/arm linux/arm64 linux/ppc64le linux/s390x
 DIST_DIRS	= find * -type d -exec
@@ -51,7 +51,7 @@ install:
 
 test: unit functional
 
-check: work fmt vet goimports golangci
+check: work fmt vet goimports linters
 unit: work
 	go test -count=1 -v $(TESTARGS) ./...
 
@@ -64,9 +64,9 @@ fmt:
 goimports:
 ifndef HAS_GOIMPORTS
 	echo "installing goimports"
-	GO111MODULE=off go get golang.org/x/tools/cmd/goimports
+	go install -mod=mod golang.org/x/tools/cmd/goimports
 endif
-	goimports -d $(shell find . -iname "*.go")
+	$(GOBIN)/goimports -w -d $(shell find . -iname "*.go" -and -not -path "*/.go*")
 
 vet:
 	go vet ./...
@@ -85,7 +85,7 @@ endif
 	echo "golangci-lint already installed"
 ifndef HAS_GOIMPORTS
 	echo "installing goimports"
-	GO111MODULE=off go get golang.org/x/tools/cmd/goimports
+	go install -mod=mod golang.org/x/tools/cmd/goimports
 endif
 	echo "goimports already installed"
 

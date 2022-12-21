@@ -8,6 +8,9 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 /*
@@ -25,10 +28,10 @@ encapsulate the built one. For example:
     RxTxFactor: 1.0,
   }
 
-  body, err := gcorecloud.BuildRequestBody(createOpts, "flavor")
+  body, err := edgecloud.BuildRequestBody(createOpts, "flavor")
 
 The above example can be run as-is, however it is recommended to look at how
-BuildRequestBody is used within GCore cloud to more fully understand how it
+BuildRequestBody is used within EdgeCenter cloud to more fully understand how it
 fits within the request process as a whole rather than use it directly as shown
 above.
 */
@@ -116,7 +119,7 @@ func BuildRequestBody(opts interface{}, parent string) (map[string]interface{}, 
 			v := optsValue.Field(i)
 			f := optsType.Field(i)
 
-			if f.Name != strings.Title(f.Name) {
+			if f.Name != cases.Title(language.English).String(f.Name) {
 				continue
 			}
 

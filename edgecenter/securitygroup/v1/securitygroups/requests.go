@@ -1,11 +1,12 @@
 package securitygroups
 
 import (
+	"net/http"
+
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/instance/v1/instances"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/securitygroup/v1/types"
 	"github.com/Edge-Center/edgecentercloud-go/pagination"
-	"net/http"
 )
 
 // ListOpts allows the filtering and sorting of paginated collections through the API.
