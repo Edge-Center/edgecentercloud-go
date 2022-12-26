@@ -10,12 +10,12 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	gcorecloud "github.com/G-Core/gcorelabscloud-go"
-	th "github.com/G-Core/gcorelabscloud-go/testhelper"
+	edgecloud "github.com/Edge-Center/edgecentercloud-go"
+	th "github.com/Edge-Center/edgecentercloud-go/testhelper"
 )
 
 func TestWaitFor(t *testing.T) {
-	err := gcorecloud.WaitFor(2, func() (bool, error) {
+	err := edgecloud.WaitFor(2, func() (bool, error) {
 		return true, nil
 	})
 	th.CheckNoErr(t, err)
@@ -26,7 +26,7 @@ func TestWaitForTimeout(t *testing.T) {
 		t.Skip("skipping test in short mode.")
 	}
 
-	err := gcorecloud.WaitFor(1, func() (bool, error) {
+	err := edgecloud.WaitFor(1, func() (bool, error) {
 		return false, nil
 	})
 	require.Error(t, err)
@@ -38,7 +38,7 @@ func TestWaitForError(t *testing.T) {
 		t.Skip("skipping test in short mode.")
 	}
 
-	err := gcorecloud.WaitFor(2, func() (bool, error) {
+	err := edgecloud.WaitFor(2, func() (bool, error) {
 		return false, errors.New("error has occurred")
 	})
 	require.Error(t, err)
@@ -50,7 +50,7 @@ func TestWaitForPredicateExceed(t *testing.T) {
 		t.Skip("skipping test in short mode.")
 	}
 
-	err := gcorecloud.WaitFor(1, func() (bool, error) {
+	err := edgecloud.WaitFor(1, func() (bool, error) {
 		time.Sleep(4 * time.Second)
 		return false, errors.New("just wasting time")
 	})
@@ -68,7 +68,7 @@ func TestNormalizeURL(t *testing.T) {
 		"SlashAtEnd/",
 	}
 	for i := 0; i < len(expected); i++ {
-		th.CheckEquals(t, expected[i], gcorecloud.NormalizeURL(urls[i]))
+		th.CheckEquals(t, expected[i], edgecloud.NormalizeURL(urls[i]))
 	}
 }
 
@@ -77,7 +77,7 @@ func TestNormalizePathURL(t *testing.T) {
 
 	rawPath := "template.yaml"
 	basePath, _ := filepath.Abs(".")
-	result, _ := gcorecloud.NormalizePathURL(basePath, rawPath)
+	result, _ := edgecloud.NormalizePathURL(basePath, rawPath)
 	expected := strings.Join([]string{"file:/", filepath.ToSlash(baseDir), "template.yaml"}, "/")
 	th.CheckEquals(t, expected, result)
 
@@ -86,43 +86,43 @@ func TestNormalizePathURL(t *testing.T) {
 
 	rawPath = googleURL
 	basePath, _ = filepath.Abs(".")
-	result, _ = gcorecloud.NormalizePathURL(basePath, rawPath)
+	result, _ = edgecloud.NormalizePathURL(basePath, rawPath)
 	expected = googleURL
 	th.CheckEquals(t, expected, result)
 
 	rawPath = testPath
 	basePath, _ = filepath.Abs(".")
-	result, _ = gcorecloud.NormalizePathURL(basePath, rawPath)
+	result, _ = edgecloud.NormalizePathURL(basePath, rawPath)
 	expected = strings.Join([]string{"file:/", filepath.ToSlash(baseDir), "very/nested/file.yaml"}, "/")
 	th.CheckEquals(t, expected, result)
 
 	rawPath = testPath
 	basePath = googleURL
-	result, _ = gcorecloud.NormalizePathURL(basePath, rawPath)
+	result, _ = edgecloud.NormalizePathURL(basePath, rawPath)
 	expected = "http://www.google.com/very/nested/file.yaml"
 	th.CheckEquals(t, expected, result)
 
 	rawPath = "very/nested/file.yaml/"
 	basePath = "http://www.google.com/"
-	result, _ = gcorecloud.NormalizePathURL(basePath, rawPath)
+	result, _ = edgecloud.NormalizePathURL(basePath, rawPath)
 	expected = "http://www.google.com/very/nested/file.yaml"
 	th.CheckEquals(t, expected, result)
 
 	rawPath = testPath
 	basePath = "http://www.google.com/even/more"
-	result, _ = gcorecloud.NormalizePathURL(basePath, rawPath)
+	result, _ = edgecloud.NormalizePathURL(basePath, rawPath)
 	expected = "http://www.google.com/even/more/very/nested/file.yaml"
 	th.CheckEquals(t, expected, result)
 
 	rawPath = testPath
 	basePath = strings.Join([]string{"file:/", filepath.ToSlash(baseDir), "only/file/even/more"}, "/")
-	result, _ = gcorecloud.NormalizePathURL(basePath, rawPath)
+	result, _ = edgecloud.NormalizePathURL(basePath, rawPath)
 	expected = strings.Join([]string{"file:/", filepath.ToSlash(baseDir), "only/file/even/more/very/nested/file.yaml"}, "/")
 	th.CheckEquals(t, expected, result)
 
 	rawPath = "very/nested/file.yaml/"
 	basePath = strings.Join([]string{"file:/", filepath.ToSlash(baseDir), "only/file/even/more"}, "/")
-	result, _ = gcorecloud.NormalizePathURL(basePath, rawPath)
+	result, _ = edgecloud.NormalizePathURL(basePath, rawPath)
 	expected = strings.Join([]string{"file:/", filepath.ToSlash(baseDir), "only/file/even/more/very/nested/file.yaml"}, "/")
 	th.CheckEquals(t, expected, result)
 }
@@ -156,6 +156,6 @@ func TestStripLastSlashURL(t *testing.T) {
 	}
 
 	for _, m := range testCase {
-		require.Equal(t, m["result"], gcorecloud.StripLastSlashURL(m["url"]))
+		require.Equal(t, m["result"], edgecloud.StripLastSlashURL(m["url"]))
 	}
 }

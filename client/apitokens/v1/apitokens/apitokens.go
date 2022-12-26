@@ -5,12 +5,12 @@ import (
 	"strings"
 	"time"
 
-	gcorecloud "github.com/G-Core/gcorelabscloud-go"
-	"github.com/G-Core/gcorelabscloud-go/client/apitokens/v1/client"
-	"github.com/G-Core/gcorelabscloud-go/client/flags"
-	"github.com/G-Core/gcorelabscloud-go/client/utils"
-	"github.com/G-Core/gcorelabscloud-go/gcore/apitoken/v1/apitokens"
-	"github.com/G-Core/gcorelabscloud-go/gcore/apitoken/v1/types"
+	edgecloud "github.com/Edge-Center/edgecentercloud-go"
+	"github.com/Edge-Center/edgecentercloud-go/client/apitokens/v1/client"
+	"github.com/Edge-Center/edgecentercloud-go/client/flags"
+	"github.com/Edge-Center/edgecentercloud-go/client/utils"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/apitoken/v1/apitokens"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/apitoken/v1/types"
 	"github.com/urfave/cli/v2"
 )
 
@@ -18,7 +18,7 @@ var apiTokenIDText = "apitoken_id is mandatory argument"
 
 var Commands = cli.Command{
 	Name:  "apitokens",
-	Usage: "GCloud api token API. Could be used only with platform client type",
+	Usage: "EdgeCloud api token API. Could be used only with platform client type",
 	Subcommands: []*cli.Command{
 		&apiTokenListCommand,
 		&apiTokenGetCommand,
@@ -204,12 +204,12 @@ var apiTokenCreateCommand = cli.Command{
 
 		expDateRaw := c.String("expiration-date")
 		if expDateRaw != "" {
-			expDate, err := time.Parse(gcorecloud.RFC3339ZZ, expDateRaw)
+			expDate, err := time.Parse(edgecloud.RFC3339ZZ, expDateRaw)
 			if err != nil {
 				_ = cli.ShowAppHelp(c)
 				return cli.NewExitError(err, 1)
 			}
-			opts.ExpDate = &gcorecloud.JSONRFC3339Z{Time: expDate}
+			opts.ExpDate = &edgecloud.JSONRFC3339Z{Time: expDate}
 		}
 
 		result, err := apitokens.Create(client, c.Int("client-id"), opts).Extract()

@@ -1,9 +1,9 @@
 package availablefloatingips
 
 import (
-	"github.com/G-Core/gcorelabscloud-go/client/floatingips/v1/client"
-	"github.com/G-Core/gcorelabscloud-go/client/utils"
-	"github.com/G-Core/gcorelabscloud-go/gcore/floatingip/v1/floatingips"
+	"github.com/Edge-Center/edgecentercloud-go/client/floatingips/v1/client"
+	"github.com/Edge-Center/edgecentercloud-go/client/utils"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/floatingip/v1/floatingips"
 	"github.com/urfave/cli/v2"
 )
 
@@ -28,7 +28,7 @@ var availableFloatingIPListSubCommand = cli.Command{
 
 var AvailableFloatingIPCommands = cli.Command{
 	Name:  "available",
-	Usage: "GCloud available floating ips API",
+	Usage: "EdgeCloud available floating ips API",
 	Subcommands: []*cli.Command{
 		&availableFloatingIPListSubCommand,
 	},

@@ -7,12 +7,12 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	gcorecloud "github.com/G-Core/gcorelabscloud-go"
-	th "github.com/G-Core/gcorelabscloud-go/testhelper"
+	edgecloud "github.com/Edge-Center/edgecentercloud-go"
+	th "github.com/Edge-Center/edgecentercloud-go/testhelper"
 )
 
 func TestServiceURL(t *testing.T) {
-	c := &gcorecloud.ServiceClient{Endpoint: "http://123.45.67.8/"}
+	c := &edgecloud.ServiceClient{Endpoint: "http://123.45.67.8/"}
 	expected := "http://123.45.67.8/more/parts/here"
 	actual := c.ServiceURL("more", "parts", "here")
 	th.CheckEquals(t, expected, actual)
@@ -25,11 +25,11 @@ func TestMoreHeaders(t *testing.T) {
 		w.WriteHeader(http.StatusOK)
 	})
 
-	c := new(gcorecloud.ServiceClient)
+	c := new(edgecloud.ServiceClient)
 	c.MoreHeaders = map[string]string{
 		"custom": "header",
 	}
-	c.ProviderClient = new(gcorecloud.ProviderClient)
+	c.ProviderClient = new(edgecloud.ProviderClient)
 	resp, err := c.Get(fmt.Sprintf("%s/route", th.Endpoint()), nil, nil)
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, resp.Request.Header.Get("custom"), "header")

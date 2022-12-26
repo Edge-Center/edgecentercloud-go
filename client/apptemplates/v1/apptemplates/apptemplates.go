@@ -1,16 +1,16 @@
 package apptemplates
 
 import (
-	"github.com/G-Core/gcorelabscloud-go/client/apptemplates/v1/client"
-	"github.com/G-Core/gcorelabscloud-go/client/flags"
-	"github.com/G-Core/gcorelabscloud-go/client/utils"
-	"github.com/G-Core/gcorelabscloud-go/gcore/apptemplate/v1/apptemplates"
+	"github.com/Edge-Center/edgecentercloud-go/client/apptemplates/v1/client"
+	"github.com/Edge-Center/edgecentercloud-go/client/flags"
+	"github.com/Edge-Center/edgecentercloud-go/client/utils"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/apptemplate/v1/apptemplates"
 	"github.com/urfave/cli/v2"
 )
 
 var Commands = cli.Command{
 	Name:  "apptemplates",
-	Usage: "GCloud apptemplates API",
+	Usage: "EdgeCloud apptemplates API",
 	Subcommands: []*cli.Command{
 		&appTemplateListSubCommand,
 		&appTemplateGetSubCommand,

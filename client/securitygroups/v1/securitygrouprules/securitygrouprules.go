@@ -4,15 +4,15 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/G-Core/gcorelabscloud-go/client/securitygroups/v1/client"
+	"github.com/Edge-Center/edgecentercloud-go/client/securitygroups/v1/client"
 
-	"github.com/G-Core/gcorelabscloud-go/gcore/securitygroup/v1/securitygroups"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/securitygroup/v1/securitygroups"
 
-	"github.com/G-Core/gcorelabscloud-go/gcore/securitygroup/v1/securitygrouprules"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/securitygroup/v1/securitygrouprules"
 
-	"github.com/G-Core/gcorelabscloud-go/client/flags"
-	"github.com/G-Core/gcorelabscloud-go/client/utils"
-	"github.com/G-Core/gcorelabscloud-go/gcore/securitygroup/v1/types"
+	"github.com/Edge-Center/edgecentercloud-go/client/flags"
+	"github.com/Edge-Center/edgecentercloud-go/client/utils"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/securitygroup/v1/types"
 	"github.com/urfave/cli/v2"
 )
 

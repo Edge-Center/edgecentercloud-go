@@ -1,4 +1,4 @@
-package gcorecloud
+package edgecloud
 
 import (
 	"encoding/json"
@@ -13,7 +13,7 @@ type BaseError struct {
 }
 
 func (e BaseError) Error() string {
-	e.DefaultErrString = "An error occurred while executing a Gcore cloud request."
+	e.DefaultErrString = "An error occurred while executing a EdgeCenter cloud request."
 	return e.choseErrString()
 }
 
@@ -90,19 +90,19 @@ func (e ErrUnexpectedResponseCode) Error() string {
 		"Expected HTTP response code %v when accessing [%s %s], but got %d instead\n%s",
 		e.Expected, e.Method, e.URL, e.Actual, e.Body,
 	)
-	gcoreErr := GcoreErrorType{}
-	err := json.Unmarshal(e.Body, &gcoreErr)
+	ecErr := ECErrorType{}
+	err := json.Unmarshal(e.Body, &ecErr)
 	if err != nil {
-		e.Info = gcoreErr.Message
+		e.Info = ecErr.Message
 	}
 	return e.choseErrString()
 }
 
-func (e *ErrUnexpectedResponseCode) ReadGcoreError() {
-	gcoreErr := GcoreErrorType{}
-	err := json.Unmarshal(e.Body, &gcoreErr)
+func (e *ErrUnexpectedResponseCode) ReadEcError() {
+	ecErr := ECErrorType{}
+	err := json.Unmarshal(e.Body, &ecErr)
 	if err == nil {
-		e.Info = gcoreErr.Message
+		e.Info = ecErr.Message
 	}
 }
 
@@ -178,14 +178,14 @@ func (e ErrDefault400) Error() string {
 		"Bad request with: [%s %s], error message: %s",
 		e.Method, e.URL, e.Body,
 	)
-	e.ReadGcoreError()
+	e.ReadEcError()
 	if e.Info != "" {
 		return e.choseErrString()
 	}
 	return e.choseErrString()
 }
 func (e ErrDefault401) Error() string {
-	e.ReadGcoreError()
+	e.ReadEcError()
 	if e.Info != "" {
 		return e.choseErrString()
 	}
@@ -196,14 +196,14 @@ func (e ErrDefault403) Error() string {
 		"Request forbidden: [%s %s], error message: %s",
 		e.Method, e.URL, e.Body,
 	)
-	e.ReadGcoreError()
+	e.ReadEcError()
 	if e.Info != "" {
 		return e.choseErrString()
 	}
 	return e.choseErrString()
 }
 func (e ErrDefault404) Error() string {
-	e.ReadGcoreError()
+	e.ReadEcError()
 	if e.Info != "" {
 		return e.choseErrString()
 	}
@@ -216,7 +216,7 @@ func (e ErrDefault408) Error() string {
 	return "The server timed out waiting for the request"
 }
 func (e ErrDefault409) Error() string {
-	e.ReadGcoreError()
+	e.ReadEcError()
 	if e.Info != "" {
 		return e.choseErrString()
 	}
@@ -227,7 +227,7 @@ func (e ErrDefault429) Error() string {
 		" requests, wait up to one minute, and try again."
 }
 func (e ErrDefault500) Error() string {
-	e.ReadGcoreError()
+	e.ReadEcError()
 	if e.Info != "" {
 		return e.choseErrString()
 	}

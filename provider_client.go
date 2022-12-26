@@ -1,4 +1,4 @@
-package gcorecloud
+package edgecloud
 
 import (
 	"bytes"
@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/http/httputil"
 	"os"
@@ -18,7 +17,7 @@ import (
 )
 
 // DefaultUserAgent is the default User-Agent string set in the request header.
-const DefaultUserAgent = "gcorecloud/0.0.1"
+const DefaultUserAgent = "edgecloud-go-client/0.3.0"
 
 // UserAgent represents a User-Agent header.
 type UserAgent struct {
@@ -34,7 +33,7 @@ func (ua *UserAgent) Prepend(s ...string) {
 }
 
 // Join concatenates all the user-defined User-Agent strings with the default
-// GCore cloud User-Agent string.
+// EdgeCenter cloud User-Agent string.
 func (ua *UserAgent) Join() string {
 	// nolint:gocritic
 	uaSlice := append(ua.prepend, DefaultUserAgent)
@@ -391,7 +390,7 @@ func (client *ProviderClient) doRequest(method, url string, options *RequestOpts
 	// io.ReadSeeker as-is. Default the content-type to application/json.
 	if options.JSONBody != nil {
 		if options.RawBody != nil {
-			return nil, errors.New("please provide only one of JSONBody or RawBody to gcorecloud.Request()")
+			return nil, errors.New("please provide only one of JSONBody or RawBody to edgecloud.Request()")
 		}
 
 		rendered, err := json.Marshal(options.JSONBody)
@@ -472,7 +471,7 @@ func (client *ProviderClient) doRequest(method, url string, options *RequestOpts
 	}
 
 	if !ok {
-		body, _ := ioutil.ReadAll(resp.Body)
+		body, _ := io.ReadAll(resp.Body)
 		err := resp.Body.Close()
 		if err != nil {
 			log.Error(err)

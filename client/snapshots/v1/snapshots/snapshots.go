@@ -4,13 +4,13 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/G-Core/gcorelabscloud-go/client/snapshots/v1/client"
+	"github.com/Edge-Center/edgecentercloud-go/client/snapshots/v1/client"
 
-	gcorecloud "github.com/G-Core/gcorelabscloud-go"
-	"github.com/G-Core/gcorelabscloud-go/client/flags"
-	"github.com/G-Core/gcorelabscloud-go/client/utils"
-	"github.com/G-Core/gcorelabscloud-go/gcore/snapshot/v1/snapshots"
-	"github.com/G-Core/gcorelabscloud-go/gcore/task/v1/tasks"
+	edgecloud "github.com/Edge-Center/edgecentercloud-go"
+	"github.com/Edge-Center/edgecentercloud-go/client/flags"
+	"github.com/Edge-Center/edgecentercloud-go/client/utils"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/snapshot/v1/snapshots"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
 
 	"github.com/urfave/cli/v2"
 )
@@ -113,7 +113,7 @@ var snapshotDeleteCommand = cli.Command{
 				return nil, fmt.Errorf("cannot delete snapshot with ID: %s", snapshotID)
 			}
 			switch err.(type) {
-			case gcorecloud.ErrDefault404:
+			case edgecloud.ErrDefault404:
 				return nil, nil
 			default:
 				return nil, err
@@ -268,7 +268,7 @@ var metadataReplaceCommand = cli.Command{
 
 var Commands = cli.Command{
 	Name:  "snapshot",
-	Usage: "GCloud snapshots API",
+	Usage: "EdgeCloud snapshots API",
 	Subcommands: []*cli.Command{
 		&snapshotListCommand,
 		&snapshotGetCommand,

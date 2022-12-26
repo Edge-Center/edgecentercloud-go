@@ -1,10 +1,10 @@
 package servergroups
 
 import (
-	"github.com/G-Core/gcorelabscloud-go/client/flags"
-	"github.com/G-Core/gcorelabscloud-go/client/servergroups/v1/client"
-	"github.com/G-Core/gcorelabscloud-go/client/utils"
-	"github.com/G-Core/gcorelabscloud-go/gcore/servergroup/v1/servergroups"
+	"github.com/Edge-Center/edgecentercloud-go/client/flags"
+	"github.com/Edge-Center/edgecentercloud-go/client/servergroups/v1/client"
+	"github.com/Edge-Center/edgecentercloud-go/client/utils"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/servergroup/v1/servergroups"
 	"github.com/urfave/cli/v2"
 )
 
@@ -12,7 +12,7 @@ var serverGroupIDText = "servergroup_id is mandatory argument"
 
 var Commands = cli.Command{
 	Name:  "servergroup",
-	Usage: "GCloud server groups v1 API",
+	Usage: "EdgeCloud server groups v1 API",
 	Subcommands: []*cli.Command{
 		&serverGroupListCommand,
 		&serverGroupGetCommand,

@@ -5,13 +5,13 @@ import (
 	"net"
 	"strings"
 
-	gcorecloud "github.com/G-Core/gcorelabscloud-go"
-	"github.com/G-Core/gcorelabscloud-go/client/flags"
-	"github.com/G-Core/gcorelabscloud-go/client/loadbalancers/v1/client"
-	"github.com/G-Core/gcorelabscloud-go/client/utils"
-	"github.com/G-Core/gcorelabscloud-go/gcore/loadbalancer/v1/lbpools"
-	"github.com/G-Core/gcorelabscloud-go/gcore/loadbalancer/v1/types"
-	"github.com/G-Core/gcorelabscloud-go/gcore/task/v1/tasks"
+	edgecloud "github.com/Edge-Center/edgecentercloud-go"
+	"github.com/Edge-Center/edgecentercloud-go/client/flags"
+	"github.com/Edge-Center/edgecentercloud-go/client/loadbalancers/v1/client"
+	"github.com/Edge-Center/edgecentercloud-go/client/utils"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/loadbalancer/v1/lbpools"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/loadbalancer/v1/types"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
 
 	"github.com/urfave/cli/v2"
 )
@@ -255,7 +255,7 @@ var lbpoolDeleteSubCommand = cli.Command{
 				return nil, fmt.Errorf("cannot delete lbpool with ID: %s", lbpoolID)
 			}
 			switch err.(type) {
-			case gcorecloud.ErrDefault404:
+			case edgecloud.ErrDefault404:
 				return nil, nil
 			default:
 				return nil, err
@@ -1009,7 +1009,7 @@ var lbpoolDeleteHealthMonitorSubCommand = cli.Command{
 
 var PoolCommands = cli.Command{
 	Name:  "pool",
-	Usage: "GCloud loadbalancer pools API",
+	Usage: "EdgeCloud loadbalancer pools API",
 	Subcommands: []*cli.Command{
 		&lbpoolListSubCommand,
 		&lbpoolGetSubCommand,
@@ -1018,7 +1018,7 @@ var PoolCommands = cli.Command{
 		&lbpoolCreateSubCommand,
 		{
 			Name:  "member",
-			Usage: "GCloud loadbalancer pool members API",
+			Usage: "EdgeCloud loadbalancer pool members API",
 			Subcommands: []*cli.Command{
 				&lbpoolCreateMemberSubCommand,
 				&lbpoolDeleteMemberSubCommand,
@@ -1026,7 +1026,7 @@ var PoolCommands = cli.Command{
 		},
 		{
 			Name:  "healthmonitor",
-			Usage: "GCloud pool's health monitor API",
+			Usage: "EdgeCloud pool's health monitor API",
 			Subcommands: []*cli.Command{
 				&lbpoolCreateHealthMonitorSubCommand,
 				&lbpoolDeleteHealthMonitorSubCommand,

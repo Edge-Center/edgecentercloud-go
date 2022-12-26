@@ -3,7 +3,6 @@ package utils
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -11,8 +10,8 @@ import (
 	"strings"
 	"time"
 
-	gcorecloud "github.com/G-Core/gcorelabscloud-go"
-	"github.com/G-Core/gcorelabscloud-go/gcore/task/v1/tasks"
+	edgecloud "github.com/Edge-Center/edgecentercloud-go"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
 	"github.com/fatih/structs"
 	"github.com/mitchellh/go-homedir"
 	"github.com/olekukonko/tablewriter"
@@ -235,7 +234,7 @@ func StringSliceToMapInterface(slice []string) (map[string]interface{}, error) {
 
 func WaitTaskAndShowResult(
 	c *cli.Context,
-	client *gcorecloud.ServiceClient,
+	client *edgecloud.ServiceClient,
 	results *tasks.TaskResults,
 	stopOnTaskError bool,
 	infoRetriever tasks.RetrieveTaskResult,
@@ -286,7 +285,7 @@ func WriteToFile(filename string, content []byte) error {
 	if err != nil {
 		return err
 	}
-	err = ioutil.WriteFile(path, content, 0644) // nolint
+	err = os.WriteFile(path, content, 0644) // nolint
 	return err
 }
 
@@ -295,7 +294,7 @@ func ReadFile(filename string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	return ioutil.ReadFile(path)
+	return os.ReadFile(path)
 }
 
 func CheckYamlFile(filename string) (content []byte, err error) {

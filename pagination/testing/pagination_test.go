@@ -1,13 +1,13 @@
 package testing
 
 import (
-	gcorecloud "github.com/G-Core/gcorelabscloud-go"
-	"github.com/G-Core/gcorelabscloud-go/testhelper"
+	edgecloud "github.com/Edge-Center/edgecentercloud-go"
+	"github.com/Edge-Center/edgecentercloud-go/testhelper"
 )
 
-func createClient() *gcorecloud.ServiceClient {
-	return &gcorecloud.ServiceClient{
-		ProviderClient: &gcorecloud.ProviderClient{AccessTokenID: "abc123"},
+func createClient() *edgecloud.ServiceClient {
+	return &edgecloud.ServiceClient{
+		ProviderClient: &edgecloud.ProviderClient{AccessTokenID: "abc123"},
 		Endpoint:       testhelper.Endpoint(),
 	}
 }

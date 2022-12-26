@@ -6,8 +6,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/G-Core/gcorelabscloud-go/pagination"
-	"github.com/G-Core/gcorelabscloud-go/testhelper"
+	"github.com/Edge-Center/edgecentercloud-go/pagination"
+	"github.com/Edge-Center/edgecentercloud-go/testhelper"
 )
 
 // LinkedPager sample and test cases.

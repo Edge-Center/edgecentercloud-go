@@ -6,18 +6,18 @@ import (
 
 	"github.com/urfave/cli/v2"
 
-	"github.com/G-Core/gcorelabscloud-go/client/flags"
-	"github.com/G-Core/gcorelabscloud-go/client/reservedfixedips/v1/client"
-	"github.com/G-Core/gcorelabscloud-go/client/utils"
-	"github.com/G-Core/gcorelabscloud-go/gcore/reservedfixedip/v1/reservedfixedips"
-	"github.com/G-Core/gcorelabscloud-go/gcore/task/v1/tasks"
+	"github.com/Edge-Center/edgecentercloud-go/client/flags"
+	"github.com/Edge-Center/edgecentercloud-go/client/reservedfixedips/v1/client"
+	"github.com/Edge-Center/edgecentercloud-go/client/utils"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/reservedfixedip/v1/reservedfixedips"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
 )
 
 var portIDText = "port_id is mandatory argument"
 
 var Commands = cli.Command{
 	Name:  "fixed_ip",
-	Usage: "GCloud reserved fixed ip API",
+	Usage: "EdgeCloud reserved fixed ip API",
 	Subcommands: []*cli.Command{
 		&reservedFixedIPListSubCommand,
 		&reservedFixedIPGetSubCommand,

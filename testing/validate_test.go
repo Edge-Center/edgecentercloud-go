@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	gcorecloud "github.com/G-Core/gcorelabscloud-go"
+	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 	"github.com/stretchr/testify/require"
 )
 
@@ -26,14 +26,14 @@ func TestValidateEnumTag(t *testing.T) {
 		Value enum `validate:"required,enum"`
 	}
 	ts1 := test{Value: "y"}
-	err := gcorecloud.Validate.Struct(ts1)
+	err := edgecloud.Validate.Struct(ts1)
 	require.Error(t, err)
-	err = gcorecloud.TranslateValidationError(err)
+	err = edgecloud.TranslateValidationError(err)
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "is not valid")
 
 	ts2 := test{Value: "x"}
-	err = gcorecloud.Validate.Struct(ts2)
+	err = edgecloud.Validate.Struct(ts2)
 	require.NoError(t, err)
 }
 
@@ -43,17 +43,17 @@ func TestAllowedWithoutTag(t *testing.T) {
 		Value2 string `validate:"allowed_without=Value1"`
 	}
 	ts1 := test{Value1: "y", Value2: "y"}
-	err := gcorecloud.TranslateValidationError(gcorecloud.Validate.Struct(ts1))
+	err := edgecloud.TranslateValidationError(edgecloud.Validate.Struct(ts1))
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "should not be")
 	ts2 := test{Value1: "y", Value2: ""}
-	err = gcorecloud.Validate.Struct(ts2)
+	err = edgecloud.Validate.Struct(ts2)
 	require.NoError(t, err)
 	ts3 := test{Value1: "", Value2: "y"}
-	err = gcorecloud.Validate.Struct(ts3)
+	err = edgecloud.Validate.Struct(ts3)
 	require.NoError(t, err)
 	ts4 := test{Value1: "", Value2: ""}
-	err = gcorecloud.Validate.Struct(ts4)
+	err = edgecloud.Validate.Struct(ts4)
 	require.NoError(t, err)
 }
 
@@ -65,23 +65,23 @@ func TestAllowedWithoutAllTag(t *testing.T) {
 		Value4 string
 	}
 	ts1 := test{Value1: "y", Value2: "y"}
-	err := gcorecloud.TranslateValidationError(gcorecloud.Validate.Struct(ts1))
+	err := edgecloud.TranslateValidationError(edgecloud.Validate.Struct(ts1))
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "should not be")
 	ts2 := test{Value1: "y", Value2: ""}
-	err = gcorecloud.Validate.Struct(ts2)
+	err = edgecloud.Validate.Struct(ts2)
 	require.NoError(t, err)
 	ts3 := test{Value1: "", Value2: "y"}
-	err = gcorecloud.Validate.Struct(ts3)
+	err = edgecloud.Validate.Struct(ts3)
 	require.NoError(t, err)
 	ts4 := test{Value1: "", Value2: ""}
-	err = gcorecloud.Validate.Struct(ts4)
+	err = edgecloud.Validate.Struct(ts4)
 	require.NoError(t, err)
 	ts5 := test{Value1: "y", Value4: "y"}
-	err = gcorecloud.Validate.Struct(ts5)
+	err = edgecloud.Validate.Struct(ts5)
 	require.NoError(t, err)
 	ts6 := test{Value1: "y", Value4: "y", Value2: "y"}
-	err = gcorecloud.Validate.Struct(ts6)
+	err = edgecloud.Validate.Struct(ts6)
 	require.Error(t, err)
 }
 
@@ -98,11 +98,11 @@ func TestName(t *testing.T) {
 	struct2 := name{Name: name2}
 	struct3 := name{Name: name3}
 
-	err := gcorecloud.ValidateStruct(struct1)
+	err := edgecloud.ValidateStruct(struct1)
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "Name")
-	require.NoError(t, gcorecloud.ValidateStruct(struct2))
+	require.NoError(t, edgecloud.ValidateStruct(struct2))
 	struct1.Name = struct1.Name[:63]
-	require.NoError(t, gcorecloud.ValidateStruct(struct1))
-	require.Error(t, gcorecloud.ValidateStruct(struct3))
+	require.NoError(t, edgecloud.ValidateStruct(struct1))
+	require.Error(t, edgecloud.ValidateStruct(struct3))
 }

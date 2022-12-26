@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"time"
 
-	gcorecloud "github.com/G-Core/gcorelabscloud-go"
-	"github.com/G-Core/gcorelabscloud-go/client/flags"
-	"github.com/G-Core/gcorelabscloud-go/client/secrets/v1/client"
-	"github.com/G-Core/gcorelabscloud-go/client/utils"
-	"github.com/G-Core/gcorelabscloud-go/gcore/secret/v1/secrets"
-	"github.com/G-Core/gcorelabscloud-go/gcore/task/v1/tasks"
+	edgecloud "github.com/Edge-Center/edgecentercloud-go"
+	"github.com/Edge-Center/edgecentercloud-go/client/flags"
+	"github.com/Edge-Center/edgecentercloud-go/client/secrets/v1/client"
+	"github.com/Edge-Center/edgecentercloud-go/client/utils"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/secret/v1/secrets"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
 	"github.com/urfave/cli/v2"
 )
 
@@ -17,7 +17,7 @@ var secretsIDText = "secrets_id is mandatory argument"
 
 var Commands = cli.Command{
 	Name:  "secrets",
-	Usage: "GCloud secrets v1 API",
+	Usage: "EdgeCloud secrets v1 API",
 	Subcommands: []*cli.Command{
 		&secretListCommand,
 		&secretGetCommand,
@@ -153,7 +153,7 @@ var secretCreateCommand = cli.Command{
 		&cli.StringFlag{
 			Name:    "expiration-time",
 			Aliases: []string{"e"},
-			Usage:   fmt.Sprintf("Date when the secret will expire. Format `%s`", gcorecloud.RFC3339NoZ),
+			Usage:   fmt.Sprintf("Date when the secret will expire. Format `%s`", edgecloud.RFC3339NoZ),
 		},
 	}, flags.WaitCommandFlags...),
 	Action: func(c *cli.Context) error {
@@ -181,7 +181,7 @@ var secretCreateCommand = cli.Command{
 		}
 		rawExpTime := c.String("expiration-time")
 		if len(rawExpTime) != 0 {
-			expirationTime, err := time.Parse(gcorecloud.RFC3339NoZ, rawExpTime)
+			expirationTime, err := time.Parse(edgecloud.RFC3339NoZ, rawExpTime)
 			if err != nil {
 				_ = cli.ShowSubcommandHelp(c)
 				return cli.NewExitError(err, 1)

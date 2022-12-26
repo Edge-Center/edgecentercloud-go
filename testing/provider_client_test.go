@@ -3,7 +3,7 @@ package testing
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -13,15 +13,15 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	gcorecloud "github.com/G-Core/gcorelabscloud-go"
-	th "github.com/G-Core/gcorelabscloud-go/testhelper"
-	"github.com/G-Core/gcorelabscloud-go/testhelper/client"
+	edgecloud "github.com/Edge-Center/edgecentercloud-go"
+	th "github.com/Edge-Center/edgecentercloud-go/testhelper"
+	"github.com/Edge-Center/edgecentercloud-go/testhelper/client"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func TestAuthenticatedHeaders(t *testing.T) {
-	p := &gcorecloud.ProviderClient{
+	p := &edgecloud.ProviderClient{
 		AccessTokenID: "1234",
 	}
 	assert.Len(t, p.AccessToken(), len("1234"))
@@ -31,20 +31,20 @@ func TestAuthenticatedHeaders(t *testing.T) {
 }
 
 func TestUserAgent(t *testing.T) {
-	p := &gcorecloud.ProviderClient{}
+	p := &edgecloud.ProviderClient{}
 
 	p.UserAgent.Prepend("custom-user-agent/2.4.0")
-	expected := "custom-user-agent/2.4.0 gcorecloud/0.0.1"
+	expected := "custom-user-agent/2.4.0 edgecloud-go-client/0.3.0"
 	actual := p.UserAgent.Join()
 	th.CheckEquals(t, expected, actual)
 
 	p.UserAgent.Prepend("another-custom-user-agent/0.3.0", "a-third-ua/5.9.0")
-	expected = "another-custom-user-agent/0.3.0 a-third-ua/5.9.0 custom-user-agent/2.4.0 gcorecloud/0.0.1"
+	expected = "another-custom-user-agent/0.3.0 a-third-ua/5.9.0 custom-user-agent/2.4.0 edgecloud-go-client/0.3.0"
 	actual = p.UserAgent.Join()
 	th.CheckEquals(t, expected, actual)
 
-	p.UserAgent = gcorecloud.UserAgent{}
-	expected = "gcorecloud/0.0.1"
+	p.UserAgent = edgecloud.UserAgent{}
+	expected = "edgecloud-go-client/0.3.0"
 	actual = p.UserAgent.Join()
 	th.CheckEquals(t, expected, actual)
 }
@@ -68,7 +68,7 @@ func TestConcurrentReauth(t *testing.T) {
 	postReAuthToken := "12345678"
 	postReAuthTokenHeader := fmt.Sprintf("Bearer %s", postReAuthToken)
 
-	p := new(gcorecloud.ProviderClient)
+	p := new(edgecloud.ProviderClient)
 	p.UseTokenLock()
 	err := p.SetTokensAndAuthResult(atc)
 	if err != nil {
@@ -113,7 +113,7 @@ func TestConcurrentReauth(t *testing.T) {
 	})
 
 	wg := new(sync.WaitGroup)
-	reqopts := new(gcorecloud.RequestOpts)
+	reqopts := new(edgecloud.RequestOpts)
 	reqopts.MoreHeaders = map[string]string{
 		"X-Auth-AccessToken": preReAuthAccessToken,
 	}
@@ -138,7 +138,7 @@ func TestConcurrentReauth(t *testing.T) {
 					log.Error(err)
 				}
 			}()
-			actual, err := ioutil.ReadAll(resp.Body)
+			actual, err := io.ReadAll(resp.Body)
 			if err != nil {
 				t.Errorf("error reading response body: %s", err)
 				return
@@ -167,7 +167,7 @@ func TestReauthEndLoop(t *testing.T) {
 	mut := new(sync.RWMutex)
 	atc := client.NewAuthResultTest(client.AccessToken, client.RefreshToken)
 
-	p := new(gcorecloud.ProviderClient)
+	p := new(edgecloud.ProviderClient)
 	p.UseTokenLock()
 	err := p.SetTokensAndAuthResult(atc)
 	if err != nil {
@@ -197,7 +197,7 @@ func TestReauthEndLoop(t *testing.T) {
 		w.WriteHeader(http.StatusUnauthorized)
 	})
 
-	reqopts := new(gcorecloud.RequestOpts)
+	reqopts := new(edgecloud.RequestOpts)
 
 	// counters for the upcoming errors
 	errAfter := 0
@@ -215,13 +215,13 @@ func TestReauthEndLoop(t *testing.T) {
 
 			// ErrErrorAfter... will happen after a successful reauthentication,
 			// but the service still responds with a 401.
-			if _, ok := err.(*gcorecloud.ErrErrorAfterReauthentication); ok {
+			if _, ok := err.(*edgecloud.ErrErrorAfterReauthentication); ok {
 				errAfter++
 			}
 
 			// ErrErrorUnable... will happen when the custom reauth func reports
 			// an error.
-			if _, ok := err.(*gcorecloud.ErrUnableToReauthenticate); ok {
+			if _, ok := err.(*edgecloud.ErrUnableToReauthenticate); ok {
 				errUnable++
 			}
 		}()
@@ -254,7 +254,7 @@ func TestRequestThatCameDuringReauthWaitsUntilItIsCompleted(t *testing.T) {
 	atc := client.NewAuthResultTest(client.AccessToken, client.RefreshToken)
 	postReAuthTokenHeader := fmt.Sprintf("Bearer %s", postReAuthToken)
 
-	p := new(gcorecloud.ProviderClient)
+	p := new(edgecloud.ProviderClient)
 	p.UseTokenLock()
 	err := p.SetTokensAndAuthResult(atc)
 	if err != nil {
@@ -306,7 +306,7 @@ func TestRequestThatCameDuringReauthWaitsUntilItIsCompleted(t *testing.T) {
 	})
 
 	wg := new(sync.WaitGroup)
-	reqopts := new(gcorecloud.RequestOpts)
+	reqopts := new(edgecloud.RequestOpts)
 	reqopts.MoreHeaders = map[string]string{
 		"X-Auth-AccessToken": preReAuthToken,
 	}
@@ -334,7 +334,7 @@ func TestRequestThatCameDuringReauthWaitsUntilItIsCompleted(t *testing.T) {
 					log.Error(err)
 				}
 			}()
-			actual, err := ioutil.ReadAll(resp.Body)
+			actual, err := io.ReadAll(resp.Body)
 			if err != nil {
 				t.Errorf("error reading response body: %s", err)
 				return
@@ -350,7 +350,7 @@ func TestRequestThatCameDuringReauthWaitsUntilItIsCompleted(t *testing.T) {
 }
 
 func TestRequestReauthsAtMostOnce(t *testing.T) {
-	// There was an issue where GCore cloud would go into an infinite
+	// There was an issue where EdgeCenter cloud would go into an infinite
 	// reauthentication loop with buggy services that send 401 even for fresh
 	// tokens. This test simulates such a service and checks that a call to
 	// ProviderClient.Request() will not try to reauthenticate more than once.
@@ -359,7 +359,7 @@ func TestRequestReauthsAtMostOnce(t *testing.T) {
 	var reauthCounterMutex sync.Mutex
 	atc := client.NewAuthResultTest(client.AccessToken, client.RefreshToken)
 
-	p := new(gcorecloud.ProviderClient)
+	p := new(edgecloud.ProviderClient)
 	p.UseTokenLock()
 	err := p.SetTokensAndAuthResult(atc)
 	if err != nil {
@@ -397,7 +397,7 @@ func TestRequestReauthsAtMostOnce(t *testing.T) {
 	// the part before the colon), but when encountering another 401 response, we
 	// did not attempt reauthentication again and just passed that 401 response to
 	// the caller as ErrDefault401.
-	_, err = p.Request("GET", th.Endpoint()+"/route", &gcorecloud.RequestOpts{}) // nolint
+	_, err = p.Request("GET", th.Endpoint()+"/route", &edgecloud.RequestOpts{}) // nolint
 	expectedErrorMessage := "Successfully re-authenticated, but got error executing request: Authentication failed"
 	if err != nil {
 		th.AssertEquals(t, expectedErrorMessage, err.Error())
@@ -414,11 +414,11 @@ func TestRequestWithContext(t *testing.T) {
 	defer ts.Close()
 
 	ctx, cancel := context.WithCancel(context.Background())
-	p := &gcorecloud.ProviderClient{Context: ctx}
+	p := &edgecloud.ProviderClient{Context: ctx}
 
-	res, err := p.Request("GET", ts.URL, &gcorecloud.RequestOpts{})
+	res, err := p.Request("GET", ts.URL, &edgecloud.RequestOpts{})
 	th.AssertNoErr(t, err)
-	_, err = ioutil.ReadAll(res.Body)
+	_, err = io.ReadAll(res.Body)
 	if err != nil {
 		log.Error(err)
 	}
@@ -429,7 +429,7 @@ func TestRequestWithContext(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	cancel()
-	_, err = p.Request("GET", ts.URL, &gcorecloud.RequestOpts{}) // nolint
+	_, err = p.Request("GET", ts.URL, &edgecloud.RequestOpts{}) // nolint
 	if err == nil {
 		t.Fatal("expecting error, got nil")
 	}

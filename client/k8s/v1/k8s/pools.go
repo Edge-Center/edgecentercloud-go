@@ -4,14 +4,14 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/G-Core/gcorelabscloud-go/gcore/volume/v1/volumes"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/volume/v1/volumes"
 
-	gcorecloud "github.com/G-Core/gcorelabscloud-go"
-	"github.com/G-Core/gcorelabscloud-go/client/flags"
-	"github.com/G-Core/gcorelabscloud-go/client/k8s/v1/client"
-	"github.com/G-Core/gcorelabscloud-go/client/utils"
-	"github.com/G-Core/gcorelabscloud-go/gcore/k8s/v1/pools"
-	"github.com/G-Core/gcorelabscloud-go/gcore/task/v1/tasks"
+	edgecloud "github.com/Edge-Center/edgecentercloud-go"
+	"github.com/Edge-Center/edgecentercloud-go/client/flags"
+	"github.com/Edge-Center/edgecentercloud-go/client/k8s/v1/client"
+	"github.com/Edge-Center/edgecentercloud-go/client/utils"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/k8s/v1/pools"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
 
 	"github.com/urfave/cli/v2"
 )
@@ -81,7 +81,7 @@ var poolDeleteSubCommand = cli.Command{
 				return nil, fmt.Errorf("cannot delete pool with ID: %s", poolID)
 			}
 			switch err.(type) {
-			case gcorecloud.ErrDefault404:
+			case edgecloud.ErrDefault404:
 				return nil, nil
 			default:
 				return nil, err
@@ -360,7 +360,7 @@ var poolVolumesSubCommand = cli.Command{
 
 var poolCommands = cli.Command{
 	Name:  "pool",
-	Usage: "Gcloud K8s pool commands",
+	Usage: "EdgeCloud K8s pool commands",
 	Subcommands: []*cli.Command{
 		&poolListSubCommand,
 		&poolDeleteSubCommand,

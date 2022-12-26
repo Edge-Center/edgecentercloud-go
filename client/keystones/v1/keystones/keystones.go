@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"strings"
 
-	gcorecloud "github.com/G-Core/gcorelabscloud-go"
-	"github.com/G-Core/gcorelabscloud-go/client/flags"
-	"github.com/G-Core/gcorelabscloud-go/client/keystones/v1/client"
-	"github.com/G-Core/gcorelabscloud-go/client/utils"
-	"github.com/G-Core/gcorelabscloud-go/gcore/keystone/v1/keystones"
-	"github.com/G-Core/gcorelabscloud-go/gcore/keystone/v1/types"
+	edgecloud "github.com/Edge-Center/edgecentercloud-go"
+	"github.com/Edge-Center/edgecentercloud-go/client/flags"
+	"github.com/Edge-Center/edgecentercloud-go/client/keystones/v1/client"
+	"github.com/Edge-Center/edgecentercloud-go/client/utils"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/keystone/v1/keystones"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/keystone/v1/types"
 	"github.com/urfave/cli/v2"
 )
 
@@ -100,7 +100,7 @@ var keystoneUpdateCommand = cli.Command{
 			return err
 		}
 
-		url, err := gcorecloud.ParseURLNonMandatory(c.String("spice-url"))
+		url, err := edgecloud.ParseURLNonMandatory(c.String("spice-url"))
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "update")
 			return cli.NewExitError(err, 1)
@@ -113,7 +113,7 @@ var keystoneUpdateCommand = cli.Command{
 			AdminPassword:             c.String("password"),
 		}
 
-		err = gcorecloud.TranslateValidationError(opts.Validate())
+		err = edgecloud.TranslateValidationError(opts.Validate())
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "update")
 			return cli.NewExitError(err, 1)
@@ -166,7 +166,7 @@ var keystoneCreateCommand = cli.Command{
 	},
 	Action: func(c *cli.Context) error {
 
-		url, err := gcorecloud.ParseURL(c.String("spice-url"))
+		url, err := edgecloud.ParseURL(c.String("spice-url"))
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "create")
 			return cli.NewExitError(err, 1)
@@ -179,7 +179,7 @@ var keystoneCreateCommand = cli.Command{
 			AdminPassword:             c.String("password"),
 		}
 
-		err = gcorecloud.TranslateValidationError(opts.Validate())
+		err = edgecloud.TranslateValidationError(opts.Validate())
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "create")
 			return cli.NewExitError(err, 1)
@@ -202,7 +202,7 @@ var keystoneCreateCommand = cli.Command{
 
 var Commands = cli.Command{
 	Name:  "keystone",
-	Usage: "GCloud keystones API",
+	Usage: "EdgeCloud keystones API",
 	Subcommands: []*cli.Command{
 		&keystoneListCommand,
 		&keystoneGetCommand,

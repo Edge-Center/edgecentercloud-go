@@ -1,15 +1,14 @@
 package common
 
 import (
-	gcorecloud "github.com/G-Core/gcorelabscloud-go"
-	"github.com/G-Core/gcorelabscloud-go/client/flags"
-	"github.com/G-Core/gcorelabscloud-go/gcore"
-
+	edgecloud "github.com/Edge-Center/edgecentercloud-go"
+	"github.com/Edge-Center/edgecentercloud-go/client/flags"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter"
 	"github.com/urfave/cli/v2"
 )
 
-func buildTokenClient(c *cli.Context, endpointName, endpointType string, version string) (*gcorecloud.ServiceClient, error) {
-	settings, err := gcore.NewGCloudTokenAPISettingsFromEnv()
+func buildTokenClient(c *cli.Context, endpointName, endpointType string, version string) (*edgecloud.ServiceClient, error) {
+	settings, err := edgecenter.NewEdgeCloudTokenAPISettingsFromEnv()
 	if err != nil {
 		return nil, err
 	}
@@ -61,11 +60,11 @@ func buildTokenClient(c *cli.Context, endpointName, endpointType string, version
 
 	options := settings.ToTokenOptions()
 	eo := settings.ToEndpointOptions()
-	return gcore.TokenClientServiceWithDebug(options, eo, settings.Debug)
+	return edgecenter.TokenClientServiceWithDebug(options, eo, settings.Debug)
 }
 
-func buildAPITokenClient(c *cli.Context, endpointName, endpointType string, version string) (*gcorecloud.ServiceClient, error) {
-	settings, err := gcore.NewGCloudAPITokenAPISettingsFromEnv()
+func buildAPITokenClient(c *cli.Context, endpointName, endpointType string, version string) (*edgecloud.ServiceClient, error) {
+	settings, err := edgecenter.NewECCloudAPITokenAPISettingsFromEnv()
 	if err != nil {
 		return nil, err
 	}
@@ -112,11 +111,11 @@ func buildAPITokenClient(c *cli.Context, endpointName, endpointType string, vers
 
 	options := settings.ToAPITokenOptions()
 	eo := settings.ToEndpointOptions()
-	return gcore.APITokenClientServiceWithDebug(options, eo, settings.Debug)
+	return edgecenter.APITokenClientServiceWithDebug(options, eo, settings.Debug)
 }
 
-func buildPlatformClient(c *cli.Context, endpointName, endpointType string, version string) (*gcorecloud.ServiceClient, error) {
-	settings, err := gcore.NewGCloudPlatformAPISettingsFromEnv()
+func buildPlatformClient(c *cli.Context, endpointName, endpointType string, version string) (*edgecloud.ServiceClient, error) {
+	settings, err := edgecenter.NewECCloudPlatformAPISettingsFromEnv()
 	if err != nil {
 		return nil, err
 	}
@@ -169,10 +168,10 @@ func buildPlatformClient(c *cli.Context, endpointName, endpointType string, vers
 
 	options := settings.ToAuthOptions()
 	eo := settings.ToEndpointOptions()
-	return gcore.AuthClientServiceWithDebug(options, eo, settings.Debug)
+	return edgecenter.AuthClientServiceWithDebug(options, eo, settings.Debug)
 }
 
-func BuildClient(c *cli.Context, endpointName, version string) (*gcorecloud.ServiceClient, error) {
+func BuildClient(c *cli.Context, endpointName, version string) (*edgecloud.ServiceClient, error) {
 	clientType := flags.ClientType
 	if clientType == "" {
 		clientType = c.String("client-type")
@@ -188,10 +187,10 @@ func BuildClient(c *cli.Context, endpointName, version string) (*gcorecloud.Serv
 	}
 }
 
-func BuildAPITokenClient(ao gcorecloud.AuthOptions) (*gcorecloud.ServiceClient, error) {
-	provider, err := gcore.AuthenticatedClient(ao)
+func BuildAPITokenClient(ao edgecloud.AuthOptions) (*edgecloud.ServiceClient, error) {
+	provider, err := edgecenter.AuthenticatedClient(ao)
 	if err != nil {
 		return nil, err
 	}
-	return gcore.NewIdentity(provider, gcorecloud.EndpointOpts{})
+	return edgecenter.NewIdentity(provider, edgecloud.EndpointOpts{})
 }

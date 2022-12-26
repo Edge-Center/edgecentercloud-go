@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"reflect"
 
-	gcorecloud "github.com/G-Core/gcorelabscloud-go"
+	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 )
 
 // MarkerPage is a stricter Page interface that describes additional functionality required for use with NewMarkerPager.
@@ -45,7 +45,7 @@ func (current MarkerPageBase) IsEmpty() (bool, error) {
 	if b, ok := current.Body.([]interface{}); ok {
 		return len(b) == 0, nil
 	}
-	err := gcorecloud.ErrUnexpectedType{}
+	err := edgecloud.ErrUnexpectedType{}
 	err.Expected = "[]interface{}"
 	err.Actual = fmt.Sprintf("%v", reflect.TypeOf(current.Body))
 	return true, err

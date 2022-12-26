@@ -2,17 +2,17 @@ package pagination
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"strings"
 
-	gcorecloud "github.com/G-Core/gcorelabscloud-go"
+	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 )
 
 // PageResult stores the HTTP response that returned the current page of results.
 type PageResult struct {
-	gcorecloud.Result
+	edgecloud.Result
 	url.URL
 }
 
@@ -22,7 +22,7 @@ func PageResultFrom(resp *http.Response) (PageResult, error) {
 	var parsedBody interface{}
 
 	defer resp.Body.Close()
-	rawBody, err := ioutil.ReadAll(resp.Body)
+	rawBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return PageResult{}, err
 	}
@@ -43,7 +43,7 @@ func PageResultFrom(resp *http.Response) (PageResult, error) {
 // body parsed as JSON (and closed).
 func PageResultFromParsed(resp *http.Response, body interface{}) PageResult {
 	return PageResult{
-		Result: gcorecloud.Result{
+		Result: edgecloud.Result{
 			Body:   body,
 			Header: resp.Header,
 		},
@@ -52,8 +52,8 @@ func PageResultFromParsed(resp *http.Response, body interface{}) PageResult {
 }
 
 // Request performs an HTTP request and extracts the http.Response from the result.
-func Request(client *gcorecloud.ServiceClient, headers map[string]string, url string) (*http.Response, error) {
-	return client.Get(url, nil, &gcorecloud.RequestOpts{
+func Request(client *edgecloud.ServiceClient, headers map[string]string, url string) (*http.Response, error) {
+	return client.Get(url, nil, &edgecloud.RequestOpts{
 		MoreHeaders: headers,
 		OkCodes:     []int{200, 204, 300},
 	})

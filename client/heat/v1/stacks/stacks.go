@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/G-Core/gcorelabscloud-go/client/flags"
-	"github.com/G-Core/gcorelabscloud-go/client/heat/v1/client"
-	"github.com/G-Core/gcorelabscloud-go/client/utils"
-	"github.com/G-Core/gcorelabscloud-go/gcore/heat/v1/stack/stacks"
-	"github.com/G-Core/gcorelabscloud-go/gcore/heat/v1/stack/stacks/types"
+	"github.com/Edge-Center/edgecentercloud-go/client/flags"
+	"github.com/Edge-Center/edgecentercloud-go/client/heat/v1/client"
+	"github.com/Edge-Center/edgecentercloud-go/client/utils"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/heat/v1/stack/stacks"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/heat/v1/stack/stacks/types"
 
 	"github.com/urfave/cli/v2"
 )

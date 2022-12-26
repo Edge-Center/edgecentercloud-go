@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/G-Core/gcorelabscloud-go/client/regions/v1/client"
+	"github.com/Edge-Center/edgecentercloud-go/client/regions/v1/client"
 
-	gcorecloud "github.com/G-Core/gcorelabscloud-go"
-	"github.com/G-Core/gcorelabscloud-go/client/flags"
-	"github.com/G-Core/gcorelabscloud-go/client/utils"
-	"github.com/G-Core/gcorelabscloud-go/gcore/region/v1/regions"
-	"github.com/G-Core/gcorelabscloud-go/gcore/region/v1/types"
+	edgecloud "github.com/Edge-Center/edgecentercloud-go"
+	"github.com/Edge-Center/edgecentercloud-go/client/flags"
+	"github.com/Edge-Center/edgecentercloud-go/client/utils"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/region/v1/regions"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/region/v1/types"
 	"github.com/urfave/cli/v2"
 )
 
@@ -112,7 +112,7 @@ var regionUpdateCommand = cli.Command{
 			return err
 		}
 
-		url, err := gcorecloud.ParseURLNonMandatory(c.String("spice-url"))
+		url, err := edgecloud.ParseURLNonMandatory(c.String("spice-url"))
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "update")
 			return cli.NewExitError(err, 1)
@@ -126,7 +126,7 @@ var regionUpdateCommand = cli.Command{
 			SpiceProxyURL:     url,
 		}
 
-		err = gcorecloud.ValidateStruct(opts)
+		err = edgecloud.ValidateStruct(opts)
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "update")
 			return cli.NewExitError(err, 1)
@@ -200,7 +200,7 @@ var regionCreateCommand = cli.Command{
 	},
 	Action: func(c *cli.Context) error {
 
-		url, err := gcorecloud.ParseURLNonMandatory(c.String("spice-url"))
+		url, err := edgecloud.ParseURLNonMandatory(c.String("spice-url"))
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "create")
 			return cli.NewExitError(err, 1)
@@ -216,7 +216,7 @@ var regionCreateCommand = cli.Command{
 			KeystoneID:        c.Int("keystone-id"),
 		}
 
-		err = gcorecloud.TranslateValidationError(opts.Validate())
+		err = edgecloud.TranslateValidationError(opts.Validate())
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "create")
 			return cli.NewExitError(err, 1)
@@ -239,7 +239,7 @@ var regionCreateCommand = cli.Command{
 
 var Commands = cli.Command{
 	Name:  "region",
-	Usage: "GCloud regions API",
+	Usage: "EdgeCloud regions API",
 	Subcommands: []*cli.Command{
 		&regionListCommand,
 		&regionGetCommand,

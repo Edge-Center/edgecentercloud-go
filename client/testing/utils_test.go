@@ -3,7 +3,7 @@ package testing
 import (
 	"testing"
 
-	"github.com/G-Core/gcorelabscloud-go/client/utils"
+	"github.com/Edge-Center/edgecentercloud-go/client/utils"
 	"github.com/stretchr/testify/require"
 )
 

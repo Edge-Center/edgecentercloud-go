@@ -4,11 +4,11 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/G-Core/gcorelabscloud-go/client/limits/v2/client"
-	"github.com/G-Core/gcorelabscloud-go/client/utils"
+	"github.com/Edge-Center/edgecentercloud-go/client/limits/v2/client"
+	"github.com/Edge-Center/edgecentercloud-go/client/utils"
 
-	"github.com/G-Core/gcorelabscloud-go/client/flags"
-	"github.com/G-Core/gcorelabscloud-go/gcore/limit/v2/limits"
+	"github.com/Edge-Center/edgecentercloud-go/client/flags"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/limit/v2/limits"
 	"github.com/urfave/cli/v2"
 )
 
@@ -196,7 +196,7 @@ var limitCreateCommand = cli.Command{
 
 var Commands = cli.Command{
 	Name:  "limit",
-	Usage: "GCloud limits API",
+	Usage: "EdgeCloud limits API",
 	Subcommands: []*cli.Command{
 		&limitListCommand,
 		&limitDeleteCommand,

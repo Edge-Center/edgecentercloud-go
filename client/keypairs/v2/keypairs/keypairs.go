@@ -1,10 +1,10 @@
 package keypairs
 
 import (
-	"github.com/G-Core/gcorelabscloud-go/client/flags"
-	"github.com/G-Core/gcorelabscloud-go/client/keypairs/v2/client"
-	"github.com/G-Core/gcorelabscloud-go/client/utils"
-	"github.com/G-Core/gcorelabscloud-go/gcore/keypair/v2/keypairs"
+	"github.com/Edge-Center/edgecentercloud-go/client/flags"
+	"github.com/Edge-Center/edgecentercloud-go/client/keypairs/v2/client"
+	"github.com/Edge-Center/edgecentercloud-go/client/utils"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/keypair/v2/keypairs"
 
 	"github.com/urfave/cli/v2"
 )
@@ -152,7 +152,7 @@ var keypairCreateCommand = cli.Command{
 
 var Commands = cli.Command{
 	Name:  "keypair",
-	Usage: "GCloud keypairs V2 API",
+	Usage: "EdgeCloud keypairs V2 API",
 	Subcommands: []*cli.Command{
 		&keypairListCommand,
 		&keypairGetCommand,

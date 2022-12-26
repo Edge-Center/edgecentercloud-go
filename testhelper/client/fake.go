@@ -1,9 +1,9 @@
 package client
 
 import (
-	gcorecloud "github.com/G-Core/gcorelabscloud-go"
-	"github.com/G-Core/gcorelabscloud-go/gcore"
-	"github.com/G-Core/gcorelabscloud-go/testhelper"
+	edgecloud "github.com/Edge-Center/edgecentercloud-go"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter"
+	"github.com/Edge-Center/edgecentercloud-go/testhelper"
 )
 
 // Fake token to use.
@@ -16,9 +16,9 @@ const RegionID = 1                                      // nolint
 const ProjectID = 1                                     // nolint
 
 // ServiceClient returns a generic service client for use in tests.
-func ServiceClient() *gcorecloud.ServiceClient {
-	return &gcorecloud.ServiceClient{
-		ProviderClient: &gcorecloud.ProviderClient{
+func ServiceClient() *edgecloud.ServiceClient {
+	return &edgecloud.ServiceClient{
+		ProviderClient: &edgecloud.ProviderClient{
 			AccessTokenID:  AccessToken,
 			RefreshTokenID: RefreshToken,
 		},
@@ -26,41 +26,41 @@ func ServiceClient() *gcorecloud.ServiceClient {
 	}
 }
 
-func ServiceTokenClient(name string, version string) *gcorecloud.ServiceClient {
-	options := gcorecloud.TokenOptions{
+func ServiceTokenClient(name string, version string) *edgecloud.ServiceClient {
+	options := edgecloud.TokenOptions{
 		APIURL:       testhelper.Endpoint(),
 		AccessToken:  AccessToken,
 		RefreshToken: RefreshToken,
 		AllowReauth:  true,
 	}
-	endpointOpts := gcorecloud.EndpointOpts{
+	endpointOpts := edgecloud.EndpointOpts{
 		Name:    name,
 		Region:  RegionID,
 		Project: ProjectID,
 		Version: version,
 	}
-	client, err := gcore.TokenClientService(options, endpointOpts)
+	client, err := edgecenter.TokenClientService(options, endpointOpts)
 	if err != nil {
 		panic(err)
 	}
 	return client
 }
 
-func ServiceAuthClient(name string, version string) *gcorecloud.ServiceClient {
-	options := gcorecloud.AuthOptions{
+func ServiceAuthClient(name string, version string) *edgecloud.ServiceClient {
+	options := edgecloud.AuthOptions{
 		APIURL:      testhelper.Endpoint(),
-		AuthURL:     testhelper.GCoreRefreshTokenIdentifyEndpoint(),
+		AuthURL:     testhelper.ECRefreshTokenIdentifyEndpoint(),
 		Username:    Username,
 		Password:    Password,
 		AllowReauth: true,
 	}
-	endpointOpts := gcorecloud.EndpointOpts{
+	endpointOpts := edgecloud.EndpointOpts{
 		Name:    name,
 		Region:  RegionID,
 		Project: ProjectID,
 		Version: version,
 	}
-	client, err := gcore.AuthClientService(options, endpointOpts)
+	client, err := edgecenter.AuthClientService(options, endpointOpts)
 	if err != nil {
 		panic(err)
 	}

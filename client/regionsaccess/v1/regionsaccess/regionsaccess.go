@@ -1,11 +1,11 @@
 package regionsaccess
 
 import (
-	"github.com/G-Core/gcorelabscloud-go/client/regions/v1/client"
-	"github.com/G-Core/gcorelabscloud-go/gcore/regionaccess/v1/regionsaccess"
+	"github.com/Edge-Center/edgecentercloud-go/client/regions/v1/client"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/regionaccess/v1/regionsaccess"
 
-	"github.com/G-Core/gcorelabscloud-go/client/flags"
-	"github.com/G-Core/gcorelabscloud-go/client/utils"
+	"github.com/Edge-Center/edgecentercloud-go/client/flags"
+	"github.com/Edge-Center/edgecentercloud-go/client/utils"
 	"github.com/urfave/cli/v2"
 )
 
@@ -125,7 +125,7 @@ var regionAccessCreateCommand = cli.Command{
 
 var Commands = cli.Command{
 	Name:  "region",
-	Usage: "GCloud regions access API",
+	Usage: "EdgeCloud regions access API",
 	Subcommands: []*cli.Command{
 		&regionAccessListCommand,
 		&regionAccessDeleteCommand,

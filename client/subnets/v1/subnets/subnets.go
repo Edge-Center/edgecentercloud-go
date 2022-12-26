@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"net"
 
-	"github.com/G-Core/gcorelabscloud-go/client/subnets/v1/client"
+	"github.com/Edge-Center/edgecentercloud-go/client/subnets/v1/client"
 
-	gcorecloud "github.com/G-Core/gcorelabscloud-go"
-	"github.com/G-Core/gcorelabscloud-go/client/flags"
-	"github.com/G-Core/gcorelabscloud-go/client/utils"
-	"github.com/G-Core/gcorelabscloud-go/gcore/subnet/v1/subnets"
-	"github.com/G-Core/gcorelabscloud-go/gcore/task/v1/tasks"
+	edgecloud "github.com/Edge-Center/edgecentercloud-go"
+	"github.com/Edge-Center/edgecentercloud-go/client/flags"
+	"github.com/Edge-Center/edgecentercloud-go/client/utils"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/subnet/v1/subnets"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
 
 	"github.com/urfave/cli/v2"
 )
@@ -38,7 +38,7 @@ func GetHostRoutes(c *cli.Context) ([]subnets.HostRoute, error) {
 	}
 	var result []subnets.HostRoute
 	for idx, desc := range destinations {
-		dst, err := gcorecloud.ParseCIDRString(desc)
+		dst, err := edgecloud.ParseCIDRString(desc)
 		if err != nil {
 			return result, fmt.Errorf("cannot parse route destination: %s: %w", desc, err)
 		}
@@ -148,7 +148,7 @@ var subnetDeleteCommand = cli.Command{
 				return nil, fmt.Errorf("cannot delete subnet with ID: %s", subnetID)
 			}
 			switch err.(type) {
-			case gcorecloud.ErrDefault404:
+			case edgecloud.ErrDefault404:
 				return nil, nil
 			default:
 				return nil, err
@@ -287,7 +287,7 @@ var subnetCreateCommand = cli.Command{
 			_ = cli.ShowAppHelp(c)
 			return cli.NewExitError(err, 1)
 		}
-		cidr, err := gcorecloud.ParseCIDRString(c.String("cidr"))
+		cidr, err := edgecloud.ParseCIDRString(c.String("cidr"))
 		if err != nil {
 			return cli.NewExitError(err, 1)
 		}
@@ -344,7 +344,7 @@ var subnetCreateCommand = cli.Command{
 
 var Commands = cli.Command{
 	Name:  "subnet",
-	Usage: "GCloud subnets API",
+	Usage: "EdgeCloud subnets API",
 	Subcommands: []*cli.Command{
 		&subnetListCommand,
 		&subnetGetCommand,

@@ -1,2 +1,2 @@
-// gcorecloud
+// edgecloud
 package testing

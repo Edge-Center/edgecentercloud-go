@@ -1,12 +1,12 @@
 package client
 
 import (
-	gcorecloud "github.com/G-Core/gcorelabscloud-go"
-	"github.com/G-Core/gcorelabscloud-go/client/common"
+	edgecloud "github.com/Edge-Center/edgecentercloud-go"
+	"github.com/Edge-Center/edgecentercloud-go/client/common"
 
 	"github.com/urfave/cli/v2"
 )
 
-func NewK8sClientV1(c *cli.Context) (*gcorecloud.ServiceClient, error) {
+func NewK8sClientV1(c *cli.Context) (*edgecloud.ServiceClient, error) {
 	return common.BuildClient(c, "k8s/clusters", "v1")
 }

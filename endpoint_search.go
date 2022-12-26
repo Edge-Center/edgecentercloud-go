@@ -1,4 +1,4 @@
-package gcorecloud
+package edgecloud
 
 import (
 	"strconv"
@@ -6,11 +6,11 @@ import (
 )
 
 // EndpointOpts specifies search criteria used by queries against an
-// GCore service. The options must contain enough information to
+// EdgeCenter service. The options must contain enough information to
 // unambiguously identify one, and only one, endpoint within the catalog.
 //
 // Usually, these are passed to service client factory functions in a provider
-// package, like "gcore.NewClusterTemplateV1()".
+// package, like "edgecenter.NewClusterTemplateV1()".
 type EndpointOpts struct {
 	// Type [required] is the service type for the client (e.g., "cluster",
 	// "nodegroup", "clustertemplates"). Generally, this will be supplied by the service client
@@ -27,7 +27,7 @@ type EndpointOpts struct {
 	// Required only for services that span multiple regions.
 	Region int
 
-	// Project [required] is GCloud project
+	// Project [required] is EdgeCenter project
 	Project int
 
 	// version

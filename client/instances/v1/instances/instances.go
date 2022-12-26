@@ -3,22 +3,22 @@ package instances
 import (
 	"encoding/base64"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"sort"
 	"strings"
 
-	"github.com/G-Core/gcorelabscloud-go/client/instances/v1/client"
-	client2 "github.com/G-Core/gcorelabscloud-go/client/instances/v2/client"
-	"github.com/G-Core/gcorelabscloud-go/gcore/baremetal/v1/bminstances"
+	"github.com/Edge-Center/edgecentercloud-go/client/instances/v1/client"
+	client2 "github.com/Edge-Center/edgecentercloud-go/client/instances/v2/client"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/baremetal/v1/bminstances"
 
-	gcorecloud "github.com/G-Core/gcorelabscloud-go"
+	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 
-	"github.com/G-Core/gcorelabscloud-go/client/flags"
-	"github.com/G-Core/gcorelabscloud-go/client/utils"
-	"github.com/G-Core/gcorelabscloud-go/gcore/instance/v1/instances"
-	"github.com/G-Core/gcorelabscloud-go/gcore/instance/v1/types"
-	"github.com/G-Core/gcorelabscloud-go/gcore/task/v1/tasks"
-	"github.com/G-Core/gcorelabscloud-go/gcore/volume/v1/volumes"
+	"github.com/Edge-Center/edgecentercloud-go/client/flags"
+	"github.com/Edge-Center/edgecentercloud-go/client/utils"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/instance/v1/instances"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/instance/v1/types"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/volume/v1/volumes"
 	"github.com/urfave/cli/v2"
 )
 
@@ -33,7 +33,7 @@ var (
 
 var Commands = cli.Command{
 	Name:  "instance",
-	Usage: "GCloud instances API",
+	Usage: "EdgeCloud instances API",
 	Subcommands: []*cli.Command{
 		&instanceGetCommand,
 		&instanceListCommand,
@@ -114,7 +114,7 @@ func getUserData(c *cli.Context) (string, error) {
 	userDataContent := c.String("user-data")
 
 	if userDataFile != "" {
-		fileContent, err := ioutil.ReadFile(userDataFile)
+		fileContent, err := os.ReadFile(userDataFile)
 		if err != nil {
 			return "", err
 		}
@@ -158,7 +158,7 @@ func getInstanceVolumes(c *cli.Context) ([]instances.CreateVolumeOpts, error) {
 			SnapshotID: utils.StringFromIndex(volumeSnapshotIDs, idx, ""),
 			VolumeID:   utils.StringFromIndex(volumeVolumeIDs, idx, ""),
 		}
-		err := gcorecloud.TranslateValidationError(opts.Validate())
+		err := edgecloud.TranslateValidationError(opts.Validate())
 
 		if err != nil {
 			return nil, err
@@ -226,7 +226,7 @@ func getInterfaces(c *cli.Context) ([]instances.InterfaceInstanceCreateOpts, err
 			FloatingIP: fIP,
 		}
 
-		err := gcorecloud.TranslateValidationError(opts.Validate())
+		err := edgecloud.TranslateValidationError(opts.Validate())
 
 		if err != nil {
 			return nil, err
@@ -269,7 +269,7 @@ func getBaremetalInterfaces(c *cli.Context) ([]bminstances.InterfaceOpts, error)
 			FloatingIP: fIP,
 		}
 
-		err := gcorecloud.TranslateValidationError(opts.Validate())
+		err := edgecloud.TranslateValidationError(opts.Validate())
 
 		if err != nil {
 			return nil, err
@@ -283,11 +283,11 @@ func getBaremetalInterfaces(c *cli.Context) ([]bminstances.InterfaceOpts, error)
 
 }
 
-func getSecurityGroups(c *cli.Context) []gcorecloud.ItemID {
+func getSecurityGroups(c *cli.Context) []edgecloud.ItemID {
 	securityGroups := c.StringSlice("security-group")
-	res := make([]gcorecloud.ItemID, len(securityGroups))
+	res := make([]edgecloud.ItemID, len(securityGroups))
 	for i, s := range securityGroups {
-		res[i] = gcorecloud.ItemID{ID: s}
+		res[i] = edgecloud.ItemID{ID: s}
 	}
 	return res
 }
@@ -524,7 +524,7 @@ var instanceCreateCommandV2 = cli.Command{
 	Name: "create",
 	Usage: `
 	Create instance. 
-	Example: gcoreclient token instance create --flavor g1-standard-1-2 --name test1 --keypair keypair --volume-source image --volume-type standard --volume-image-id --interface-type subnet --interface-network-id 95ea2073-c5eb-448a-aed5-78045f88f24a --interface-subnet-id b7fd6e0a-36a5-4f6a-9dc4-90a39eb9833f --volume-size 2 --metadata one=two -d -w`,
+	Example: ec_client token instance create --flavor g1-standard-1-2 --name test1 --keypair keypair --volume-source image --volume-type standard --volume-image-id --interface-type subnet --interface-network-id 95ea2073-c5eb-448a-aed5-78045f88f24a --interface-subnet-id b7fd6e0a-36a5-4f6a-9dc4-90a39eb9833f --volume-size 2 --metadata one=two -d -w`,
 	Category: "instance",
 	Flags: append([]cli.Flag{
 		&cli.StringSliceFlag{
@@ -724,7 +724,7 @@ var instanceCreateCommandV2 = cli.Command{
 
 		fmt.Printf("%#v", opts)
 
-		err = gcorecloud.TranslateValidationError(opts.Validate())
+		err = edgecloud.TranslateValidationError(opts.Validate())
 		if err != nil {
 			return cli.NewExitError(err, 1)
 		}
@@ -817,7 +817,7 @@ var instanceDeleteCommand = cli.Command{
 			FloatingIPs:     c.StringSlice("floating-ip"),
 		}
 
-		err = gcorecloud.TranslateValidationError(opts.Validate())
+		err = edgecloud.TranslateValidationError(opts.Validate())
 		if err != nil {
 			return cli.NewExitError(err, 1)
 		}
@@ -833,7 +833,7 @@ var instanceDeleteCommand = cli.Command{
 				return nil, fmt.Errorf("cannot delete instance with ID: %s", instanceID)
 			}
 			switch err.(type) {
-			case gcorecloud.ErrDefault404:
+			case edgecloud.ErrDefault404:
 				return nil, nil
 			default:
 				return nil, err
@@ -1206,7 +1206,7 @@ var instanceCreateBaremetalCommand = cli.Command{
 	Name: "create_baremetal",
 	Usage: `
 	Create baremetal instance. 
-	Example: gcoreclient instance create_baremetal --flavor bm1-infrastructure-small --name test1 --keypair keypair --image-id 1ee7ccee-5003-48c9-8ae0-d96063af75b2 --interface-type external`,
+	Example: ec_client instance create_baremetal --flavor bm1-infrastructure-small --name test1 --keypair keypair --image-id 1ee7ccee-5003-48c9-8ae0-d96063af75b2 --interface-type external`,
 	Category: "instance",
 	Flags: append([]cli.Flag{
 		&cli.StringSliceFlag{

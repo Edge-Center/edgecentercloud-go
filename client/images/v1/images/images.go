@@ -4,15 +4,15 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/G-Core/gcorelabscloud-go/client/images/v1/client"
+	"github.com/Edge-Center/edgecentercloud-go/client/images/v1/client"
 
-	gcorecloud "github.com/G-Core/gcorelabscloud-go"
-	"github.com/G-Core/gcorelabscloud-go/gcore/task/v1/tasks"
+	edgecloud "github.com/Edge-Center/edgecentercloud-go"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
 
-	"github.com/G-Core/gcorelabscloud-go/client/flags"
-	"github.com/G-Core/gcorelabscloud-go/client/utils"
-	"github.com/G-Core/gcorelabscloud-go/gcore/image/v1/images"
-	"github.com/G-Core/gcorelabscloud-go/gcore/image/v1/images/types"
+	"github.com/Edge-Center/edgecentercloud-go/client/flags"
+	"github.com/Edge-Center/edgecentercloud-go/client/utils"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/image/v1/images"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/image/v1/images/types"
 	"github.com/urfave/cli/v2"
 )
 
@@ -23,7 +23,7 @@ var (
 
 func listImages(c *cli.Context) error {
 	var err error
-	var cl *gcorecloud.ServiceClient
+	var cl *edgecloud.ServiceClient
 	cl, err = client.NewImageClientV1(c)
 	if c.Bool("baremetal") {
 		cl, err = client.NewBmImageClientV1(c)
@@ -413,7 +413,7 @@ var imageDeleteCommand = cli.Command{
 				return nil, fmt.Errorf("cannot delete image with ID: %s", imageID)
 			}
 			switch err.(type) {
-			case gcorecloud.ErrDefault404:
+			case edgecloud.ErrDefault404:
 				return nil, nil
 			default:
 				return nil, err
@@ -424,7 +424,7 @@ var imageDeleteCommand = cli.Command{
 
 var Commands = cli.Command{
 	Name:  "image",
-	Usage: "GCloud images API",
+	Usage: "EdgeCloud images API",
 	Subcommands: []*cli.Command{
 		&imageListCommand,
 		&imageShowCommand,
@@ -434,7 +434,7 @@ var Commands = cli.Command{
 		&imageUploadCommand,
 		{
 			Name:  "project",
-			Usage: "GCloud project images API",
+			Usage: "EdgeCloud project images API",
 			Subcommands: []*cli.Command{
 				&imageProjectListCommand,
 			},

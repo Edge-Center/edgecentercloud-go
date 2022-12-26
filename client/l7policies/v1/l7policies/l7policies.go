@@ -5,19 +5,19 @@ import (
 
 	"github.com/urfave/cli/v2"
 
-	"github.com/G-Core/gcorelabscloud-go/client/flags"
-	"github.com/G-Core/gcorelabscloud-go/client/l7policies/v1/client"
-	"github.com/G-Core/gcorelabscloud-go/client/l7policies/v1/l7rules"
-	"github.com/G-Core/gcorelabscloud-go/client/utils"
-	"github.com/G-Core/gcorelabscloud-go/gcore/loadbalancer/v1/l7policies"
-	"github.com/G-Core/gcorelabscloud-go/gcore/task/v1/tasks"
+	"github.com/Edge-Center/edgecentercloud-go/client/flags"
+	"github.com/Edge-Center/edgecentercloud-go/client/l7policies/v1/client"
+	"github.com/Edge-Center/edgecentercloud-go/client/l7policies/v1/l7rules"
+	"github.com/Edge-Center/edgecentercloud-go/client/utils"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/loadbalancer/v1/l7policies"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
 )
 
 var policyIDText = "policy_id is mandatory argument"
 
 var Commands = cli.Command{
 	Name:  "l7policy",
-	Usage: "GCloud l7policy API",
+	Usage: "EdgeCloud l7policy API",
 	Subcommands: []*cli.Command{
 		&l7policyListSubCommand,
 		&l7policyGetSubCommand,

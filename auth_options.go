@@ -1,4 +1,4 @@
-package gcorecloud
+package edgecloud
 
 import "fmt"
 
@@ -12,7 +12,7 @@ type TokenOptionsBuilder interface {
 	ToMap() map[string]interface{}
 }
 
-// AuthOptions gcore API
+// AuthOptions edgecenter API
 type AuthOptions struct {
 	APIURL      string `json:"-"`
 	AuthURL     string `json:"-"`
@@ -30,7 +30,7 @@ func (ao AuthOptions) ToMap() map[string]interface{} {
 	}
 }
 
-// TokenOptions gcore API
+// TokenOptions edgecenter API
 type TokenOptions struct {
 	APIURL       string `json:"-"`
 	AccessToken  string `json:"access,omitempty"`
@@ -60,7 +60,7 @@ func (to TokenOptions) ToMap() map[string]interface{} {
 	}
 }
 
-// APITokenOptions gcore API
+// APITokenOptions edgecenter API
 type APITokenOptions struct {
 	APIURL   string `json:"-"`
 	APIToken string `json:"-"`

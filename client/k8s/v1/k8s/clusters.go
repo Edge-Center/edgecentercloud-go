@@ -4,18 +4,18 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/G-Core/gcorelabscloud-go/gcore/volume/v1/volumes"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/volume/v1/volumes"
 
-	gcorecloud "github.com/G-Core/gcorelabscloud-go"
-	"github.com/G-Core/gcorelabscloud-go/gcore/k8s/v1/pools"
+	edgecloud "github.com/Edge-Center/edgecentercloud-go"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/k8s/v1/pools"
 
-	"github.com/G-Core/gcorelabscloud-go/client/flags"
-	"github.com/G-Core/gcorelabscloud-go/client/k8s/v1/client"
-	"github.com/G-Core/gcorelabscloud-go/gcore/task/v1/tasks"
+	"github.com/Edge-Center/edgecentercloud-go/client/flags"
+	"github.com/Edge-Center/edgecentercloud-go/client/k8s/v1/client"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
 
-	"github.com/G-Core/gcorelabscloud-go/client/utils"
-	"github.com/G-Core/gcorelabscloud-go/client/utils/k8sconfig"
-	"github.com/G-Core/gcorelabscloud-go/gcore/k8s/v1/clusters"
+	"github.com/Edge-Center/edgecentercloud-go/client/utils"
+	"github.com/Edge-Center/edgecentercloud-go/client/utils/k8sconfig"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/k8s/v1/clusters"
 
 	"github.com/urfave/cli/v2"
 )
@@ -347,12 +347,12 @@ var clusterCreateSubCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 
-		podsIPPool, err := gcorecloud.ParseCIDRStringOrNil(c.String("pods-ip-pool"))
+		podsIPPool, err := edgecloud.ParseCIDRStringOrNil(c.String("pods-ip-pool"))
 		if err != nil {
 			return cli.NewExitError(err, 1)
 		}
 
-		servicesIPPool, err := gcorecloud.ParseCIDRStringOrNil(c.String("services-ip-pool"))
+		servicesIPPool, err := edgecloud.ParseCIDRStringOrNil(c.String("services-ip-pool"))
 		if err != nil {
 			return cli.NewExitError(err, 1)
 		}
@@ -617,7 +617,7 @@ var clusterDeleteSubCommand = cli.Command{
 				return nil, fmt.Errorf("cannot delete cluster with ID: %s", clusterID)
 			}
 			switch err.(type) {
-			case gcorecloud.ErrDefault404:
+			case edgecloud.ErrDefault404:
 				return nil, nil
 			default:
 				return nil, err
@@ -700,7 +700,7 @@ var clusterSignCertificateSubCommand = cli.Command{
 
 var Commands = cli.Command{
 	Name:  "cluster",
-	Usage: "Gcloud k8s cluster commands",
+	Usage: "EdgeCloud k8s cluster commands",
 	Subcommands: []*cli.Command{
 		&clusterListSubCommand,
 		&clusterGetSubCommand,
