@@ -54,6 +54,14 @@ func deleteSecurityGroupsURL(c *edgecloud.ServiceClient, id string) string {
 	return resourceActionURL(c, id, "delsecuritygroup")
 }
 
+func putIntoServerGroupURL(c *edgecloud.ServiceClient, id string) string {
+	return resourceActionURL(c, id, "put_into_servergroup")
+}
+
+func removeFromServerGroupURL(c *edgecloud.ServiceClient, id string) string {
+	return resourceActionURL(c, id, "remove_from_servergroup")
+}
+
 func attachInterfaceURL(c *edgecloud.ServiceClient, id string) string {
 	return resourceActionURL(c, id, "attach_interface")
 }

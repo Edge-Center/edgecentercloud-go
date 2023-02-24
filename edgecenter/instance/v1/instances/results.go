@@ -162,6 +162,7 @@ type Instance struct {
 	RegionID         int                          `json:"region_id"`
 	Region           string                       `json:"region"`
 	AvailabilityZone string                       `json:"availability_zone"`
+	ServerGroup      string                       `json:"server_group"`
 }
 
 // Interface represents a instance port interface.

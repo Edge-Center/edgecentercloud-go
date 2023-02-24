@@ -75,6 +75,14 @@ var Commands = cli.Command{
 				&metadataDeleteCommand,
 			},
 		},
+		{
+			Name:  "servergroup",
+			Usage: "Instance server group",
+			Subcommands: []*cli.Command{
+				&instanceAddServerGroupCommand,
+				&instanceRemoveServerGroupCommand,
+			},
+		},
 	},
 }
 
@@ -1338,6 +1346,77 @@ var instanceCreateBaremetalCommand = cli.Command{
 				return nil, fmt.Errorf("cannot retrieve instance ID from task info: %w", err)
 			}
 			instance, err := instances.Get(clientV1, instanceID).Extract()
+			if err != nil {
+				return nil, fmt.Errorf("cannot get instance with ID: %s. Error: %w", instanceID, err)
+			}
+			return instance, nil
+		})
+	},
+}
+
+var instanceAddServerGroupCommand = cli.Command{
+	Name:      "add",
+	Usage:     "Add server group to instance",
+	ArgsUsage: "<instance_id>",
+	Category:  "instance",
+	Flags: append([]cli.Flag{
+		&cli.StringSliceFlag{
+			Name:     "servergroup",
+			Usage:    "instance server group id",
+			Required: true,
+		},
+	}, flags.WaitCommandFlags...),
+	Action: func(c *cli.Context) error {
+		instanceID, err := flags.GetFirstStringArg(c, instanceIDText)
+		if err != nil {
+			_ = cli.ShowCommandHelp(c, "add")
+			return err
+		}
+		client, err := client.NewInstanceClientV1(c)
+		if err != nil {
+			_ = cli.ShowAppHelp(c)
+			return cli.NewExitError(err, 1)
+		}
+
+		opts := instances.ServerGroupOpts{ServerGroupID: c.String("servergroup")}
+
+		results, err := instances.AddServerGroup(client, instanceID, opts).Extract()
+		if err != nil {
+			return cli.NewExitError(err, 1)
+		}
+		return utils.WaitTaskAndShowResult(c, client, results, true, func(task tasks.TaskID) (interface{}, error) {
+			instance, err := instances.Get(client, instanceID).Extract()
+			if err != nil {
+				return nil, fmt.Errorf("cannot get instance with ID: %s. Error: %w", instanceID, err)
+			}
+			return instance, nil
+		})
+	},
+}
+
+var instanceRemoveServerGroupCommand = cli.Command{
+	Name:      "remove",
+	Usage:     "Remove server group from instance",
+	ArgsUsage: "<instance_id>",
+	Category:  "instance",
+	Action: func(c *cli.Context) error {
+		instanceID, err := flags.GetFirstStringArg(c, instanceIDText)
+		if err != nil {
+			_ = cli.ShowCommandHelp(c, "remove")
+			return err
+		}
+		client, err := client.NewInstanceClientV1(c)
+		if err != nil {
+			_ = cli.ShowAppHelp(c)
+			return cli.NewExitError(err, 1)
+		}
+
+		results, err := instances.RemoveServerGroup(client, instanceID).Extract()
+		if err != nil {
+			return cli.NewExitError(err, 1)
+		}
+		return utils.WaitTaskAndShowResult(c, client, results, true, func(task tasks.TaskID) (interface{}, error) {
+			instance, err := instances.Get(client, instanceID).Extract()
 			if err != nil {
 				return nil, fmt.Errorf("cannot get instance with ID: %s. Error: %w", instanceID, err)
 			}

@@ -282,6 +282,27 @@ func (opts ChangeFlavorOpts) ToChangeFlavorActionMap() (map[string]interface{}, 
 	return edgecloud.BuildRequestBody(opts, "")
 }
 
+// ServerGroupOptsBuilder builds parameters or change server group request.
+type ServerGroupOptsBuilder interface {
+	ToServerGroupActionMap() (map[string]interface{}, error)
+}
+
+type ServerGroupOpts struct {
+	ServerGroupID string `json:"servergroup_id" required:"true" validate:"required"`
+}
+
+func (opts ServerGroupOpts) Validate() error {
+	return edgecloud.ValidateStruct(opts)
+}
+
+// ToServerGroupActionMap builds a request body from ServerGroupOpts.
+func (opts ServerGroupOpts) ToServerGroupActionMap() (map[string]interface{}, error) {
+	if err := opts.Validate(); err != nil {
+		return nil, err
+	}
+	return edgecloud.BuildRequestBody(opts, "")
+}
+
 func List(client *edgecloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 	url := listURL(client)
 	if opts != nil {
@@ -423,6 +444,27 @@ func UnAssignSecurityGroup(client *edgecloud.ServiceClient, id string, opts Secu
 		return
 	}
 	_, r.Err = client.Post(deleteSecurityGroupsURL(client, id), b, nil, &edgecloud.RequestOpts{ // nolint
+		OkCodes: []int{http.StatusNoContent, http.StatusOK},
+	})
+	return
+}
+
+// AddServerGroup adds a server group to the instance.
+func AddServerGroup(client *edgecloud.ServiceClient, id string, opts ServerGroupOptsBuilder) (r tasks.Result) {
+	b, err := opts.ToServerGroupActionMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	_, r.Err = client.Post(putIntoServerGroupURL(client, id), b, &r.Body, &edgecloud.RequestOpts{ // nolint
+		OkCodes: []int{http.StatusNoContent, http.StatusOK},
+	})
+	return
+}
+
+// RemoveServerGroup removes a server group from the instance.
+func RemoveServerGroup(client *edgecloud.ServiceClient, id string) (r tasks.Result) {
+	_, r.Err = client.Post(removeFromServerGroupURL(client, id), nil, &r.Body, &edgecloud.RequestOpts{ // nolint
 		OkCodes: []int{http.StatusNoContent, http.StatusOK},
 	})
 	return

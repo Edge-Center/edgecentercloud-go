@@ -143,6 +143,14 @@ func prepareCreateTestURLV2() string {
 	return prepareListTestURLParams("v2", fake.ProjectID, fake.RegionID)
 }
 
+func preparePutIntoServerGroupTestURL(id string) string {
+	return prepareGetActionTestURLParams("v1", id, "put_into_servergroup")
+}
+
+func removeFromServerGroupTestURL(id string) string {
+	return prepareGetActionTestURLParams("v1", id, "remove_from_servergroup")
+}
+
 func TestList(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
@@ -952,4 +960,52 @@ func TestListInstanceLocation(t *testing.T) {
 	ct := actual[0]
 	require.Equal(t, InstanceLocation, ct)
 	require.Equal(t, ExpectedInstancesLocationSlice, actual)
+}
+
+func TestAddServerGroup(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc(preparePutIntoServerGroupTestURL(instanceID), func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "Authorization", fmt.Sprintf("Bearer %s", fake.AccessToken))
+		th.TestHeader(t, r, "Accept", "application/json")
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		_, err := fmt.Fprint(w, ServerGroupResponse)
+		if err != nil {
+			log.Error(err)
+		}
+	})
+
+	opts := instances.ServerGroupOpts{ServerGroupID: Instance1.ServerGroup}
+
+	client := fake.ServiceTokenClient("instances", "v1")
+	tasks, err := instances.AddServerGroup(client, instanceID, opts).Extract()
+	require.NoError(t, err)
+	require.Equal(t, Tasks1, *tasks)
+}
+
+func TestRemoveServerGroup(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc(removeFromServerGroupTestURL(instanceID), func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "Authorization", fmt.Sprintf("Bearer %s", fake.AccessToken))
+		th.TestHeader(t, r, "Accept", "application/json")
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		_, err := fmt.Fprint(w, ServerGroupResponse)
+		if err != nil {
+			log.Error(err)
+		}
+	})
+
+	client := fake.ServiceTokenClient("instances", "v1")
+	tasks, err := instances.RemoveServerGroup(client, instanceID).Extract()
+	require.NoError(t, err)
+	require.Equal(t, Tasks1, *tasks)
 }
