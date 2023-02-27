@@ -473,6 +473,14 @@ const ListInstanceLocationResponse = `
 }
 `
 
+const ServerGroupResponse = `
+{
+  "tasks": [
+    "50f53a35-42ed-40c4-82b2-5a37fb3e00bc"
+  ]
+}
+`
+
 var (
 	ip1                 = net.ParseIP("10.0.0.17")
 	ip2                 = net.ParseIP("92.38.157.215")
@@ -537,6 +545,7 @@ var (
 		RegionID:      1,
 		Region:        "RegionOne",
 	}
+	ServerGroup                    = "8c0562f3-d6c8-4af3-8369-2328bbb7a629"
 	PortID                         = "1f0ca628-a73b-42c0-bdac-7b10d023e097"
 	PortMac, _                     = edgecloud.ParseMacString("00:16:3e:f2:87:16")
 	PortIP1                        = net.ParseIP("192.168.123.20")
