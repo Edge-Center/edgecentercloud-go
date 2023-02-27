@@ -7,19 +7,20 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/Edge-Center/edgecentercloud-go/client/instances/v1/client"
-	client2 "github.com/Edge-Center/edgecentercloud-go/client/instances/v2/client"
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/baremetal/v1/bminstances"
+	"github.com/urfave/cli/v2"
 
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
-
 	"github.com/Edge-Center/edgecentercloud-go/client/flags"
+	"github.com/Edge-Center/edgecentercloud-go/client/instances/v1/client"
+	client2 "github.com/Edge-Center/edgecentercloud-go/client/instances/v2/client"
+	sgClient "github.com/Edge-Center/edgecentercloud-go/client/servergroups/v1/client"
 	"github.com/Edge-Center/edgecentercloud-go/client/utils"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/baremetal/v1/bminstances"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/instance/v1/instances"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/instance/v1/types"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/servergroup/v1/servergroups"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/volume/v1/volumes"
-	"github.com/urfave/cli/v2"
 )
 
 var (
@@ -1372,24 +1373,38 @@ var instanceAddServerGroupCommand = cli.Command{
 			_ = cli.ShowCommandHelp(c, "add")
 			return err
 		}
+
 		client, err := client.NewInstanceClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
 			return cli.NewExitError(err, 1)
 		}
 
-		opts := instances.ServerGroupOpts{ServerGroupID: c.String("servergroup")}
+		sgClient, err := sgClient.NewServerGroupClientV1(c)
+		if err != nil {
+			_ = cli.ShowAppHelp(c)
+			return cli.NewExitError(err, 1)
+		}
+
+		sgID := c.String("servergroup")
+		opts := instances.ServerGroupOpts{ServerGroupID: sgID}
 
 		results, err := instances.AddServerGroup(client, instanceID, opts).Extract()
 		if err != nil {
 			return cli.NewExitError(err, 1)
 		}
+
 		return utils.WaitTaskAndShowResult(c, client, results, true, func(task tasks.TaskID) (interface{}, error) {
-			instance, err := instances.Get(client, instanceID).Extract()
+			sgInfo, err := servergroups.Get(sgClient, sgID).Extract()
 			if err != nil {
-				return nil, fmt.Errorf("cannot get instance with ID: %s. Error: %w", instanceID, err)
+				return nil, fmt.Errorf("cannot get server group with ID: %s. Error: %w", sgID, err)
 			}
-			return instance, nil
+			for _, instanceInfo := range sgInfo.Instances {
+				if instanceInfo.InstanceID == instanceID {
+					return sgInfo, nil
+				}
+			}
+			return nil, fmt.Errorf("the server group: %s was not added to the instance: %s. Error: %w", sgID, instanceID, err)
 		})
 	},
 }
@@ -1405,22 +1420,38 @@ var instanceRemoveServerGroupCommand = cli.Command{
 			_ = cli.ShowCommandHelp(c, "remove")
 			return err
 		}
+
 		client, err := client.NewInstanceClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
 			return cli.NewExitError(err, 1)
 		}
 
+		sgClient, err := sgClient.NewServerGroupClientV1(c)
+		if err != nil {
+			_ = cli.ShowAppHelp(c)
+			return cli.NewExitError(err, 1)
+		}
+
+		sgID := c.String("servergroup")
+
 		results, err := instances.RemoveServerGroup(client, instanceID).Extract()
 		if err != nil {
 			return cli.NewExitError(err, 1)
 		}
+
 		return utils.WaitTaskAndShowResult(c, client, results, true, func(task tasks.TaskID) (interface{}, error) {
-			instance, err := instances.Get(client, instanceID).Extract()
+			sgInfo, err := servergroups.Get(sgClient, sgID).Extract()
 			if err != nil {
-				return nil, fmt.Errorf("cannot get instance with ID: %s. Error: %w", instanceID, err)
+				return nil, fmt.Errorf("failed to get server group %s: %w", sgID, err)
 			}
-			return instance, nil
+
+			for _, instanceInfo := range sgInfo.Instances {
+				if instanceInfo.InstanceID == instanceID {
+					return nil, fmt.Errorf("server group %s was not removed from instance %s", sgID, instanceID)
+				}
+			}
+			return sgInfo, nil
 		})
 	},
 }

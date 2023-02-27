@@ -5,12 +5,10 @@ import (
 	"fmt"
 	"net"
 
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
-
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/instance/v1/types"
-
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/flavor/v1/flavors"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/instance/v1/types"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
 	"github.com/Edge-Center/edgecentercloud-go/pagination"
 )
 
@@ -162,7 +160,6 @@ type Instance struct {
 	RegionID         int                          `json:"region_id"`
 	Region           string                       `json:"region"`
 	AvailabilityZone string                       `json:"availability_zone"`
-	ServerGroup      string                       `json:"server_group"`
 }
 
 // Interface represents a instance port interface.

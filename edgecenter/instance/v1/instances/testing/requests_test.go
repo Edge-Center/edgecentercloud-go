@@ -979,7 +979,7 @@ func TestAddServerGroup(t *testing.T) {
 		}
 	})
 
-	opts := instances.ServerGroupOpts{ServerGroupID: Instance1.ServerGroup}
+	opts := instances.ServerGroupOpts{ServerGroupID: ServerGroup}
 
 	client := fake.ServiceTokenClient("instances", "v1")
 	tasks, err := instances.AddServerGroup(client, instanceID, opts).Extract()
