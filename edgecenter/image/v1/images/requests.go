@@ -1,11 +1,9 @@
 package images
 
 import (
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
-
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/image/v1/images/types"
-
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/image/v1/images/types"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
 	"github.com/Edge-Center/edgecentercloud-go/pagination"
 )
 
@@ -98,6 +96,7 @@ type UploadOpts struct {
 	IsBaremetal    *bool                `json:"is_baremetal,omitempty"`
 	HwFirmwareType types.HwFirmwareType `json:"hw_firmware_type" validate:"required,enum"`
 	CowFormat      bool                 `json:"cow_format"`
+	Metadata       map[string]string    `json:"metadata,omitempty"`
 }
 
 // Validate
@@ -185,6 +184,6 @@ func Upload(client *edgecloud.ServiceClient, opts UploadOptsBuilder) (r tasks.Re
 		r.Err = err
 		return
 	}
-	_, r.Err = client.Post(uploadURL(client), b, &r.Body, nil) // nolint
+	_, r.Err = client.Post(uploadURL(client), b, &r.Body, nil)
 	return
 }

@@ -4,16 +4,16 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/Edge-Center/edgecentercloud-go/client/images/v1/client"
+	"github.com/urfave/cli/v2"
 
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
-
 	"github.com/Edge-Center/edgecentercloud-go/client/flags"
+	"github.com/Edge-Center/edgecentercloud-go/client/images/v1/client"
 	"github.com/Edge-Center/edgecentercloud-go/client/utils"
+	cmeta "github.com/Edge-Center/edgecentercloud-go/client/utils/metadata"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/image/v1/images"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/image/v1/images/types"
-	"github.com/urfave/cli/v2"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
 )
 
 var (
@@ -437,6 +437,48 @@ var Commands = cli.Command{
 			Usage: "EdgeCloud project images API",
 			Subcommands: []*cli.Command{
 				&imageProjectListCommand,
+			},
+		},
+		{
+			Name:  "metadata",
+			Usage: "Image metadata",
+			Subcommands: []*cli.Command{
+				cmeta.NewMetadataListCommand(
+					client.NewImageClientV1,
+					"Get image metadata",
+					"<image_id>",
+					"image_id is mandatory argument",
+				),
+				cmeta.NewMetadataGetCommand(
+					client.NewImageClientV1,
+					"Show image metadata by key",
+					"<image_id>",
+					"image_id is mandatory argument",
+				),
+				cmeta.NewMetadataDeleteCommand(
+					client.NewImageClientV1,
+					"Delete image_id metadata by key",
+					"<image_id>",
+					"image_id is mandatory argument",
+				),
+				cmeta.NewMetadataCreateCommand(
+					client.NewImageClientV1,
+					"Create instance metadata. It would update existing keys",
+					"<image_id>",
+					"image_id is mandatory argument",
+				),
+				cmeta.NewMetadataUpdateCommand(
+					client.NewImageClientV1,
+					"Update image_id metadata. It overriding existing records",
+					"<image_id>",
+					"volume_id is mandatory argument",
+				),
+				cmeta.NewMetadataReplaceCommand(
+					client.NewImageClientV1,
+					"Replace image_id metadata. It replace existing records",
+					"<image_id>",
+					"image_id is mandatory argument",
+				),
 			},
 		},
 	},

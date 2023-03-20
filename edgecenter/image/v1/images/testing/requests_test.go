@@ -5,18 +5,15 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/image/v1/images/types"
-
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/image/v1/images"
-
-	fake "github.com/Edge-Center/edgecentercloud-go/testhelper/client"
-
+	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/require"
 
-	log "github.com/sirupsen/logrus"
-
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/image/v1/images"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/image/v1/images/types"
+	etest "github.com/Edge-Center/edgecentercloud-go/edgecenter/utils/testing"
 	"github.com/Edge-Center/edgecentercloud-go/pagination"
 	th "github.com/Edge-Center/edgecentercloud-go/testhelper"
+	fake "github.com/Edge-Center/edgecentercloud-go/testhelper/client"
 )
 
 func prepareListTestURLParams(version string, projectID int, regionID int) string {
@@ -70,7 +67,7 @@ func TestList(t *testing.T) {
 		w.WriteHeader(http.StatusOK)
 		_, err := fmt.Fprint(w, ListResponse)
 		if err != nil {
-			log.Error(err)
+			logrus.Error(err)
 		}
 	})
 
@@ -108,7 +105,7 @@ func TestListAll(t *testing.T) {
 		w.WriteHeader(http.StatusOK)
 		_, err := fmt.Fprint(w, ListResponse)
 		if err != nil {
-			log.Error(err)
+			logrus.Error(err)
 		}
 	})
 
@@ -139,7 +136,7 @@ func TestGet(t *testing.T) {
 
 		_, err := fmt.Fprint(w, GetResponse)
 		if err != nil {
-			log.Error(err)
+			logrus.Error(err)
 		}
 	})
 
@@ -167,7 +164,7 @@ func TestCreate(t *testing.T) {
 
 		_, err := fmt.Fprint(w, CreateResponse)
 		if err != nil {
-			log.Error(err)
+			logrus.Error(err)
 		}
 	})
 
@@ -205,7 +202,7 @@ func TestDelete(t *testing.T) {
 
 		_, err := fmt.Fprint(w, DeleteResponse)
 		if err != nil {
-			log.Error(err)
+			logrus.Error(err)
 		}
 	})
 
@@ -231,7 +228,7 @@ func TestUpload(t *testing.T) {
 
 		_, err := fmt.Fprint(w, CreateResponse)
 		if err != nil {
-			log.Error(err)
+			logrus.Error(err)
 		}
 	})
 
@@ -271,7 +268,7 @@ func TestUpdate(t *testing.T) {
 
 		_, err := fmt.Fprint(w, GetResponse)
 		if err != nil {
-			log.Error(err)
+			logrus.Error(err)
 		}
 	})
 
@@ -292,4 +289,25 @@ func TestUpdate(t *testing.T) {
 	ct, err := images.Update(client, Image1.ID, options).Extract()
 	require.NoError(t, err)
 	require.Equal(t, Image1, *ct)
+}
+
+func TestMetadataListAll(t *testing.T) {
+	etest.BuildTestMetadataListAll("images", Image1.ID)(t)
+}
+
+func TestMetadataGet(t *testing.T) {
+	etest.BuildTestMetadataGet("images", Image1.ID)(t)
+}
+
+func TestMetadataCreate(t *testing.T) {
+	etest.BuildTestMetadataCreate("images", Image1.ID)(t)
+}
+
+func TestMetadataUpdate(t *testing.T) {
+	etest.BuildTestMetadataUpdate("images", Image1.ID)(t)
+
+}
+
+func TestMetadataDelete(t *testing.T) {
+	etest.BuildTestMetadataDelete("images", Image1.ID)(t)
 }
