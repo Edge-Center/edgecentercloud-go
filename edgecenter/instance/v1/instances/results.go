@@ -9,6 +9,7 @@ import (
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/flavor/v1/flavors"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/instance/v1/types"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/utils/metadata"
 	"github.com/Edge-Center/edgecentercloud-go/pagination"
 )
 
@@ -209,6 +210,7 @@ type FloatingIP struct {
 	ProjectID         int                     `json:"project_id"`
 	RegionID          int                     `json:"region_id"`
 	Region            string                  `json:"region"`
+	Metadata          []metadata.Metadata     `json:"metadata"`
 }
 
 // Subnet port subnet

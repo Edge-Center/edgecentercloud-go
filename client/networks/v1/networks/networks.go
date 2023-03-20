@@ -3,15 +3,16 @@ package networks
 import (
 	"fmt"
 
+	"github.com/urfave/cli/v2"
+
 	edgecenter "github.com/Edge-Center/edgecentercloud-go"
 	"github.com/Edge-Center/edgecentercloud-go/client/flags"
 	"github.com/Edge-Center/edgecentercloud-go/client/networks/v1/client"
 	"github.com/Edge-Center/edgecentercloud-go/client/utils"
+	cmeta "github.com/Edge-Center/edgecentercloud-go/client/utils/metadata"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/network/v1/availablenetworks"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/network/v1/networks"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
-
-	"github.com/urfave/cli/v2"
 )
 
 var networkIDText = "network_id is mandatory argument"
@@ -288,5 +289,47 @@ var Commands = cli.Command{
 		&networkUpdateCommand,
 		&extensionCommands,
 		&networkInstancePortCommand,
+		{
+			Name:  "metadata",
+			Usage: "Network metadata",
+			Subcommands: []*cli.Command{
+				cmeta.NewMetadataListCommand(
+					client.NewNetworkClientV1,
+					"Get networks metadata",
+					"<network_id>",
+					"network_id is mandatory argument",
+				),
+				cmeta.NewMetadataGetCommand(
+					client.NewNetworkClientV1,
+					"Show network metadata by key",
+					"<network_id>",
+					"network_id is mandatory argument",
+				),
+				cmeta.NewMetadataDeleteCommand(
+					client.NewNetworkClientV1,
+					"Delete network metadata by key",
+					"<network_id>",
+					"network_id is mandatory argument",
+				),
+				cmeta.NewMetadataCreateCommand(
+					client.NewNetworkClientV1,
+					"Create network metadata. It would update existing keys",
+					"<network_id>",
+					"network_id is mandatory argument",
+				),
+				cmeta.NewMetadataUpdateCommand(
+					client.NewNetworkClientV1,
+					"Update network metadata. It overriding existing records",
+					"<network_id>",
+					"network_id is mandatory argument",
+				),
+				cmeta.NewMetadataReplaceCommand(
+					client.NewNetworkClientV1,
+					"Replace network metadata. It replace existing records",
+					"<network_id>",
+					"network_id is mandatory argument",
+				),
+			},
+		},
 	},
 }
