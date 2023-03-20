@@ -6,16 +6,15 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/loadbalancer/v1/loadbalancers"
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/loadbalancer/v1/types"
-	fake "github.com/Edge-Center/edgecentercloud-go/testhelper/client"
-
+	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/require"
 
-	log "github.com/sirupsen/logrus"
-
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/loadbalancer/v1/loadbalancers"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/loadbalancer/v1/types"
+	etest "github.com/Edge-Center/edgecentercloud-go/edgecenter/utils/testing"
 	"github.com/Edge-Center/edgecentercloud-go/pagination"
 	th "github.com/Edge-Center/edgecentercloud-go/testhelper"
+	fake "github.com/Edge-Center/edgecentercloud-go/testhelper/client"
 )
 
 func prepareListTestURLParams(projectID int, regionID int) string {
@@ -50,7 +49,7 @@ func TestList(t *testing.T) {
 		w.WriteHeader(http.StatusOK)
 		_, err := fmt.Fprint(w, ListResponse)
 		if err != nil {
-			log.Error(err)
+			logrus.Error(err)
 		}
 	})
 
@@ -86,7 +85,7 @@ func TestListAll(t *testing.T) {
 		w.WriteHeader(http.StatusOK)
 		_, err := fmt.Fprint(w, ListResponse)
 		if err != nil {
-			log.Error(err)
+			logrus.Error(err)
 		}
 	})
 
@@ -115,7 +114,7 @@ func TestGet(t *testing.T) {
 
 		_, err := fmt.Fprint(w, GetResponse)
 		if err != nil {
-			log.Error(err)
+			logrus.Error(err)
 		}
 	})
 
@@ -145,7 +144,7 @@ func TestCreate(t *testing.T) {
 
 		_, err := fmt.Fprint(w, CreateResponse)
 		if err != nil {
-			log.Error(err)
+			logrus.Error(err)
 		}
 	})
 
@@ -215,7 +214,7 @@ func TestDelete(t *testing.T) {
 		w.WriteHeader(http.StatusOK)
 		_, err := fmt.Fprint(w, DeleteResponse)
 		if err != nil {
-			log.Error(err)
+			logrus.Error(err)
 		}
 	})
 
@@ -244,7 +243,7 @@ func TestUpdate(t *testing.T) {
 
 		_, err := fmt.Fprint(w, GetResponse)
 		if err != nil {
-			log.Error(err)
+			logrus.Error(err)
 		}
 	})
 
@@ -276,7 +275,7 @@ func TestGetCustomSecurityGroup(t *testing.T) {
 		w.WriteHeader(http.StatusOK)
 		_, err := fmt.Fprint(w, ListCustomSecurityGroupResponse)
 		if err != nil {
-			log.Error(err)
+			logrus.Error(err)
 		}
 	})
 
@@ -305,4 +304,25 @@ func TestCreateCustomSecurityGroup(t *testing.T) {
 
 	err := loadbalancers.CreateCustomSecurityGroup(client, LoadBalancer1.ID).ExtractErr()
 	require.NoError(t, err)
+}
+
+func TestMetadataListAll(t *testing.T) {
+	etest.BuildTestMetadataListAll("loadbalancers", LoadBalancer1.ID)(t)
+}
+
+func TestMetadataGet(t *testing.T) {
+	etest.BuildTestMetadataGet("loadbalancers", LoadBalancer1.ID)(t)
+}
+
+func TestMetadataCreate(t *testing.T) {
+	etest.BuildTestMetadataCreate("loadbalancers", LoadBalancer1.ID)(t)
+}
+
+func TestMetadataUpdate(t *testing.T) {
+	etest.BuildTestMetadataUpdate("loadbalancers", LoadBalancer1.ID)(t)
+
+}
+
+func TestMetadataDelete(t *testing.T) {
+	etest.BuildTestMetadataDelete("loadbalancers", LoadBalancer1.ID)(t)
 }
