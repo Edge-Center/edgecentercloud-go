@@ -14,8 +14,10 @@ type ListOptsBuilder interface {
 
 // ListOpts allows the filtering and sorting of paginated collections through the API.
 type ListOpts struct {
-	Private    bool             `q:"private"`
-	Visibility types.Visibility `q:"visibility"`
+	Private    bool              `q:"private" validate:"omitempty"`
+	Visibility types.Visibility  `q:"visibility" validate:"omitempty"`
+	MetadataK  string            `q:"metadata_k" validate:"omitempty"`
+	MetadataKV map[string]string `q:"metadata_kv" validate:"omitempty"`
 }
 
 // ToImageListQuery formats a ListOpts into a query string.
@@ -44,7 +46,7 @@ type CreateOpts struct {
 	VolumeID       string                `json:"volume_id" required:"true" validate:"required"`
 }
 
-// Validate
+// Validate CreateOpts.
 func (opts CreateOpts) Validate() error {
 	return edgecloud.Validate.Struct(opts)
 }
@@ -69,7 +71,7 @@ type UpdateOpts struct {
 	HwFirmwareType types.HwFirmwareType `json:"hw_firmware_type" validate:"required,enum"`
 }
 
-// Validate
+// Validate UpdateOpts.
 func (opts UpdateOpts) Validate() error {
 	return edgecloud.Validate.Struct(opts)
 }
@@ -99,7 +101,7 @@ type UploadOpts struct {
 	Metadata       map[string]string    `json:"metadata,omitempty"`
 }
 
-// Validate
+// Validate UploadOpts.
 func (opts UploadOpts) Validate() error {
 	return edgecloud.Validate.Struct(opts)
 }
@@ -163,8 +165,7 @@ func Delete(client *edgecloud.ServiceClient, imageID string) (r tasks.Result) {
 	return
 }
 
-// Update accepts a UpdateOpts struct and updates an existing image using the
-// values provided.
+// Update accepts a UpdateOpts struct and updates an existing image using the values provided.
 func Update(client *edgecloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
 	url := updateURL(client, id)
 	b, err := opts.ToImageUpdateMap()
@@ -176,14 +177,13 @@ func Update(client *edgecloud.ServiceClient, id string, opts UpdateOptsBuilder) 
 	return
 }
 
-// Upload accepts a UploadOpts struct and upload an image using the
-// values provided.
+// Upload accepts a UploadOpts struct and upload an image using the values provided.
 func Upload(client *edgecloud.ServiceClient, opts UploadOptsBuilder) (r tasks.Result) {
 	b, err := opts.ToImageUploadMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	_, r.Err = client.Post(uploadURL(client), b, &r.Body, nil)
+	_, r.Err = client.Post(uploadURL(client), b, &r.Body, nil) // nolint
 	return
 }
