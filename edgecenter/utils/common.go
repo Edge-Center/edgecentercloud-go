@@ -21,13 +21,3 @@ func MapInterfaceToMapString(mapInterface interface{}) (map[string]string, error
 
 	return mapString, nil
 }
-
-//func MapInterfaceToMapString(mapInterface map[string]interface{}) map[string]string {
-//	mapString := make(map[string]string)
-//
-//	for key, value := range mapInterface {
-//		mapString[key] = fmt.Sprintf("%v", value)
-//	}
-//
-//	return mapString
-//}
