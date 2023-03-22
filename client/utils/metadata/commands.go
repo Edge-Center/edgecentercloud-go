@@ -27,7 +27,7 @@ func showResults(c *cli.Context, data interface{}) error {
 	return nil
 }
 
-func StringSliceToMap(slice []string) (map[string]string, error) {
+func stringSliceToMap(slice []string) (map[string]string, error) {
 	if len(slice) == 0 {
 		return nil, nil
 	}
@@ -182,7 +182,7 @@ func NewMetadataCreateCommand(cc ClientConstructor, usage string, argsUsage stri
 				_ = cli.ShowAppHelp(c)
 				return cli.NewExitError(err, 1)
 			}
-			opts, err := StringSliceToMap(c.StringSlice("metadata"))
+			opts, err := stringSliceToMap(c.StringSlice("metadata"))
 			if err != nil {
 				_ = cli.ShowAppHelp(c)
 				return cli.NewExitError(err, 1)
@@ -221,7 +221,7 @@ func NewMetadataUpdateCommand(cc ClientConstructor, usage string, argsUsage stri
 				_ = cli.ShowAppHelp(c)
 				return cli.NewExitError(err, 1)
 			}
-			opts, err := StringSliceToMap(c.StringSlice("metadata"))
+			opts, err := stringSliceToMap(c.StringSlice("metadata"))
 			if err != nil {
 				_ = cli.ShowAppHelp(c)
 				return cli.NewExitError(err, 1)
@@ -259,7 +259,7 @@ func NewMetadataReplaceCommand(cc ClientConstructor, usage string, argsUsage str
 				_ = cli.ShowAppHelp(c)
 				return cli.NewExitError(err, 1)
 			}
-			opts, err := StringSliceToMap(c.StringSlice("metadata"))
+			opts, err := stringSliceToMap(c.StringSlice("metadata"))
 			if err != nil {
 				_ = cli.ShowAppHelp(c)
 				return cli.NewExitError(err, 1)
