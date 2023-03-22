@@ -5,6 +5,7 @@ import (
 
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/utils/metadata"
 	"github.com/Edge-Center/edgecentercloud-go/pagination"
 )
 
@@ -46,13 +47,6 @@ type DeleteResult struct {
 	commonResult
 }
 
-// Metadata represents a metadata of volume.
-type Metadata struct {
-	TaskID       string `json:"task_id"`
-	ClusterID    string `json:"cluster_id"`
-	AttachedMode string `json:"attached_mode"`
-}
-
 // VolumeImageMetadata represents a metadata of volume image.
 type VolumeImageMetadata struct {
 	ContainerFormat               string `json:"container_format"`
@@ -80,24 +74,24 @@ type Attachment struct {
 
 // Volume represents a volume structure.
 type Volume struct {
-	AvailabilityZone string                 `json:"availability_zone"`
-	CreatedAt        edgecloud.JSONRFC3339Z `json:"created_at"`
-	UpdatedAt        edgecloud.JSONRFC3339Z `json:"updated_at"`
-	VolumeType       VolumeType             `json:"volume_type"`
-	ID               string                 `json:"id"`
-	Name             string                 `json:"name"`
-	RegionName       string                 `json:"region"`
-	Status           VolumeStatus           `json:"status"`
-	Size             int                    `json:"size"`
-	Bootable         bool                   `json:"bootable"`
-	SnapshotID       string                 `json:"snapshot_id"`
-	SourceVolID      string                 `json:"source_volid"`
-	ProjectID        int                    `json:"project_id"`
-	RegionID         int                    `json:"region_id"`
-	Attachments      []Attachment           `json:"attachments"`
-	// Metadata            Metadata                `json:"metadata"`
-	CreatorTaskID       string              `json:"creator_task_id"`
-	VolumeImageMetadata VolumeImageMetadata `json:"volume_image_metadata"`
+	AvailabilityZone    string                 `json:"availability_zone"`
+	CreatedAt           edgecloud.JSONRFC3339Z `json:"created_at"`
+	UpdatedAt           edgecloud.JSONRFC3339Z `json:"updated_at"`
+	VolumeType          VolumeType             `json:"volume_type"`
+	ID                  string                 `json:"id"`
+	Name                string                 `json:"name"`
+	RegionName          string                 `json:"region"`
+	Status              VolumeStatus           `json:"status"`
+	Size                int                    `json:"size"`
+	Bootable            bool                   `json:"bootable"`
+	SnapshotID          string                 `json:"snapshot_id"`
+	SourceVolID         string                 `json:"source_volid"`
+	ProjectID           int                    `json:"project_id"`
+	RegionID            int                    `json:"region_id"`
+	Attachments         []Attachment           `json:"attachments"`
+	Metadata            []metadata.Metadata    `json:"metadata_detailed"`
+	CreatorTaskID       string                 `json:"creator_task_id"`
+	VolumeImageMetadata VolumeImageMetadata    `json:"volume_image_metadata"`
 }
 
 // VolumePage is the page returned by a pager when traversing over a
@@ -126,7 +120,7 @@ func (r VolumePage) IsEmpty() (bool, error) {
 	return len(is) == 0, err
 }
 
-// ExtractVolume accepts a Page struct, specifically a VolumePage struct,
+// ExtractVolumes accepts a Page struct, specifically a VolumePage struct,
 // and extracts the elements into a slice of Volume structs. In other words,
 // a generic collection is mapped into a relevant slice.
 func ExtractVolumes(r pagination.Page) ([]Volume, error) {

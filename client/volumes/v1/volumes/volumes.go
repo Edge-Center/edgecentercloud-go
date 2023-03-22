@@ -4,13 +4,15 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/urfave/cli/v2"
+
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 	"github.com/Edge-Center/edgecentercloud-go/client/flags"
 	"github.com/Edge-Center/edgecentercloud-go/client/utils"
+	cmeta "github.com/Edge-Center/edgecentercloud-go/client/utils/metadata"
 	"github.com/Edge-Center/edgecentercloud-go/client/volumes/v1/client"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/volume/v1/volumes"
-	"github.com/urfave/cli/v2"
 )
 
 var (
@@ -476,5 +478,47 @@ var Commands = cli.Command{
 		&volumeRetypeCommand,
 		&volumeExtendCommand,
 		&volumeRevertCommand,
+		{
+			Name:  "metadata",
+			Usage: "Volume metadata",
+			Subcommands: []*cli.Command{
+				cmeta.NewMetadataListCommand(
+					client.NewVolumeClientV1,
+					"Get volume metadata",
+					"<volume_id>",
+					"volume_id is mandatory argument",
+				),
+				cmeta.NewMetadataGetCommand(
+					client.NewVolumeClientV1,
+					"Show volume metadata by key",
+					"<volume_id>",
+					"volume_id is mandatory argument",
+				),
+				cmeta.NewMetadataDeleteCommand(
+					client.NewVolumeClientV1,
+					"Delete volume metadata by key",
+					"<volume_id>",
+					"volume_id is mandatory argument",
+				),
+				cmeta.NewMetadataCreateCommand(
+					client.NewVolumeClientV1,
+					"Create instance metadata. It would update existing keys",
+					"<volume_id>",
+					"volume_id is mandatory argument",
+				),
+				cmeta.NewMetadataUpdateCommand(
+					client.NewVolumeClientV1,
+					"Update volume metadata. It overriding existing records",
+					"<volume_id>",
+					"volume_id is mandatory argument",
+				),
+				cmeta.NewMetadataReplaceCommand(
+					client.NewVolumeClientV1,
+					"Replace volume metadata. It replace existing records",
+					"<volume_id>",
+					"volume_id is mandatory argument",
+				),
+			},
+		},
 	},
 }

@@ -1,16 +1,15 @@
 package testing
 
 import (
+	"fmt"
 	"time"
 
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/image/v1/images"
-
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
-
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/image/v1/images"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
 )
 
-const ListResponse = `
+var ListResponse = fmt.Sprintf(`
 {
   "count": 1,
   "results": [
@@ -30,13 +29,28 @@ const ListResponse = `
       "disk_format": "qcow2",
       "min_disk": 0,
       "name": "fedora-coreos",
-      "status": "active"
+      "status": "active",
+      "metadata_detailed": [%s],
+  	  "metadata": %s
     }
   ]
 }
+`, MetadataResponse, MetadataResponseKV)
+
+const MetadataResponse = `
+{
+  "key": "some_key",
+  "value": "some_val",
+  "read_only": false
+}
+`
+const MetadataResponseKV = `
+{
+  "some_key": "some_val"
+}
 `
 
-const GetResponse = `
+var GetResponse = fmt.Sprintf(`
 {
   "id": "4a44e5a2-e7ba-41b8-bf78-ddfa2e22974b",
   "project_id": 1,
@@ -53,9 +67,11 @@ const GetResponse = `
   "disk_format": "qcow2",
   "min_disk": 0,
   "name": "fedora-coreos",
-  "status": "active"
+  "status": "active",
+  "metadata_detailed": [%s],
+  "metadata": %s
 }
-`
+`, MetadataResponse, MetadataResponseKV)
 
 const CreateRequest = `
 {

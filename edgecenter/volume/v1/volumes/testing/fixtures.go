@@ -1,14 +1,16 @@
 package testing
 
 import (
+	"fmt"
 	"time"
 
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/utils/metadata"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/volume/v1/volumes"
 )
 
-const ListResponse = `
+var ListResponse = fmt.Sprintf(`
 {
   "count": 1,
   "results": [
@@ -35,10 +37,8 @@ const ListResponse = `
           "device": "/dev/vda"
         }
       ],
-      "metadata": {
-        "task_id": "d74c2bb9-cea7-4b23-a009-2f13518ae66d",
-        "attached_mode": "rw"
-      },
+      "metadata_detailed": [%s],
+  	  "metadata": %s,
       "creator_task_id": "d74c2bb9-cea7-4b23-a009-2f13518ae66d",
       "volume_image_metadata": {
         "container_format": "bare",
@@ -56,9 +56,23 @@ const ListResponse = `
     }
   ]
 }
+`, MetadataResponse, MetadataResponseKV)
+
+const MetadataResponse = `
+{
+  "key": "some_key",
+  "value": "some_val",
+  "read_only": false
+}
 `
 
-const GetResponse = `
+const MetadataResponseKV = `
+{
+  "some_key": "some_val"
+}
+`
+
+var GetResponse = fmt.Sprintf(`
 {
   "availability_zone": "nova",
   "created_at": "2019-05-29T05:32:41+0000",
@@ -82,10 +96,8 @@ const GetResponse = `
       "device": "/dev/vda"
     }
   ],
-  "metadata": {
-    "task_id": "d74c2bb9-cea7-4b23-a009-2f13518ae66d",
-    "attached_mode": "rw"
-  },
+  "metadata_detailed": [%s],
+  "metadata": %s,
   "creator_task_id": "d74c2bb9-cea7-4b23-a009-2f13518ae66d",
   "volume_image_metadata": {
     "container_format": "bare",
@@ -101,7 +113,7 @@ const GetResponse = `
     "size": "46137344"
   }
 }
-`
+`, MetadataResponse, MetadataResponseKV)
 
 const CreateRequest = `
 {
@@ -195,10 +207,7 @@ var (
 			Device:       "/dev/vda",
 		},
 		},
-		// Metadata: volumes.Metadata{
-		// 	TaskID:       "d74c2bb9-cea7-4b23-a009-2f13518ae66d",
-		// 	AttachedMode: "rw",
-		// },
+		Metadata:      []metadata.Metadata{ResourceMetadataReadOnly},
 		CreatorTaskID: "d74c2bb9-cea7-4b23-a009-2f13518ae66d",
 		VolumeImageMetadata: volumes.VolumeImageMetadata{
 			ContainerFormat:               "bare",
@@ -219,4 +228,10 @@ var (
 	}
 
 	ExpectedVolumeSlice = []volumes.Volume{Volume1}
+
+	ResourceMetadataReadOnly = metadata.Metadata{
+		Key:      "some_key",
+		Value:    "some_val",
+		ReadOnly: false,
+	}
 )

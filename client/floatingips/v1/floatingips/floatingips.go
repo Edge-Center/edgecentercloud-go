@@ -4,18 +4,17 @@ import (
 	"fmt"
 	"net"
 
-	"github.com/Edge-Center/edgecentercloud-go/client/floatingips/v1/availablefloatingips"
-	"github.com/Edge-Center/edgecentercloud-go/client/floatingips/v1/client"
+	"github.com/urfave/cli/v2"
 
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/volume/v1/volumes"
-
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
-
 	"github.com/Edge-Center/edgecentercloud-go/client/flags"
+	"github.com/Edge-Center/edgecentercloud-go/client/floatingips/v1/availablefloatingips"
+	"github.com/Edge-Center/edgecentercloud-go/client/floatingips/v1/client"
 	"github.com/Edge-Center/edgecentercloud-go/client/utils"
+	cmeta "github.com/Edge-Center/edgecentercloud-go/client/utils/metadata"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/floatingip/v1/floatingips"
-	"github.com/urfave/cli/v2"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/volume/v1/volumes"
 )
 
 var (
@@ -255,5 +254,47 @@ var Commands = cli.Command{
 		&floatingIPDeleteSubCommand,
 		&floatingIPCreateSubCommand,
 		&availablefloatingips.AvailableFloatingIPCommands,
+		{
+			Name:  "metadata",
+			Usage: "FloatingIP metadata",
+			Subcommands: []*cli.Command{
+				cmeta.NewMetadataListCommand(
+					client.NewFloatingIPClientV1,
+					"Get floating ip metadata",
+					"<floatingip_id>",
+					"floatingip_id is mandatory argument",
+				),
+				cmeta.NewMetadataGetCommand(
+					client.NewFloatingIPClientV1,
+					"Show floating ip metadata by key",
+					"<floatingip_id>",
+					"floatingip_id is mandatory argument",
+				),
+				cmeta.NewMetadataDeleteCommand(
+					client.NewFloatingIPClientV1,
+					"Delete floating ip metadata by key",
+					"<floatingip_id>",
+					"floatingip_id is mandatory argument",
+				),
+				cmeta.NewMetadataCreateCommand(
+					client.NewFloatingIPClientV1,
+					"Create floating ip metadata. It would update existing keys",
+					"<floatingip_id>",
+					"floatingip_id is mandatory argument",
+				),
+				cmeta.NewMetadataUpdateCommand(
+					client.NewFloatingIPClientV1,
+					"Update floating ip metadata. It overriding existing records",
+					"<floatingip_id>",
+					"floatingip_id is mandatory argument",
+				),
+				cmeta.NewMetadataReplaceCommand(
+					client.NewFloatingIPClientV1,
+					"Replace floating ip metadata. It replace existing records",
+					"<floatingip_id>",
+					"floatingip_id is mandatory argument",
+				),
+			},
+		},
 	},
 }

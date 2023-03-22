@@ -5,15 +5,14 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/volume/v1/volumes"
-	fake "github.com/Edge-Center/edgecentercloud-go/testhelper/client"
-
+	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/require"
 
-	log "github.com/sirupsen/logrus"
-
+	etest "github.com/Edge-Center/edgecentercloud-go/edgecenter/utils/testing"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/volume/v1/volumes"
 	"github.com/Edge-Center/edgecentercloud-go/pagination"
 	th "github.com/Edge-Center/edgecentercloud-go/testhelper"
+	fake "github.com/Edge-Center/edgecentercloud-go/testhelper/client"
 )
 
 func prepareListTestURLParams(projectID int, regionID int) string {
@@ -72,7 +71,7 @@ func TestList(t *testing.T) {
 		w.WriteHeader(http.StatusOK)
 		_, err := fmt.Fprint(w, ListResponse)
 		if err != nil {
-			log.Error(err)
+			logrus.Error(err)
 		}
 	})
 
@@ -110,7 +109,7 @@ func TestListAll(t *testing.T) {
 		w.WriteHeader(http.StatusOK)
 		_, err := fmt.Fprint(w, ListResponse)
 		if err != nil {
-			log.Error(err)
+			logrus.Error(err)
 		}
 	})
 
@@ -140,7 +139,7 @@ func TestGet(t *testing.T) {
 
 		_, err := fmt.Fprint(w, GetResponse)
 		if err != nil {
-			log.Error(err)
+			logrus.Error(err)
 		}
 	})
 
@@ -170,7 +169,7 @@ func TestCreate(t *testing.T) {
 
 		_, err := fmt.Fprint(w, CreateResponse)
 		if err != nil {
-			log.Error(err)
+			logrus.Error(err)
 		}
 	})
 
@@ -206,7 +205,7 @@ func TestDelete(t *testing.T) {
 		w.WriteHeader(http.StatusOK)
 		_, err := fmt.Fprint(w, DeleteResponse)
 		if err != nil {
-			log.Error(err)
+			logrus.Error(err)
 		}
 	})
 
@@ -234,7 +233,7 @@ func TestUpdate(t *testing.T) {
 
 		_, err := fmt.Fprint(w, GetResponse)
 		if err != nil {
-			log.Error(err)
+			logrus.Error(err)
 		}
 	})
 
@@ -263,7 +262,7 @@ func TestAttach(t *testing.T) {
 
 		_, err := fmt.Fprint(w, GetResponse)
 		if err != nil {
-			log.Error(err)
+			logrus.Error(err)
 		}
 	})
 
@@ -292,7 +291,7 @@ func TestDetach(t *testing.T) {
 
 		_, err := fmt.Fprint(w, GetResponse)
 		if err != nil {
-			log.Error(err)
+			logrus.Error(err)
 		}
 	})
 
@@ -321,7 +320,7 @@ func TestRetype(t *testing.T) {
 
 		_, err := fmt.Fprint(w, GetResponse)
 		if err != nil {
-			log.Error(err)
+			logrus.Error(err)
 		}
 	})
 
@@ -348,7 +347,7 @@ func TestExtend(t *testing.T) {
 		w.WriteHeader(http.StatusOK)
 		_, err := fmt.Fprint(w, ExtendResponse)
 		if err != nil {
-			log.Error(err)
+			logrus.Error(err)
 		}
 	})
 
@@ -371,7 +370,7 @@ func TestRevert(t *testing.T) {
 		w.WriteHeader(http.StatusOK)
 		_, err := fmt.Fprint(w, ExtendResponse)
 		if err != nil {
-			log.Error(err)
+			logrus.Error(err)
 		}
 	})
 
@@ -379,4 +378,25 @@ func TestRevert(t *testing.T) {
 	tasks, err := volumes.Revert(client, Volume1.ID).Extract()
 	require.NoError(t, err)
 	require.Equal(t, Tasks1, *tasks)
+}
+
+func TestMetadataListAll(t *testing.T) {
+	etest.BuildTestMetadataListAll("volumes", Volume1.ID)(t)
+}
+
+func TestMetadataGet(t *testing.T) {
+	etest.BuildTestMetadataGet("volumes", Volume1.ID)(t)
+}
+
+func TestMetadataCreate(t *testing.T) {
+	etest.BuildTestMetadataCreate("volumes", Volume1.ID)(t)
+}
+
+func TestMetadataUpdate(t *testing.T) {
+	etest.BuildTestMetadataUpdate("volumes", Volume1.ID)(t)
+
+}
+
+func TestMetadataDelete(t *testing.T) {
+	etest.BuildTestMetadataDelete("volumes", Volume1.ID)(t)
 }

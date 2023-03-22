@@ -3,17 +3,18 @@ package loadbalancers
 import (
 	"fmt"
 
+	"github.com/urfave/cli/v2"
+
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 	"github.com/Edge-Center/edgecentercloud-go/client/flags"
 	"github.com/Edge-Center/edgecentercloud-go/client/loadbalancers/v1/client"
 	"github.com/Edge-Center/edgecentercloud-go/client/loadbalancers/v1/lbpools"
 	"github.com/Edge-Center/edgecentercloud-go/client/loadbalancers/v1/listeners"
 	"github.com/Edge-Center/edgecentercloud-go/client/utils"
+	cmeta "github.com/Edge-Center/edgecentercloud-go/client/utils/metadata"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/loadbalancer/v1/lbflavors"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/loadbalancer/v1/loadbalancers"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
-
-	"github.com/urfave/cli/v2"
 )
 
 var loadBalancerIDText = "loadbalancer_id is mandatory argument"
@@ -313,5 +314,47 @@ var Commands = cli.Command{
 		&listeners.ListenerCommands,
 		&lbpools.PoolCommands,
 		&securityGroupSubCommand,
+		{
+			Name:  "metadata",
+			Usage: "Loadbalancer metadata",
+			Subcommands: []*cli.Command{
+				cmeta.NewMetadataListCommand(
+					client.NewLoadbalancerClientV1,
+					"Get loadbalancer metadata",
+					"<loadbalancer_id>",
+					"loadbalancer_id is mandatory argument",
+				),
+				cmeta.NewMetadataGetCommand(
+					client.NewLoadbalancerClientV1,
+					"Show loadbalancer metadata by key",
+					"<loadbalancer_id>",
+					"loadbalancer_id is mandatory argument",
+				),
+				cmeta.NewMetadataDeleteCommand(
+					client.NewLoadbalancerClientV1,
+					"Delete loadbalancer metadata by key",
+					"<loadbalancer_id>",
+					"loadbalancer_id is mandatory argument",
+				),
+				cmeta.NewMetadataCreateCommand(
+					client.NewLoadbalancerClientV1,
+					"Create loadbalancer metadata. It would update existing keys",
+					"<loadbalancer_id>",
+					"loadbalancer_id is mandatory argument",
+				),
+				cmeta.NewMetadataUpdateCommand(
+					client.NewLoadbalancerClientV1,
+					"Update loadbalancer metadata. It overriding existing records",
+					"<loadbalancer_id>",
+					"loadbalancer_id is mandatory argument",
+				),
+				cmeta.NewMetadataReplaceCommand(
+					client.NewLoadbalancerClientV1,
+					"Replace loadbalancer metadata. It replace existing records",
+					"<loadbalancer_id>",
+					"loadbalancer_id is mandatory argument",
+				),
+			},
+		},
 	},
 }

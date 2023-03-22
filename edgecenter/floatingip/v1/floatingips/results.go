@@ -2,12 +2,13 @@ package floatingips
 
 import (
 	"fmt"
+
 	"net"
 
+	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/instance/v1/instances"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
-
-	edgecloud "github.com/Edge-Center/edgecentercloud-go"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/utils/metadata"
 	"github.com/Edge-Center/edgecentercloud-go/pagination"
 )
 
@@ -62,6 +63,7 @@ type FloatingIPDetail struct {
 	RegionID          int                     `json:"region_id"`
 	Region            string                  `json:"region"`
 	Instance          instances.Instance      `json:"instance,omitempty"`
+	Metadata          []metadata.Metadata     `json:"metadata"`
 }
 
 // FloatingIPPage is the page returned by a pager when traversing over a

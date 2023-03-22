@@ -8,6 +8,7 @@ import (
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/loadbalancer/v1/lbflavors"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/loadbalancer/v1/types"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/utils/metadata"
 	"github.com/Edge-Center/edgecentercloud-go/pagination"
 )
 
@@ -87,6 +88,7 @@ type LoadBalancer struct {
 	Region             string                   `json:"region"`
 	Tags               []string                 `json:"tags"`
 	Flavor             lbflavors.Flavor         `json:"flavor"`
+	Metadata           []metadata.Metadata      `json:"metadata"`
 }
 
 func (lb LoadBalancer) IsDeleted() bool {

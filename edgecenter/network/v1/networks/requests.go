@@ -41,7 +41,6 @@ type ListOptsBuilder interface {
 // CreateOpts represents options used to create a network.
 type CreateOpts struct {
 	Name         string            `json:"name" required:"true" validate:"required"`
-	Mtu          int               `json:"mtu,omitempty" validate:"omitempty,lte=1500"`
 	CreateRouter bool              `json:"create_router"`
 	Type         string            `json:"type,omitempty" validate:"omitempty"`
 	Metadata     map[string]string `json:"metadata,omitempty"`
@@ -67,7 +66,7 @@ func (opts ListOpts) ToNetworkListQuery() (string, error) {
 	return q.String(), err
 }
 
-// Validate
+// Validate CreateOpts.
 func (opts CreateOpts) Validate() error {
 	return edgecloud.TranslateValidationError(edgecloud.Validate.Struct(opts))
 }
@@ -107,7 +106,7 @@ func (opts UpdateOpts) ToNetworkUpdateMap() (map[string]interface{}, error) {
 	return edgecloud.BuildRequestBody(opts, "")
 }
 
-// Validate
+// Validate UpdateOpts.
 func (opts UpdateOpts) Validate() error {
 	return edgecloud.TranslateValidationError(edgecloud.Validate.Struct(opts))
 }
@@ -145,7 +144,6 @@ func ListAll(client *edgecloud.ServiceClient, opts ListOptsBuilder) ([]Network, 
 	}
 
 	return all, nil
-
 }
 
 // ListAllInstancePort retrieves a specific list of instance ports by network_id.

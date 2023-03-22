@@ -50,7 +50,7 @@ func MetadataDelete(client *edgecloud.ServiceClient, id string, key string) (r M
 	return
 }
 
-// MetadataGet gets defined metadata key for a security group.
+// MetadataGet gets defined metadata key for a resource.
 func MetadataGet(client *edgecloud.ServiceClient, id string, key string) (r MetadataResult) {
 	url := MetadataItemURL(client, id, key)
 
