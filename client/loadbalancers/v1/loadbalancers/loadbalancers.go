@@ -29,7 +29,7 @@ var loadBalancerListSubCommand = cli.Command{
 			_ = cli.ShowAppHelp(c)
 			return cli.NewExitError(err, 1)
 		}
-		results, err := loadbalancers.ListAll(client)
+		results, err := loadbalancers.ListAll(client, nil)
 		if err != nil {
 			return cli.NewExitError(err, 1)
 		}
@@ -53,6 +53,12 @@ var loadBalancerCreateSubCommand = cli.Command{
 			Name:    "flavor",
 			Aliases: []string{"fl"},
 			Usage:   "Loadbalancer flavor",
+		},
+		&cli.StringFlag{
+			Name:        "vip-port-id",
+			Usage:       "Loadbalancer vip port ID",
+			DefaultText: "<nil>",
+			Required:    false,
 		},
 		&cli.StringFlag{
 			Name:        "vip-network-id",
@@ -82,6 +88,7 @@ var loadBalancerCreateSubCommand = cli.Command{
 		opts := loadbalancers.CreateOpts{
 			Name:         c.String("name"),
 			Listeners:    []loadbalancers.CreateListenerOpts{},
+			VipPortID:    c.String("vip-port-id"),
 			VipNetworkID: c.String("vip-network-id"),
 			VipSubnetID:  c.String("vip-subnet-id"),
 			Tags:         c.StringSlice("tags"),
