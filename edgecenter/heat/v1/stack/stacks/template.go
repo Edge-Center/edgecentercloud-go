@@ -36,7 +36,7 @@ func (t *Template) Validate() error {
 		invalid = key
 	}
 
-	return ErrInvalidTemplateFormatVersion{Version: invalid}
+	return InvalidTemplateFormatVersionError{Version: invalid}
 }
 
 // GetFileContents recursively parses a template to search for urls. These urls
@@ -117,7 +117,7 @@ func (t *Template) getFileContents(te interface{}, ignoreIf igFunc, recurse bool
 	case string, bool, float64, nil, int:
 		return nil
 	default:
-		return edgecloud.ErrUnexpectedType{Actual: fmt.Sprintf("%v", reflect.TypeOf(te))}
+		return edgecloud.UnexpectedTypeError{Actual: fmt.Sprintf("%v", reflect.TypeOf(te))}
 	}
 
 	return nil

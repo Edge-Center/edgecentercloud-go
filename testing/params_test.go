@@ -233,7 +233,7 @@ func TestBuildRequestBody(t *testing.T) {
 				TenantID:   "987654321",
 				TenantName: "me",
 			},
-			edgecloud.ErrMissingInput{},
+			edgecloud.MissingInputError{},
 		},
 		{
 			AuthOptions{
@@ -245,7 +245,7 @@ func TestBuildRequestBody(t *testing.T) {
 					Password: "swordfish",
 				},
 			},
-			edgecloud.ErrMissingInput{},
+			edgecloud.MissingInputError{},
 		},
 		{
 			AuthOptions{
@@ -253,7 +253,7 @@ func TestBuildRequestBody(t *testing.T) {
 					Password: "swordfish",
 				},
 			},
-			edgecloud.ErrMissingInput{},
+			edgecloud.MissingInputError{},
 		},
 		{
 			AuthOptions{
@@ -265,7 +265,7 @@ func TestBuildRequestBody(t *testing.T) {
 					Filler: 2,
 				},
 			},
-			edgecloud.ErrMissingInput{},
+			edgecloud.MissingInputError{},
 		},
 	}
 

@@ -219,7 +219,7 @@ func (p Pager) AllPages() (Page, error) {
 			body.Index(i).Set(reflect.ValueOf(s))
 		}
 	default:
-		err := edgecloud.ErrUnexpectedType{}
+		err := edgecloud.UnexpectedTypeError{}
 		err.Expected = "map[string]interface{}/[]byte/[]interface{}"
 		err.Actual = fmt.Sprintf("%T", pb)
 		return nil, err

@@ -133,11 +133,11 @@ func IDFromName(client *edgecloud.ServiceClient, name string, opts ListOptsBuild
 
 	switch count {
 	case 0:
-		return "", edgecloud.ErrResourceNotFound{Name: name, ResourceType: "snapshots"}
+		return "", edgecloud.ResourceNotFoundError{Name: name, ResourceType: "snapshots"}
 	case 1:
 		return id, nil
 	default:
-		return "", edgecloud.ErrMultipleResourcesFound{Name: name, Count: count, ResourceType: "snapshots"}
+		return "", edgecloud.MultipleResourcesFoundError{Name: name, Count: count, ResourceType: "snapshots"}
 	}
 }
 

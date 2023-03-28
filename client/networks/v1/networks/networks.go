@@ -141,7 +141,7 @@ var networkDeleteCommand = cli.Command{
 			if err == nil {
 				return nil, fmt.Errorf("cannot delete network with ID: %s", networkID)
 			}
-			var e edgecenter.ErrDefault404
+			var e edgecenter.Default404Error
 			if errors.As(err, &e) {
 				return nil, nil
 			}

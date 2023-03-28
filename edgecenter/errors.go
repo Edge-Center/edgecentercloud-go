@@ -6,37 +6,37 @@ import (
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 )
 
-// ErrEndpointNotFound is the error when no suitable endpoint can be found in the user's catalog.
-type ErrEndpointNotFound struct{ edgecloud.BaseError }
+// EndpointNotFoundError is the error when no suitable endpoint can be found in the user's catalog.
+type EndpointNotFoundError struct{ edgecloud.BaseError }
 
-func (e ErrEndpointNotFound) Error() string {
+func (e EndpointNotFoundError) Error() string {
 	return "No suitable endpoint could be found in the service catalog."
 }
 
-// ErrInvalidAvailabilityProvided is the error when an invalid endpoint availability is provided.
-type ErrInvalidAvailabilityProvided struct{ edgecloud.ErrInvalidInput }
+// InvalidAvailabilityProvidedError is the error when an invalid endpoint availability is provided.
+type InvalidAvailabilityProvidedError struct{ edgecloud.InvalidInputError }
 
-func (e ErrInvalidAvailabilityProvided) Error() string {
+func (e InvalidAvailabilityProvidedError) Error() string {
 	return fmt.Sprintf("Unexpected availability in endpoint query: %s", e.Value)
 }
 
-// ErrNoAuthURL is the error when the OS_AUTH_URL environment variable is not found.
-type ErrNoAuthURL struct{ edgecloud.ErrInvalidInput }
+// NoAuthURLError is the error when the OS_AUTH_URL environment variable is not found.
+type NoAuthURLError struct{ edgecloud.InvalidInputError }
 
-func (e ErrNoAuthURL) Error() string {
+func (e NoAuthURLError) Error() string {
 	return "Environment variable OS_AUTH_URL needs to be set."
 }
 
-// ErrNoUsername is the error when the OS_USERNAME environment variable is not found.
-type ErrNoUsername struct{ edgecloud.ErrInvalidInput }
+// NoUsernameError is the error when the OS_USERNAME environment variable is not found.
+type NoUsernameError struct{ edgecloud.InvalidInputError }
 
-func (e ErrNoUsername) Error() string {
+func (e NoUsernameError) Error() string {
 	return "Environment variable OS_USERNAME needs to be set."
 }
 
-// ErrNoPassword is the error when the OS_PASSWORD environment variable is not found.
-type ErrNoPassword struct{ edgecloud.ErrInvalidInput }
+// NoPasswordError is the error when the OS_PASSWORD environment variable is not found.
+type NoPasswordError struct{ edgecloud.InvalidInputError }
 
-func (e ErrNoPassword) Error() string {
+func (e NoPasswordError) Error() string {
 	return "Environment variable OS_PASSWORD needs to be set."
 }

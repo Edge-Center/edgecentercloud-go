@@ -104,11 +104,15 @@ func getBasePath() (string, error) {
 	return u, nil
 }
 
-// get a an HTTP client to retrieve URL's. This client allows the use of `file`
+// get an HTTP client to retrieve URL's. This client allows the use of `file`
 // scheme since we may need to fetch files from users filesystem.
 func getHTTPClient() Client {
 	transport := &http.Transport{}
-	transport.RegisterProtocol("file", http.NewFileTransport(http.Dir("/")))
+	absRootDir, err := filepath.Abs("/")
+	if err != nil {
+		panic(err)
+	}
+	transport.RegisterProtocol("file", http.NewFileTransport(http.Dir(absRootDir)))
 	return &http.Client{Transport: transport}
 }
 
@@ -119,7 +123,7 @@ func (t *TE) Parse() error {
 	}
 	if jerr := json.Unmarshal(t.Bin, &t.Parsed); jerr != nil {
 		if yerr := yaml.Unmarshal(t.Bin, &t.Parsed); yerr != nil {
-			return ErrInvalidDataFormat{}
+			return InvalidDataFormatError{}
 		}
 	}
 	return t.Validate()
@@ -147,7 +151,7 @@ func toStringKeys(m interface{}) (map[string]interface{}, error) {
 		}
 		return typedMap, nil
 	default:
-		return nil, edgecloud.ErrUnexpectedType{Expected: "map[string]interface{}/map[interface{}]interface{}", Actual: fmt.Sprintf("%v", reflect.TypeOf(m))}
+		return nil, edgecloud.UnexpectedTypeError{Expected: "map[string]interface{}/map[interface{}]interface{}", Actual: fmt.Sprintf("%v", reflect.TypeOf(m))}
 	}
 }
 

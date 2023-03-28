@@ -227,7 +227,7 @@ type UpdateOpts struct {
 // the toStackUpdateMap private function.
 func (opts UpdateOpts) ToStackUpdateMap() (map[string]interface{}, error) {
 	if opts.TemplateOpts == nil {
-		return nil, ErrTemplateRequired{}
+		return nil, TemplateRequiredError{}
 	}
 	return toStackUpdateMap(opts)
 }

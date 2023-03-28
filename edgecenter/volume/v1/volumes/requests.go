@@ -297,10 +297,10 @@ func IDFromName(client *edgecloud.ServiceClient, name string) (string, error) {
 
 	switch count {
 	case 0:
-		return "", edgecloud.ErrResourceNotFound{Name: name, ResourceType: "volumes"}
+		return "", edgecloud.ResourceNotFoundError{Name: name, ResourceType: "volumes"}
 	case 1:
 		return id, nil
 	default:
-		return "", edgecloud.ErrMultipleResourcesFound{Name: name, Count: count, ResourceType: "volumes"}
+		return "", edgecloud.MultipleResourcesFoundError{Name: name, Count: count, ResourceType: "volumes"}
 	}
 }

@@ -257,7 +257,7 @@ func TestUpdateStackNoTemplate(t *testing.T) {
 	updateOpts := &stacks.UpdateOpts{
 		Parameters: parameters,
 	}
-	expected := stacks.ErrTemplateRequired{}
+	expected := stacks.TemplateRequiredError{}
 
 	err := stacks.Update(fake.ServiceClient(), Stack1.ID, updateOpts).ExtractErr()
 	th.AssertEquals(t, expected, err)

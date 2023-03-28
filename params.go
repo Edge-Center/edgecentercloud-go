@@ -133,7 +133,7 @@ func BuildRequestBody(opts interface{}, parent string) (map[string]interface{}, 
 				// if the field's value is zero, return a missing-argument error
 				if zero {
 					// if the field has a 'required' tag, it can't have a zero-value
-					err := ErrMissingInput{}
+					err := MissingInputError{}
 					err.Argument = f.Name
 					return nil, err
 				}
@@ -151,7 +151,7 @@ func BuildRequestBody(opts interface{}, parent string) (map[string]interface{}, 
 					xorFieldIsZero = isZero(xorField)
 				}
 				if !(zero != xorFieldIsZero) {
-					err := ErrMissingInput{}
+					err := MissingInputError{}
 					err.Argument = fmt.Sprintf("%s/%s", f.Name, xorTag)
 					err.Info = fmt.Sprintf("Exactly one of %s and %s must be provided", f.Name, xorTag)
 					return nil, err
@@ -171,7 +171,7 @@ func BuildRequestBody(opts interface{}, parent string) (map[string]interface{}, 
 						orFieldIsZero = isZero(orField)
 					}
 					if orFieldIsZero {
-						err := ErrMissingInput{}
+						err := MissingInputError{}
 						err.Argument = fmt.Sprintf("%s/%s", f.Name, orTag)
 						err.Info = fmt.Sprintf("At least one of %s and %s must be provided", f.Name, orTag)
 						return nil, err

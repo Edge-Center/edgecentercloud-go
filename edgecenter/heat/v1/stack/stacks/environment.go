@@ -23,7 +23,7 @@ func (e *Environment) Validate() error {
 	}
 	for key := range e.Parsed {
 		if _, ok := EnvironmentSections[key]; !ok {
-			return ErrInvalidEnvironment{Section: key}
+			return InvalidEnvironmentError{Section: key}
 		}
 	}
 

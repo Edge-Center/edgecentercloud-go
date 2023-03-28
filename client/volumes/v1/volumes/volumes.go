@@ -155,7 +155,7 @@ var volumeDeleteCommand = cli.Command{
 			if err == nil {
 				return nil, fmt.Errorf("cannot delete volume with ID: %s", volumeID)
 			}
-			var e edgecloud.ErrDefault404
+			var e edgecloud.Default404Error
 			if errors.As(err, &e) {
 				return nil, nil
 			}

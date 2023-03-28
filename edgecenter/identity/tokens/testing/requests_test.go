@@ -100,5 +100,5 @@ func TestCreateExtractsTokenFromResponse(t *testing.T) {
 }
 
 func TestCreateFailureEmptyAuth(t *testing.T) {
-	authTokenPostErr(t, edgecloud.AuthOptions{}, false, edgecloud.ErrDefault400{})
+	authTokenPostErr(t, edgecloud.AuthOptions{}, false, edgecloud.Default400Error{})
 }

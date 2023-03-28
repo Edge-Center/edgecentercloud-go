@@ -8,7 +8,7 @@ import (
 )
 
 func TestGetResponseCode(t *testing.T) {
-	respErr := edgecloud.ErrUnexpectedResponseCode{
+	respErr := edgecloud.UnexpectedResponseCodeError{
 		URL:      "http://example.com",
 		Method:   "GET",
 		Expected: []int{200},
@@ -16,7 +16,7 @@ func TestGetResponseCode(t *testing.T) {
 		Body:     nil,
 	}
 
-	var err404 error = edgecloud.ErrDefault404{ErrUnexpectedResponseCode: respErr}
+	var err404 error = edgecloud.Default404Error{UnexpectedResponseCodeError: respErr}
 
 	err, ok := err404.(edgecloud.StatusCodeError) //nolint: errorlint
 	th.AssertEquals(t, true, ok)

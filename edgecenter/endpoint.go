@@ -14,7 +14,7 @@ func EndpointOptionsFromEnv() (edgecloud.EndpointOpts, error) {
 	project := os.Getenv("EC_CLOUD_PROJECT")
 
 	if region == "" {
-		err := edgecloud.ErrMissingEnvironmentVariable{
+		err := edgecloud.MissingEnvironmentVariableError{
 			EnvironmentVariable: "EC_CLOUD_REGION",
 		}
 		return nilEndpointOptions, err
@@ -25,7 +25,7 @@ func EndpointOptionsFromEnv() (edgecloud.EndpointOpts, error) {
 		return nilEndpointOptions, err
 	}
 	if project == "" {
-		err := edgecloud.ErrMissingEnvironmentVariable{
+		err := edgecloud.MissingEnvironmentVariableError{
 			EnvironmentVariable: "EC_CLOUD_PROJECT",
 		}
 		return nilEndpointOptions, err

@@ -214,13 +214,13 @@ func TestReauthEndLoop(t *testing.T) {
 			defer mut.Unlock()
 
 			// ErrErrorAfter... will happen after a successful reauthentication, but the service still responds with a 401.
-			var errorAfter *edgecloud.ErrErrorAfterReauthentication
+			var errorAfter *edgecloud.AfterReauthenticationError
 			if errors.As(err, &errorAfter) {
 				errAfter++
 			}
 
 			// ErrErrorUnable... will happen when the custom reauth func reports an error.
-			var errorUnable *edgecloud.ErrUnableToReauthenticate
+			var errorUnable *edgecloud.UnableToReauthenticateError
 			if errors.As(err, &errorUnable) {
 				errUnable++
 			}
@@ -396,7 +396,7 @@ func TestRequestReauthsAtMostOnce(t *testing.T) {
 
 	// The expected error message indicates that we reauthenticated once (that's the part before the colon),
 	// but when encountering another 401 response, we did not attempt reauthentication again and just passed
-	// that 401 response to the caller as ErrDefault401.
+	// that 401 response to the caller as Default401Error.
 	_, err = p.Request("GET", th.Endpoint()+"/route", &edgecloud.RequestOpts{})
 	expectedErrorMessage := "Successfully re-authenticated, but got error executing request: Authentication failed"
 	if err != nil {

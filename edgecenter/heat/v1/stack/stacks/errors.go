@@ -6,36 +6,36 @@ import (
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 )
 
-type ErrInvalidEnvironment struct {
+type InvalidEnvironmentError struct {
 	edgecloud.BaseError
 	Section string
 }
 
-func (e ErrInvalidEnvironment) Error() string {
+func (e InvalidEnvironmentError) Error() string {
 	return fmt.Sprintf("environment has wrong section: %s", e.Section)
 }
 
-type ErrInvalidDataFormat struct {
+type InvalidDataFormatError struct {
 	edgecloud.BaseError
 }
 
-func (e ErrInvalidDataFormat) Error() string {
+func (e InvalidDataFormatError) Error() string {
 	return "data in neither json nor yaml format"
 }
 
-type ErrInvalidTemplateFormatVersion struct {
+type InvalidTemplateFormatVersionError struct {
 	edgecloud.BaseError
 	Version string
 }
 
-func (e ErrInvalidTemplateFormatVersion) Error() string {
+func (e InvalidTemplateFormatVersionError) Error() string {
 	return "template format version not found"
 }
 
-type ErrTemplateRequired struct {
+type TemplateRequiredError struct {
 	edgecloud.BaseError
 }
 
-func (e ErrTemplateRequired) Error() string {
+func (e TemplateRequiredError) Error() string {
 	return "template required for this function"
 }

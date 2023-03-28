@@ -64,7 +64,7 @@ func deleteTestSubnet(client *edgecloud.ServiceClient, subnetID string) error {
 		if err == nil {
 			return nil, fmt.Errorf("cannot delete subnet with ID: %s", subnetID)
 		}
-		var e edgecloud.ErrDefault404
+		var e edgecloud.Default404Error
 		if errors.As(err, &e) {
 			return nil, nil
 		}

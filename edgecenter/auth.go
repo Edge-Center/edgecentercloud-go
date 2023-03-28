@@ -27,21 +27,21 @@ func AuthOptionsFromEnv() (edgecloud.AuthOptions, error) {
 	password := os.Getenv("EC_CLOUD_PASSWORD")
 
 	if authURL == "" {
-		err := edgecloud.ErrMissingEnvironmentVariable{
+		err := edgecloud.MissingEnvironmentVariableError{
 			EnvironmentVariable: "EC_CLOUD_AUTH_URL",
 		}
 		return nilAuthOptions, err
 	}
 
 	if username == "" {
-		err := edgecloud.ErrMissingEnvironmentVariable{
+		err := edgecloud.MissingEnvironmentVariableError{
 			EnvironmentVariable: "EC_CLOUD_USERNAME",
 		}
 		return nilAuthOptions, err
 	}
 
 	if password == "" {
-		err := edgecloud.ErrMissingEnvironmentVariable{
+		err := edgecloud.MissingEnvironmentVariableError{
 			EnvironmentVariable: "EC_CLOUD_PASSWORD",
 		}
 		return nilAuthOptions, err
@@ -62,21 +62,21 @@ func TokenOptionsFromEnv() (edgecloud.TokenOptions, error) {
 	refreshToken := os.Getenv("EC_CLOUD_REFRESH_TOKEN")
 
 	if apiURL == "" {
-		err := edgecloud.ErrMissingEnvironmentVariable{
+		err := edgecloud.MissingEnvironmentVariableError{
 			EnvironmentVariable: "EC_CLOUD_API_URL",
 		}
 		return nilTokenOptions, err
 	}
 
 	if accessToken == "" {
-		err := edgecloud.ErrMissingEnvironmentVariable{
+		err := edgecloud.MissingEnvironmentVariableError{
 			EnvironmentVariable: "EC_CLOUD_ACCESS_TOKEN",
 		}
 		return nilTokenOptions, err
 	}
 
 	if refreshToken == "" {
-		err := edgecloud.ErrMissingEnvironmentVariable{
+		err := edgecloud.MissingEnvironmentVariableError{
 			EnvironmentVariable: "EC_CLOUD_REFRESH_TOKEN",
 		}
 		return nilTokenOptions, err

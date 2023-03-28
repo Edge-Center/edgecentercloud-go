@@ -209,11 +209,11 @@ func IDFromName(client *edgecloud.ServiceClient, name string) (string, error) {
 
 	switch count {
 	case 0:
-		return "", edgecloud.ErrResourceNotFound{Name: name, ResourceType: "security group"}
+		return "", edgecloud.ResourceNotFoundError{Name: name, ResourceType: "security group"}
 	case 1:
 		return id, nil
 	default:
-		return "", edgecloud.ErrMultipleResourcesFound{Name: name, Count: count, ResourceType: "security group"}
+		return "", edgecloud.MultipleResourcesFoundError{Name: name, Count: count, ResourceType: "security group"}
 	}
 }
 

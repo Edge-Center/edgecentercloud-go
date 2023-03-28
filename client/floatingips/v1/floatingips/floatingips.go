@@ -155,7 +155,7 @@ var floatingIPDeleteSubCommand = cli.Command{
 			if err == nil {
 				return nil, fmt.Errorf("cannot delete floating IP with ID: %s", floatingIPID)
 			}
-			var e edgecloud.ErrDefault404
+			var e edgecloud.Default404Error
 			if errors.As(err, &e) {
 				return nil, nil
 			}

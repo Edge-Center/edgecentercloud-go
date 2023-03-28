@@ -181,10 +181,11 @@ var loadBalancerDeleteSubCommand = cli.Command{
 				}
 				return nil, fmt.Errorf("cannot delete loadbalancer with ID: %s", loadBalancerID)
 			}
-			var e edgecloud.ErrDefault404
+			var e edgecloud.Default404Error
 			if errors.As(err, &e) {
 				return nil, nil
 			}
+
 			return nil, err
 		})
 	},

@@ -198,10 +198,11 @@ var listenerDeleteSubCommand = cli.Command{
 				}
 				return nil, fmt.Errorf("cannot delete listener with ID: %s", listenerID)
 			}
-			var e edgecloud.ErrDefault404
+			var e edgecloud.Default404Error
 			if errors.As(err, &e) {
 				return nil, nil
 			}
+
 			return nil, err
 		})
 	},
