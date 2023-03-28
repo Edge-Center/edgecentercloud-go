@@ -64,7 +64,7 @@ func TestList(t *testing.T) {
 	client := fake.ServiceTokenClient("floatingips", "v1")
 	count := 0
 
-	err := floatingips.List(client).EachPage(func(page pagination.Page) (bool, error) {
+	err := floatingips.List(client, nil).EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		actual, err := floatingips.ExtractFloatingIPs(page)
 		require.NoError(t, err)
@@ -99,7 +99,7 @@ func TestListAll(t *testing.T) {
 
 	client := fake.ServiceTokenClient("floatingips", "v1")
 
-	groups, err := floatingips.ListAll(client)
+	groups, err := floatingips.ListAll(client, nil)
 	require.NoError(t, err)
 	ct := groups[0]
 	require.Equal(t, floatingIPDetails, ct)
