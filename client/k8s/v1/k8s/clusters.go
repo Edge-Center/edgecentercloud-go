@@ -35,7 +35,7 @@ func getPools(c *cli.Context) ([]pools.CreateOpts, error) {
 		return nil, fmt.Errorf("parameters number should be same for pool names, flavors, node-count, min-node-count and max-node-count: %w", err)
 	}
 
-	var result []pools.CreateOpts
+	result := make([]pools.CreateOpts, len(poolNames))
 
 	for idx, name := range poolNames {
 		pool := pools.CreateOpts{

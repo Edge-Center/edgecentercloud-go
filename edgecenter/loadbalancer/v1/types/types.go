@@ -102,11 +102,12 @@ func (ps ProvisioningStatus) List() []ProvisioningStatus {
 }
 
 func (ps ProvisioningStatus) StringList() []string {
-	var s []string
-	for _, v := range ps.List() {
-		s = append(s, v.String())
+	lst := ps.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
 // UnmarshalJSON - implements Unmarshaler interface.
@@ -169,11 +170,12 @@ func (os OperatingStatus) List() []OperatingStatus {
 }
 
 func (os OperatingStatus) StringList() []string {
-	var s []string
-	for _, v := range os.List() {
-		s = append(s, v.String())
+	lst := os.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
 // UnmarshalJSON - implements Unmarshaler interface.
@@ -232,11 +234,12 @@ func (lba LoadBalancerAlgorithm) List() []LoadBalancerAlgorithm {
 }
 
 func (lba LoadBalancerAlgorithm) StringList() []string {
-	var s []string
-	for _, v := range lba.List() {
-		s = append(s, v.String())
+	lst := lba.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
 // UnmarshalJSON - implements Unmarshaler interface.
@@ -297,11 +300,12 @@ func (lbspt PersistenceType) List() []PersistenceType {
 }
 
 func (lbspt PersistenceType) StringList() []string {
-	var s []string
-	for _, v := range lbspt.List() {
-		s = append(s, v.String())
+	lst := lbspt.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
 // UnmarshalJSON - implements Unmarshaler interface.
@@ -352,11 +356,12 @@ func (pt ProtocolType) List() []ProtocolType {
 }
 
 func (pt ProtocolType) StringList() []string {
-	var s []string
-	for _, v := range pt.List() {
-		s = append(s, v.String())
+	lst := pt.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
 // UnmarshalJSON - implements Unmarshaler interface.
@@ -423,11 +428,12 @@ func (hm HealthMonitorType) List() []HealthMonitorType {
 }
 
 func (hm HealthMonitorType) StringList() []string {
-	var s []string
-	for _, v := range hm.List() {
-		s = append(s, v.String())
+	lst := hm.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
 // UnmarshalJSON - implements Unmarshaler interface.
@@ -496,11 +502,12 @@ func (m HTTPMethod) List() []HTTPMethod {
 }
 
 func (m HTTPMethod) StringList() []string {
-	var s []string
-	for _, v := range m.List() {
-		s = append(s, v.String())
+	lst := m.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
 // UnmarshalJSON - implements Unmarshaler interface.

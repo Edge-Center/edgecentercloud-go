@@ -54,11 +54,12 @@ func (ng PoolRole) List() []PoolRole {
 }
 
 func (ng PoolRole) StringList() []string {
-	var s []string
-	for _, v := range ng.List() {
-		s = append(s, v.String())
+	lst := ng.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
 // UnmarshalJSON - implements Unmarshaler interface.
@@ -115,11 +116,12 @@ func (hs HealthStatus) List() []HealthStatus {
 }
 
 func (hs HealthStatus) StringList() []string {
-	var s []string
-	for _, v := range hs.List() {
-		s = append(s, v.String())
+	lst := hs.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
 // UnmarshalJSON - implements Unmarshaler interface.
@@ -176,11 +178,12 @@ func (ic IngressController) List() []IngressController {
 }
 
 func (ic IngressController) StringList() []string {
-	var s []string
-	for _, v := range ic.List() {
-		s = append(s, v.String())
+	lst := ic.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
 // UnmarshalJSON - implements Unmarshaler interface.

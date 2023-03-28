@@ -98,7 +98,7 @@ func getPoolMembers(c *cli.Context) ([]lbpools.CreatePoolMemberOpts, error) {
 	memberWeights := c.IntSlice("member-weight")
 	memberSubnetIDs := c.StringSlice("member-subnet-id")
 	memberInstanceIDs := c.StringSlice("member-instance-id")
-	var members []lbpools.CreatePoolMemberOpts
+	members := make([]lbpools.CreatePoolMemberOpts, len(memberAddresses))
 
 	type addressPortPair struct {
 		ip   string

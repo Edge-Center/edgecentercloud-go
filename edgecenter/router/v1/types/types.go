@@ -24,11 +24,12 @@ func (gw GatewayType) List() []GatewayType {
 }
 
 func (gw GatewayType) StringList() []string {
-	var s []string
-	for _, v := range gw.List() {
-		s = append(s, v.String())
+	lst := gw.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
 func (gw GatewayType) IsValid() error {
@@ -79,11 +80,12 @@ func (it InterfaceType) List() []GatewayType {
 }
 
 func (it InterfaceType) StringList() []string {
-	var s []string
-	for _, v := range it.List() {
-		s = append(s, v.String())
+	lst := it.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
 func (it InterfaceType) IsValid() error {

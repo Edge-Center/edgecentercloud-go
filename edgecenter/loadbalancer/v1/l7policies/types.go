@@ -69,11 +69,12 @@ func (a Action) List() []Action {
 }
 
 func (a Action) StringList() []string {
-	var s []string
-	for _, v := range a.List() {
-		s = append(s, v.String())
+	lst := a.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
 // UnmarshalJSON - implements Unmarshaler interface.
@@ -140,11 +141,12 @@ func (rt RuleType) List() []RuleType {
 }
 
 func (rt RuleType) StringList() []string {
-	var s []string
-	for _, v := range rt.List() {
-		s = append(s, v.String())
+	lst := rt.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
 // UnmarshalJSON - implements Unmarshaler interface.
@@ -205,11 +207,12 @@ func (ct CompareType) List() []CompareType {
 }
 
 func (ct CompareType) StringList() []string {
-	var s []string
-	for _, v := range ct.List() {
-		s = append(s, v.String())
+	lst := ct.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
 // UnmarshalJSON - implements Unmarshaler interface.

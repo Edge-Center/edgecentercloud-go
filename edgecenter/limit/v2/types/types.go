@@ -47,11 +47,12 @@ func (ks LimitRequestStatus) List() []LimitRequestStatus {
 }
 
 func (ks LimitRequestStatus) StringList() []string {
-	var s []string
-	for _, v := range ks.List() {
-		s = append(s, v.String())
+	lst := ks.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
 // UnmarshalJSON - implements Unmarshaler interface for LimitRequestStatus.

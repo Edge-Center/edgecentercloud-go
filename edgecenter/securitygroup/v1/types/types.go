@@ -73,11 +73,12 @@ func (rd RuleDirection) List() []RuleDirection {
 }
 
 func (rd RuleDirection) StringList() []string {
-	var s []string
-	for _, v := range rd.List() {
-		s = append(s, v.String())
+	lst := rd.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
 // UnmarshalJSON - implements Unmarshaler interface.
@@ -131,11 +132,12 @@ func (et EtherType) List() []EtherType {
 }
 
 func (et EtherType) StringList() []string {
-	var s []string
-	for _, v := range et.List() {
-		s = append(s, v.String())
+	lst := et.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
 // UnmarshalJSON - implements Unmarshaler interface.
@@ -232,11 +234,12 @@ func (p Protocol) List() []Protocol {
 }
 
 func (p Protocol) StringList() []string {
-	var s []string
-	for _, v := range p.List() {
-		s = append(s, v.String())
+	lst := p.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
 // UnmarshalJSON - implements Unmarshaler interface.

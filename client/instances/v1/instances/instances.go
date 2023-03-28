@@ -173,7 +173,6 @@ func getInstanceVolumes(c *cli.Context) ([]instances.CreateVolumeOpts, error) {
 		}
 
 		res = append(res, opts)
-
 	}
 
 	// adjust boot order number so that they goes consistently
@@ -239,7 +238,6 @@ func getInterfaces(c *cli.Context) ([]instances.InterfaceInstanceCreateOpts, err
 		}
 
 		res = append(res, instances.InterfaceInstanceCreateOpts{InterfaceOpts: opts})
-
 	}
 
 	return res, nil

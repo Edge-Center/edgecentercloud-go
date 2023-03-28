@@ -52,11 +52,12 @@ func (et EndpointType) List() []EndpointType {
 }
 
 func (et EndpointType) StringList() []string {
-	var s []string
-	for _, v := range et.List() {
-		s = append(s, v.String())
+	lst := et.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
 // UnmarshalJSON - implements Unmarshaler interface for EndpointType.
@@ -121,11 +122,12 @@ func (rs RegionState) List() []RegionState {
 }
 
 func (rs RegionState) StringList() []string {
-	var s []string
-	for _, v := range rs.List() {
-		s = append(s, v.String())
+	lst := rs.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
 // UnmarshalJSON - implements Unmarshaler interface for RegionState.

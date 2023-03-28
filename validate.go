@@ -436,7 +436,6 @@ func sem(fl validator.FieldLevel) bool {
 
 func isEq(field reflect.Value, param string) bool {
 	switch field.Kind() {
-
 	case reflect.String:
 		return field.String() == param
 

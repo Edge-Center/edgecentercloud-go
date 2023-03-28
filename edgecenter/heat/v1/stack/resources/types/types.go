@@ -60,8 +60,9 @@ func (srs StackResourceStatus) List() []StackResourceStatus {
 }
 
 func (srs StackResourceStatus) StringList() []string {
-	var s []string
-	for _, v := range srs.List() {
+	lst := srs.List()
+	s := make([]string, 0, len(lst))
+	for _, v := range lst {
 		s = append(s, v.String())
 	}
 	return s
@@ -137,8 +138,9 @@ func (sra StackResourceAction) List() []StackResourceAction {
 }
 
 func (sra StackResourceAction) StringList() []string {
-	var s []string
-	for _, v := range sra.List() {
+	lst := sra.List()
+	s := make([]string, 0, len(lst))
+	for _, v := range lst {
 		s = append(s, v.String())
 	}
 	return s

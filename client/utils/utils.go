@@ -99,8 +99,8 @@ func tableHeaderFromStruct(m interface{}) []string {
 }
 
 func tableRowFromStruct(m interface{}) []string {
-	var res []string
 	values := structs.Values(m)
+	res := make([]string, 0, len(values))
 	for _, v := range values {
 		value, _ := json.Marshal(v)
 		res = append(res, string(value))

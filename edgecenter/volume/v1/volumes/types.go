@@ -106,11 +106,12 @@ func (vs VolumeStatus) List() []VolumeStatus {
 }
 
 func (vs VolumeStatus) StringList() []string {
-	var s []string
-	for _, v := range vs.List() {
-		s = append(s, v.String())
+	lst := vs.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
 // UnmarshalJSON - implements Unmarshaler interface for VolumeStatus.
@@ -161,11 +162,12 @@ func (vs VolumeSource) List() []VolumeSource {
 }
 
 func (vs VolumeSource) StringList() []string {
-	var s []string
-	for _, v := range vs.List() {
-		s = append(s, v.String())
+	lst := vs.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
 // UnmarshalJSON - implements Unmarshaler interface for VolumeSource.
@@ -197,11 +199,12 @@ func (vt VolumeType) List() []VolumeType {
 }
 
 func (vt VolumeType) StringList() []string {
-	var s []string
-	for _, v := range vt.List() {
-		s = append(s, v.String())
+	lst := vt.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
 func (vt VolumeType) IsValid() error {

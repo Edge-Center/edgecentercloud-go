@@ -32,8 +32,9 @@ func (t ScheduleType) String() string {
 }
 
 func (t ScheduleType) StringList() []string {
-	var strings []string
-	for _, x := range t.List() {
+	lst := t.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
 		strings = append(strings, x.String())
 	}
 	return strings
@@ -57,8 +58,9 @@ func (s PolicyStatus) String() string {
 }
 
 func (s PolicyStatus) StringList() []string {
-	var strings []string
-	for _, x := range s.List() {
+	lst := s.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
 		strings = append(strings, x.String())
 	}
 	return strings
@@ -82,11 +84,12 @@ func (a PolicyAction) String() string {
 }
 
 func (a PolicyAction) StringList() []string {
-	var strings []string
-	for _, x := range a.List() {
-		strings = append(strings, x.String())
+	lst := a.List()
+	s := make([]string, 0, len(lst))
+	for _, x := range lst {
+		s = append(s, x.String())
 	}
-	return strings
+	return s
 }
 
 func (a PolicyAction) IsValid() error {

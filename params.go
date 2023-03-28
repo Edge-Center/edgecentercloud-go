@@ -82,7 +82,6 @@ func BuildSliceRequestBody(opts interface{}) ([]map[string]interface{}, error) {
 		}
 
 		return optsSlice, nil
-
 	}
 	return nil, fmt.Errorf("options type is not a slice")
 }
@@ -100,7 +99,6 @@ func skipCustomStructs(v reflect.Value, typeof ...reflect.Type) bool {
 }
 
 func BuildRequestBody(opts interface{}, parent string) (map[string]interface{}, error) { // nolint: gocyclo
-
 	optsValue := reflect.ValueOf(opts)
 	if optsValue.Kind() == reflect.Ptr {
 		optsValue = optsValue.Elem()
@@ -574,14 +572,12 @@ func BuildHeaders(opts interface{}) (map[string]string, error) {
 						optsMap[tags[0]] = strconv.FormatBool(v.Bool())
 					}
 				} else { // nolint: gocritic
-
 					// if the field has a 'required' tag, it can't have a zero-value
 					if requiredTag := f.Tag.Get("required"); requiredTag == trueTag {
 						return optsMap, fmt.Errorf("required header [%s] not set", f.Name)
 					}
 				}
 			}
-
 		}
 		return optsMap, nil
 	}

@@ -7,7 +7,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"reflect"
 
 	"github.com/urfave/cli/v2"
@@ -27,7 +27,7 @@ func flagSet(name string, flags []cli.Flag) (*flag.FlagSet, error) {
 			return nil, err
 		}
 	}
-	set.SetOutput(ioutil.Discard)
+	set.SetOutput(io.Discard)
 	return set, nil
 }
 

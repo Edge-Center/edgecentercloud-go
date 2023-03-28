@@ -85,6 +85,9 @@ func TestSubnetsMetadata(t *testing.T) {
 	}
 
 	resourceClient, err := client.NewSubnetClientV1(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	opts := networks.CreateOpts{
 		Name: "test-network1",

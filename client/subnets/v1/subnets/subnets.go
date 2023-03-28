@@ -19,7 +19,7 @@ var subnetIDText = "subnet_id is mandatory argument"
 
 func getDNSNameservers(c *cli.Context) ([]net.IP, error) {
 	dns := c.StringSlice("dns-nameserver")
-	var result []net.IP
+	result := make([]net.IP, 0, len(dns))
 	for _, server := range dns {
 		ip := net.ParseIP(server)
 		if ip == nil {
@@ -36,7 +36,7 @@ func GetHostRoutes(c *cli.Context) ([]subnets.HostRoute, error) {
 	if len(destinations) > 0 && len(destinations) != len(hops) {
 		return nil, fmt.Errorf("should be equal number of route-destination and route-nexthop arguments")
 	}
-	var result []subnets.HostRoute
+	result := make([]subnets.HostRoute, 0, len(destinations))
 	for idx, desc := range destinations {
 		dst, err := edgecloud.ParseCIDRString(desc)
 		if err != nil {

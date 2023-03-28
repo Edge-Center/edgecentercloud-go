@@ -52,11 +52,12 @@ func (r RoleIDType) List() []RoleIDType {
 }
 
 func (r RoleIDType) StringList() []string {
-	var s []string
-	for _, v := range r.List() {
-		s = append(s, v.String())
+	lst := r.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
 // UnmarshalJSON - implements Unmarshaler interface for RoleIDType.
@@ -117,11 +118,12 @@ func (rs RoleNameType) List() []RoleNameType {
 }
 
 func (rs RoleNameType) StringList() []string {
-	var s []string
-	for _, v := range rs.List() {
-		s = append(s, v.String())
+	lst := rs.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
 // UnmarshalJSON - implements Unmarshaler interface for RoleNameType.

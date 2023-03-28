@@ -70,11 +70,12 @@ func (v Visibility) List() []Visibility {
 }
 
 func (v Visibility) StringList() []string {
-	var s []string
-	for _, v := range v.List() {
-		s = append(s, v.String())
+	lst := v.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
 // UnmarshalJSON - implements Unmarshaler interface for Visibility.
@@ -125,11 +126,12 @@ func (v HwMachineType) List() []HwMachineType {
 }
 
 func (v HwMachineType) StringList() []string {
-	var s []string
-	for _, v := range v.List() {
-		s = append(s, v.String())
+	lst := v.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
 // UnmarshalJSON - implements Unmarshaler interface for HwMachineType.
@@ -180,11 +182,12 @@ func (v SSHKeyType) List() []SSHKeyType {
 }
 
 func (v SSHKeyType) StringList() []string {
-	var s []string
-	for _, v := range v.List() {
-		s = append(s, v.String())
+	lst := v.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
 // UnmarshalJSON - implements Unmarshaler interface for SSHKeyType.
@@ -235,11 +238,12 @@ func (v OSType) List() []OSType {
 }
 
 func (v OSType) StringList() []string {
-	var s []string
-	for _, v := range v.List() {
-		s = append(s, v.String())
+	lst := v.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
 // UnmarshalJSON - implements Unmarshaler interface for OSType.
@@ -290,11 +294,12 @@ func (v HwFirmwareType) List() []HwFirmwareType {
 }
 
 func (v HwFirmwareType) StringList() []string {
-	var s []string
-	for _, v := range v.List() {
-		s = append(s, v.String())
+	lst := v.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
 // UnmarshalJSON - implements Unmarshaler interface for HwFirmwareType.
@@ -344,11 +349,12 @@ func (v ImageSourceType) List() []ImageSourceType {
 }
 
 func (v ImageSourceType) StringList() []string {
-	var s []string
-	for _, v := range v.List() {
-		s = append(s, v.String())
+	lst := v.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
 // UnmarshalJSON - implements Unmarshaler interface for ImageSourceType.

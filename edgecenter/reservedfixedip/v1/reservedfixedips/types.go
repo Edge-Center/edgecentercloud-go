@@ -23,11 +23,12 @@ func (t ReservedFixedIPType) List() []ReservedFixedIPType {
 }
 
 func (t ReservedFixedIPType) StringList() []string {
-	var s []string
-	for _, v := range t.List() {
-		s = append(s, v.String())
+	lst := t.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
 func (t ReservedFixedIPType) IsValid() error {

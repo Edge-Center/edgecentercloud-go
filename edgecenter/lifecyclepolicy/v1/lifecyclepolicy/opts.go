@@ -1,6 +1,5 @@
 package lifecyclepolicy
 
-// nolint:goimports
 import (
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 )

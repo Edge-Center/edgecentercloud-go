@@ -101,7 +101,6 @@ func (t *Template) getFileContents(te interface{}, ignoreIf igFunc, recurse bool
 				// At this point, the child template has been parsed recursively.
 				t.fileMaps[value] = childTemplate.URL
 				t.Files[childTemplate.URL] = string(childTemplate.Bin)
-
 			}
 		}
 		return nil

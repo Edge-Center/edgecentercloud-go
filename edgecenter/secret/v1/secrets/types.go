@@ -32,11 +32,12 @@ func (s SecretType) List() []SecretType {
 }
 
 func (s SecretType) StringList() []string {
-	var sg []string
-	for _, v := range s.List() {
-		sg = append(sg, v.String())
+	lst := s.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return sg
+	return strings
 }
 
 func (s SecretType) IsValid() error {

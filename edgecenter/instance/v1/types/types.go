@@ -68,11 +68,12 @@ func (vs VolumeSource) Bootable() bool {
 }
 
 func (vs VolumeSource) StringList() []string {
-	var s []string
-	for _, v := range vs.List() {
-		s = append(s, v.String())
+	lst := vs.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
 // UnmarshalJSON - implements Unmarshaler interface for VolumeSource.
@@ -126,11 +127,12 @@ func (fip FloatingIPSource) List() []FloatingIPSource {
 }
 
 func (fip FloatingIPSource) StringList() []string {
-	var s []string
-	for _, v := range fip.List() {
-		s = append(s, v.String())
+	lst := fip.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
 // UnmarshalJSON - implements Unmarshaler interface.
@@ -184,11 +186,12 @@ func (at AddressType) List() []AddressType {
 }
 
 func (at AddressType) StringList() []string {
-	var s []string
-	for _, v := range at.List() {
-		s = append(s, v.String())
+	lst := at.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
 // UnmarshalJSON - implements Unmarshaler interface.
@@ -244,11 +247,12 @@ func (it InterfaceType) List() []InterfaceType {
 }
 
 func (it InterfaceType) StringList() []string {
-	var s []string
-	for _, v := range it.List() {
-		s = append(s, v.String())
+	lst := it.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
 // UnmarshalJSON - implements Unmarshaler interface.
@@ -302,11 +306,12 @@ func (u MetricsTimeUnit) List() []MetricsTimeUnit {
 }
 
 func (u MetricsTimeUnit) StringList() []string {
-	var s []string
-	for _, v := range u.List() {
-		s = append(s, v.String())
+	lst := u.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
 // UnmarshalJSON - implements Unmarshaler interface.

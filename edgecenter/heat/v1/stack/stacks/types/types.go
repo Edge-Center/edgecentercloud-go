@@ -50,11 +50,12 @@ func (sd SortDir) List() []SortDir {
 }
 
 func (sd SortDir) StringList() []string {
-	var s []string
-	for _, v := range sd.List() {
-		s = append(s, v.String())
+	lst := sd.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
 // UnmarshalJSON - implements Unmarshaler interface.
@@ -107,11 +108,12 @@ func (sk SortKey) List() []SortKey {
 }
 
 func (sk SortKey) StringList() []string {
-	var s []string
-	for _, v := range sk.List() {
-		s = append(s, v.String())
+	lst := sk.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
 // UnmarshalJSON - implements Unmarshaler interface.
