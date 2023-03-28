@@ -66,7 +66,6 @@ func (client *ServiceClient) initReqOpts(_ string, jsonBody interface{}, jsonRes
 	if opts.MoreHeaders == nil {
 		opts.MoreHeaders = make(map[string]string)
 	}
-
 }
 
 // Get calls `Request` with the "GET" HTTP verb.

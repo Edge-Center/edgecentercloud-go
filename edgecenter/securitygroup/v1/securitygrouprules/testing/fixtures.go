@@ -16,6 +16,7 @@ const ReplaceRuleRequest = `
   "protocol": "tcp"
 }
 `
+
 const ReplaceRuleResponse = `
 {
 	"description": null,

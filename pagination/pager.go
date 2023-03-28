@@ -1,18 +1,12 @@
 package pagination
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
 	"reflect"
 	"strings"
 
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
-)
-
-var (
-	// ErrPageNotAvailable is returned from a Pager when a next or previous page is requested, but does not exist.
-	ErrPageNotAvailable = errors.New("the requested page does not exist")
 )
 
 // Page must be satisfied by the result type of any resource collection.

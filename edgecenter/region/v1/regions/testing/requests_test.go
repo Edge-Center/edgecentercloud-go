@@ -83,11 +83,9 @@ func TestListAll(t *testing.T) {
 	ct := results[0]
 	require.Equal(t, Region1, ct)
 	require.Equal(t, ExpectedRegionSlice, results)
-
 }
 
 func TestGet(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -113,7 +111,6 @@ func TestGet(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, Region1, *ct)
 	require.Equal(t, createdTime, ct.CreatedOn)
-
 }
 
 func TestCreate(t *testing.T) {
@@ -156,7 +153,6 @@ func TestCreate(t *testing.T) {
 }
 
 func TestUpdate(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -191,5 +187,4 @@ func TestUpdate(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, Region1, *region)
 	require.Equal(t, createdTime, region.CreatedOn)
-
 }

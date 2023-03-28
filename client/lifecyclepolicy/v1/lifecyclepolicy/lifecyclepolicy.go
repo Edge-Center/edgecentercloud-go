@@ -20,9 +20,7 @@ const (
 	idErrorText       = "lifecycle_policy_id is mandatory argument"
 )
 
-var (
-	policyTypes = lifecyclepolicy.ScheduleType("").StringList()
-)
+var policyTypes = lifecyclepolicy.ScheduleType("").StringList()
 
 var Commands = cli.Command{
 	Name:  "lifecycle",

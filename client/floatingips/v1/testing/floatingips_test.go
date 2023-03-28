@@ -34,7 +34,6 @@ func createTestFloatingIP(client *edgecloud.ServiceClient, opts floatingips.Crea
 		}
 		return floatingIPID, nil
 	})
-
 	if err != nil {
 		return "", err
 	}

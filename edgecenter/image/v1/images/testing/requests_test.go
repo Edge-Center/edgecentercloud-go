@@ -121,7 +121,6 @@ func TestListAll(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -146,7 +145,6 @@ func TestGet(t *testing.T) {
 
 	require.NoError(t, err)
 	require.Equal(t, Image1, *ct)
-
 }
 
 func TestCreate(t *testing.T) {
@@ -210,7 +208,6 @@ func TestDelete(t *testing.T) {
 	tasks, err := images.Delete(client, Image1.ID).Extract()
 	require.NoError(t, err)
 	require.Equal(t, Tasks1, *tasks)
-
 }
 
 func TestUpload(t *testing.T) {
@@ -305,7 +302,6 @@ func TestMetadataCreate(t *testing.T) {
 
 func TestMetadataUpdate(t *testing.T) {
 	etest.BuildTestMetadataUpdate("images", Image1.ID)(t)
-
 }
 
 func TestMetadataDelete(t *testing.T) {

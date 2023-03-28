@@ -9,9 +9,7 @@ import (
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/regionaccess/v1/regionsaccess"
 )
 
-var (
-	resellerIDText = "reseller_id is mandatory argument"
-)
+var resellerIDText = "reseller_id is mandatory argument"
 
 var regionAccessListCommand = cli.Command{
 	Name:     "list",

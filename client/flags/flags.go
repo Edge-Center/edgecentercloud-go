@@ -156,9 +156,11 @@ func buildAPITokenClientFlags() []cli.Flag {
 	return flags
 }
 
-var TokenClientFlags = buildTokenClientFlags()
-var PlatformClientFlags = buildPlatformClientFlags()
-var APITokenClientFlags = buildAPITokenClientFlags()
+var (
+	TokenClientFlags    = buildTokenClientFlags()
+	PlatformClientFlags = buildPlatformClientFlags()
+	APITokenClientFlags = buildAPITokenClientFlags()
+)
 
 var TokenClientHelpText = `
    Environment variables example:

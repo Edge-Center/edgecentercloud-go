@@ -102,9 +102,7 @@ func TestUnmarshalAnonymousStructs(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	var singleResult = edgecloud.Result{
-		Body: dejson,
-	}
+	singleResult := edgecloud.Result{Body: dejson}
 
 	err = singleResult.ExtractIntoStructPtr(&actual, "person")
 	th.AssertNoErr(t, err)
@@ -125,13 +123,9 @@ func TestUnmarshalSliceOfAnonymousStructs(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	var multiResult = edgecloud.Result{
-		Body: dejson,
-	}
-
+	multiResult := edgecloud.Result{Body: dejson}
 	err = multiResult.ExtractIntoSlicePtr(&actual, "people")
 	th.AssertNoErr(t, err)
-
 	th.AssertEquals(t, "Bill unmarshalled", actual[0].Name)
 	th.AssertEquals(t, "Canada unmarshalled", actual[0].Location)
 	th.AssertEquals(t, "Ted unmarshalled", actual[1].Name)
@@ -150,13 +144,9 @@ func TestUnmarshalSliceofStruct(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	var multiResult = edgecloud.Result{
-		Body: dejson,
-	}
-
+	multiResult := edgecloud.Result{Body: dejson}
 	err = multiResult.ExtractIntoSlicePtr(&actual, "people")
 	th.AssertNoErr(t, err)
-
 	th.AssertEquals(t, "Bill unmarshalled", actual[0].Name)
 	th.AssertEquals(t, "Ted unmarshalled", actual[1].Name)
 }
@@ -172,13 +162,9 @@ func TestUnmarshalNamedStructs(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	var singleResult = edgecloud.Result{
-		Body: dejson,
-	}
-
+	singleResult := edgecloud.Result{Body: dejson}
 	err = singleResult.ExtractIntoStructPtr(&actual, "person")
 	th.AssertNoErr(t, err)
-
 	th.AssertEquals(t, "", actual.TestPerson.Name)
 	th.AssertEquals(t, "", actual.TestPersonExt.Location)
 }
@@ -194,13 +180,9 @@ func TestUnmarshalSliceOfNamedStructs(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	var multiResult = edgecloud.Result{
-		Body: dejson,
-	}
-
+	multiResult := edgecloud.Result{Body: dejson}
 	err = multiResult.ExtractIntoSlicePtr(&actual, "people")
 	th.AssertNoErr(t, err)
-
 	th.AssertEquals(t, "", actual[0].TestPerson.Name)
 	th.AssertEquals(t, "", actual[0].TestPersonExt.Location)
 	th.AssertEquals(t, "", actual[1].TestPerson.Name)

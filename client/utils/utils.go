@@ -20,9 +20,7 @@ import (
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
 )
 
-var (
-	slPfx = fmt.Sprintf("sl:::%d:::", time.Now().UTC().UnixNano())
-)
+var slPfx = fmt.Sprintf("sl:::%d:::", time.Now().UTC().UnixNano())
 
 type EnumValue struct {
 	Enum        []string
@@ -286,7 +284,9 @@ func WriteToFile(filename string, content []byte) error {
 	if err != nil {
 		return err
 	}
-	err = os.WriteFile(path, content, 0644)
+
+	err = os.WriteFile(path, content, 0o644)
+
 	return err
 }
 
@@ -341,8 +341,7 @@ func ValidateEqualSlicesLength(slices ...interface{}) error {
 	return nil
 }
 
-type Item interface {
-}
+type Item interface{}
 
 type Result struct {
 	Item    Item

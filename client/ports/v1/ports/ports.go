@@ -12,9 +12,7 @@ import (
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/reservedfixedip/v1/reservedfixedips"
 )
 
-var (
-	portIDText = "port_id is mandatory argument"
-)
+var portIDText = "port_id is mandatory argument"
 
 var portSecurityEnableSubCommand = cli.Command{
 	Name:      "enable",

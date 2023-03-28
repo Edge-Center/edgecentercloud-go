@@ -50,15 +50,10 @@ const UpdateRequest = `
 }	
 `
 
-const CreateResponse = GetResponse
-const UpdateResponse = GetResponse
-const DeleteResponse = `
-{
-  "tasks": [
-    "50f53a35-42ed-40c4-82b2-5a37fb3e00bc"
-  ]
-}
-`
+const (
+	CreateResponse = GetResponse
+	UpdateResponse = GetResponse
+)
 
 var (
 	createdTimeString    = "2020-04-10T11:37:57"

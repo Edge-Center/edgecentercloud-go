@@ -92,7 +92,6 @@ func TestListAll(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -118,5 +117,4 @@ func TestGet(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, Extension1, *ct)
 	require.Equal(t, updatedTime, ct.Updated)
-
 }

@@ -170,7 +170,6 @@ func TestListAll(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -197,11 +196,9 @@ func TestGet(t *testing.T) {
 	require.Equal(t, Stack1, *ct)
 	require.Equal(t, creationTime, ct.CreationTime)
 	require.Equal(t, updatedTime, *ct.UpdatedTime)
-
 }
 
 func TestUpdate(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -237,7 +234,6 @@ func TestUpdate(t *testing.T) {
 
 	err := stacks.Update(client, Stack1.ID, updateOpts).ExtractErr()
 	require.NoError(t, err)
-
 }
 
 func TestUpdateStackNoTemplate(t *testing.T) {
@@ -268,7 +264,6 @@ func TestUpdateStackNoTemplate(t *testing.T) {
 }
 
 func TestUpdatePatch(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -294,5 +289,4 @@ func TestUpdatePatch(t *testing.T) {
 
 	err := stacks.UpdatePatch(client, Stack1.ID, updateOpts).ExtractErr()
 	require.NoError(t, err)
-
 }

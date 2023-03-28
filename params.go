@@ -85,7 +85,6 @@ func BuildSliceRequestBody(opts interface{}) ([]map[string]interface{}, error) {
 
 	}
 	return nil, fmt.Errorf("options type is not a slice")
-
 }
 
 func skipCustomStructs(v reflect.Value, typeof ...reflect.Type) bool {
@@ -399,7 +398,6 @@ func queryStringSliceStrategy(delimiter string) buildQueryStringStrategy {
 	default:
 		return buildQueryStringSliceStrategy
 	}
-
 }
 
 /*

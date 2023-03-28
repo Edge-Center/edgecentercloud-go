@@ -211,11 +211,13 @@ const MetadataResponse = `
   "read_only": false
 }
 `
+
 const ResourceMetadataRequest = `
 {
 "some_key": "some_val"
 }
 `
+
 const MetadataCreateRequest = `
 {
 "test1": "test1", 

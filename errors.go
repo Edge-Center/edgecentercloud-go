@@ -183,6 +183,7 @@ func (e ErrDefault400) Error() string {
 	}
 	return e.choseErrString()
 }
+
 func (e ErrDefault401) Error() string {
 	e.ReadEcError()
 	if e.Info != "" {
@@ -190,6 +191,7 @@ func (e ErrDefault401) Error() string {
 	}
 	return "Authentication failed"
 }
+
 func (e ErrDefault403) Error() string {
 	e.DefaultErrString = fmt.Sprintf(
 		"Request forbidden: [%s %s], error message: %s",
@@ -201,6 +203,7 @@ func (e ErrDefault403) Error() string {
 	}
 	return e.choseErrString()
 }
+
 func (e ErrDefault404) Error() string {
 	e.ReadEcError()
 	if e.Info != "" {
@@ -208,12 +211,15 @@ func (e ErrDefault404) Error() string {
 	}
 	return "Resource not found"
 }
+
 func (e ErrDefault405) Error() string {
 	return "Method not allowed"
 }
+
 func (e ErrDefault408) Error() string {
 	return "The server timed out waiting for the request"
 }
+
 func (e ErrDefault409) Error() string {
 	e.ReadEcError()
 	if e.Info != "" {
@@ -221,10 +227,12 @@ func (e ErrDefault409) Error() string {
 	}
 	return "Conflict"
 }
+
 func (e ErrDefault429) Error() string {
 	return "Too many requests have been sent in a given amount of time. Pause" +
 		" requests, wait up to one minute, and try again."
 }
+
 func (e ErrDefault500) Error() string {
 	e.ReadEcError()
 	if e.Info != "" {
@@ -232,6 +240,7 @@ func (e ErrDefault500) Error() string {
 	}
 	return "Internal Server Error"
 }
+
 func (e ErrDefault503) Error() string {
 	return "The service is currently unable to handle the request due to a temporary" +
 		" overloading or maintenance. This is a temporary condition. Try again later."

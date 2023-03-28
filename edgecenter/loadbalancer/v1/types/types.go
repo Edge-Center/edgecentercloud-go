@@ -6,11 +6,17 @@ import (
 )
 
 type ProvisioningStatus string
+
 type OperatingStatus string
+
 type LoadBalancerAlgorithm string
+
 type PersistenceType string
+
 type ProtocolType string
+
 type HealthMonitorType string
+
 type HTTPMethod string
 
 const (

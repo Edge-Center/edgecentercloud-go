@@ -45,7 +45,6 @@ func TestVolumeMetadata(t *testing.T) {
 		}
 		return resourceID, nil
 	})
-
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -63,5 +62,4 @@ func TestVolumeMetadata(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-
 }

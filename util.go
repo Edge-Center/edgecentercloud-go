@@ -100,7 +100,6 @@ func NormalizePathURL(basePath, rawPath string) (string, error) {
 	u.Path = filepath.ToSlash(absPathSys)
 	u.Scheme = "file"
 	return u.String(), nil
-
 }
 
 // StripLastSlashURL removes last slash symbols from url.
@@ -117,7 +116,6 @@ func StripLastSlashURL(url string) string {
 
 // NativeMapToStruct converts from map to struct.
 func NativeMapToStruct(nativeMap interface{}, obj interface{}) error {
-
 	var md mapstructure.Metadata
 	config := &mapstructure.DecoderConfig{
 		Metadata: &md,

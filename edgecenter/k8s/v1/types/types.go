@@ -6,7 +6,9 @@ import (
 )
 
 type PoolRole string
+
 type HealthStatus string
+
 type IngressController string
 
 const (

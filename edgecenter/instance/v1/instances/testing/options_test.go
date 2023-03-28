@@ -84,11 +84,9 @@ func TestValidateCreateVolumeBlankVolumeIDOpts(t *testing.T) {
 
 	err = opts.Validate()
 	require.NoError(t, err)
-
 }
 
 func TestValidateCreateVolumeBlankSnapshotIDOpts(t *testing.T) {
-
 	opts := instances.CreateVolumeOpts{
 		Source:     types.Snapshot,
 		BootIndex:  0,
@@ -117,11 +115,9 @@ func TestValidateCreateVolumeBlankSnapshotIDOpts(t *testing.T) {
 
 	err = edgecloud.TranslateValidationError(opts.Validate())
 	require.NoError(t, err)
-
 }
 
 func TestValidateCreateVolumeOpts(t *testing.T) {
-
 	opts := instances.CreateVolumeOpts{
 		Source:        types.NewVolume,
 		BootIndex:     0,
@@ -202,11 +198,9 @@ func TestValidateCreateVolumeOpts(t *testing.T) {
 	err = edgecloud.TranslateValidationError(opts.Validate())
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "Source")
-
 }
 
 func TestValidateCreateInstanceBlankSnapshotIDOpts(t *testing.T) {
-
 	volumeOpts := []instances.CreateVolumeOpts{{
 		Source:     types.Snapshot,
 		BootIndex:  0,
@@ -243,11 +237,9 @@ func TestValidateCreateInstanceBlankSnapshotIDOpts(t *testing.T) {
 	errTranslated := edgecloud.TranslateValidationError(err)
 	require.Error(t, errTranslated)
 	require.Contains(t, errTranslated.Error(), "Snapshot")
-
 }
 
 func TestValidateDeleteOpts(t *testing.T) {
-
 	opts := instances.DeleteOpts{
 		Volumes:         []string{"28bfe198-a003-4283-8dca-ab5da4a71b62"},
 		DeleteFloatings: true,
@@ -286,11 +278,9 @@ func TestValidateDeleteOpts(t *testing.T) {
 
 	err = opts.Validate()
 	require.NoError(t, err)
-
 }
 
 func TestDeleteOpts(t *testing.T) {
-
 	opts := instances.DeleteOpts{
 		Volumes:         nil,
 		DeleteFloatings: true,
@@ -308,7 +298,6 @@ func TestDeleteOpts(t *testing.T) {
 	query, err = opts.ToInstanceDeleteQuery()
 	require.NoError(t, err)
 	require.Equal(t, "?volumes=28bfe198-a003-4283-8dca-ab5da4a71b62%2C29bfe198-a003-4283-8dca-ab5da4a71b62", query)
-
 }
 
 func TestMetadataOpts(t *testing.T) {

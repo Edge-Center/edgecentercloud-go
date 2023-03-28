@@ -81,5 +81,4 @@ func TestListAll(t *testing.T) {
 	ct := actual[0]
 	require.Equal(t, Network1, ct)
 	require.Equal(t, ExpectedNetworkSlice, actual)
-
 }

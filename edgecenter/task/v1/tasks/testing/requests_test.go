@@ -68,7 +68,6 @@ func TestList(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -95,7 +94,6 @@ func TestGet(t *testing.T) {
 }
 
 func TestWaitTask(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 

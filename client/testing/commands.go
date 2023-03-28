@@ -120,6 +120,7 @@ func CompareMetadata(srcMeta interface{}, dstMeta interface{}) (bool, error) {
 
 	return CheckMapInMap(src, dst), nil
 }
+
 func InitTestApp(args []string) (*cli.App, *cli.Context) {
 	a := cmd.NewApp(args)
 	a.Setup()
@@ -165,7 +166,6 @@ func MetadataTest(getMetadata FuncGetMetadata, a *cli.App, resourceName string, 
 	}
 
 	isEqual, err := CompareMetadata(map[string]string{"key1": "val1", "key2": "val2"}, meta)
-
 	if err != nil {
 		return err
 	}
@@ -226,8 +226,10 @@ func MetadataTest(getMetadata FuncGetMetadata, a *cli.App, resourceName string, 
 	return nil
 }
 
-const networkDeleting int = 1200
-const networkCreatingTimeout int = 1200
+const (
+	networkDeleting        int = 1200
+	networkCreatingTimeout int = 1200
+)
 
 func CreateTestNetwork(client *edgecloud.ServiceClient, opts networks.CreateOpts) (string, error) {
 	res, err := networks.Create(client, opts).Extract()

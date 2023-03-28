@@ -342,7 +342,6 @@ func ListAll(client *edgecloud.ServiceClient, opts ListOptsBuilder) ([]Instance,
 	}
 
 	return all, nil
-
 }
 
 // ListInterfacesAll is a convenience function that returns all instance interfaces.
@@ -358,7 +357,6 @@ func ListInterfacesAll(client *edgecloud.ServiceClient, id string) ([]Interface,
 	}
 
 	return all, nil
-
 }
 
 // ListSecurityGroups retrieves security groups interfaces for instance.
@@ -589,7 +587,6 @@ func (opts ListMetricsOpts) ToListMetricsMap() (map[string]interface{}, error) {
 
 // ListInstanceMetrics retrieves instance's metrics.
 func ListInstanceMetrics(client *edgecloud.ServiceClient, id string, opts ListMetricsOptsBuilder) (r ListMetricsResult) {
-
 	b, err := opts.ToListMetricsMap()
 	if err != nil {
 		return

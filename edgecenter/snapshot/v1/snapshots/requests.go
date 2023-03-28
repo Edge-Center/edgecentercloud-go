@@ -112,7 +112,6 @@ func ListAll(client *edgecloud.ServiceClient, opts ListOptsBuilder) ([]Snapshot,
 	}
 
 	return all, nil
-
 }
 
 // IDFromName is a convenience function that returns a snapshot ID, given its name.

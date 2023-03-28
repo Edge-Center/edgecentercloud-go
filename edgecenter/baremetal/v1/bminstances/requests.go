@@ -147,7 +147,6 @@ func ListAll(client *edgecloud.ServiceClient, opts ListOptsBuilder) ([]instances
 	}
 
 	return all, nil
-
 }
 
 // RebuildInstanceOptsBuilder allows extensions to add additional parameters to the Rebuild request.

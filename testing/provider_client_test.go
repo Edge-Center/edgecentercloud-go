@@ -49,7 +49,7 @@ func TestUserAgent(t *testing.T) {
 }
 
 func TestConcurrentReauth(t *testing.T) {
-	var info = struct {
+	info := struct {
 		numreauths  int
 		failedAuths int
 		mut         *sync.RWMutex
@@ -152,7 +152,7 @@ func TestConcurrentReauth(t *testing.T) {
 }
 
 func TestReauthEndLoop(t *testing.T) {
-	var info = struct {
+	info := struct {
 		reauthAttempts   int
 		maxReauthReached bool
 		mut              *sync.RWMutex
@@ -234,7 +234,7 @@ func TestReauthEndLoop(t *testing.T) {
 }
 
 func TestRequestThatCameDuringReauthWaitsUntilItIsCompleted(t *testing.T) {
-	var info = struct {
+	info := struct {
 		numreauths  int
 		failedAuths int
 		reauthCh    chan struct{}

@@ -144,7 +144,6 @@ func ListAll(client *edgecloud.ServiceClient, opts ListOptsBuilder) ([]Image, er
 	}
 
 	return all, nil
-
 }
 
 // Create an image.

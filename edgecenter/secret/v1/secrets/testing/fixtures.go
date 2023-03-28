@@ -70,8 +70,10 @@ var CreateResponse = `
 
 var DeleteResponse = CreateResponse
 
-var createdTimeParsed, _ = time.Parse(edgecloud.RFC3339ZColon, "2025-12-28T19:14:44+00:00")
-var createdTime = edgecloud.JSONRFC3339ZColon{Time: createdTimeParsed}
+var (
+	createdTimeParsed, _ = time.Parse(edgecloud.RFC3339ZColon, "2025-12-28T19:14:44+00:00")
+	createdTime          = edgecloud.JSONRFC3339ZColon{Time: createdTimeParsed}
+)
 
 var (
 	S1 = secrets.Secret{

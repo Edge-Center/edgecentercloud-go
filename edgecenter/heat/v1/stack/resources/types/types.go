@@ -6,6 +6,7 @@ import (
 )
 
 type StackResourceStatus string
+
 type StackResourceAction string
 
 const (

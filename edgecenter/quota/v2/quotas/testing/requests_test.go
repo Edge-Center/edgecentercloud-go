@@ -26,7 +26,6 @@ func prepareListRegionalTestURL(clientID, regionID int) string {
 }
 
 func TestListCombined(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -53,7 +52,6 @@ func TestListCombined(t *testing.T) {
 }
 
 func TestListGlobal(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -80,7 +78,6 @@ func TestListGlobal(t *testing.T) {
 }
 
 func TestListRegional(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 

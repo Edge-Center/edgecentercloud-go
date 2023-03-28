@@ -118,7 +118,6 @@ var snapshotDeleteCommand = cli.Command{
 				return nil, err
 			}
 		})
-
 	},
 }
 
@@ -211,7 +210,7 @@ func parseMetadata(keys []string, values []string) (map[string]string, error) {
 
 	meta := map[string]string{}
 	// nolint:gosimple
-	for i, _ := range keys {
+	for i := range keys {
 		meta[keys[i]] = values[i]
 	}
 	return meta, nil

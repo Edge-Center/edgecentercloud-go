@@ -110,7 +110,6 @@ func TestListAll(t *testing.T) {
 	ct := actual[0]
 	require.Equal(t, Network1, ct)
 	require.Equal(t, ExpectedNetworkSlice, actual)
-
 }
 
 func TestGet(t *testing.T) {
@@ -140,7 +139,6 @@ func TestGet(t *testing.T) {
 	require.Equal(t, Network1, *ct)
 	require.Equal(t, createdTime, ct.CreatedAt)
 	require.Equal(t, updatedTime, *ct.UpdatedAt)
-
 }
 
 func TestCreate(t *testing.T) {
@@ -191,11 +189,9 @@ func TestDelete(t *testing.T) {
 	tasks, err := networks.Delete(client, Network1.ID).Extract()
 	require.NoError(t, err)
 	require.Equal(t, Tasks1, *tasks)
-
 }
 
 func TestUpdate(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -229,7 +225,6 @@ func TestUpdate(t *testing.T) {
 	require.Equal(t, Network1.Name, ct.Name)
 	require.Equal(t, createdTime, ct.CreatedAt)
 	require.Equal(t, updatedTime, *ct.UpdatedAt)
-
 }
 
 func TestListAllInstancePort(t *testing.T) {
@@ -255,7 +250,6 @@ func TestListAllInstancePort(t *testing.T) {
 	ct := actual[0]
 	require.Equal(t, InstancePort1, ct)
 	require.Equal(t, ExpectedInstancePortSlice, actual)
-
 }
 
 func TestMetadataListAll(t *testing.T) {

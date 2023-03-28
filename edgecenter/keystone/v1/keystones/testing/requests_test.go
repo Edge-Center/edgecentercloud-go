@@ -83,11 +83,9 @@ func TestListAll(t *testing.T) {
 	ct := results[0]
 	require.Equal(t, Keystone1, ct)
 	require.Equal(t, ExpectedKeystoneSlice, results)
-
 }
 
 func TestGet(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -113,7 +111,6 @@ func TestGet(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, Keystone1, *ct)
 	require.Equal(t, createdTime, ct.CreatedOn)
-
 }
 
 func TestCreate(t *testing.T) {
@@ -153,7 +150,6 @@ func TestCreate(t *testing.T) {
 }
 
 func TestUpdate(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -188,5 +184,4 @@ func TestUpdate(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, Keystone1, *keystone)
 	require.Equal(t, createdTime, keystone.CreatedOn)
-
 }

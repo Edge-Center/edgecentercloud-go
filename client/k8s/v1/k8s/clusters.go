@@ -23,7 +23,6 @@ var (
 )
 
 func getPools(c *cli.Context) ([]pools.CreateOpts, error) {
-
 	poolNames := c.StringSlice("pool-name")
 	poolFlavors := c.StringSlice("flavor-id")
 	poolNodesCount := c.IntSlice("node-count")
@@ -64,7 +63,6 @@ func getPools(c *cli.Context) ([]pools.CreateOpts, error) {
 	}
 
 	return result, nil
-
 }
 
 type k8sConfigFileOptions struct {
@@ -355,7 +353,6 @@ var clusterCreateSubCommand = cli.Command{
 		}
 
 		clusterPools, err := getPools(c)
-
 		if err != nil {
 			return cli.NewExitError(err, 1)
 		}
@@ -474,7 +471,6 @@ var clusterResizeSubCommand = cli.Command{
 			}
 			return cluster, nil
 		})
-
 	},
 }
 
@@ -534,7 +530,6 @@ var clusterUpgradeSubCommand = cli.Command{
 			utils.ShowResults(cluster, c.String("format"))
 			return nil, nil
 		})
-
 	},
 }
 
@@ -620,7 +615,6 @@ var clusterDeleteSubCommand = cli.Command{
 				return nil, err
 			}
 		})
-
 	},
 }
 
@@ -647,7 +641,6 @@ var clusterGetCertificateSubCommand = cli.Command{
 		}
 		utils.ShowResults(certificate, c.String("format"))
 		return nil
-
 	},
 }
 
@@ -691,7 +684,6 @@ var clusterSignCertificateSubCommand = cli.Command{
 		}
 		utils.ShowResults(signedCertificate, c.String("format"))
 		return nil
-
 	},
 }
 

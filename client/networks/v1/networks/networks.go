@@ -144,7 +144,6 @@ var networkDeleteCommand = cli.Command{
 				return nil, err
 			}
 		})
-
 	},
 }
 
@@ -186,7 +185,6 @@ var networkUpdateCommand = cli.Command{
 		}
 		utils.ShowResults(network, c.String("format"))
 		return nil
-
 	},
 }
 

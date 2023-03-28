@@ -30,13 +30,11 @@ func prepareTestParams(resourceName string, urlFunc func(c *edgecloud.ServiceCli
 	resourceUrl := ""
 	if urlFunc == nil {
 		resourceUrl = client.ResourceBaseURL()
-
 	} else {
 		resourceUrl = urlFunc(client)
 	}
 
 	parsedUrl, err := url.Parse(resourceUrl)
-
 	if err != nil {
 		panic(err)
 	}

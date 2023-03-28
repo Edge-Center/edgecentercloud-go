@@ -6,7 +6,9 @@ import (
 )
 
 type Action string
+
 type RuleType string
+
 type CompareType string
 
 const (

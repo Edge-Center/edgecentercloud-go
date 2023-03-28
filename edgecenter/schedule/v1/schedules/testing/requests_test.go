@@ -19,7 +19,6 @@ func prepareResourceTestURL(scheduleID string) string {
 }
 
 func TestGetCron(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -52,7 +51,6 @@ func TestGetCron(t *testing.T) {
 }
 
 func TestGetInterval(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -85,7 +83,6 @@ func TestGetInterval(t *testing.T) {
 }
 
 func TestUpdate(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 

@@ -168,7 +168,6 @@ func getInstanceVolumes(c *cli.Context) ([]instances.CreateVolumeOpts, error) {
 			VolumeID:   utils.StringFromIndex(volumeVolumeIDs, idx, ""),
 		}
 		err := edgecloud.TranslateValidationError(opts.Validate())
-
 		if err != nil {
 			return nil, err
 		}
@@ -203,7 +202,6 @@ func getInstanceVolumes(c *cli.Context) ([]instances.CreateVolumeOpts, error) {
 	}
 
 	return res, nil
-
 }
 
 func getInterfaces(c *cli.Context) ([]instances.InterfaceInstanceCreateOpts, error) {
@@ -236,7 +234,6 @@ func getInterfaces(c *cli.Context) ([]instances.InterfaceInstanceCreateOpts, err
 		}
 
 		err := edgecloud.TranslateValidationError(opts.Validate())
-
 		if err != nil {
 			return nil, err
 		}
@@ -246,7 +243,6 @@ func getInterfaces(c *cli.Context) ([]instances.InterfaceInstanceCreateOpts, err
 	}
 
 	return res, nil
-
 }
 
 func getBaremetalInterfaces(c *cli.Context) ([]bminstances.InterfaceOpts, error) {
@@ -279,17 +275,14 @@ func getBaremetalInterfaces(c *cli.Context) ([]bminstances.InterfaceOpts, error)
 		}
 
 		err := edgecloud.TranslateValidationError(opts.Validate())
-
 		if err != nil {
 			return nil, err
 		}
 
 		res = append(res, opts)
-
 	}
 
 	return res, nil
-
 }
 
 func getSecurityGroups(c *cli.Context) []edgecloud.ItemID {

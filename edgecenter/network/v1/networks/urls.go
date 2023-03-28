@@ -1,17 +1,11 @@
 package networks
 
 import (
-	"fmt"
-
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 )
 
 func resourceURL(c *edgecloud.ServiceClient, id string) string {
 	return c.ServiceURL(id)
-}
-
-func resourceActionURL(c *edgecloud.ServiceClient, id string, action string) string {
-	return c.ServiceURL(id, action)
 }
 
 func rootURL(c *edgecloud.ServiceClient) string {
@@ -40,11 +34,4 @@ func updateURL(c *edgecloud.ServiceClient, id string) string {
 
 func deleteURL(c *edgecloud.ServiceClient, id string) string {
 	return resourceURL(c, id)
-}
-
-func metadataURL(c *edgecloud.ServiceClient, id string) string {
-	return resourceActionURL(c, id, "metadata")
-}
-func metadataItemURL(c *edgecloud.ServiceClient, id string, key string) string {
-	return resourceActionURL(c, id, fmt.Sprintf("metadata_item?key=%s", key))
 }

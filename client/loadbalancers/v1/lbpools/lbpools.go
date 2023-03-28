@@ -27,7 +27,6 @@ var (
 )
 
 func getHealthMonitor(c *cli.Context) (*lbpools.CreateHealthMonitorOpts, error) {
-
 	healthMonitorType, err := types.HealthMonitorType(c.String("healthmonitor-type")).ValidOrNil()
 	if err != nil || healthMonitorType == nil {
 		return nil, err
@@ -69,7 +68,6 @@ func getHealthMonitor(c *cli.Context) (*lbpools.CreateHealthMonitorOpts, error) 
 }
 
 func getSessionPersistence(c *cli.Context) (*lbpools.CreateSessionPersistenceOpts, error) {
-
 	sessionPersistenceType, err := types.PersistenceType(c.String("session-persistence-type")).ValidOrNil()
 	if err != nil || sessionPersistenceType == nil {
 		return nil, err
@@ -150,7 +148,6 @@ func getPoolMembers(c *cli.Context) ([]lbpools.CreatePoolMemberOpts, error) {
 	}
 
 	return members, nil
-
 }
 
 var lbpoolListSubCommand = cli.Command{

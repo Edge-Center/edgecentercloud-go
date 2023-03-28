@@ -14,8 +14,10 @@ import (
 	translations "github.com/go-playground/validator/v10/translations/en"
 )
 
-const splitParamsRegexString = `'[^']*'|\S+`
-const nameRegexString = "^[a-zA-Z0-9][a-zA-Z 0-9._\\-]{1,61}[a-zA-Z0-9._]$"
+const (
+	splitParamsRegexString = `'[^']*'|\S+`
+	nameRegexString        = "^[a-zA-Z0-9][a-zA-Z 0-9._\\-]{1,61}[a-zA-Z0-9._]$"
+)
 
 var (
 	Validate         *validator.Validate
@@ -251,7 +253,6 @@ func init() {
 	FailOnErrorF(err, "Cannot register custom validation tag: %s", "sem")
 	err = Validate.RegisterValidation(`name`, name)
 	FailOnErrorF(err, "Cannot register custom validation tag: %s", "name")
-
 }
 
 func allowedWithout(fl validator.FieldLevel) bool {
@@ -261,7 +262,6 @@ func allowedWithout(fl validator.FieldLevel) bool {
 }
 
 func allowedWithoutAll(fl validator.FieldLevel) bool {
-
 	params := splitParamsRegex.FindAllString(strings.TrimSpace(fl.Param()), -1)
 
 	for _, field := range params {
@@ -273,7 +273,6 @@ func allowedWithoutAll(fl validator.FieldLevel) bool {
 	}
 
 	return true
-
 }
 
 func requiredIfFieldEqual(fl validator.FieldLevel) bool {
@@ -389,7 +388,6 @@ func hasValue(fl validator.FieldLevel) bool {
 
 // regex is the validation function for validating if the current field's value matches to regex.
 func regex(fl validator.FieldLevel) bool {
-
 	field := fl.Field()
 	rgx := fl.Param()
 
@@ -405,7 +403,6 @@ func regex(fl validator.FieldLevel) bool {
 
 // name is the validation function for validating name regex.
 func name(fl validator.FieldLevel) bool {
-
 	field := fl.Field()
 
 	if field.Kind() == reflect.String {
@@ -418,7 +415,6 @@ func name(fl validator.FieldLevel) bool {
 
 // sem is the validation function for validating semantic version.
 func sem(fl validator.FieldLevel) bool {
-
 	field := fl.Field()
 
 	if field.Kind() == reflect.String {
@@ -439,7 +435,6 @@ func sem(fl validator.FieldLevel) bool {
 }
 
 func isEq(field reflect.Value, param string) bool {
-
 	switch field.Kind() {
 
 	case reflect.String:
@@ -475,7 +470,6 @@ func isEq(field reflect.Value, param string) bool {
 }
 
 func asBool(param string) bool {
-
 	i, err := strconv.ParseBool(param)
 	panicIf(err)
 
@@ -489,7 +483,6 @@ func panicIf(err error) {
 }
 
 func asFloat(param string) float64 {
-
 	i, err := strconv.ParseFloat(param, 64)
 	panicIf(err)
 
@@ -497,7 +490,6 @@ func asFloat(param string) float64 {
 }
 
 func asInt(param string) int64 {
-
 	i, err := strconv.ParseInt(param, 0, 64)
 	panicIf(err)
 
@@ -505,7 +497,6 @@ func asInt(param string) int64 {
 }
 
 func asUint(param string) uint64 {
-
 	i, err := strconv.ParseUint(param, 0, 64)
 	panicIf(err)
 

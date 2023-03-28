@@ -105,5 +105,4 @@ func ListAll(client *edgecloud.ServiceClient) ([]Region, error) {
 	}
 
 	return all, nil
-
 }

@@ -12,9 +12,7 @@ import (
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/limit/v2/limits"
 )
 
-var (
-	limitIDText = "limit_id is mandatory argument"
-)
+var limitIDText = "limit_id is mandatory argument"
 
 func buildLimitFromFlags(c *cli.Context) (limits.Limit, error) {
 	var err error
@@ -165,9 +163,7 @@ var limitCreateCommand = cli.Command{
 		},
 	},
 	Action: func(c *cli.Context) error {
-
 		requestedLimits, err := buildLimitFromFlags(c)
-
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "create")
 			return cli.NewExitError(err, 1)

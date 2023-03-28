@@ -173,16 +173,20 @@ const ExtendResponse = `
 }
 `
 
-const createdTimeString = "2019-05-29T05:32:41+0000"
-const updatedTimeString = "2019-05-29T05:39:20+0000"
-const attachedTimeString = "2019-07-26T14:22:03+0000"
+const (
+	createdTimeString  = "2019-05-29T05:32:41+0000"
+	updatedTimeString  = "2019-05-29T05:39:20+0000"
+	attachedTimeString = "2019-07-26T14:22:03+0000"
+)
 
-var createdTimeParsed, _ = time.Parse(edgecloud.RFC3339Z, createdTimeString)
-var createdTime = edgecloud.JSONRFC3339Z{Time: createdTimeParsed}
-var updatedTimeParsed, _ = time.Parse(edgecloud.RFC3339Z, updatedTimeString)
-var updatedTime = edgecloud.JSONRFC3339Z{Time: updatedTimeParsed}
-var attachedTimeParsed, _ = time.Parse(edgecloud.RFC3339Z, attachedTimeString)
-var attachedTime = edgecloud.JSONRFC3339Z{Time: attachedTimeParsed}
+var (
+	createdTimeParsed, _  = time.Parse(edgecloud.RFC3339Z, createdTimeString)
+	createdTime           = edgecloud.JSONRFC3339Z{Time: createdTimeParsed}
+	updatedTimeParsed, _  = time.Parse(edgecloud.RFC3339Z, updatedTimeString)
+	updatedTime           = edgecloud.JSONRFC3339Z{Time: updatedTimeParsed}
+	attachedTimeParsed, _ = time.Parse(edgecloud.RFC3339Z, attachedTimeString)
+	attachedTime          = edgecloud.JSONRFC3339Z{Time: attachedTimeParsed}
+)
 
 var (
 	Volume1 = volumes.Volume{
@@ -198,14 +202,15 @@ var (
 		Bootable:         false,
 		ProjectID:        1,
 		RegionID:         1,
-		Attachments: []volumes.Attachment{{
-			ServerID:     "8dc30d49-bb34-4920-9bbd-03a2587ec0ad",
-			AttachmentID: "f2ed59d9-8068-400c-be4b-c4501ef6f33c",
-			InstanceName: "123",
-			AttachedAt:   attachedTime,
-			VolumeID:     "67baa7d1-08ea-4fc5-bef2-6b2465b7d227",
-			Device:       "/dev/vda",
-		},
+		Attachments: []volumes.Attachment{
+			{
+				ServerID:     "8dc30d49-bb34-4920-9bbd-03a2587ec0ad",
+				AttachmentID: "f2ed59d9-8068-400c-be4b-c4501ef6f33c",
+				InstanceName: "123",
+				AttachedAt:   attachedTime,
+				VolumeID:     "67baa7d1-08ea-4fc5-bef2-6b2465b7d227",
+				Device:       "/dev/vda",
+			},
 		},
 		Metadata:      []metadata.Metadata{ResourceMetadataReadOnly},
 		CreatorTaskID: "d74c2bb9-cea7-4b23-a009-2f13518ae66d",

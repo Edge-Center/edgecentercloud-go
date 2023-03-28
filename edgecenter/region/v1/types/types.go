@@ -6,7 +6,9 @@ import (
 )
 
 type RegionState string
+
 type KeystoneState string
+
 type EndpointType string
 
 const (

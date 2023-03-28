@@ -222,6 +222,7 @@ const CreateResponse = `
   ]
 }
 `
+
 const DeleteResponse = `
 {
   "tasks": [
@@ -229,6 +230,7 @@ const DeleteResponse = `
   ]
 }
 `
+
 const ResizeResponse = `
 {
   "tasks": [
@@ -352,14 +354,15 @@ var (
 			Faults:            nil,
 			ClusterList:       clusterList,
 		},
-		Pools: []pools.ClusterPool{{
-			ClusterID:       "5e09faed-e742-404f-8a75-0ea5eb3c435f",
-			ProjectID:       "46beed3938e6474390b530fefd6173d2",
-			Labels:          labels,
-			NodeAddresses:   nodeAddresses,
-			StatusReason:    "Stack CREATE completed successfully",
-			ClusterListPool: &listPool,
-		},
+		Pools: []pools.ClusterPool{
+			{
+				ClusterID:       "5e09faed-e742-404f-8a75-0ea5eb3c435f",
+				ProjectID:       "46beed3938e6474390b530fefd6173d2",
+				Labels:          labels,
+				NodeAddresses:   nodeAddresses,
+				StatusReason:    "Stack CREATE completed successfully",
+				ClusterListPool: &listPool,
+			},
 		},
 	}
 	ClusterCertificate = clusters.ClusterCACertificate{

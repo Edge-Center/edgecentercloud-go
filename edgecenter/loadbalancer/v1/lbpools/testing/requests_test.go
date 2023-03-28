@@ -114,11 +114,9 @@ func TestListAll(t *testing.T) {
 	pool := pools[0]
 	require.Equal(t, LBPool1, pool)
 	require.Equal(t, ExpectedLBPoolsSlice, pools)
-
 }
 
 func TestGet(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -143,7 +141,6 @@ func TestGet(t *testing.T) {
 
 	require.NoError(t, err)
 	require.Equal(t, LBPool1, *ct)
-
 }
 
 func TestCreate(t *testing.T) {
@@ -215,11 +212,9 @@ func TestDelete(t *testing.T) {
 	tasks, err := lbpools.Delete(client, LBPool1.ID).Extract()
 	require.NoError(t, err)
 	require.Equal(t, Tasks1, *tasks)
-
 }
 
 func TestUpdate(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -251,7 +246,6 @@ func TestUpdate(t *testing.T) {
 	require.NoError(t, err)
 	require.NoError(t, err)
 	require.Equal(t, Tasks1, *tasks)
-
 }
 
 func TestDeleteMember(t *testing.T) {
@@ -274,7 +268,6 @@ func TestDeleteMember(t *testing.T) {
 	tasks, err := lbpools.DeleteMember(client, LBPool1.ID, memberID).Extract()
 	require.NoError(t, err)
 	require.Equal(t, Tasks1, *tasks)
-
 }
 
 func TestCreateMember(t *testing.T) {
@@ -323,7 +316,6 @@ func TestDeleteHealthMonitor(t *testing.T) {
 	client := fake.ServiceTokenClient("lbpools", "v1")
 	err := lbpools.DeleteHealthMonitor(client, LBPool1.ID).ExtractErr()
 	require.NoError(t, err)
-
 }
 
 func TestCreateHealthMonitor(t *testing.T) {

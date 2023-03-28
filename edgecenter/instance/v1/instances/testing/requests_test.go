@@ -211,7 +211,6 @@ func TestListAll(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -236,11 +235,9 @@ func TestGet(t *testing.T) {
 
 	require.NoError(t, err)
 	require.Equal(t, Instance1, *ct)
-
 }
 
 func TestRenameInstance(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -267,7 +264,6 @@ func TestRenameInstance(t *testing.T) {
 
 	require.NoError(t, err)
 	require.Equal(t, Instance1, *ct)
-
 }
 
 func TestListAllInterfaces(t *testing.T) {
@@ -535,7 +531,6 @@ func TestDelete(t *testing.T) {
 	tasks, err := instances.Delete(client, instanceID, options).Extract()
 	require.NoError(t, err)
 	require.Equal(t, Tasks1, *tasks)
-
 }
 
 func TestStart(t *testing.T) {
@@ -765,14 +760,17 @@ func TestMetadataCreate(t *testing.T) {
 	})
 
 	opts := instances.MetadataSetOpts{
-		Metadata: []instances.MetadataOpts{{
-			Key:   "test1",
-			Value: "test1",
-		}, {
-			Key:   "test2",
-			Value: "test2",
+		Metadata: []instances.MetadataOpts{
+			{
+				Key:   "test1",
+				Value: "test1",
+			},
+			{
+				Key:   "test2",
+				Value: "test2",
+			},
 		},
-		}}
+	}
 
 	client := fake.ServiceTokenClient("instances", "v1")
 	err := instances.MetadataCreate(client, instanceID, opts).ExtractErr()
@@ -795,14 +793,17 @@ func TestMetadataUpdate(t *testing.T) {
 	})
 
 	opts := instances.MetadataSetOpts{
-		Metadata: []instances.MetadataOpts{{
-			Key:   "test1",
-			Value: "test1",
-		}, {
-			Key:   "test2",
-			Value: "test2",
+		Metadata: []instances.MetadataOpts{
+			{
+				Key:   "test1",
+				Value: "test1",
+			},
+			{
+				Key:   "test2",
+				Value: "test2",
+			},
 		},
-		}}
+	}
 
 	client := fake.ServiceTokenClient("instances", "v1")
 	err := instances.MetadataUpdate(client, instanceID, opts).ExtractErr()

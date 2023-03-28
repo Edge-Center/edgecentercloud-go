@@ -95,5 +95,4 @@ func TestDelete(t *testing.T) {
 	client := fake.ServiceTokenClient("reseller_region", "v1")
 	err := regionsaccess.Delete(client, resellerID).ExtractErr()
 	require.NoError(t, err)
-
 }

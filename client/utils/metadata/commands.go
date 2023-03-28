@@ -120,7 +120,8 @@ func NewMetadataGetCommand(cc ClientConstructor, usage string, argsUsage string,
 			}
 
 			return showResults(c, metadata)
-		}}
+		},
+	}
 }
 
 func NewMetadataDeleteCommand(cc ClientConstructor, usage string, argsUsage string, errorText string) *cli.Command {
@@ -231,7 +232,8 @@ func NewMetadataUpdateCommand(cc ClientConstructor, usage string, argsUsage stri
 				return cli.NewExitError(err, 1)
 			}
 			return nil
-		}}
+		},
+	}
 }
 
 func NewMetadataReplaceCommand(cc ClientConstructor, usage string, argsUsage string, errorText string) *cli.Command {
@@ -269,5 +271,6 @@ func NewMetadataReplaceCommand(cc ClientConstructor, usage string, argsUsage str
 				return cli.NewExitError(err, 1)
 			}
 			return nil
-		}}
+		},
+	}
 }

@@ -7,13 +7,15 @@ import (
 )
 
 // Fake token to use.
-const TokenID = "cbc36478b0bd8e67e89469c7749d4127"
-const AccessToken = "cbc36478b0bd8e67e89469c7749d4127"
-const RefreshToken = "tbc36478b0bd8e67e89469c7749d4127"
-const Username = "username"
-const Password = "password"
-const RegionID = 1
-const ProjectID = 1
+const (
+	TokenID      = "cbc36478b0bd8e67e89469c7749d4127"
+	AccessToken  = "cbc36478b0bd8e67e89469c7749d4127"
+	RefreshToken = "tbc36478b0bd8e67e89469c7749d4127"
+	Username     = "username"
+	Password     = "password"
+	RegionID     = 1
+	ProjectID    = 1
+)
 
 // ServiceClient returns a generic service client for use in tests.
 func ServiceClient() *edgecloud.ServiceClient {

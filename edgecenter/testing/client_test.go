@@ -116,7 +116,6 @@ func TestReauthAuthenticatedServiceClient(t *testing.T) {
 	require.Equal(t, client.RefreshToken, serviceClient.RefreshToken())
 
 	require.Equal(t, reauthCount, 2)
-
 }
 
 func TestReauthAuthenticatedServiceClientWithBadRefreshToken(t *testing.T) {
@@ -181,7 +180,6 @@ func TestReauthAuthenticatedServiceClientWithBadRefreshToken(t *testing.T) {
 
 	require.Equal(t, reauthCount, 1)
 	require.Equal(t, authCount, 2)
-
 }
 
 func TestReauthTokenServiceClient(t *testing.T) {
@@ -241,7 +239,6 @@ func TestReauthTokenServiceClient(t *testing.T) {
 	require.Equal(t, client.RefreshToken, serviceClient.RefreshToken())
 
 	require.Equal(t, reauthCount, 2)
-
 }
 
 func TestServiceClientURL(t *testing.T) {
@@ -311,5 +308,4 @@ func TestServiceClientURL(t *testing.T) {
 	require.NoError(t, err)
 	actual = c.ServiceURL("more", "parts", "here")
 	require.Equal(t, "http://test.com/v1/test/1/1/more/parts/here", actual)
-
 }

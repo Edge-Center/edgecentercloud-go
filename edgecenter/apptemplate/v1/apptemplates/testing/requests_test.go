@@ -81,11 +81,9 @@ func TestListAll(t *testing.T) {
 	ct := groups[0]
 	require.Equal(t, AppTemplate1, ct)
 	require.Equal(t, ExpectedAppTemplateSlice, groups)
-
 }
 
 func TestGet(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 

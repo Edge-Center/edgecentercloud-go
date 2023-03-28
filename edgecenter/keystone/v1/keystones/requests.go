@@ -101,5 +101,4 @@ func ListAll(client *edgecloud.ServiceClient) ([]Keystone, error) {
 	}
 
 	return all, nil
-
 }

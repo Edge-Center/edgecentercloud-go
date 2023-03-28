@@ -159,7 +159,6 @@ var volumeDeleteCommand = cli.Command{
 				return nil, err
 			}
 		})
-
 	},
 }
 

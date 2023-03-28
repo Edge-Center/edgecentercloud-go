@@ -45,11 +45,9 @@ func TestList(t *testing.T) {
 	ct := results[0]
 	require.Equal(t, apiToken1, ct)
 	require.Equal(t, ExpectedAPITokenSlice, results)
-
 }
 
 func TestGet(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -124,5 +122,4 @@ func TestCreate(t *testing.T) {
 	ct, err := apitokens.Create(client, clientID, options).Extract()
 	require.NoError(t, err)
 	require.Equal(t, Token1, *ct)
-
 }

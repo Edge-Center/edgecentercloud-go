@@ -58,7 +58,6 @@ func authTokenPostErr(t *testing.T, options edgecloud.AuthOptions, includeToken 
 	}
 
 	testhelper.Mux.HandleFunc("/auth/jwt/login", func(w http.ResponseWriter, r *http.Request) {
-
 		testhelper.TestMethod(t, r, "POST")
 		testhelper.TestHeader(t, r, "Content-Type", "application/json")
 		testhelper.TestHeader(t, r, "Accept", "application/json")
@@ -97,7 +96,6 @@ func TestCreateExtractsTokenFromResponse(t *testing.T) {
 	`)
 
 	require.Equal(t, token.Access, client.AccessToken)
-
 }
 
 func TestCreateFailureEmptyAuth(t *testing.T) {

@@ -63,19 +63,21 @@ var ListResponse = fmt.Sprintf(`
 }
 `, availableIps, totalIps)
 
-var createdTimeString = "2020-03-05T12:03:24+0000"
-var updatedTimeString = "2020-03-05T12:03:25+0000"
-var createdTimeParsed, _ = time.Parse(edgecloud.RFC3339Z, createdTimeString)
-var createdTime = edgecloud.JSONRFC3339Z{Time: createdTimeParsed}
-var updatedTimeParsed, _ = time.Parse(edgecloud.RFC3339Z, updatedTimeString)
-var updatedTime = edgecloud.JSONRFC3339Z{Time: updatedTimeParsed}
-var cidr, _ = edgecloud.ParseCIDRString("192.168.10.0/24")
-var taskID = "50f53a35-42ed-40c4-82b2-5a37fb3e00bc"
-var availableIps = 241
-var totalIps = 243
-var ip = net.ParseIP("10.0.0.13")
-var gwip = net.ParseIP("10.0.0.1")
-var routeCidr, _ = edgecloud.ParseCIDRString("10.0.3.0/24")
+var (
+	createdTimeString    = "2020-03-05T12:03:24+0000"
+	updatedTimeString    = "2020-03-05T12:03:25+0000"
+	createdTimeParsed, _ = time.Parse(edgecloud.RFC3339Z, createdTimeString)
+	createdTime          = edgecloud.JSONRFC3339Z{Time: createdTimeParsed}
+	updatedTimeParsed, _ = time.Parse(edgecloud.RFC3339Z, updatedTimeString)
+	updatedTime          = edgecloud.JSONRFC3339Z{Time: updatedTimeParsed}
+	cidr, _              = edgecloud.ParseCIDRString("192.168.10.0/24")
+	taskID               = "50f53a35-42ed-40c4-82b2-5a37fb3e00bc"
+	availableIps         = 241
+	totalIps             = 243
+	ip                   = net.ParseIP("10.0.0.13")
+	gwip                 = net.ParseIP("10.0.0.1")
+	routeCidr, _         = edgecloud.ParseCIDRString("10.0.3.0/24")
+)
 
 var (
 	Subnet1 = subnets.Subnet{

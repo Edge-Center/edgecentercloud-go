@@ -91,7 +91,6 @@ func TestFindByName(t *testing.T) {
 
 	_, err = flavors.IDFromName(client, "X")
 	require.Error(t, err)
-
 }
 
 func TestListMalformedResponse(t *testing.T) {
@@ -114,5 +113,4 @@ func TestListMalformedResponse(t *testing.T) {
 
 	_, err := flavors.List(client, nil).AllPages()
 	require.Error(t, err)
-
 }

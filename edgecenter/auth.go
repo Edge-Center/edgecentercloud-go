@@ -7,8 +7,10 @@ import (
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 )
 
-var nilAuthOptions = edgecloud.AuthOptions{}
-var nilTokenOptions = edgecloud.TokenOptions{}
+var (
+	nilAuthOptions  = edgecloud.AuthOptions{}
+	nilTokenOptions = edgecloud.TokenOptions{}
+)
 
 /*
 AuthOptionsFromEnv fills out an identity.AuthOptions structure with the
@@ -55,7 +57,6 @@ func AuthOptionsFromEnv() (edgecloud.AuthOptions, error) {
 }
 
 func TokenOptionsFromEnv() (edgecloud.TokenOptions, error) {
-
 	apiURL := os.Getenv("EC_CLOUD_API_URL")
 	accessToken := os.Getenv("EC_CLOUD_ACCESS_TOKEN")
 	refreshToken := os.Getenv("EC_CLOUD_REFRESH_TOKEN")

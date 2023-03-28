@@ -31,6 +31,7 @@ func prepareListTestURL() string {
 func prepareGetTestURL(id string) string {
 	return prepareGetTestURLParams(fake.ProjectID, fake.RegionID, id)
 }
+
 func prepareGetActionTestURLParams(version string, id string, action string) string {
 	return fmt.Sprintf("/%s/subnets/%d/%d/%s/%s", version, fake.ProjectID, fake.RegionID, id, action)
 }
@@ -110,7 +111,6 @@ func TestListAll(t *testing.T) {
 	ct := results[0]
 	require.Equal(t, Subnet1, ct)
 	require.Equal(t, ExpectedSubnetSlice, results)
-
 }
 
 func TestGet(t *testing.T) {
@@ -140,7 +140,6 @@ func TestGet(t *testing.T) {
 	require.Equal(t, Subnet1, *ct)
 	require.Equal(t, createdTime, ct.CreatedAt)
 	require.Equal(t, updatedTime, ct.UpdatedAt)
-
 }
 
 func TestCreateNoGW(t *testing.T) {
@@ -229,11 +228,9 @@ func TestDelete(t *testing.T) {
 	tasks, err := subnets.Delete(client, Subnet1.ID).Extract()
 	require.NoError(t, err)
 	require.Equal(t, Tasks1, *tasks)
-
 }
 
 func TestUpdateNoGW(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -267,11 +264,9 @@ func TestUpdateNoGW(t *testing.T) {
 	require.Equal(t, Subnet1.Name, ct.Name)
 	require.Equal(t, createdTime, ct.CreatedAt)
 	require.Equal(t, updatedTime, ct.UpdatedAt)
-
 }
 
 func TestUpdateGW(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 

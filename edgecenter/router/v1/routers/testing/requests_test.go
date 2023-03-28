@@ -101,11 +101,9 @@ func TestListAll(t *testing.T) {
 	ct := results[0]
 	require.Equal(t, Router1, ct)
 	require.Equal(t, ExpectedRouterSlice, results)
-
 }
 
 func TestGet(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -205,7 +203,6 @@ func TestDelete(t *testing.T) {
 }
 
 func TestUpdate(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 

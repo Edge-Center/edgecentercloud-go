@@ -124,5 +124,4 @@ func TestCreateOpts(t *testing.T) {
 	_, err = options.ToVolumeCreateMap()
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "TypeName is a required field")
-
 }

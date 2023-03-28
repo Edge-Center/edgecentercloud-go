@@ -6,9 +6,13 @@ import (
 )
 
 type AddressType string
+
 type VolumeSource string
+
 type FloatingIPSource string
+
 type InterfaceType string
+
 type MetricsTimeUnit string
 
 const (

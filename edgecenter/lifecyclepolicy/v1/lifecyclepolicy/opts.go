@@ -105,6 +105,7 @@ type CreateIntervalScheduleOpts struct {
 func (opts *CreateCronScheduleOpts) SetCommonCreateScheduleOpts(common CommonCreateScheduleOpts) {
 	opts.CommonCreateScheduleOpts = common
 }
+
 func (opts *CreateIntervalScheduleOpts) SetCommonCreateScheduleOpts(common CommonCreateScheduleOpts) {
 	opts.CommonCreateScheduleOpts = common
 }

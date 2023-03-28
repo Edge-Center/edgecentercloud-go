@@ -82,5 +82,4 @@ func TestListAll(t *testing.T) {
 	ct := groups[0]
 	require.Equal(t, floatingIPDetails, ct)
 	require.Equal(t, ExpectedFloatingIPSlice, groups)
-
 }

@@ -30,17 +30,14 @@ func TestDelete(t *testing.T) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "Authorization", fmt.Sprintf("Bearer %s", fake.AccessToken))
 		w.WriteHeader(http.StatusNoContent)
-
 	})
 
 	client := fake.ServiceTokenClient("securitygrouprules", "v1")
 	err := securitygrouprules.Delete(client, securityGroupRule1.ID).ExtractErr()
 	require.NoError(t, err)
-
 }
 
 func TestUpdate(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -74,5 +71,4 @@ func TestUpdate(t *testing.T) {
 
 	require.NoError(t, err)
 	require.Equal(t, securityGroupRule1, *ct)
-
 }

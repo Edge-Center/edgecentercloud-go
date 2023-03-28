@@ -4,10 +4,6 @@ import (
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 )
 
-func resourceActionURL(c *edgecloud.ServiceClient, id string, action string) string {
-	return c.ServiceURL(id, action)
-}
-
 func resourceURL(c *edgecloud.ServiceClient, id string) string {
 	return c.ServiceURL(id)
 }

@@ -6,7 +6,9 @@ import (
 )
 
 type VolumeSource string
+
 type VolumeType string
+
 type VolumeStatus string
 
 const (

@@ -101,8 +101,10 @@ const DeleteResponse = `
 }
 `
 
-const AssignResponse = GetResponse
-const UnassignResponse = GetResponse
+const (
+	AssignResponse   = GetResponse
+	UnassignResponse = GetResponse
+)
 
 var (
 	floatingIPUpdatedAtParsed, _ = time.Parse(edgecloud.RFC3339Z, "2019-06-13T13:58:12+0000")

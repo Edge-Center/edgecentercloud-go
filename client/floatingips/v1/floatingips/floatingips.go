@@ -17,9 +17,7 @@ import (
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/volume/v1/volumes"
 )
 
-var (
-	floatingIPIDText = "floatingip_id is mandatory argument"
-)
+var floatingIPIDText = "floatingip_id is mandatory argument"
 
 var floatingIPListSubCommand = cli.Command{
 	Name:     "list",
@@ -98,7 +96,6 @@ var floatingIPCreateSubCommand = cli.Command{
 			utils.ShowResults(volume, c.String("format"))
 			return nil, nil
 		})
-
 	},
 }
 
@@ -161,7 +158,6 @@ var floatingIPDeleteSubCommand = cli.Command{
 				return nil, err
 			}
 		})
-
 	},
 }
 

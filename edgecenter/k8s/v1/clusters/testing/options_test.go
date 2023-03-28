@@ -36,7 +36,6 @@ func TestResizeOpts(t *testing.T) {
 
 	_, err = options.ToClusterResizeMap()
 	require.NoError(t, err)
-
 }
 
 func TestCreateOptions(t *testing.T) {
@@ -67,7 +66,6 @@ func TestCreateOptions(t *testing.T) {
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "Version")
 	require.Contains(t, err.Error(), "Pools")
-
 }
 
 func TestDecodeClusterTask(t *testing.T) {

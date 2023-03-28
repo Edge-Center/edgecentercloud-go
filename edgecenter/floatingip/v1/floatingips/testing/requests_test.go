@@ -102,11 +102,9 @@ func TestListAll(t *testing.T) {
 	ct := groups[0]
 	require.Equal(t, floatingIPDetails, ct)
 	require.Equal(t, ExpectedFloatingIPSlice, groups)
-
 }
 
 func TestGet(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -133,7 +131,6 @@ func TestGet(t *testing.T) {
 	require.Equal(t, floatingIP, *ct)
 	require.Equal(t, floatingIPCreatedAt, ct.CreatedAt)
 	require.Equal(t, floatingIPUpdatedAt, *ct.UpdatedAt)
-
 }
 
 func TestCreate(t *testing.T) {
@@ -185,11 +182,9 @@ func TestDelete(t *testing.T) {
 	tasks, err := floatingips.Delete(client, floatingIP.ID).Extract()
 	require.NoError(t, err)
 	require.Equal(t, Tasks1, *tasks)
-
 }
 
 func TestAssign(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -221,11 +216,9 @@ func TestAssign(t *testing.T) {
 	require.Equal(t, floatingIP, *ip)
 	require.Equal(t, floatingIPCreatedAt, ip.CreatedAt)
 	require.Equal(t, floatingIPUpdatedAt, *ip.UpdatedAt)
-
 }
 
 func TestUnAssign(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -250,5 +243,4 @@ func TestUnAssign(t *testing.T) {
 	require.Equal(t, floatingIP, *ip)
 	require.Equal(t, floatingIPCreatedAt, ip.CreatedAt)
 	require.Equal(t, floatingIPUpdatedAt, *ip.UpdatedAt)
-
 }

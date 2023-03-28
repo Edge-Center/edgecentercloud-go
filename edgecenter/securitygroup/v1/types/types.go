@@ -6,7 +6,9 @@ import (
 )
 
 type RuleDirection string
+
 type EtherType string
+
 type Protocol string
 
 const (
@@ -100,8 +102,7 @@ func (rd *RuleDirection) MarshalJSON() ([]byte, error) {
 
 func (et EtherType) IsValid() error {
 	switch et {
-	case EtherTypeIPv4,
-		EtherTypeIPv6:
+	case EtherTypeIPv4, EtherTypeIPv6:
 		return nil
 	}
 	return fmt.Errorf("invalid EtherType: %v", et)

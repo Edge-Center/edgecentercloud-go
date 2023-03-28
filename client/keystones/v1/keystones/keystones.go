@@ -166,7 +166,6 @@ var keystoneCreateCommand = cli.Command{
 		},
 	},
 	Action: func(c *cli.Context) error {
-
 		url, err := edgecloud.ParseURL(c.String("spice-url"))
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "create")

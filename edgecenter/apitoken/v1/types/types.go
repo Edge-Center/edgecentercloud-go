@@ -7,6 +7,7 @@ import (
 )
 
 type RoleIDType int
+
 type RoleNameType string
 
 const (

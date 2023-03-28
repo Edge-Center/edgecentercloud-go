@@ -97,7 +97,6 @@ func TestListAll(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -122,7 +121,6 @@ func TestGet(t *testing.T) {
 
 	require.NoError(t, err)
 	require.Equal(t, Listener1, *ct)
-
 }
 
 func TestCreate(t *testing.T) {
@@ -175,11 +173,9 @@ func TestDelete(t *testing.T) {
 	tasks, err := listeners.Delete(client, Listener1.ID).Extract()
 	require.NoError(t, err)
 	require.Equal(t, Tasks1, *tasks)
-
 }
 
 func TestUpdate(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -211,5 +207,4 @@ func TestUpdate(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, Listener1, *ct)
 	require.Equal(t, Listener1.Name, ct.Name)
-
 }

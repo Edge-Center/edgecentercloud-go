@@ -37,7 +37,6 @@ func TestImageMetadata(t *testing.T) {
 	}
 
 	res, err := images.Upload(downloadClient, opts).Extract()
-
 	if err != nil {
 		t.Fatal(err)
 	}

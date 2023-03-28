@@ -124,5 +124,4 @@ func ListAll(client *edgecloud.ServiceClient, stackID string, opts ListOptsBuild
 	}
 
 	return all, nil
-
 }

@@ -199,7 +199,6 @@ var regionCreateCommand = cli.Command{
 		},
 	},
 	Action: func(c *cli.Context) error {
-
 		url, err := edgecloud.ParseURLNonMandatory(c.String("spice-url"))
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "create")

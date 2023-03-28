@@ -51,5 +51,4 @@ func TestUpdateOptsValidation(t *testing.T) {
 	}
 	err = edgecloud.ValidateStruct(opts)
 	require.NoError(t, err)
-
 }

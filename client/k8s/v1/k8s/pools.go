@@ -15,9 +15,7 @@ import (
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/volume/v1/volumes"
 )
 
-var (
-	poolIDText = "pool_id is mandatory argument"
-)
+var poolIDText = "pool_id is mandatory argument"
 
 var poolListSubCommand = cli.Command{
 	Name:      "list",
@@ -86,7 +84,6 @@ var poolDeleteSubCommand = cli.Command{
 				return nil, err
 			}
 		})
-
 	},
 }
 

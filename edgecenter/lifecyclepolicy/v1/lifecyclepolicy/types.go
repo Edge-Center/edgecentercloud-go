@@ -143,6 +143,7 @@ type CronSchedule struct {
 func (s CronSchedule) GetCommonSchedule() CommonSchedule {
 	return s.CommonSchedule
 }
+
 func (s IntervalSchedule) GetCommonSchedule() CommonSchedule {
 	return s.CommonSchedule
 }

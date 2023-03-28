@@ -89,11 +89,9 @@ func TestListAll(t *testing.T) {
 	ct := results[0]
 	require.Equal(t, Sg1, ct)
 	require.Equal(t, ExpectedServerGroupSlice, results)
-
 }
 
 func TestGet(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 

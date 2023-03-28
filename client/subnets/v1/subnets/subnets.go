@@ -154,7 +154,6 @@ var subnetDeleteCommand = cli.Command{
 				return nil, err
 			}
 		})
-
 	},
 }
 
@@ -218,7 +217,6 @@ var subnetUpdateCommand = cli.Command{
 		}
 		utils.ShowResults(subnet, c.String("format"))
 		return nil
-
 	},
 }
 

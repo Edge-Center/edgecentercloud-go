@@ -151,7 +151,6 @@ var projectDeleteCommand = cli.Command{
 				return nil, err
 			}
 		})
-
 	},
 }
 
@@ -187,7 +186,6 @@ var projectCreateCommand = cli.Command{
 		},
 	},
 	Action: func(c *cli.Context) error {
-
 		opts := projects.CreateOpts{
 			ClientID:    c.Int("client-id"),
 			State:       types.ProjectState(c.String("state")),

@@ -50,8 +50,10 @@ const UpdateRequest = `
 }	
 `
 
-const CreateResponse = GetResponse
-const UpdateResponse = GetResponse
+const (
+	CreateResponse = GetResponse
+	UpdateResponse = GetResponse
+)
 
 var (
 	createdTimeString    = "2020-04-10T11:37:58"

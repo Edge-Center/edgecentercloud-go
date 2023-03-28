@@ -15,8 +15,10 @@ import (
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/utils/metadata"
 )
 
-const SubnetDeleting int = 1200
-const SubnetCreatingTimeout int = 1200
+const (
+	SubnetDeleting        int = 1200
+	SubnetCreatingTimeout int = 1200
+)
 
 func createTestSubnet(client *edgecloud.ServiceClient, opts subnets.CreateOpts, subCidr string) (string, error) {
 	var gccidr edgecloud.CIDR

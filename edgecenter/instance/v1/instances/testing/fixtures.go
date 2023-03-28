@@ -523,10 +523,11 @@ var (
 			DeleteOnTermination: false,
 		}},
 		Addresses: map[string][]instances.InstanceAddress{
-			"net1": {{
-				Type:    types.AddressTypeFixed,
-				Address: ip1,
-			},
+			"net1": {
+				{
+					Type:    types.AddressTypeFixed,
+					Address: ip1,
+				},
 				{
 					Type:    types.AddressTypeFloating,
 					Address: ip2,

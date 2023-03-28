@@ -97,7 +97,6 @@ func TestListAll(t *testing.T) {
 	ct := actual[0]
 	require.Equal(t, Snapshot1, ct)
 	require.Equal(t, ExpectedSnapshotSlice, actual)
-
 }
 
 func TestListQuery(t *testing.T) {
@@ -136,7 +135,6 @@ func TestCreateOptsToMap(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -163,7 +161,6 @@ func TestGet(t *testing.T) {
 	require.Equal(t, Snapshot1, *ct)
 	require.Equal(t, createdTime, ct.CreatedAt)
 	require.Equal(t, updatedTime, *ct.UpdatedAt)
-
 }
 
 func TestCreate(t *testing.T) {
@@ -216,7 +213,6 @@ func TestDelete(t *testing.T) {
 	tasks, err := snapshots.Delete(client, Snapshot1.ID).Extract()
 	require.NoError(t, err)
 	require.Equal(t, Tasks1, *tasks)
-
 }
 
 func TestFindByName(t *testing.T) {
@@ -247,7 +243,6 @@ func TestFindByName(t *testing.T) {
 	require.Equal(t, Snapshot1.ID, snapShopID)
 	_, err = snapshots.IDFromName(client, "X", opts)
 	require.Error(t, err)
-
 }
 
 func TestMetadataReplace(t *testing.T) {
@@ -271,14 +266,17 @@ func TestMetadataReplace(t *testing.T) {
 	})
 
 	opts := snapshots.MetadataSetOpts{
-		Metadata: []snapshots.MetadataOpts{{
-			Key:   "test1",
-			Value: "test1",
-		}, {
-			Key:   "test2",
-			Value: "test2",
+		Metadata: []snapshots.MetadataOpts{
+			{
+				Key:   "test1",
+				Value: "test1",
+			},
+			{
+				Key:   "test2",
+				Value: "test2",
+			},
 		},
-		}}
+	}
 
 	client := fake.ServiceTokenClient("snapshots", "v1")
 	ct, err := snapshots.MetadataReplace(client, Snapshot1.ID, opts).Extract()
