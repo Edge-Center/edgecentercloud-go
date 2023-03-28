@@ -1,6 +1,7 @@
 package listeners
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 
@@ -197,12 +198,11 @@ var listenerDeleteSubCommand = cli.Command{
 				}
 				return nil, fmt.Errorf("cannot delete listener with ID: %s", listenerID)
 			}
-			switch err.(type) {
-			case edgecloud.ErrDefault404:
+			var e edgecloud.ErrDefault404
+			if errors.As(err, &e) {
 				return nil, nil
-			default:
-				return nil, err
 			}
+			return nil, err
 		})
 	},
 }

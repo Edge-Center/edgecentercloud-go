@@ -1,6 +1,7 @@
 package k8s
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 
@@ -35,7 +36,7 @@ func getPools(c *cli.Context) ([]pools.CreateOpts, error) {
 		return nil, fmt.Errorf("parameters number should be same for pool names, flavors, node-count, min-node-count and max-node-count: %w", err)
 	}
 
-	result := make([]pools.CreateOpts, len(poolNames))
+	result := make([]pools.CreateOpts, 0, len(poolNames))
 
 	for idx, name := range poolNames {
 		pool := pools.CreateOpts{
@@ -59,7 +60,6 @@ func getPools(c *cli.Context) ([]pools.CreateOpts, error) {
 		}
 
 		result = append(result, pool)
-
 	}
 
 	return result, nil
@@ -613,12 +613,11 @@ var clusterDeleteSubCommand = cli.Command{
 			if err == nil {
 				return nil, fmt.Errorf("cannot delete cluster with ID: %s", clusterID)
 			}
-			switch err.(type) {
-			case edgecloud.ErrDefault404:
+			var e edgecloud.ErrDefault404
+			if errors.As(err, &e) {
 				return nil, nil
-			default:
-				return nil, err
 			}
+			return nil, err
 		})
 	},
 }

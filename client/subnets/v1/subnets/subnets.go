@@ -1,6 +1,7 @@
 package subnets
 
 import (
+	"errors"
 	"fmt"
 	"net"
 
@@ -150,12 +151,11 @@ var subnetDeleteCommand = cli.Command{
 			if err == nil {
 				return nil, fmt.Errorf("cannot delete subnet with ID: %s", subnetID)
 			}
-			switch err.(type) {
-			case edgecloud.ErrDefault404:
+			var e edgecloud.ErrDefault404
+			if errors.As(err, &e) {
 				return nil, nil
-			default:
-				return nil, err
 			}
+			return nil, err
 		})
 	},
 }

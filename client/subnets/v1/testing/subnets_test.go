@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"errors"
 	"fmt"
 	"net"
 	"testing"
@@ -63,12 +64,11 @@ func deleteTestSubnet(client *edgecloud.ServiceClient, subnetID string) error {
 		if err == nil {
 			return nil, fmt.Errorf("cannot delete subnet with ID: %s", subnetID)
 		}
-		switch err.(type) {
-		case edgecloud.ErrDefault404:
+		var e edgecloud.ErrDefault404
+		if errors.As(err, &e) {
 			return nil, nil
-		default:
-			return nil, err
 		}
+		return nil, err
 	})
 
 	return err

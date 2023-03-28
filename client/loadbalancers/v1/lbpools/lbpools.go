@@ -1,6 +1,7 @@
 package lbpools
 
 import (
+	"errors"
 	"fmt"
 	"net"
 	"strings"
@@ -92,6 +93,7 @@ func getPoolMembers(c *cli.Context) ([]lbpools.CreatePoolMemberOpts, error) {
 	if len(memberAddresses) == 0 {
 		return nil, nil
 	}
+
 	memberPorts := c.IntSlice("member-port")
 	if len(memberAddresses) != len(memberPorts) {
 		return nil, fmt.Errorf("number of --member-address should be equal --member-port")
@@ -99,7 +101,7 @@ func getPoolMembers(c *cli.Context) ([]lbpools.CreatePoolMemberOpts, error) {
 	memberWeights := c.IntSlice("member-weight")
 	memberSubnetIDs := c.StringSlice("member-subnet-id")
 	memberInstanceIDs := c.StringSlice("member-instance-id")
-	members := make([]lbpools.CreatePoolMemberOpts, len(memberAddresses))
+	members := make([]lbpools.CreatePoolMemberOpts, 0, len(memberAddresses))
 
 	type addressPortPair struct {
 		ip   string
@@ -255,12 +257,11 @@ var lbpoolDeleteSubCommand = cli.Command{
 				}
 				return nil, fmt.Errorf("cannot delete lbpool with ID: %s", lbpoolID)
 			}
-			switch err.(type) {
-			case edgecloud.ErrDefault404:
+			var e edgecloud.ErrDefault404
+			if errors.As(err, &e) {
 				return nil, nil
-			default:
-				return nil, err
 			}
+			return nil, err
 		})
 	},
 }

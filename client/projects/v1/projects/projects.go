@@ -1,6 +1,7 @@
 package projects
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 
@@ -147,12 +148,11 @@ var projectDeleteCommand = cli.Command{
 			if err == nil {
 				return nil, fmt.Errorf("cannot delete project with ID: %d", projectID)
 			}
-			switch err.(type) {
-			case edgecloud.ErrDefault404:
+			var e edgecloud.ErrDefault404
+			if errors.As(err, &e) {
 				return nil, nil
-			default:
-				return nil, err
 			}
+			return nil, err
 		})
 	},
 }

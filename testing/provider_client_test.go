@@ -2,6 +2,7 @@ package testing
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -212,15 +213,15 @@ func TestReauthEndLoop(t *testing.T) {
 			mut.Lock()
 			defer mut.Unlock()
 
-			// ErrErrorAfter... will happen after a successful reauthentication,
-			// but the service still responds with a 401.
-			if _, ok := err.(*edgecloud.ErrErrorAfterReauthentication); ok {
+			// ErrErrorAfter... will happen after a successful reauthentication, but the service still responds with a 401.
+			var errorAfter *edgecloud.ErrErrorAfterReauthentication
+			if errors.As(err, &errorAfter) {
 				errAfter++
 			}
 
-			// ErrErrorUnable... will happen when the custom reauth func reports
-			// an error.
-			if _, ok := err.(*edgecloud.ErrUnableToReauthenticate); ok {
+			// ErrErrorUnable... will happen when the custom reauth func reports an error.
+			var errorUnable *edgecloud.ErrUnableToReauthenticate
+			if errors.As(err, &errorUnable) {
 				errUnable++
 			}
 		}()

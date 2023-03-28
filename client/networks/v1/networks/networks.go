@@ -1,6 +1,7 @@
 package networks
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/urfave/cli/v2"
@@ -140,12 +141,11 @@ var networkDeleteCommand = cli.Command{
 			if err == nil {
 				return nil, fmt.Errorf("cannot delete network with ID: %s", networkID)
 			}
-			switch err.(type) {
-			case edgecenter.ErrDefault404:
+			var e edgecenter.ErrDefault404
+			if errors.As(err, &e) {
 				return nil, nil
-			default:
-				return nil, err
 			}
+			return nil, err
 		})
 	},
 }

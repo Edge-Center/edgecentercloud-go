@@ -85,7 +85,7 @@ type ProviderClient struct {
 	Throwaway bool
 
 	// Context is the context passed to the HTTP request.
-	Context context.Context
+	Context context.Context //nolint: containedctx
 
 	// mut is a mutex for the client. It protects read and write access to client attributes such as getting
 	// and setting the AccessTokenID.
@@ -491,7 +491,8 @@ func (client *ProviderClient) doRequest(method, url string, options *RequestOpts
 		switch resp.StatusCode {
 		case http.StatusBadRequest:
 			err = ErrDefault400{respErr}
-			if error400er, ok := errType.(Err400er); ok {
+			var error400er Err400er
+			if errors.As(errType, &error400er) {
 				err = error400er.Error400(respErr)
 			}
 		case http.StatusUnauthorized:
@@ -513,62 +514,70 @@ func (client *ProviderClient) doRequest(method, url string, options *RequestOpts
 				state.hasReauthenticated = true
 				resp, err = client.doRequest(method, url, options, state)
 				if err != nil {
-					switch err := err.(type) {
-					case *ErrUnexpectedResponseCode:
+					var unexpectedErr *ErrUnexpectedResponseCode
+					if errors.As(err, &unexpectedErr) {
 						e := &ErrErrorAfterReauthentication{}
-						e.ErrOriginal = err
-						return nil, e
-					default:
-						e := &ErrErrorAfterReauthentication{}
-						e.ErrOriginal = err
+						e.ErrOriginal = unexpectedErr
 						return nil, e
 					}
+					e := &ErrErrorAfterReauthentication{}
+					e.ErrOriginal = err
+					return nil, e
 				}
 
 				return resp, nil
 			}
 			err = ErrDefault401{respErr}
-			if error401er, ok := errType.(Err401er); ok {
+			var error401er Err401er
+			if errors.As(errType, &error401er) {
 				err = error401er.Error401(respErr)
 			}
 		case http.StatusForbidden:
 			err = ErrDefault403{respErr}
-			if error403er, ok := errType.(Err403er); ok {
+			var error403er Err403er
+			if errors.As(errType, &error403er) {
 				err = error403er.Error403(respErr)
 			}
 		case http.StatusNotFound:
 			err = ErrDefault404{respErr}
-			if error404er, ok := errType.(Err404er); ok {
+			var error404er Err404er
+			if errors.As(errType, &error404er) {
 				err = error404er.Error404(respErr)
 			}
 		case http.StatusMethodNotAllowed:
 			err = ErrDefault405{respErr}
-			if error405er, ok := errType.(Err405er); ok {
+			var error405er Err405er
+			if errors.As(errType, &error405er) {
 				err = error405er.Error405(respErr)
 			}
 		case http.StatusRequestTimeout:
 			err = ErrDefault408{respErr}
-			if error408er, ok := errType.(Err408er); ok {
+			var error408er Err408er
+			if errors.As(errType, &error408er) {
 				err = error408er.Error408(respErr)
 			}
 		case http.StatusConflict:
 			err = ErrDefault409{respErr}
-			if error409er, ok := errType.(Err409er); ok {
+			var error409er Err409er
+			if errors.As(errType, &error409er) {
 				err = error409er.Error409(respErr)
 			}
-		case 429:
+		case http.StatusTooManyRequests:
 			err = ErrDefault429{respErr}
-			if error429er, ok := errType.(Err429er); ok {
+			var error429er Err429er
+			if errors.As(errType, &error429er) {
 				err = error429er.Error429(respErr)
 			}
 		case http.StatusInternalServerError:
 			err = ErrDefault500{respErr}
-			if error500er, ok := errType.(Err500er); ok {
+			var error500er Err500er
+			if errors.As(errType, &error500er) {
 				err = error500er.Error500(respErr)
 			}
 		case http.StatusServiceUnavailable:
 			err = ErrDefault503{respErr}
-			if error503er, ok := errType.(Err503er); ok {
+			var error503er Err503er
+			if errors.As(errType, &error503er) {
 				err = error503er.Error503(respErr)
 			}
 		}

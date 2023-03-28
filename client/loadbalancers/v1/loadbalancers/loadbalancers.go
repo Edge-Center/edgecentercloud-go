@@ -1,6 +1,7 @@
 package loadbalancers
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/urfave/cli/v2"
@@ -180,12 +181,11 @@ var loadBalancerDeleteSubCommand = cli.Command{
 				}
 				return nil, fmt.Errorf("cannot delete loadbalancer with ID: %s", loadBalancerID)
 			}
-			switch err.(type) {
-			case edgecloud.ErrDefault404:
+			var e edgecloud.ErrDefault404
+			if errors.As(err, &e) {
 				return nil, nil
-			default:
-				return nil, err
 			}
+			return nil, err
 		})
 	},
 }

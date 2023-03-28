@@ -7,7 +7,7 @@ func MapInterfaceToMapString(mapInterface interface{}) (map[string]string, error
 
 	switch mapInterface.(type) {
 	default:
-		return nil, fmt.Errorf("Unexpected type %T", mapInterface)
+		return nil, fmt.Errorf("unexpected type %T", mapInterface)
 	case map[string]interface{}:
 		for key, value := range mapInterface.(map[string]interface{}) {
 			mapString[key] = fmt.Sprintf("%v", value)

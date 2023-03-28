@@ -1,6 +1,7 @@
 package floatingips
 
 import (
+	"errors"
 	"fmt"
 	"net"
 
@@ -154,12 +155,11 @@ var floatingIPDeleteSubCommand = cli.Command{
 			if err == nil {
 				return nil, fmt.Errorf("cannot delete floating IP with ID: %s", floatingIPID)
 			}
-			switch err.(type) {
-			case edgecloud.ErrDefault404:
+			var e edgecloud.ErrDefault404
+			if errors.As(err, &e) {
 				return nil, nil
-			default:
-				return nil, err
 			}
+			return nil, err
 		})
 	},
 }

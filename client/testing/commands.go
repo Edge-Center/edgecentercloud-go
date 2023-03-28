@@ -268,12 +268,11 @@ func DeleteTestNetwork(client *edgecloud.ServiceClient, networkID string) error 
 		if err == nil {
 			return nil, fmt.Errorf("cannot delete network with ID: %s", networkID)
 		}
-		switch err.(type) {
-		case edgecloud.ErrDefault404:
+		var e edgecloud.ErrDefault404
+		if errors.As(err, &e) {
 			return nil, nil
-		default:
-			return nil, err
 		}
+		return nil, err
 	})
 
 	return err

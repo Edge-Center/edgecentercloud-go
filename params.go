@@ -577,7 +577,7 @@ func BuildHeaders(opts interface{}) (map[string]string, error) {
 					case reflect.Bool:
 						optsMap[tags[0]] = strconv.FormatBool(v.Bool())
 					}
-				} else { // nolint: gocritic
+				} else {
 					// if the field has a 'required' tag, it can't have a zero-value
 					if requiredTag := f.Tag.Get("required"); requiredTag == trueTag {
 						return optsMap, fmt.Errorf("required header [%s] not set", f.Name)

@@ -1,6 +1,7 @@
 package edgecloud
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"reflect"
@@ -507,8 +508,9 @@ func TranslateValidationError(err error) error {
 	if err == nil {
 		return nil
 	}
-	validationErrors, ok := err.(validator.ValidationErrors)
-	if !ok {
+
+	var validationErrors validator.ValidationErrors
+	if !errors.As(err, &validationErrors) {
 		return err
 	}
 	errs := make([]string, len(validationErrors))

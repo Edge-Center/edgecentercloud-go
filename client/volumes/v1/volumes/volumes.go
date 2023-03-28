@@ -1,6 +1,7 @@
 package volumes
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 
@@ -154,12 +155,11 @@ var volumeDeleteCommand = cli.Command{
 			if err == nil {
 				return nil, fmt.Errorf("cannot delete volume with ID: %s", volumeID)
 			}
-			switch err.(type) {
-			case edgecloud.ErrDefault404:
+			var e edgecloud.ErrDefault404
+			if errors.As(err, &e) {
 				return nil, nil
-			default:
-				return nil, err
 			}
+			return nil, err
 		})
 	},
 }

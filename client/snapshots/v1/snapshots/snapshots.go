@@ -113,12 +113,11 @@ var snapshotDeleteCommand = cli.Command{
 			if err == nil {
 				return nil, fmt.Errorf("cannot delete snapshot with ID: %s", snapshotID)
 			}
-			switch err.(type) {
-			case edgecloud.ErrDefault404:
+			var e edgecloud.ErrDefault404
+			if errors.As(err, &e) {
 				return nil, nil
-			default:
-				return nil, err
 			}
+			return nil, err
 		})
 	},
 }

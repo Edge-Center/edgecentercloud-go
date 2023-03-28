@@ -2,6 +2,7 @@ package instances
 
 import (
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"os"
 	"sort"
@@ -625,7 +626,7 @@ var instanceCreateCommandV2 = cli.Command{
 		},
 		&cli.StringSliceFlag{
 			Name:     "volume-volume-id",
-			Usage:    "instance volume volume id",
+			Usage:    "instance volume id",
 			Required: false,
 		},
 		&cli.GenericFlag{
@@ -841,12 +842,11 @@ var instanceDeleteCommand = cli.Command{
 			if err == nil {
 				return nil, fmt.Errorf("cannot delete instance with ID: %s", instanceID)
 			}
-			switch err.(type) {
-			case edgecloud.ErrDefault404:
+			var e edgecloud.ErrDefault404
+			if errors.As(err, &e) {
 				return nil, nil
-			default:
-				return nil, err
 			}
+			return nil, err
 		})
 	},
 }
