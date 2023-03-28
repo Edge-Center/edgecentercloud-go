@@ -40,6 +40,7 @@ func prepareTestParams(resourceName string, urlFunc func(c *edgecloud.ServiceCli
 	}
 
 	relativeURL = parsedURL.Path
+
 	return
 }
 

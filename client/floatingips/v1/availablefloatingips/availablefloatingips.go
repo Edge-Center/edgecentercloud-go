@@ -23,6 +23,7 @@ var availableFloatingIPListSubCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
+
 		return nil
 	},
 }

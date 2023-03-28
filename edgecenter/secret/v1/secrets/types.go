@@ -76,6 +76,7 @@ func (s *SecretType) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*s = v
+
 	return nil
 }
 

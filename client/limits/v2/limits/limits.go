@@ -39,6 +39,7 @@ func buildLimitFromFlags(c *cli.Context) (limits.Limit, error) {
 			limit.RegionalLimits = append(limit.RegionalLimits, newRegionalLimits)
 		}
 	}
+
 	return limit, nil
 }
 
@@ -57,6 +58,7 @@ var limitListCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(limit, c.String("format"))
+
 		return nil
 	},
 }
@@ -82,6 +84,7 @@ var limitGetCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(limitRequest, c.String("format"))
+
 		return nil
 	},
 }
@@ -106,6 +109,7 @@ var limitDeleteCommand = cli.Command{
 		if err != nil {
 			return cli.NewExitError(err, 1)
 		}
+
 		return nil
 	},
 }
@@ -133,6 +137,7 @@ func (g RegionLimitsFlag) Set(value string) error {
 
 		g[newRegion.RegionID] = newRegion
 	}
+
 	return nil
 }
 
@@ -186,6 +191,7 @@ var limitCreateCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
+
 		return nil
 	},
 }

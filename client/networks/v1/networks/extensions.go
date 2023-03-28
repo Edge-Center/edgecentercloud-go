@@ -26,6 +26,7 @@ var extensionListCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
+
 		return nil
 	},
 }
@@ -51,6 +52,7 @@ var extensionGetCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(ext, c.String("format"))
+
 		return nil
 	},
 }

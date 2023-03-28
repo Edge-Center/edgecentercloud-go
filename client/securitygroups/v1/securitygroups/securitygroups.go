@@ -36,6 +36,7 @@ var securityGroupListSubCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
+
 		return nil
 	},
 }
@@ -238,6 +239,7 @@ var securityGroupCreateSubCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
+
 		return nil
 	},
 }
@@ -263,6 +265,7 @@ var securityGroupGetSubCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
+
 		return nil
 	},
 }
@@ -288,6 +291,7 @@ var securityGroupListInstancesSubCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
+
 		return nil
 	},
 }
@@ -312,6 +316,7 @@ var securityGroupDeleteSubCommand = cli.Command{
 		if err != nil {
 			return cli.NewExitError(err, 1)
 		}
+
 		return nil
 	},
 }
@@ -351,6 +356,7 @@ var securityGroupUpdateSubCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
+
 		return nil
 	},
 }
@@ -385,6 +391,7 @@ var securityGroupDeepCopySubCommand = cli.Command{
 		if err := securitygroups.DeepCopy(client, securityGroupID, opts).ExtractErr(); err != nil {
 			return cli.NewExitError(err, 1)
 		}
+
 		return nil
 	},
 }

@@ -34,6 +34,7 @@ var floatingIPListSubCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
+
 		return nil
 	},
 }
@@ -94,6 +95,7 @@ var floatingIPCreateSubCommand = cli.Command{
 				return nil, fmt.Errorf("cannot get floating IP ID: %s. Error: %w", floatingIPID, err)
 			}
 			utils.ShowResults(volume, c.String("format"))
+
 			return nil, nil
 		})
 	},
@@ -120,6 +122,7 @@ var floatingIPGetSubCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
+
 		return nil
 	},
 }
@@ -209,6 +212,7 @@ var floatingIPAssignSubCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(floatingIP, c.String("format"))
+
 		return nil
 	},
 }
@@ -235,6 +239,7 @@ var floatingIPUnAssignSubCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(floatingIP, c.String("format"))
+
 		return nil
 	},
 }

@@ -43,6 +43,7 @@ func listImages(c *cli.Context) error {
 		return cli.NewExitError(err, 1)
 	}
 	utils.ShowResults(results, c.String("format"))
+
 	return nil
 }
 
@@ -57,6 +58,7 @@ func listProjectImages(c *cli.Context) error {
 		return cli.NewExitError(err, 1)
 	}
 	utils.ShowResults(results, c.String("format"))
+
 	return nil
 }
 
@@ -172,6 +174,7 @@ var imageCreateCommand = cli.Command{
 		if err != nil {
 			return cli.NewExitError(err, 1)
 		}
+
 		return utils.WaitTaskAndShowResult(c, downloadClient, results, true, func(task tasks.TaskID) (interface{}, error) {
 			taskInfo, err := tasks.Get(downloadClient, string(task)).Extract()
 			if err != nil {
@@ -189,6 +192,7 @@ var imageCreateCommand = cli.Command{
 			if err != nil {
 				return nil, fmt.Errorf("cannot get image with ID: %s. Error: %w", instanceID, err)
 			}
+
 			return instance, nil
 		})
 	},
@@ -216,6 +220,7 @@ var imageShowCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(image, c.String("format"))
+
 		return nil
 	},
 }
@@ -283,6 +288,7 @@ var imageUpdateCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(image, c.String("format"))
+
 		return nil
 	},
 }
@@ -363,6 +369,7 @@ var imageUploadCommand = cli.Command{
 		if err != nil {
 			return cli.NewExitError(err, 1)
 		}
+
 		return utils.WaitTaskAndShowResult(c, downloadClient, results, true, func(task tasks.TaskID) (interface{}, error) {
 			taskInfo, err := tasks.Get(downloadClient, string(task)).Extract()
 			if err != nil {
@@ -380,6 +387,7 @@ var imageUploadCommand = cli.Command{
 			if err != nil {
 				return nil, fmt.Errorf("cannot get image with ID: %s. Error: %w", instanceID, err)
 			}
+
 			return instance, nil
 		})
 	},
@@ -407,6 +415,7 @@ var imageDeleteCommand = cli.Command{
 		if err != nil {
 			return cli.NewExitError(err, 1)
 		}
+
 		return utils.WaitTaskAndShowResult(c, client, results, false, func(task tasks.TaskID) (interface{}, error) {
 			_, err := images.Get(client, imageID).Extract()
 			if err == nil {

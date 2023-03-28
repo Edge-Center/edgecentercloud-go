@@ -81,6 +81,7 @@ var apiTokenListCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
+
 		return nil
 	},
 }
@@ -115,6 +116,7 @@ var apiTokenGetCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
+
 		return nil
 	},
 }
@@ -148,6 +150,7 @@ var apiTokenDeleteCommand = cli.Command{
 		if err != nil {
 			return cli.NewExitError(err, 1)
 		}
+
 		return nil
 	},
 }
@@ -218,6 +221,7 @@ var apiTokenCreateCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
+
 		return nil
 	},
 }

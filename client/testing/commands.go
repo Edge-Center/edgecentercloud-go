@@ -253,6 +253,7 @@ func CreateTestNetwork(client *edgecloud.ServiceClient, opts networks.CreateOpts
 	if err != nil {
 		return "", err
 	}
+
 	return networkID.(string), nil
 }
 
@@ -274,5 +275,6 @@ func DeleteTestNetwork(client *edgecloud.ServiceClient, networkID string) error 
 			return nil, err
 		}
 	})
+
 	return err
 }

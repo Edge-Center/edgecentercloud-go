@@ -29,6 +29,7 @@ func (g *GlobalLimits) Update(source interface{}) error {
 			return fmt.Errorf("cannot set global field %s", field)
 		}
 	}
+
 	return nil
 }
 
@@ -77,6 +78,7 @@ func (r *RegionalLimits) Update(source interface{}) error {
 			return fmt.Errorf("cannot set regional field %s", f)
 		}
 	}
+
 	return nil
 }
 
@@ -137,6 +139,7 @@ func (opts CreateOpts) ToLimitCreateMap() (map[string]interface{}, error) {
 		return nil, err
 	}
 	m["requested_limits"] = rm
+
 	return m, nil
 }
 
@@ -161,6 +164,7 @@ func ToRequestMap(opts interface{}) map[string]interface{} {
 			optsMap[name] = value
 		}
 	}
+
 	return optsMap
 }
 

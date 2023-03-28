@@ -51,6 +51,7 @@ func GetHostRoutes(c *cli.Context) ([]subnets.HostRoute, error) {
 			NextHop:     hop,
 		})
 	}
+
 	return result, nil
 }
 
@@ -85,6 +86,7 @@ var subnetListCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
+
 		return nil
 	},
 }
@@ -113,6 +115,7 @@ var subnetGetCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(task, c.String("format"))
+
 		return nil
 	},
 }
@@ -216,6 +219,7 @@ var subnetUpdateCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(subnet, c.String("format"))
+
 		return nil
 	},
 }
@@ -321,6 +325,7 @@ var subnetCreateCommand = cli.Command{
 		if results == nil {
 			return cli.NewExitError(err, 1)
 		}
+
 		return utils.WaitTaskAndShowResult(c, client, results, true, func(task tasks.TaskID) (interface{}, error) {
 			taskInfo, err := tasks.Get(client, string(task)).Extract()
 			if err != nil {
@@ -335,6 +340,7 @@ var subnetCreateCommand = cli.Command{
 				return nil, fmt.Errorf("cannot get subnet with ID: %s. Error: %w", subnetID, err)
 			}
 			utils.ShowResults(subnet, c.String("format"))
+
 			return nil, nil
 		})
 	},

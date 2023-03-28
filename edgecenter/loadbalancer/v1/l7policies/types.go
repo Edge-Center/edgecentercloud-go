@@ -89,6 +89,7 @@ func (a *Action) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*a = v
+
 	return nil
 }
 
@@ -109,6 +110,7 @@ func (rt RuleType) IsValid() error {
 		TypeSSLDNField:
 		return nil
 	}
+
 	return fmt.Errorf("invalid rule type: %v", rt)
 }
 
@@ -161,6 +163,7 @@ func (rt *RuleType) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*rt = v
+
 	return nil
 }
 
@@ -227,6 +230,7 @@ func (ct *CompareType) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*ct = v
+
 	return nil
 }
 

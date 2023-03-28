@@ -42,6 +42,7 @@ func List(c *edgecloud.ServiceClient, clientID int, opts ListOptsBuilder) (r Lis
 		url += query
 	}
 	_, r.Err = c.Get(url, &r.Body, nil)
+
 	return
 }
 

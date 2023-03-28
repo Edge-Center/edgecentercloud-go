@@ -99,6 +99,7 @@ func StringSliceToMetadataSetOpts(slice []string) (*instances.MetadataSetOpts, e
 		}
 		m.Metadata = append(m.Metadata, instances.MetadataOpts{Key: parts[0], Value: parts[1]})
 	}
+
 	return &m, nil
 }
 
@@ -114,6 +115,7 @@ func StringSliceToAppConfigSetOpts(slice []string) (map[string]interface{}, erro
 		}
 		m[parts[0]] = parts[1]
 	}
+
 	return m, nil
 }
 
@@ -131,6 +133,7 @@ func getUserData(c *cli.Context) (string, error) {
 	} else if userDataContent != "" {
 		userData = base64.StdEncoding.EncodeToString([]byte(userDataContent))
 	}
+
 	return userData, nil
 }
 
@@ -360,6 +363,7 @@ var instanceListCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
+
 		return nil
 	},
 }
@@ -385,6 +389,7 @@ var instanceListInterfacesCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
+
 		return nil
 	},
 }
@@ -410,6 +415,7 @@ var instanceListSecurityGroupsCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
+
 		return nil
 	},
 }
@@ -446,6 +452,7 @@ var instanceRenameCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(instance, c.String("format"))
+
 		return nil
 	},
 }
@@ -481,6 +488,7 @@ var instanceAssignSecurityGroupsCommand = cli.Command{
 		if err != nil {
 			return cli.NewExitError(err, 1)
 		}
+
 		return nil
 	},
 }
@@ -516,6 +524,7 @@ var instanceUnAssignSecurityGroupsCommand = cli.Command{
 		if err != nil {
 			return cli.NewExitError(err, 1)
 		}
+
 		return nil
 	},
 }
@@ -722,8 +731,6 @@ var instanceCreateCommandV2 = cli.Command{
 			ServerGroupID:  c.String("server-group"),
 		}
 
-		fmt.Printf("%#v", opts)
-
 		err = edgecloud.TranslateValidationError(opts.Validate())
 		if err != nil {
 			return cli.NewExitError(err, 1)
@@ -747,6 +754,7 @@ var instanceCreateCommandV2 = cli.Command{
 			if err != nil {
 				return nil, fmt.Errorf("cannot get instance with ID: %s. Error: %w", instanceID, err)
 			}
+
 			return instance, nil
 		})
 	},
@@ -773,6 +781,7 @@ var instanceGetCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(instance, c.String("format"))
+
 		return nil
 	},
 }
@@ -864,6 +873,7 @@ var instanceStartCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(instance, c.String("format"))
+
 		return nil
 	},
 }
@@ -890,6 +900,7 @@ var instanceStopCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(instance, c.String("format"))
+
 		return nil
 	},
 }
@@ -916,6 +927,7 @@ var instancePowerCycleCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(instance, c.String("format"))
+
 		return nil
 	},
 }
@@ -942,6 +954,7 @@ var instanceRebootCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(instance, c.String("format"))
+
 		return nil
 	},
 }
@@ -968,6 +981,7 @@ var instanceSuspendCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(instance, c.String("format"))
+
 		return nil
 	},
 }
@@ -994,6 +1008,7 @@ var instanceResumeCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(instance, c.String("format"))
+
 		return nil
 	},
 }
@@ -1028,6 +1043,7 @@ var instanceResizeCommand = cli.Command{
 		if err != nil {
 			return cli.NewExitError(err, 1)
 		}
+
 		return utils.WaitTaskAndShowResult(c, client, results, true, func(task tasks.TaskID) (interface{}, error) {
 			instance, err := instances.Get(client, instanceID).Extract()
 			if err != nil {
@@ -1059,6 +1075,7 @@ var metadataListCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(metadata, c.String("format"))
+
 		return nil
 	},
 }
@@ -1092,6 +1109,7 @@ var metadataGetCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(metadata, c.String("format"))
+
 		return nil
 	},
 }
@@ -1124,6 +1142,7 @@ var metadataDeleteCommand = cli.Command{
 		if err != nil {
 			return cli.NewExitError(err, 1)
 		}
+
 		return nil
 	},
 }
@@ -1161,6 +1180,7 @@ var metadataCreateCommand = cli.Command{
 		if err != nil {
 			return cli.NewExitError(err, 1)
 		}
+
 		return nil
 	},
 }
@@ -1198,6 +1218,7 @@ var metadataUpdateCommand = cli.Command{
 		if err != nil {
 			return cli.NewExitError(err, 1)
 		}
+
 		return nil
 	},
 }
@@ -1341,6 +1362,7 @@ var instanceCreateBaremetalCommand = cli.Command{
 			if err != nil {
 				return nil, fmt.Errorf("cannot get instance with ID: %s. Error: %w", instanceID, err)
 			}
+
 			return instance, nil
 		})
 	},
@@ -1442,6 +1464,7 @@ var instanceRemoveServerGroupCommand = cli.Command{
 					return nil, fmt.Errorf("server group %s was not removed from instance %s", sgID, instanceID)
 				}
 			}
+
 			return sgInfo, nil
 		})
 	},

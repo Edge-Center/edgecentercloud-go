@@ -38,6 +38,7 @@ var appTemplateListSubCommand = cli.Command{
 		if results != nil {
 			utils.ShowResults(results, c.String("format"))
 		}
+
 		return nil
 	},
 }
@@ -67,6 +68,7 @@ var appTemplateGetSubCommand = cli.Command{
 		if result != nil {
 			utils.ShowResults(result, c.String("format"))
 		}
+
 		return nil
 	},
 }

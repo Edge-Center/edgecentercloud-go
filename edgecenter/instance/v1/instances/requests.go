@@ -192,6 +192,7 @@ func (opts CreateOpts) ToInstanceCreateMap() (map[string]interface{}, error) {
 	} else {
 		delete(mp, "configuration")
 	}
+
 	return mp, nil
 }
 
@@ -513,6 +514,7 @@ func Delete(client *edgecloud.ServiceClient, instanceID string, opts DeleteOptsB
 		url += query
 	}
 	_, r.Err = client.DeleteWithResponse(url, &r.Body, nil)
+
 	return
 }
 

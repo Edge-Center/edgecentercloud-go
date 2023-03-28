@@ -70,6 +70,7 @@ func deleteTestSubnet(client *edgecloud.ServiceClient, subnetID string) error {
 			return nil, err
 		}
 	})
+
 	return err
 }
 

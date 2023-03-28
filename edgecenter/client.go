@@ -316,6 +316,7 @@ func initClientOpts(client *edgecloud.ProviderClient, eo edgecloud.EndpointOpts,
 	sc.ResourceBase = url
 	sc.Type = clientType
 	sc.RegionID = eo.Region
+
 	return sc, nil
 }
 

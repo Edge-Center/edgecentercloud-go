@@ -111,6 +111,7 @@ func buildClientCommands(commands []*cli.Command) clientCommands {
 		}
 	}
 	mainClientUsage := fmt.Sprintf("GCloud API client\n%s", flags.MainClientHelpText)
+
 	return clientCommands{
 		commands: []*cli.Command{
 			{
@@ -162,6 +163,7 @@ func NewApp(args []string) *cli.App {
 	if len(clientCommands.usage) > 0 {
 		app.Usage = clientCommands.usage
 	}
+
 	return app
 }
 

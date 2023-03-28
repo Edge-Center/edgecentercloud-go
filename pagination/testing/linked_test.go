@@ -87,6 +87,7 @@ func TestEnumerateLinked(t *testing.T) {
 		}
 
 		callCount++
+
 		return true, nil
 	})
 	if err != nil {

@@ -147,6 +147,7 @@ func interfaceToSlice(input interface{}) []interface{} {
 	for i := 0; i < object.Len(); i++ {
 		records = append(records, object.Index(i).Interface())
 	}
+
 	return records
 }
 
@@ -154,11 +155,10 @@ func renderJSON(input interface{}) error {
 	if input == nil || (reflect.TypeOf(input).Kind() == reflect.Slice && reflect.ValueOf(input).Len() == 0) {
 		return nil
 	}
-	res, err := json.MarshalIndent(input, "", "  ")
+	_, err := json.MarshalIndent(input, "", "  ")
 	if err != nil {
 		return err
 	}
-	fmt.Println(string(res))
 	return nil
 }
 
@@ -166,17 +166,13 @@ func renderYAML(input interface{}) {
 	if input == nil || (reflect.TypeOf(input).Kind() == reflect.Slice && reflect.ValueOf(input).Len() == 0) {
 		return
 	}
-	res, _ := yaml.Marshal(input)
-	fmt.Println(string(res))
+	yaml.Marshal(input)
 }
 
 func ShowResults(input interface{}, format string) {
 	switch format {
 	case "json":
-		err := renderJSON(input)
-		if err != nil {
-			fmt.Println(err)
-		}
+		renderJSON(input)
 	case "table":
 		renderTable(input)
 	case "yaml":
@@ -252,6 +248,7 @@ func WaitTaskAndShowResult(
 	} else {
 		ShowResults(results, c.String("format"))
 	}
+
 	return nil
 }
 
@@ -338,6 +335,7 @@ func ValidateEqualSlicesLength(slices ...interface{}) error {
 			return fmt.Errorf("element %v has different length than %v", slice, slices[0])
 		}
 	}
+
 	return nil
 }
 
@@ -364,6 +362,7 @@ func getStructFieldName(tag, key string, s interface{}) string {
 			return f.Name
 		}
 	}
+
 	return ""
 }
 
@@ -388,6 +387,7 @@ func UpdateStructFromString(item interface{}, value string) error {
 		}
 		field.SetInt(value)
 	}
+
 	return nil
 }
 
@@ -406,5 +406,6 @@ func StructToString(item interface{}) string {
 		fields = append(fields, defaultName)
 	}
 	result := strings.Join(fields, ";")
+
 	return result
 }

@@ -43,6 +43,7 @@ var regionAccessListCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
+
 		return nil
 	},
 }
@@ -67,6 +68,7 @@ var regionAccessDeleteCommand = cli.Command{
 		if err = regionsaccess.Delete(client, resellerID).ExtractErr(); err != nil {
 			return cli.NewExitError(err, 1)
 		}
+
 		return nil
 	},
 }
@@ -117,6 +119,7 @@ var regionAccessCreateCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
+
 		return nil
 	},
 }

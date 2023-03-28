@@ -93,6 +93,7 @@ func (rd *RuleDirection) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*rd = v
+
 	return nil
 }
 
@@ -152,6 +153,7 @@ func (et *EtherType) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*et = v
+
 	return nil
 }
 
@@ -187,6 +189,7 @@ func (p Protocol) IsValid() error {
 		ProtocolIPIP:
 		return nil
 	}
+
 	return fmt.Errorf("invalid Protocol: %v", p)
 }
 
@@ -254,6 +257,7 @@ func (p *Protocol) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*p = v
+
 	return nil
 }
 

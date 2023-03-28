@@ -39,6 +39,7 @@ func stringSliceToMap(slice []string) (map[string]string, error) {
 		}
 		metadataMap[parts[0]] = parts[1]
 	}
+
 	return metadataMap, nil
 }
 
@@ -153,6 +154,7 @@ func NewMetadataDeleteCommand(cc ClientConstructor, usage string, argsUsage stri
 			if err != nil {
 				return cli.NewExitError(err, 1)
 			}
+
 			return nil
 		},
 	}
@@ -192,6 +194,7 @@ func NewMetadataCreateCommand(cc ClientConstructor, usage string, argsUsage stri
 			if err != nil {
 				return cli.NewExitError(err, 1)
 			}
+
 			return nil
 		},
 	}
@@ -231,6 +234,7 @@ func NewMetadataUpdateCommand(cc ClientConstructor, usage string, argsUsage stri
 			if err != nil {
 				return cli.NewExitError(err, 1)
 			}
+
 			return nil
 		},
 	}
@@ -270,6 +274,7 @@ func NewMetadataReplaceCommand(cc ClientConstructor, usage string, argsUsage str
 			if err != nil {
 				return cli.NewExitError(err, 1)
 			}
+
 			return nil
 		},
 	}

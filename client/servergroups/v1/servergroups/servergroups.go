@@ -36,6 +36,7 @@ var serverGroupListCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
+
 		return nil
 	},
 }
@@ -60,6 +61,7 @@ var serverGroupGetCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(sg, c.String("format"))
+
 		return nil
 	},
 }
@@ -83,6 +85,7 @@ var serverGroupDeleteCommand = cli.Command{
 		if err != nil {
 			return cli.NewExitError(err, 1)
 		}
+
 		return nil
 	},
 }
@@ -120,6 +123,7 @@ var serverGroupCreateCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
+
 		return nil
 	},
 }

@@ -41,6 +41,7 @@ func authTokenPost(t *testing.T, options edgecloud.AuthOptions, requestJSON stri
 	actual, err := tokens.Create(serviceClient, &options).ExtractTokens()
 	require.NoError(t, err)
 	require.Equal(t, expectedToken, *actual)
+
 	return actual
 }
 

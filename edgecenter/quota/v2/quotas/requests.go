@@ -33,6 +33,7 @@ func ListCombined(c *edgecloud.ServiceClient, opts ListCombinedOptsBuilder) (r C
 		url += query
 	}
 	_, r.Err = c.Get(url, &r.Body, nil)
+
 	return
 }
 

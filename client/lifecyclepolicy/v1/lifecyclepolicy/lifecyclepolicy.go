@@ -88,6 +88,7 @@ var getSubCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
+
 		return nil
 	},
 }
@@ -113,6 +114,7 @@ var listSubCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
+
 		return nil
 	},
 }
@@ -137,6 +139,7 @@ var deleteSubCommand = cli.Command{
 		if err != nil {
 			return cli.NewExitError(err, 1)
 		}
+
 		return nil
 	},
 }
@@ -181,6 +184,7 @@ var createSubCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
+
 		return nil
 	},
 }
@@ -240,6 +244,7 @@ var updateSubCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
+
 		return nil
 	},
 }
@@ -276,6 +281,7 @@ var addVolumeSubCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
+
 		return nil
 	},
 }
@@ -312,6 +318,7 @@ var removeVolumeSubCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
+
 		return nil
 	},
 }
@@ -351,6 +358,7 @@ func extractRetentionTime(c *cli.Context) (*lifecyclepolicy.RetentionTimer, erro
 	default:
 		return nil, fmt.Errorf("invalid value of retention_time flag (%s)", s)
 	}
+
 	return t, nil
 }
 
@@ -376,6 +384,7 @@ func extractCreateIntervalScheduleOpts(c *cli.Context) (*lifecyclepolicy.CreateI
 	default:
 		return nil, fmt.Errorf("invalid value of interval flag (%s)", s)
 	}
+
 	return opts, nil
 }
 
@@ -513,6 +522,7 @@ var addScheduleSubCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
+
 		return nil
 	},
 }
@@ -549,6 +559,7 @@ var removeScheduleSubCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
+
 		return nil
 	},
 }

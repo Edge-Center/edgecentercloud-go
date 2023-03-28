@@ -36,6 +36,7 @@ var networkListCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
+
 		return nil
 	},
 }
@@ -75,6 +76,7 @@ var availableNetworkListCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
+
 		return nil
 	},
 }
@@ -103,6 +105,7 @@ var networkGetCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(network, c.String("format"))
+
 		return nil
 	},
 }
@@ -184,6 +187,7 @@ var networkUpdateCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(network, c.String("format"))
+
 		return nil
 	},
 }
@@ -223,6 +227,7 @@ var networkCreateCommand = cli.Command{
 		if results == nil {
 			return cli.NewExitError(err, 1)
 		}
+
 		return utils.WaitTaskAndShowResult(c, client, results, true, func(task tasks.TaskID) (interface{}, error) {
 			taskInfo, err := tasks.Get(client, string(task)).Extract()
 			if err != nil {
@@ -237,6 +242,7 @@ var networkCreateCommand = cli.Command{
 				return nil, fmt.Errorf("cannot get network with ID: %s. Error: %w", networkID, err)
 			}
 			utils.ShowResults(network, c.String("format"))
+
 			return nil, nil
 		})
 	},
@@ -263,6 +269,7 @@ var networkInstancePortCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
+
 		return nil
 	},
 }

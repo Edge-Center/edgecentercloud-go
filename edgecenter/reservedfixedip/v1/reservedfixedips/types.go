@@ -62,6 +62,7 @@ func (t *ReservedFixedIPType) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*t = v
+
 	return nil
 }
 

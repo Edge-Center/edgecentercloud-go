@@ -46,6 +46,7 @@ var l7policyListSubCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
+
 		return nil
 	},
 }
@@ -75,6 +76,7 @@ var l7policyGetSubCommand = cli.Command{
 		if result != nil {
 			utils.ShowResults(result, c.String("format"))
 		}
+
 		return nil
 	},
 }
@@ -105,6 +107,7 @@ var l7policyDeleteSubCommand = cli.Command{
 		if result != nil {
 			utils.ShowResults(result, c.String("format"))
 		}
+
 		return nil
 	},
 }
@@ -175,6 +178,7 @@ var l7policyCreateSubCommand = cli.Command{
 		if err != nil {
 			return cli.NewExitError(err, 1)
 		}
+
 		return utils.WaitTaskAndShowResult(c, client, results, true, func(task tasks.TaskID) (interface{}, error) {
 			taskInfo, err := tasks.Get(client, string(task)).Extract()
 			if err != nil {
@@ -189,6 +193,7 @@ var l7policyCreateSubCommand = cli.Command{
 				return nil, fmt.Errorf("cannot get policy with ID: %s. Error: %w", policyID, err)
 			}
 			utils.ShowResults(router, c.String("format"))
+
 			return nil, nil
 		})
 	},
@@ -261,6 +266,7 @@ var l7policyReplaceSubCommand = cli.Command{
 		if err != nil {
 			return cli.NewExitError(err, 1)
 		}
+
 		return utils.WaitTaskAndShowResult(c, client, results, true, func(task tasks.TaskID) (interface{}, error) {
 			taskInfo, err := tasks.Get(client, string(task)).Extract()
 			if err != nil {
@@ -275,6 +281,7 @@ var l7policyReplaceSubCommand = cli.Command{
 				return nil, fmt.Errorf("cannot get policy with ID: %s. Error: %w", policyID, err)
 			}
 			utils.ShowResults(router, c.String("format"))
+
 			return nil, nil
 		})
 	},

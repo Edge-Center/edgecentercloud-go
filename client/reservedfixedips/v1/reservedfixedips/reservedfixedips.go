@@ -79,6 +79,7 @@ var reservedFixedIPListSubCommand = cli.Command{
 		if results != nil {
 			utils.ShowResults(results, c.String("format"))
 		}
+
 		return nil
 	},
 }
@@ -108,6 +109,7 @@ var reservedFixedIPGetSubCommand = cli.Command{
 		if result != nil {
 			utils.ShowResults(result, c.String("format"))
 		}
+
 		return nil
 	},
 }
@@ -137,6 +139,7 @@ var reservedFixedIPDeleteSubCommand = cli.Command{
 		if result != nil {
 			utils.ShowResults(result, c.String("format"))
 		}
+
 		return nil
 	},
 }
@@ -190,6 +193,7 @@ var reservedFixedIPCreateSubCommand = cli.Command{
 		if err != nil {
 			return cli.NewExitError(err, 1)
 		}
+
 		return utils.WaitTaskAndShowResult(c, client, results, true, func(task tasks.TaskID) (interface{}, error) {
 			taskInfo, err := tasks.Get(client, string(task)).Extract()
 			if err != nil {
@@ -204,6 +208,7 @@ var reservedFixedIPCreateSubCommand = cli.Command{
 				return nil, fmt.Errorf("cannot get reserved fixed ip with port ID: %s. Error: %w", portID, err)
 			}
 			utils.ShowResults(reservedFixedIP, c.String("format"))
+
 			return nil, nil
 		})
 	},
@@ -244,6 +249,7 @@ var reservedFixedIPSwitchVIPSubCommand = cli.Command{
 		if results != nil {
 			utils.ShowResults(results, c.String("format"))
 		}
+
 		return nil
 	},
 }
@@ -278,6 +284,7 @@ var reservedFixedIPListInstancePortSubCommand = cli.Command{
 		if result != nil {
 			utils.ShowResults(result, c.String("format"))
 		}
+
 		return nil
 	},
 }
@@ -307,6 +314,7 @@ var reservedFixedIPListAvailablePortSubCommand = cli.Command{
 		if results != nil {
 			utils.ShowResults(results, c.String("format"))
 		}
+
 		return nil
 	},
 }
@@ -346,6 +354,7 @@ var reservedFixedIPAddPortSubCommand = cli.Command{
 		if results != nil {
 			utils.ShowResults(results, c.String("format"))
 		}
+
 		return nil
 	},
 }
@@ -385,6 +394,7 @@ var reservedFixedIPReplacePortSubCommand = cli.Command{
 		if results != nil {
 			utils.ShowResults(results, c.String("format"))
 		}
+
 		return nil
 	},
 }

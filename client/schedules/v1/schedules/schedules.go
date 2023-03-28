@@ -50,6 +50,7 @@ var scheduleGetSubCommand = cli.Command{
 			}
 			utils.ShowResults(schedule, c.String("format"))
 		}
+
 		return nil
 	},
 }
@@ -190,6 +191,7 @@ var scheduleUpdateSubCommand = cli.Command{
 			}
 			utils.ShowResults(schedule, c.String("format"))
 		}
+
 		return nil
 	},
 }

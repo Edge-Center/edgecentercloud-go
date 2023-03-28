@@ -39,6 +39,7 @@ var quotasListCombinedSubCommands = cli.Command{
 		client, err := client.NewQuotaClientV2(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
+
 			return cli.NewExitError(err, 1)
 		}
 
@@ -52,6 +53,7 @@ var quotasListCombinedSubCommands = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
+
 		return nil
 	},
 }
@@ -81,6 +83,7 @@ var quotasListGlobalSubCommands = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
+
 		return nil
 	},
 }
@@ -107,6 +110,7 @@ var quotasListRegionalSubCommands = cli.Command{
 		client, err := client.NewQuotaClientV2(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
+
 			return cli.NewExitError(err, 1)
 		}
 
@@ -117,6 +121,7 @@ var quotasListRegionalSubCommands = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
+
 		return nil
 	},
 }

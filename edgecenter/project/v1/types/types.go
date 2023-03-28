@@ -67,6 +67,7 @@ func (rs *ProjectState) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*rs = v
+
 	return nil
 }
 

@@ -36,6 +36,7 @@ var portSecurityEnableSubCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(iface, c.String("format"))
+
 		return nil
 	},
 }
@@ -62,6 +63,7 @@ var portSecurityDisableSubCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(iface, c.String("format"))
+
 		return nil
 	},
 }
@@ -108,6 +110,7 @@ var assignAllowedAddressPairsSubCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
+
 		return nil
 	},
 }
@@ -124,6 +127,7 @@ func getAddressPairs(ips, macs []string) ([]reservedfixedips.AllowedAddressPairs
 			MacAddress: macs[i],
 		}
 	}
+
 	return result, nil
 }
 

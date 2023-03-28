@@ -45,6 +45,7 @@ func ServiceTokenClient(name string, version string) *edgecloud.ServiceClient {
 	if err != nil {
 		panic(err)
 	}
+
 	return client
 }
 
@@ -66,6 +67,7 @@ func ServiceAuthClient(name string, version string) *edgecloud.ServiceClient {
 	if err != nil {
 		panic(err)
 	}
+
 	return client
 }
 

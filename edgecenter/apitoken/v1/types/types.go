@@ -72,6 +72,7 @@ func (r *RoleIDType) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*r = v
+
 	return nil
 }
 
@@ -138,6 +139,7 @@ func (rs *RoleNameType) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*rs = v
+
 	return nil
 }
 

@@ -136,6 +136,7 @@ func (gs TokenAPISettings) Validate() error {
 	if gs.APIURL == "" {
 		return fmt.Errorf("api url required. APIURL")
 	}
+
 	return nil
 }
 
@@ -232,5 +233,6 @@ func (gs PasswordAPISettings) Validate() error {
 	if gs.Password == "" {
 		return fmt.Errorf("password required")
 	}
+
 	return nil
 }

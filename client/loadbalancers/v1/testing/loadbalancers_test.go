@@ -40,6 +40,7 @@ func createTestLoadBalancerWithListener(client *edgecloud.ServiceClient, opts lo
 	if err != nil {
 		return "", err
 	}
+
 	return lbID.(string), nil
 }
 

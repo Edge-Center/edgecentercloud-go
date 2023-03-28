@@ -70,6 +70,7 @@ func (ks *KeystoneState) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*ks = v
+
 	return nil
 }
 

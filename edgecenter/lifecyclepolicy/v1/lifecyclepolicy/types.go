@@ -235,6 +235,7 @@ func (rawPolicy rawLifecyclePolicy) cook() (*LifecyclePolicy, error) {
 		return nil, err
 	}
 	policy.Schedules = schedules
+
 	return &policy, nil
 }
 

@@ -87,6 +87,7 @@ func (t *TE) Fetch() error {
 		return err
 	}
 	t.Bin = body
+
 	return nil
 }
 

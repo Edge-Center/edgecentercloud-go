@@ -26,6 +26,7 @@ func (e *Environment) Validate() error {
 			return ErrInvalidEnvironment{Section: key}
 		}
 	}
+
 	return nil
 }
 
@@ -108,6 +109,7 @@ func (e *Environment) getRRFileContents(ignoreIf igFunc) error {
 		// if the resource registry contained any URL's, store them. This can
 		// then be passed as parameter to api calls to Heat api.
 		e.Files = tempTemplate.Files
+
 		return nil
 	default:
 		return nil
@@ -130,5 +132,6 @@ func ignoreIfEnvironment(key string, value interface{}) bool {
 	if strings.Contains(valueString, "::") {
 		return true
 	}
+
 	return false
 }

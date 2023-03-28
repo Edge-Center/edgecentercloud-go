@@ -82,6 +82,7 @@ var volumeListCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
+
 		return nil
 	},
 }
@@ -110,6 +111,7 @@ var volumeGetCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(task, c.String("format"))
+
 		return nil
 	},
 }
@@ -251,6 +253,7 @@ var volumeCreateCommand = cli.Command{
 		if results == nil {
 			return cli.NewExitError(err, 1)
 		}
+
 		return utils.WaitTaskAndShowResult(c, client, results, true, func(task tasks.TaskID) (interface{}, error) {
 			taskInfo, err := tasks.Get(client, string(task)).Extract()
 			if err != nil {
@@ -264,6 +267,7 @@ var volumeCreateCommand = cli.Command{
 			if err != nil {
 				return nil, fmt.Errorf("cannot get volume with ID: %s. Error: %w", volumeID, err)
 			}
+
 			return volume, nil
 		})
 	},
@@ -301,6 +305,7 @@ var volumeAttachCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(volume, c.String("format"))
+
 		return nil
 	},
 }
@@ -337,6 +342,7 @@ var volumeDetachCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(volume, c.String("format"))
+
 		return nil
 	},
 }
@@ -378,6 +384,7 @@ var volumeRetypeCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(volume, c.String("format"))
+
 		return nil
 	},
 }
@@ -418,6 +425,7 @@ var volumeExtendCommand = cli.Command{
 		if results == nil {
 			return cli.NewExitError(err, 1)
 		}
+
 		return utils.WaitTaskAndShowResult(c, client, results, true, func(task tasks.TaskID) (interface{}, error) {
 			volume, err := volumes.Get(client, volumeID).Extract()
 			if err != nil {
@@ -453,6 +461,7 @@ var volumeRevertCommand = cli.Command{
 		if results == nil {
 			return cli.NewExitError(err, 1)
 		}
+
 		return utils.WaitTaskAndShowResult(c, client, results, true, func(task tasks.TaskID) (interface{}, error) {
 			volume, err := volumes.Get(client, volumeID).Extract()
 			if err != nil {

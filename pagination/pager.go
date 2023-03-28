@@ -170,6 +170,7 @@ func (p Pager) AllPages() (Page, error) {
 					}
 				}
 			}
+
 			return true, nil
 		})
 		if err != nil {

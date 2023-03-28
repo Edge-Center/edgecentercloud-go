@@ -61,6 +61,7 @@ func buildTokenClient(c *cli.Context, endpointName, endpointType string, version
 
 	options := settings.ToTokenOptions()
 	eo := settings.ToEndpointOptions()
+
 	return edgecenter.TokenClientServiceWithDebug(options, eo, settings.Debug)
 }
 
@@ -112,6 +113,7 @@ func buildAPITokenClient(c *cli.Context, endpointName, endpointType string, vers
 
 	options := settings.ToAPITokenOptions()
 	eo := settings.ToEndpointOptions()
+
 	return edgecenter.APITokenClientServiceWithDebug(options, eo, settings.Debug)
 }
 
@@ -169,6 +171,7 @@ func buildPlatformClient(c *cli.Context, endpointName, endpointType string, vers
 
 	options := settings.ToAuthOptions()
 	eo := settings.ToEndpointOptions()
+
 	return edgecenter.AuthClientServiceWithDebug(options, eo, settings.Debug)
 }
 

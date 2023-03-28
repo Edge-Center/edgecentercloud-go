@@ -132,6 +132,7 @@ func deepDiffEqual(expected, actual reflect.Value, visited map[visit]bool, path 
 			hop := append(path, fmt.Sprintf("[%d]", i)) // nolint:gocritic
 			deepDiffEqual(expected.Index(i), actual.Index(i), visited, hop, logDifference)
 		}
+
 		return
 	case reflect.Interface:
 		if expected.IsNil() != actual.IsNil() {
@@ -183,6 +184,7 @@ func deepDiffEqual(expected, actual reflect.Value, visited map[visit]bool, path 
 			hop := append(path, fmt.Sprintf("[%v]", k))
 			deepDiffEqual(expectedValue, actualValue, visited, hop, logDifference)
 		}
+
 		return
 	case reflect.Func:
 		if expected.IsNil() != actual.IsNil() {
@@ -312,6 +314,7 @@ func isJSONEquals(t *testing.T, expectedJSON string, actual interface{}) bool {
 
 		return false
 	}
+
 	return true
 }
 

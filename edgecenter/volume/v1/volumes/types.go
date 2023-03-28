@@ -61,8 +61,10 @@ func (vs VolumeStatus) IsValid() error {
 		Uploading,
 		Retyping,
 		Extending:
+
 		return nil
 	}
+
 	return fmt.Errorf("invalid VolumeStatus type: %v", vs)
 }
 
@@ -126,6 +128,7 @@ func (vs *VolumeStatus) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*vs = v
+
 	return nil
 }
 
@@ -182,6 +185,7 @@ func (vs *VolumeSource) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*vs = v
+
 	return nil
 }
 
@@ -238,6 +242,7 @@ func (vt *VolumeType) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*vt = v
+
 	return nil
 }
 

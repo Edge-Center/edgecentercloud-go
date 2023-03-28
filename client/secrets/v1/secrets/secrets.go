@@ -41,6 +41,7 @@ var secretListCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
+
 		return nil
 	},
 }
@@ -65,6 +66,7 @@ var secretGetCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(secret, c.String("format"))
+
 		return nil
 	},
 }
@@ -92,6 +94,7 @@ var secretDeleteCommand = cli.Command{
 		if result != nil {
 			utils.ShowResults(result, c.String("format"))
 		}
+
 		return nil
 	},
 }
@@ -198,6 +201,7 @@ var secretCreateCommand = cli.Command{
 		if err != nil {
 			return cli.NewExitError(err, 1)
 		}
+
 		return utils.WaitTaskAndShowResult(c, client, results, true, func(task tasks.TaskID) (interface{}, error) {
 			taskInfo, err := tasks.Get(client, string(task)).Extract()
 			if err != nil {
@@ -212,6 +216,7 @@ var secretCreateCommand = cli.Command{
 				return nil, fmt.Errorf("cannot get secret with ID: %s. Error: %w", secretID, err)
 			}
 			utils.ShowResults(secret, c.String("format"))
+
 			return nil, nil
 		})
 	},

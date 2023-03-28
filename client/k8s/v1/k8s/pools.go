@@ -38,6 +38,7 @@ var poolListSubCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
+
 		return nil
 	},
 }
@@ -140,6 +141,7 @@ var poolUpdateSubCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
+
 		return nil
 	},
 }
@@ -174,6 +176,7 @@ var poolGetSubCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
+
 		return nil
 	},
 }
@@ -277,6 +280,7 @@ var poolCreateSubCommand = cli.Command{
 				return nil, fmt.Errorf("cannot get pool with ID: %s. Error: %w", poolID, err)
 			}
 			utils.ShowResults(pool, c.String("format"))
+
 			return nil, nil
 		})
 	},

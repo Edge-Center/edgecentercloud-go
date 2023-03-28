@@ -90,6 +90,7 @@ func (v *Visibility) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*v = vt
+
 	return nil
 }
 
@@ -146,6 +147,7 @@ func (v *HwMachineType) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*v = vt
+
 	return nil
 }
 
@@ -202,6 +204,7 @@ func (v *SSHKeyType) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*v = vt
+
 	return nil
 }
 
@@ -258,6 +261,7 @@ func (v *OSType) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*v = vt
+
 	return nil
 }
 
@@ -314,6 +318,7 @@ func (v *HwFirmwareType) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*v = vt
+
 	return nil
 }
 
@@ -369,6 +374,7 @@ func (v *ImageSourceType) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*v = vt
+
 	return nil
 }
 

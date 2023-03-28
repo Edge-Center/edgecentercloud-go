@@ -64,6 +64,7 @@ func getHealthMonitor(c *cli.Context) (*lbpools.CreateHealthMonitorOpts, error) 
 		}
 		hm.URLPath = httpMethodURLPath
 	}
+
 	return &hm, nil
 }
 
@@ -193,6 +194,7 @@ var lbpoolListSubCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
+
 		return nil
 	},
 }
@@ -218,6 +220,7 @@ var lbpoolGetSubCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
+
 		return nil
 	},
 }
@@ -243,6 +246,7 @@ var lbpoolDeleteSubCommand = cli.Command{
 		if err != nil {
 			return cli.NewExitError(err, 1)
 		}
+
 		return utils.WaitTaskAndShowResult(c, client, results, false, func(task tasks.TaskID) (interface{}, error) {
 			lbpool, err := lbpools.Get(client, lbpoolID).Extract()
 			if err == nil {
@@ -506,6 +510,7 @@ var lbpoolCreateSubCommand = cli.Command{
 		if err != nil {
 			return cli.NewExitError(err, 1)
 		}
+
 		return utils.WaitTaskAndShowResult(c, client, results, true, func(task tasks.TaskID) (interface{}, error) {
 			taskInfo, err := tasks.Get(client, string(task)).Extract()
 			if err != nil {
@@ -520,6 +525,7 @@ var lbpoolCreateSubCommand = cli.Command{
 				return nil, fmt.Errorf("cannot get lbpool with ID: %s. Error: %w", lbpoolID, err)
 			}
 			utils.ShowResults(lbpool, c.String("format"))
+
 			return nil, nil
 		})
 	},
@@ -591,6 +597,7 @@ var lbpoolCreateMemberSubCommand = cli.Command{
 		if err != nil {
 			return cli.NewExitError(err, 1)
 		}
+
 		return utils.WaitTaskAndShowResult(c, client, results, true, func(task tasks.TaskID) (interface{}, error) {
 			taskInfo, err := tasks.Get(client, string(task)).Extract()
 			if err != nil {
@@ -605,6 +612,7 @@ var lbpoolCreateMemberSubCommand = cli.Command{
 				return nil, fmt.Errorf("cannot get lbpool with ID: %s. Error: %w", memberID, err)
 			}
 			utils.ShowResults(lbpool, c.String("format"))
+
 			return nil, nil
 		})
 	},
@@ -639,6 +647,7 @@ var lbpoolDeleteMemberSubCommand = cli.Command{
 		if err != nil {
 			return cli.NewExitError(err, 1)
 		}
+
 		return utils.WaitTaskAndShowResult(c, client, results, false, func(task tasks.TaskID) (interface{}, error) {
 			lbpool, err := lbpools.Get(client, lbpoolID).Extract()
 			if err != nil {
@@ -650,6 +659,7 @@ var lbpoolDeleteMemberSubCommand = cli.Command{
 					return nil, fmt.Errorf("cannot delete loadbalancer pool member with ID: %s", memberID)
 				}
 			}
+
 			return nil, nil
 		})
 	},
@@ -862,6 +872,7 @@ var lbpoolUpdateSubCommand = cli.Command{
 		if results == nil {
 			return cli.NewExitError(err, 1)
 		}
+
 		return utils.WaitTaskAndShowResult(c, client, results, true, func(task tasks.TaskID) (interface{}, error) {
 			_, err := tasks.Get(client, string(task)).Extract()
 			if err != nil {
@@ -964,6 +975,7 @@ var lbpoolCreateHealthMonitorSubCommand = cli.Command{
 		if results == nil {
 			return cli.NewExitError(err, 1)
 		}
+
 		return utils.WaitTaskAndShowResult(c, client, results, true, func(task tasks.TaskID) (interface{}, error) {
 			_, err := tasks.Get(client, string(task)).Extract()
 			if err != nil {
@@ -1000,6 +1012,7 @@ var lbpoolDeleteHealthMonitorSubCommand = cli.Command{
 		if err = lbpools.DeleteHealthMonitor(client, lbpoolID).ExtractErr(); err != nil {
 			return cli.NewExitError(err, 1)
 		}
+
 		return nil
 	},
 }

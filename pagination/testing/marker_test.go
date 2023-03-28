@@ -117,6 +117,7 @@ func TestEnumerateMarker(t *testing.T) {
 		testhelper.CheckDeepEquals(t, expected, actual)
 
 		callCount++
+
 		return true, nil
 	})
 	testhelper.AssertNoErr(t, err)

@@ -47,6 +47,7 @@ var listenerListSubCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
+
 		return nil
 	},
 }
@@ -119,6 +120,7 @@ var listenerCreateSubCommand = cli.Command{
 		if err != nil {
 			return cli.NewExitError(err, 1)
 		}
+
 		return utils.WaitTaskAndShowResult(c, client, results, true, func(task tasks.TaskID) (interface{}, error) {
 			taskInfo, err := tasks.Get(client, string(task)).Extract()
 			if err != nil {
@@ -133,6 +135,7 @@ var listenerCreateSubCommand = cli.Command{
 				return nil, fmt.Errorf("cannot get listener with ID: %s. Error: %w", listenerID, err)
 			}
 			utils.ShowResults(listener, c.String("format"))
+
 			return nil, nil
 		})
 	},
@@ -159,6 +162,7 @@ var listenerGetSubCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
+
 		return nil
 	},
 }
@@ -184,6 +188,7 @@ var listenerDeleteSubCommand = cli.Command{
 		if err != nil {
 			return cli.NewExitError(err, 1)
 		}
+
 		return utils.WaitTaskAndShowResult(c, client, results, false, func(task tasks.TaskID) (interface{}, error) {
 			listener, err := listeners.Get(client, listenerID).Extract()
 			if err == nil {
@@ -237,6 +242,7 @@ var listenerUpdateSubCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
+
 		return nil
 	},
 }

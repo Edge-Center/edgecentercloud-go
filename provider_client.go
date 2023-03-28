@@ -135,6 +135,7 @@ func (client *ProviderClient) AuthenticatedHeaders() (m map[string]string) {
 	if t == "" {
 		return
 	}
+
 	return map[string]string{"Authorization": fmt.Sprintf("Bearer %s", t)}
 }
 
@@ -206,6 +207,7 @@ func (client *ProviderClient) SetTokensAndAuthResult(r AuthResult) error {
 	client.AccessTokenID = accessTokenID
 	client.RefreshTokenID = refreshTokenID
 	client.authResult = r
+
 	return nil
 }
 
@@ -300,6 +302,7 @@ func (client *ProviderClient) Reauthenticate(previousToken string) error {
 			responseChannel <- err
 		}
 	}()
+
 	return err
 }
 
@@ -521,6 +524,7 @@ func (client *ProviderClient) doRequest(method, url string, options *RequestOpts
 						return nil, e
 					}
 				}
+
 				return resp, nil
 			}
 			err = ErrDefault401{respErr}

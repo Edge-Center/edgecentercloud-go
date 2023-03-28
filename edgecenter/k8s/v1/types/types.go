@@ -74,6 +74,7 @@ func (ng *PoolRole) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*ng = v
+
 	return nil
 }
 
@@ -136,6 +137,7 @@ func (hs *HealthStatus) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*hs = v
+
 	return nil
 }
 
@@ -198,6 +200,7 @@ func (ic *IngressController) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*ic = v
+
 	return nil
 }
 

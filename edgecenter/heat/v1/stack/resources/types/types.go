@@ -80,6 +80,7 @@ func (srs *StackResourceStatus) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*srs = v
+
 	return nil
 }
 
@@ -103,6 +104,7 @@ func (sra StackResourceAction) IsValid() error {
 		StackResourceActionUpdated:
 		return nil
 	}
+
 	return fmt.Errorf("invalid StackResourceAction type: %v", sra)
 }
 
@@ -158,6 +160,7 @@ func (sra *StackResourceAction) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*sra = v
+
 	return nil
 }
 

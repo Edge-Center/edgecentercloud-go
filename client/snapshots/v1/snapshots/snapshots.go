@@ -49,6 +49,7 @@ var snapshotListCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
+
 		return nil
 	},
 }
@@ -77,6 +78,7 @@ var snapshotGetCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(snapshot, c.String("format"))
+
 		return nil
 	},
 }
@@ -181,6 +183,7 @@ var snapshotCreateCommand = cli.Command{
 		if results == nil {
 			return cli.NewExitError(err, 1)
 		}
+
 		return utils.WaitTaskAndShowResult(c, client, results, true, func(task tasks.TaskID) (interface{}, error) {
 			taskInfo, err := tasks.Get(client, string(task)).Extract()
 			if err != nil {
@@ -195,6 +198,7 @@ var snapshotCreateCommand = cli.Command{
 				return nil, fmt.Errorf("cannot get snapshot with ID: %s. Error: %w", snapshotID, err)
 			}
 			utils.ShowResults(snapshot, c.String("format"))
+
 			return nil, nil
 		})
 	},
@@ -212,6 +216,7 @@ func parseMetadata(keys []string, values []string) (map[string]string, error) {
 	for i := range keys {
 		meta[keys[i]] = values[i]
 	}
+
 	return meta, nil
 }
 
@@ -259,6 +264,7 @@ var metadataReplaceCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(snapshot, c.String("format"))
+
 		return nil
 	},
 }

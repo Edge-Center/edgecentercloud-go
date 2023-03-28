@@ -106,6 +106,7 @@ func (opts CreateOpts) ToInstanceCreateMap() (map[string]interface{}, error) {
 	} else {
 		delete(mp, "metadata")
 	}
+
 	return mp, nil
 }
 

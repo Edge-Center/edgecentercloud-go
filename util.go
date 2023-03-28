@@ -99,6 +99,7 @@ func NormalizePathURL(basePath, rawPath string) (string, error) {
 	absPathSys = filepath.Join(basePath, rawPath)
 	u.Path = filepath.ToSlash(absPathSys)
 	u.Scheme = "file"
+
 	return u.String(), nil
 }
 

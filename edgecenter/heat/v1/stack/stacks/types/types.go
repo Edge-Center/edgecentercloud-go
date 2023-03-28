@@ -70,6 +70,7 @@ func (sd *SortDir) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*sd = v
+
 	return nil
 }
 
@@ -128,6 +129,7 @@ func (sk *SortKey) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*sk = v
+
 	return nil
 }
 

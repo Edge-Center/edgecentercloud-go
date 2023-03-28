@@ -99,6 +99,7 @@ func getK8sConfigFileOptions(c *cli.Context) (k8sConfigFileOptions, error) {
 			return opts, err
 		}
 	}
+
 	return opts, nil
 }
 
@@ -117,6 +118,7 @@ var clusterListSubCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
+
 		return nil
 	},
 }
@@ -142,6 +144,7 @@ var clusterGetSubCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
+
 		return nil
 	},
 }
@@ -223,9 +226,8 @@ var clusterConfigSubCommand = cli.Command{
 				}
 				return nil
 			}
-		} else {
-			fmt.Println(strings.TrimSpace(config))
 		}
+
 		return nil
 	},
 }
@@ -396,6 +398,7 @@ var clusterCreateSubCommand = cli.Command{
 				return nil, fmt.Errorf("cannot get cluster with ID: %s. Error: %w", clusterID, err)
 			}
 			utils.ShowResults(cluster, c.String("format"))
+
 			return nil, nil
 		})
 	},
@@ -469,6 +472,7 @@ var clusterResizeSubCommand = cli.Command{
 			if err != nil {
 				return nil, fmt.Errorf("cannot get cluster with ID: %s. Error: %w", clusterID, err)
 			}
+
 			return cluster, nil
 		})
 	},
@@ -528,6 +532,7 @@ var clusterUpgradeSubCommand = cli.Command{
 				return nil, fmt.Errorf("cannot get cluster with ID: %s. Error: %w", clusterID, err)
 			}
 			utils.ShowResults(cluster, c.String("format"))
+
 			return nil, nil
 		})
 	},
@@ -640,6 +645,7 @@ var clusterGetCertificateSubCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(certificate, c.String("format"))
+
 		return nil
 	},
 }
@@ -683,6 +689,7 @@ var clusterSignCertificateSubCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(signedCertificate, c.String("format"))
+
 		return nil
 	},
 }

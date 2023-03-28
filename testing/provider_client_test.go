@@ -275,6 +275,7 @@ func TestRequestThatCameDuringReauthWaitsUntilItIsCompleted(t *testing.T) {
 		info.mut.Unlock()
 		p.AccessTokenID = postReAuthToken
 		p.SetThrowaway(false)
+
 		return nil
 	}
 

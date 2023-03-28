@@ -88,6 +88,7 @@ func (vs *VolumeSource) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*vs = v
+
 	return nil
 }
 
@@ -147,6 +148,7 @@ func (fip *FloatingIPSource) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*fip = v
+
 	return nil
 }
 
@@ -206,6 +208,7 @@ func (at *AddressType) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*at = v
+
 	return nil
 }
 
@@ -267,6 +270,7 @@ func (it *InterfaceType) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*it = v
+
 	return nil
 }
 
@@ -326,6 +330,7 @@ func (u *MetricsTimeUnit) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*u = v
+
 	return nil
 }
 

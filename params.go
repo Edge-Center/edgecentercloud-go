@@ -83,6 +83,7 @@ func BuildSliceRequestBody(opts interface{}) ([]map[string]interface{}, error) {
 
 		return optsSlice, nil
 	}
+
 	return nil, fmt.Errorf("options type is not a slice")
 }
 
@@ -213,6 +214,7 @@ func BuildRequestBody(opts interface{}, parent string) (map[string]interface{}, 
 							}
 						}
 					}
+
 					continue
 				}
 
@@ -236,6 +238,7 @@ func BuildRequestBody(opts interface{}, parent string) (map[string]interface{}, 
 		if parent != "" {
 			optsMap = map[string]interface{}{parent: optsMap}
 		}
+
 		return optsMap, nil
 	}
 	// Return an error if the underlying type of 'opts' isn't a struct.
@@ -343,6 +346,7 @@ func isZero(v reflect.Value) bool {
 	}
 	// Compare other types directly:
 	z := reflect.Zero(v.Type())
+
 	return v.Interface() == z.Interface()
 }
 
@@ -360,6 +364,7 @@ func buildQueryStringSliceStrategy(v reflect.Value, tag string) url.Values {
 			params.Add(tag, v.Index(i).String())
 		}
 	}
+
 	return params
 }
 
@@ -377,6 +382,7 @@ func buildQueryStringCommaSeparatedSliceStrategy(v reflect.Value, tag string) ur
 		}
 	}
 	params.Add(tag, strings.Join(s, ","))
+
 	return params
 }
 
@@ -579,6 +585,7 @@ func BuildHeaders(opts interface{}) (map[string]string, error) {
 				}
 			}
 		}
+
 		return optsMap, nil
 	}
 	// Return an error if the underlying type of 'opts' isn't a struct.

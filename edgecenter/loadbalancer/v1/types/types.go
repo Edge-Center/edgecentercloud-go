@@ -122,6 +122,7 @@ func (ps *ProvisioningStatus) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*ps = v
+
 	return nil
 }
 
@@ -190,6 +191,7 @@ func (os *OperatingStatus) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*os = v
+
 	return nil
 }
 
@@ -254,6 +256,7 @@ func (lba *LoadBalancerAlgorithm) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*lba = v
+
 	return nil
 }
 
@@ -320,6 +323,7 @@ func (lbspt *PersistenceType) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*lbspt = v
+
 	return nil
 }
 
@@ -376,6 +380,7 @@ func (pt *ProtocolType) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*pt = v
+
 	return nil
 }
 
@@ -448,6 +453,7 @@ func (hm *HealthMonitorType) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*hm = v
+
 	return nil
 }
 
@@ -469,6 +475,7 @@ func (m HTTPMethod) IsValid() error {
 		HTTPMethodTRACE:
 		return nil
 	}
+
 	return fmt.Errorf("invalid HTTPMethod: %v", m)
 }
 
@@ -522,6 +529,7 @@ func (m *HTTPMethod) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*m = v
+
 	return nil
 }
 

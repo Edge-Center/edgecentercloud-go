@@ -63,6 +63,7 @@ func (gw *GatewayType) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*gw = v
+
 	return nil
 }
 
@@ -118,6 +119,7 @@ func (it *InterfaceType) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*it = v
+
 	return nil
 }
 

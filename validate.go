@@ -428,6 +428,7 @@ func sem(fl validator.FieldLevel) bool {
 				return false
 			}
 		}
+
 		return true
 	}
 
@@ -515,6 +516,7 @@ func TranslateValidationError(err error) error {
 		errs[i] = fmt.Sprintf("%s: %s", e.Field(), e.Translate(Trans))
 	}
 	errorText := strings.Join(errs, ", ")
+
 	return fmt.Errorf(errorText)
 }
 

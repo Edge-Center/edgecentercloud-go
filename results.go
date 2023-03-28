@@ -159,6 +159,7 @@ func (r Result) extractIntoPtr(to interface{}, label string) error {
 	}
 
 	err = json.Unmarshal(b, &to)
+
 	return err
 }
 
@@ -325,6 +326,7 @@ func (jt *JSONRFC3339Milli) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*jt = JSONRFC3339Milli(t)
+
 	return nil
 }
 
@@ -348,6 +350,7 @@ func (jt *JSONRFC3339MilliNoZ) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*jt = JSONRFC3339MilliNoZ(t)
+
 	return nil
 }
 
@@ -368,6 +371,7 @@ func (jt *JSONRFC1123) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*jt = JSONRFC1123(t)
+
 	return nil
 }
 
@@ -389,6 +393,7 @@ func (jt *JSONUnix) UnmarshalJSON(data []byte) error {
 	}
 	t = time.Unix(unix, 0)
 	*jt = JSONUnix(t)
+
 	return nil
 }
 
@@ -414,6 +419,7 @@ func (jt *JSONRFC3339NoZ) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	jt.Time = t
+
 	return nil
 }
 
@@ -448,6 +454,7 @@ func (jt *JSONRFC3339Z) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	jt.Time = t
+
 	return nil
 }
 
@@ -478,6 +485,7 @@ func (jt *JSONRFC3339ZColon) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	jt.Time = t
+
 	return nil
 }
 
@@ -508,6 +516,7 @@ func (jt *JSONRFC3339ZZ) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	jt.Time = t
+
 	return nil
 }
 
@@ -536,6 +545,7 @@ func (jt *JSONRFC3339ZNoT) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*jt = JSONRFC3339ZNoT(t)
+
 	return nil
 }
 
@@ -559,6 +569,7 @@ func (jt *JSONRFC3339ZNoTNoZ) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*jt = JSONRFC3339ZNoTNoZ(t)
+
 	return nil
 }
 
@@ -584,6 +595,7 @@ func (jt *JSONRFC3339Date) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	jt.Time = t
+
 	return nil
 }
 

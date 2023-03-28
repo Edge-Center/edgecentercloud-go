@@ -21,5 +21,6 @@ func NewAPITokenClient(_ *cli.Context) (*edgecloud.ServiceClient, error) {
 	}
 
 	ao.APIURL = settings.AuthURL
+
 	return common.BuildAPITokenClient(ao)
 }

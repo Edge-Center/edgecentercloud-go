@@ -53,6 +53,7 @@ var l7RuleListSubCommand = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
+
 		return nil
 	},
 }
@@ -209,6 +210,7 @@ var l7RuleCreateSubCommand = cli.Command{
 				return nil, fmt.Errorf("cannot get rule with ID: %s. Error: %w", ruleID, err)
 			}
 			utils.ShowResults(rule, c.String("format"))
+
 			return nil, nil
 		})
 	},
@@ -295,6 +297,7 @@ var l7RuleReplaceSubCommand = cli.Command{
 				return nil, fmt.Errorf("cannot get rule with ID: %s. Error: %w", ruleID, err)
 			}
 			utils.ShowResults(rule, c.String("format"))
+
 			return nil, nil
 		})
 	},

@@ -49,6 +49,7 @@ var routerListSubCommand = cli.Command{
 		if results != nil {
 			utils.ShowResults(results, c.String("format"))
 		}
+
 		return nil
 	},
 }
@@ -78,6 +79,7 @@ var routerGetSubCommand = cli.Command{
 		if result != nil {
 			utils.ShowResults(result, c.String("format"))
 		}
+
 		return nil
 	},
 }
@@ -108,6 +110,7 @@ var routerDeleteSubCommand = cli.Command{
 		if result != nil {
 			utils.ShowResults(result, c.String("format"))
 		}
+
 		return nil
 	},
 }
@@ -191,6 +194,7 @@ var routerCreateSubCommand = cli.Command{
 		if err != nil {
 			return cli.NewExitError(err, 1)
 		}
+
 		return utils.WaitTaskAndShowResult(c, client, results, true, func(task tasks.TaskID) (interface{}, error) {
 			taskInfo, err := tasks.Get(client, string(task)).Extract()
 			if err != nil {
@@ -205,6 +209,7 @@ var routerCreateSubCommand = cli.Command{
 				return nil, fmt.Errorf("cannot get router with ID: %s. Error: %w", routerID, err)
 			}
 			utils.ShowResults(router, c.String("format"))
+
 			return nil, nil
 		})
 	},
@@ -279,6 +284,7 @@ var routerUpdateSubCommand = cli.Command{
 		}
 
 		utils.ShowResults(result, c.String("format"))
+
 		return nil
 	},
 }
@@ -314,6 +320,7 @@ var routerAttachSubCommand = cli.Command{
 		}
 
 		utils.ShowResults(result, c.String("format"))
+
 		return nil
 	},
 }
@@ -349,6 +356,7 @@ var routerDetachSubCommand = cli.Command{
 		}
 
 		utils.ShowResults(result, c.String("format"))
+
 		return nil
 	},
 }

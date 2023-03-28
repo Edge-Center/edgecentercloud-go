@@ -67,6 +67,7 @@ func (ks *LimitRequestStatus) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*ks = v
+
 	return nil
 }
 

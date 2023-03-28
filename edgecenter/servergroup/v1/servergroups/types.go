@@ -60,6 +60,7 @@ func (s *ServerGroupPolicy) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*s = v
+
 	return nil
 }
 

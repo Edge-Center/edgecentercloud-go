@@ -72,6 +72,7 @@ func (et *EndpointType) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*et = v
+
 	return nil
 }
 
@@ -91,6 +92,7 @@ func (rs RegionState) IsValid() error {
 		RegionStateNew:
 		return nil
 	}
+
 	return fmt.Errorf("invalid RegionState type: %v", rs)
 }
 
@@ -142,6 +144,7 @@ func (rs *RegionState) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*rs = v
+
 	return nil
 }
 

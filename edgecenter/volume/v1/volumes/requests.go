@@ -196,11 +196,13 @@ func Delete(c *edgecloud.ServiceClient, volumeID string, opts DeleteOptsBuilder)
 		query, err := opts.ToVolumeDeleteQuery()
 		if err != nil {
 			r.Err = err
+
 			return
 		}
 		url += query
 	}
 	_, r.Err = c.DeleteWithResponse(url, &r.Body, nil)
+
 	return
 }
 

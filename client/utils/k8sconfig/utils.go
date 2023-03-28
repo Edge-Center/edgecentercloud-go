@@ -41,6 +41,7 @@ func MergeKubeconfigFile(filename string, content []byte) (err error) {
 	if err != nil {
 		return
 	}
+
 	return clientcmd.WriteToFile(*config, configPath)
 }
 

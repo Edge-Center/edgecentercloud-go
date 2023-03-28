@@ -35,6 +35,7 @@ func (t *Template) Validate() error {
 		}
 		invalid = key
 	}
+
 	return ErrInvalidTemplateFormatVersion{Version: invalid}
 }
 
@@ -103,6 +104,7 @@ func (t *Template) getFileContents(te interface{}, ignoreIf igFunc, recurse bool
 				t.Files[childTemplate.URL] = string(childTemplate.Bin)
 			}
 		}
+
 		return nil
 	// if te is a slice, call the function on each element of the slice.
 	case []interface{}:
@@ -117,6 +119,7 @@ func (t *Template) getFileContents(te interface{}, ignoreIf igFunc, recurse bool
 	default:
 		return edgecloud.ErrUnexpectedType{Actual: fmt.Sprintf("%v", reflect.TypeOf(te))}
 	}
+
 	return nil
 }
 
@@ -135,5 +138,6 @@ func ignoreIfTemplate(key string, value interface{}) bool {
 	if key == "type" && !(strings.HasSuffix(valueString, ".template") || strings.HasSuffix(valueString, ".yaml")) {
 		return true
 	}
+
 	return false
 }
