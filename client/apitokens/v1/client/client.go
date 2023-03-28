@@ -8,7 +8,7 @@ import (
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter"
 )
 
-func NewAPITokenClient(c *cli.Context) (*edgecloud.ServiceClient, error) {
+func NewAPITokenClient(_ *cli.Context) (*edgecloud.ServiceClient, error) {
 	// todo refactor it, now apitokens could be generated only with platform client type
 	settings, err := edgecenter.NewECCloudPlatformAPISettingsFromEnv()
 	if err != nil {

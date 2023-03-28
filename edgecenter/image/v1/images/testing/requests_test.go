@@ -170,7 +170,7 @@ func TestCreate(t *testing.T) {
 	options := images.CreateOpts{
 		Name:           "test_image",
 		HwMachineType:  types.HwMachineQ35,
-		SshKey:         types.SshKeyAllow,
+		SSHKey:         types.SSHKeyAllow,
 		OSType:         types.OsLinux,
 		IsBaremetal:    &isBm,
 		HwFirmwareType: types.HwFirmwareBIOS,
@@ -233,7 +233,7 @@ func TestUpload(t *testing.T) {
 	options := images.UploadOpts{
 		Name:           "image_name",
 		HwMachineType:  types.HwMachineQ35,
-		SshKey:         types.SshKeyAllow,
+		SSHKey:         types.SSHKeyAllow,
 		OSType:         types.OsLinux,
 		IsBaremetal:    &isBm,
 		HwFirmwareType: types.HwFirmwareBIOS,
@@ -273,7 +273,7 @@ func TestUpdate(t *testing.T) {
 	options := images.UpdateOpts{
 		Name:           "string",
 		HwMachineType:  types.HwMachineI440,
-		SshKey:         types.SshKeyAllow,
+		SSHKey:         types.SSHKeyAllow,
 		OSType:         types.OsLinux,
 		IsBaremetal:    &isBm,
 		HwFirmwareType: types.HwFirmwareBIOS,

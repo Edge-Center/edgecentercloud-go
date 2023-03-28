@@ -10,8 +10,8 @@ type Visibility string
 // HwMachineType virtual chipset type.
 type HwMachineType string
 
-// SshKeyType whether the image supports SSH key or not.
-type SshKeyType string
+// SSHKeyType whether the image supports SSH key or not.
+type SSHKeyType string
 
 // OSType the operating system installed on the image.
 type OSType string
@@ -29,9 +29,9 @@ const (
 	HwMachineI440 HwMachineType = "i440"
 	HwMachineQ35  HwMachineType = "q35"
 
-	SshKeyAllow    SshKeyType = "allow"
-	SshKeyDeny     SshKeyType = "deny"
-	SshKeyRequired SshKeyType = "required"
+	SSHKeyAllow    SSHKeyType = "allow"
+	SSHKeyDeny     SSHKeyType = "deny"
+	SSHKeyRequired SSHKeyType = "required"
 
 	OsLinux   OSType = "linux"
 	OsWindows OSType = "windows"
@@ -152,15 +152,15 @@ func (v *HwMachineType) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.String())
 }
 
-func (v SshKeyType) IsValid() error {
+func (v SSHKeyType) IsValid() error {
 	switch v {
-	case SshKeyAllow, SshKeyDeny, SshKeyRequired:
+	case SSHKeyAllow, SSHKeyDeny, SSHKeyRequired:
 		return nil
 	}
-	return fmt.Errorf("invalid SshKeyType type: %v", v)
+	return fmt.Errorf("invalid SSHKeyType type: %v", v)
 }
 
-func (v SshKeyType) ValidOrNil() (*SshKeyType, error) {
+func (v SSHKeyType) ValidOrNil() (*SSHKeyType, error) {
 	if v.String() == "" {
 		return nil, nil
 	}
@@ -171,15 +171,15 @@ func (v SshKeyType) ValidOrNil() (*SshKeyType, error) {
 	return &v, nil
 }
 
-func (v SshKeyType) String() string {
+func (v SSHKeyType) String() string {
 	return string(v)
 }
 
-func (v SshKeyType) List() []SshKeyType {
-	return []SshKeyType{SshKeyAllow, SshKeyDeny, SshKeyRequired}
+func (v SSHKeyType) List() []SSHKeyType {
+	return []SSHKeyType{SSHKeyAllow, SSHKeyDeny, SSHKeyRequired}
 }
 
-func (v SshKeyType) StringList() []string {
+func (v SSHKeyType) StringList() []string {
 	var s []string
 	for _, v := range v.List() {
 		s = append(s, v.String())
@@ -187,13 +187,13 @@ func (v SshKeyType) StringList() []string {
 	return s
 }
 
-// UnmarshalJSON - implements Unmarshaler interface for SshKeyType.
-func (v *SshKeyType) UnmarshalJSON(data []byte) error {
+// UnmarshalJSON - implements Unmarshaler interface for SSHKeyType.
+func (v *SSHKeyType) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
 		return err
 	}
-	vt := SshKeyType(s)
+	vt := SSHKeyType(s)
 	err := vt.IsValid()
 	if err != nil {
 		return err
@@ -202,8 +202,8 @@ func (v *SshKeyType) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface for SshKeyType.
-func (v *SshKeyType) MarshalJSON() ([]byte, error) {
+// MarshalJSON - implements Marshaler interface for SSHKeyType.
+func (v *SSHKeyType) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.String())
 }
 

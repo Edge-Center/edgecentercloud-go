@@ -374,14 +374,14 @@ func TestInterfaceOpts(t *testing.T) {
 	require.Contains(t, err.Error(), "NetworkID")
 
 	opts = instances.InterfaceOpts{
-		Type: types.ReservedFixedIpType,
+		Type: types.ReservedFixedIPType,
 	}
 	err = opts.Validate()
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "PortID")
 
 	opts = instances.InterfaceOpts{
-		Type:      types.ReservedFixedIpType,
+		Type:      types.ReservedFixedIPType,
 		SubnetID:  "9bc36cf6-407c-4a74-bc83-ce3aa3854c3d",
 		NetworkID: "9bc36cf6-407c-4a74-bc83-ce3aa3854c3d",
 		PortID:    "9bc36cf6-407c-4a74-bc83-ce3aa3854c3d",
@@ -395,7 +395,7 @@ func TestInterfaceOpts(t *testing.T) {
 		SubnetID:  "9bc36cf6-407c-4a74-bc83-ce3aa3854c3d",
 		NetworkID: "9bc36cf6-407c-4a74-bc83-ce3aa3854c3d",
 		PortID:    "9bc36cf6-407c-4a74-bc83-ce3aa3854c3d",
-		IpAddress: "192.168.100.2",
+		IPAddress: "192.168.100.2",
 	}
 	err = opts.Validate()
 	require.Error(t, err)
@@ -414,7 +414,7 @@ func TestInterfaceOpts(t *testing.T) {
 	require.NoError(t, err)
 
 	opts = instances.InterfaceOpts{
-		Type:   types.ReservedFixedIpType,
+		Type:   types.ReservedFixedIPType,
 		PortID: "9bc36cf6-407c-4a74-bc83-ce3aa3854c3d",
 		FloatingIP: &instances.CreateNewInterfaceFloatingIPOpts{
 			Source:             types.ExistingFloatingIP,

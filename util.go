@@ -127,10 +127,7 @@ func NativeMapToStruct(nativeMap interface{}, obj interface{}) error {
 		return err
 	}
 
-	if err := decoder.Decode(nativeMap); err != nil {
-		return err
-	}
-	return nil
+	return decoder.Decode(nativeMap)
 }
 
 func FailOnErrorF(err error, msg string, args ...interface{}) {

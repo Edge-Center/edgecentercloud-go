@@ -454,10 +454,8 @@ func (i *Instance) UnmarshalJSON(data []byte) error {
 	i.AvailabilityZone = DefaultAvailabilityZone
 	type Alias Instance
 	tmp := (*Alias)(i)
-	if err := json.Unmarshal(data, &tmp); err != nil {
-		return err
-	}
-	return nil
+
+	return json.Unmarshal(data, &tmp)
 }
 
 type InstanceTaskResult struct {

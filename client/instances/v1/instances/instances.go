@@ -215,7 +215,7 @@ func getInterfaces(c *cli.Context) ([]instances.InterfaceInstanceCreateOpts, err
 
 	for idx, t := range interfaceTypes {
 		interfaceType := types.InterfaceType(t)
-		var fIP *instances.CreateNewInterfaceFloatingIPOpts = nil
+		var fIP *instances.CreateNewInterfaceFloatingIPOpts
 		if interfaceType == types.SubnetInterfaceType {
 			source := types.FloatingIPSource(utils.StringFromIndex(interfaceFloatingSources, idx, ""))
 			if source != "" {
@@ -256,7 +256,7 @@ func getBaremetalInterfaces(c *cli.Context) ([]bminstances.InterfaceOpts, error)
 
 	for idx, t := range interfaceTypes {
 		interfaceType := types.InterfaceType(t)
-		var fIP *bminstances.CreateNewInterfaceFloatingIPOpts = nil
+		var fIP *bminstances.CreateNewInterfaceFloatingIPOpts
 		if interfaceType == types.SubnetInterfaceType {
 			source := types.FloatingIPSource(utils.StringFromIndex(interfaceFloatingSources, idx, ""))
 			if source != "" {

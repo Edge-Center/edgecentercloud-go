@@ -436,7 +436,7 @@ func TestDetachInterface(t *testing.T) {
 
 	opts := instances.InterfaceOpts{
 		PortID:    "9bc36cf6-407c-4a74-bc83-ce3aa3854c3d",
-		IpAddress: "192.168.0.23",
+		IPAddress: "192.168.0.23",
 	}
 
 	tasks, err := instances.DetachInterface(client, instanceID, opts).Extract()

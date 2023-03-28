@@ -323,7 +323,7 @@ func TestMetadataListAll(t *testing.T) {
 
 	client := fake.ServiceTokenClient("subnets", "v1")
 
-	actual, err := metadata.MetadataListAll(client, Subnet1.ID)
+	actual, err := metadata.ResourceMetadataListAll(client, Subnet1.ID)
 	require.NoError(t, err)
 	ct := actual[0]
 	require.Equal(t, Metadata1, ct)
@@ -348,7 +348,7 @@ func TestMetadataGet(t *testing.T) {
 
 	client := fake.ServiceTokenClient("subnets", "v1")
 
-	actual, err := metadata.MetadataGet(client, Subnet1.ID, ResourceMetadataReadOnly.Key).Extract()
+	actual, err := metadata.ResourceMetadataGet(client, Subnet1.ID, ResourceMetadataReadOnly.Key).Extract()
 	require.NoError(t, err)
 	require.Equal(t, &ResourceMetadataReadOnly, actual)
 }
@@ -369,7 +369,7 @@ func TestMetadataCreate(t *testing.T) {
 	})
 
 	client := fake.ServiceTokenClient("subnets", "v1")
-	err := metadata.MetadataCreateOrUpdate(client, Subnet1.ID, map[string]string{
+	err := metadata.ResourceMetadataCreateOrUpdate(client, Subnet1.ID, map[string]string{
 		"test1": "test1",
 		"test2": "test2",
 	}).ExtractErr()
@@ -392,7 +392,7 @@ func TestMetadataUpdate(t *testing.T) {
 	})
 
 	client := fake.ServiceTokenClient("subnets", "v1")
-	err := metadata.MetadataReplace(client, Subnet1.ID, map[string]string{
+	err := metadata.ResourceMetadataReplace(client, Subnet1.ID, map[string]string{
 		"test1": "test1",
 		"test2": "test2",
 	}).ExtractErr()
@@ -412,6 +412,6 @@ func TestMetadataDelete(t *testing.T) {
 	})
 
 	client := fake.ServiceTokenClient("subnets", "v1")
-	err := metadata.MetadataDelete(client, Subnet1.ID, Metadata1.Key).ExtractErr()
+	err := metadata.ResourceMetadataDelete(client, Subnet1.ID, Metadata1.Key).ExtractErr()
 	require.NoError(t, err)
 }

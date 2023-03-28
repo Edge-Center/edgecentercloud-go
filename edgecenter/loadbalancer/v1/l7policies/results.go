@@ -66,7 +66,7 @@ type L7Policy struct {
 	Region             string                  `json:"region"`
 	OperatingStatus    string                  `json:"operating_status"`
 	ProvisioningStatus string                  `json:"provisioning_status"`
-	RedirectHttpCode   *int                    `json:"redirect_http_code"`
+	RedirectHTTPCode   *int                    `json:"redirect_http_code"`
 	RedirectPrefix     *string                 `json:"redirect_prefix"`
 	RedirectURL        *string                 `json:"redirect_url"`
 	Tags               []string                `json:"tags"`

@@ -160,7 +160,7 @@ var imageCreateCommand = cli.Command{
 		opts := images.CreateOpts{
 			Name:           c.String("name"),
 			HwMachineType:  types.HwMachineType(c.String("hw-machine-type")),
-			SshKey:         types.SshKeyType(c.String("ssh-key")),
+			SSHKey:         types.SSHKeyType(c.String("ssh-key")),
 			OSType:         types.OSType(c.String("os-type")),
 			IsBaremetal:    utils.BoolToPointer(c.Bool("is-baremetal")),
 			HwFirmwareType: types.HwFirmwareType(c.String("hw-firmware-type")),
@@ -272,7 +272,7 @@ var imageUpdateCommand = cli.Command{
 		opts := images.UpdateOpts{
 			Name:           c.String("name"),
 			HwMachineType:  types.HwMachineType(c.String("hw-machine-type")),
-			SshKey:         types.SshKeyType(c.String("ssh-key")),
+			SSHKey:         types.SSHKeyType(c.String("ssh-key")),
 			OSType:         types.OSType(c.String("os-type")),
 			IsBaremetal:    utils.BoolToPointer(c.Bool("is-baremetal")),
 			HwFirmwareType: types.HwFirmwareType(c.String("hw-firmware-type")),
@@ -349,7 +349,7 @@ var imageUploadCommand = cli.Command{
 		opts := images.UploadOpts{
 			OsVersion:      c.String("os-version"),
 			HwMachineType:  types.HwMachineType(c.String("hw-machine-type")),
-			SshKey:         types.SshKeyType(c.String("ssh-key")),
+			SSHKey:         types.SSHKeyType(c.String("ssh-key")),
 			Name:           c.String("name"),
 			OsDistro:       c.String("os-distro"),
 			OSType:         types.OSType(c.String("os-type")),

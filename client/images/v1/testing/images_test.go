@@ -28,7 +28,7 @@ func TestImageMetadata(t *testing.T) {
 
 	opts := images.UploadOpts{
 		HwMachineType:  "q35",
-		SshKey:         "allow",
+		SSHKey:         "allow",
 		Name:           "test_image_tf1",
 		OSType:         "linux",
 		URL:            "http://mirror.noris.net/cirros/0.4.0/cirros-0.4.0-x86_64-disk.img",

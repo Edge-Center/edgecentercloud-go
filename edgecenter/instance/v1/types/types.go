@@ -27,7 +27,7 @@ const (
 	SubnetInterfaceType    InterfaceType    = "subnet"
 	AnySubnetInterfaceType InterfaceType    = "any_subnet"
 	ExternalInterfaceType  InterfaceType    = "external"
-	ReservedFixedIpType    InterfaceType    = "reserved_fixed_ip"
+	ReservedFixedIPType    InterfaceType    = "reserved_fixed_ip"
 	HourMetricsTimeUnit    MetricsTimeUnit  = "hour"
 	DayMetricsTimeUnit     MetricsTimeUnit  = "day"
 )
@@ -213,7 +213,7 @@ func (at *AddressType) MarshalJSON() ([]byte, error) {
 
 func (it InterfaceType) IsValid() error {
 	switch it {
-	case ExternalInterfaceType, SubnetInterfaceType, AnySubnetInterfaceType, ReservedFixedIpType:
+	case ExternalInterfaceType, SubnetInterfaceType, AnySubnetInterfaceType, ReservedFixedIPType:
 		return nil
 	}
 	return fmt.Errorf("invalid InterfaceType type: %v", it)
@@ -239,7 +239,7 @@ func (it InterfaceType) List() []InterfaceType {
 		ExternalInterfaceType,
 		SubnetInterfaceType,
 		AnySubnetInterfaceType,
-		ReservedFixedIpType,
+		ReservedFixedIPType,
 	}
 }
 

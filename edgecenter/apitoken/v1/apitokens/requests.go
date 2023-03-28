@@ -59,7 +59,7 @@ func Delete(c *edgecloud.ServiceClient, clientID, tokenID int) (r DeleteResult) 
 
 // CreateOptsBuilder allows extensions to add additional parameters to the Create request.
 type CreateOptsBuilder interface {
-	ToApiTokenCreateMap() (map[string]interface{}, error)
+	ToAPITokenCreateMap() (map[string]interface{}, error)
 }
 
 // CreateOpts represents options used to create an api token.
@@ -74,8 +74,8 @@ type CreateClientUser struct {
 	Role ClientRole `json:"role" validate:"dive"`
 }
 
-// ToApiTokenCreateMap builds a request body from CreateOpts.
-func (opts CreateOpts) ToApiTokenCreateMap() (map[string]interface{}, error) {
+// ToAPITokenCreateMap builds a request body from CreateOpts.
+func (opts CreateOpts) ToAPITokenCreateMap() (map[string]interface{}, error) {
 	if err := opts.Validate(); err != nil {
 		return nil, err
 	}
@@ -89,7 +89,7 @@ func (opts CreateOpts) Validate() error {
 
 // Create creates an APIToken.
 func Create(client *edgecloud.ServiceClient, clientID int, opts CreateOptsBuilder) (r CreateResult) {
-	b, err := opts.ToApiTokenCreateMap()
+	b, err := opts.ToAPITokenCreateMap()
 	if err != nil {
 		r.Err = err
 		return
