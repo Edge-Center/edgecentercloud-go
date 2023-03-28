@@ -6,11 +6,12 @@ import (
 	"strings"
 	"unicode/utf8"
 
+	"github.com/urfave/cli/v2"
+
 	"github.com/Edge-Center/edgecentercloud-go/client/flags"
 	"github.com/Edge-Center/edgecentercloud-go/client/lifecyclepolicy/v1/client"
 	"github.com/Edge-Center/edgecentercloud-go/client/utils"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/lifecyclepolicy/v1/lifecyclepolicy"
-	"github.com/urfave/cli/v2"
 )
 
 const (

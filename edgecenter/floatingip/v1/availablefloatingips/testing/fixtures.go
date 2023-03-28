@@ -4,13 +4,10 @@ import (
 	"net"
 	"time"
 
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/flavor/v1/flavors"
-
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/floatingip/v1/floatingips"
-
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/instance/v1/instances"
-
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/flavor/v1/flavors"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/floatingip/v1/floatingips"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/instance/v1/instances"
 )
 
 const ListResponse = `

@@ -1,10 +1,11 @@
 package availablefloatingips
 
 import (
+	"github.com/urfave/cli/v2"
+
 	"github.com/Edge-Center/edgecentercloud-go/client/floatingips/v1/client"
 	"github.com/Edge-Center/edgecentercloud-go/client/utils"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/floatingip/v1/floatingips"
-	"github.com/urfave/cli/v2"
 )
 
 var availableFloatingIPListSubCommand = cli.Command{

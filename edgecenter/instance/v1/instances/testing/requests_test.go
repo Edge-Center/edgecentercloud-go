@@ -5,22 +5,17 @@ import (
 	"net/http"
 	"testing"
 
-	edgecloud "github.com/Edge-Center/edgecentercloud-go"
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/flavor/v1/flavors"
-
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/instance/v1/types"
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/volume/v1/volumes"
-
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/instance/v1/instances"
-
-	fake "github.com/Edge-Center/edgecentercloud-go/testhelper/client"
-
+	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/require"
 
-	log "github.com/sirupsen/logrus"
-
+	edgecloud "github.com/Edge-Center/edgecentercloud-go"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/flavor/v1/flavors"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/instance/v1/instances"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/instance/v1/types"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/volume/v1/volumes"
 	"github.com/Edge-Center/edgecentercloud-go/pagination"
 	th "github.com/Edge-Center/edgecentercloud-go/testhelper"
+	fake "github.com/Edge-Center/edgecentercloud-go/testhelper/client"
 )
 
 func prepareListTestURLParams(version string, projectID int, regionID int) string {
@@ -35,11 +30,11 @@ func prepareListInstanceLocationTestURL() string {
 	return "/v1/instances/search"
 }
 
-func prepareGetActionTestURLParams(version string, id string, action string) string { // nolint
+func prepareGetActionTestURLParams(version string, id string, action string) string {
 	return fmt.Sprintf("/%s/instances/%d/%d/%s/%s", version, fake.ProjectID, fake.RegionID, id, action)
 }
 
-func prepareGetActionDetailsTestURLParams(version string, id string, action, actionID string) string { // nolint
+func prepareGetActionDetailsTestURLParams(version string, id string, action, actionID string) string {
 	return fmt.Sprintf("/%s/instances/%d/%d/%s/%s/%s", version, fake.ProjectID, fake.RegionID, id, action, actionID)
 }
 

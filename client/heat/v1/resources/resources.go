@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/urfave/cli/v2"
+
 	"github.com/Edge-Center/edgecentercloud-go/client/flags"
 	"github.com/Edge-Center/edgecentercloud-go/client/heat/v1/client"
 	"github.com/Edge-Center/edgecentercloud-go/client/utils"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/heat/v1/stack/resources"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/heat/v1/stack/resources/types"
-
-	"github.com/urfave/cli/v2"
 )
 
 var (

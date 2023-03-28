@@ -5,15 +5,13 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/snapshot/v1/snapshots"
-	fake "github.com/Edge-Center/edgecentercloud-go/testhelper/client"
-
+	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/require"
 
-	log "github.com/sirupsen/logrus"
-
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/snapshot/v1/snapshots"
 	"github.com/Edge-Center/edgecentercloud-go/pagination"
 	th "github.com/Edge-Center/edgecentercloud-go/testhelper"
+	fake "github.com/Edge-Center/edgecentercloud-go/testhelper/client"
 )
 
 func prepareListTestURLParams(projectID int, regionID int) string {
@@ -32,7 +30,7 @@ func prepareGetTestURL(id string) string {
 	return prepareGetTestURLParams(fake.ProjectID, fake.RegionID, id)
 }
 
-func prepareGetActionTestURLParams(version string, id string, action string) string { // nolint
+func prepareGetActionTestURLParams(version string, id string, action string) string {
 	return fmt.Sprintf("/%s/snapshots/%d/%d/%s/%s", version, fake.ProjectID, fake.RegionID, id, action)
 }
 

@@ -5,12 +5,13 @@ import (
 	"net/http"
 	"testing"
 
+	log "github.com/sirupsen/logrus"
+	"github.com/stretchr/testify/require"
+
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/apitoken/v1/apitokens"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/apitoken/v1/types"
 	th "github.com/Edge-Center/edgecentercloud-go/testhelper"
 	fake "github.com/Edge-Center/edgecentercloud-go/testhelper/client"
-	log "github.com/sirupsen/logrus"
-	"github.com/stretchr/testify/require"
 )
 
 func prepareRootTestURL(clientID int) string {

@@ -3,13 +3,13 @@ package ports
 import (
 	"errors"
 
-	"github.com/Edge-Center/edgecentercloud-go/client/ports/v1/client"
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/port/v1/ports"
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/reservedfixedip/v1/reservedfixedips"
+	"github.com/urfave/cli/v2"
 
 	"github.com/Edge-Center/edgecentercloud-go/client/flags"
+	"github.com/Edge-Center/edgecentercloud-go/client/ports/v1/client"
 	"github.com/Edge-Center/edgecentercloud-go/client/utils"
-	"github.com/urfave/cli/v2"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/port/v1/ports"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/reservedfixedip/v1/reservedfixedips"
 )
 
 var (

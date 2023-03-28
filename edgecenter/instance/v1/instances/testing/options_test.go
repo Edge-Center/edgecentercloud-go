@@ -4,15 +4,12 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/volume/v1/volumes"
+	"github.com/stretchr/testify/require"
 
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
-
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/instance/v1/types"
-
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/instance/v1/instances"
-
-	"github.com/stretchr/testify/require"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/instance/v1/types"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/volume/v1/volumes"
 )
 
 func TestListQueryNullParams(t *testing.T) {

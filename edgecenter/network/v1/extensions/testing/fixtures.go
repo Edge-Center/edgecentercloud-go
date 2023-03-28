@@ -3,9 +3,8 @@ package testing
 import (
 	"time"
 
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/network/v1/extensions"
-
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/network/v1/extensions"
 )
 
 const ListResponse = `

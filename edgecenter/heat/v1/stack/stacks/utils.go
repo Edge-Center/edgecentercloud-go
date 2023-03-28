@@ -9,8 +9,9 @@ import (
 	"reflect"
 	"strings"
 
-	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 	"gopkg.in/yaml.v2"
+
+	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 )
 
 // Client is an interface that expects a Get method similar to http.Get. This

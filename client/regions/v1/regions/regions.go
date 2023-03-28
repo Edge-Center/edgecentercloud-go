@@ -4,14 +4,14 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/Edge-Center/edgecentercloud-go/client/regions/v1/client"
+	"github.com/urfave/cli/v2"
 
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 	"github.com/Edge-Center/edgecentercloud-go/client/flags"
+	"github.com/Edge-Center/edgecentercloud-go/client/regions/v1/client"
 	"github.com/Edge-Center/edgecentercloud-go/client/utils"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/region/v1/regions"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/region/v1/types"
-	"github.com/urfave/cli/v2"
 )
 
 var (

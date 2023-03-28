@@ -3,9 +3,8 @@ package resources
 import (
 	"time"
 
-	"github.com/Edge-Center/edgecentercloud-go/pagination"
-
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
+	"github.com/Edge-Center/edgecentercloud-go/pagination"
 )
 
 type commonResult struct {

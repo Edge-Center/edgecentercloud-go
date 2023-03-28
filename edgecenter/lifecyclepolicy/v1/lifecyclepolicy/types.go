@@ -4,8 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 
-	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 	"github.com/shopspring/decimal"
+
+	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 )
 
 type (

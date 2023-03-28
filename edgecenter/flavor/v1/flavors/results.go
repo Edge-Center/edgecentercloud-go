@@ -1,13 +1,13 @@
 package flavors
 
 import (
+	"github.com/shopspring/decimal"
+
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 	"github.com/Edge-Center/edgecentercloud-go/pagination"
-
-	"github.com/shopspring/decimal"
 )
 
-func init() { // nolint
+func init() {
 	decimal.DivisionPrecision = 2
 	decimal.MarshalJSONWithoutQuotes = true
 }

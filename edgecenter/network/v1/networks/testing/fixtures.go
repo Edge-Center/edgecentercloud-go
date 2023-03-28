@@ -4,11 +4,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/utils/metadata"
-
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/network/v1/networks"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/utils/metadata"
 	fake "github.com/Edge-Center/edgecentercloud-go/testhelper/client"
 )
 

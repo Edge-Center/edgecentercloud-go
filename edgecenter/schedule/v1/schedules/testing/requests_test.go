@@ -5,12 +5,13 @@ import (
 	"net/http"
 	"testing"
 
+	log "github.com/sirupsen/logrus"
+	"github.com/stretchr/testify/require"
+
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/lifecyclepolicy/v1/lifecyclepolicy"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/schedule/v1/schedules"
 	th "github.com/Edge-Center/edgecentercloud-go/testhelper"
 	fake "github.com/Edge-Center/edgecentercloud-go/testhelper/client"
-	log "github.com/sirupsen/logrus"
-	"github.com/stretchr/testify/require"
 )
 
 func prepareResourceTestURL(scheduleID string) string {

@@ -3,9 +3,10 @@ package testing
 import (
 	"testing"
 
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/volume/v1/volumes"
 	"github.com/fatih/structs"
 	"github.com/stretchr/testify/require"
+
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/volume/v1/volumes"
 )
 
 func TestCreateOpts(t *testing.T) {

@@ -5,17 +5,14 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter"
-
-	"github.com/Edge-Center/edgecentercloud-go/testhelper/client"
-
+	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/require"
 
-	log "github.com/sirupsen/logrus"
-
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/identity/tokens"
 	"github.com/Edge-Center/edgecentercloud-go/testhelper"
+	"github.com/Edge-Center/edgecentercloud-go/testhelper/client"
 )
 
 // authTokenPost verifies that providing certain AuthOptions results in an expected JSON structure.

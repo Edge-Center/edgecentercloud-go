@@ -2,7 +2,6 @@ package floatingips
 
 import (
 	"fmt"
-
 	"net"
 
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"

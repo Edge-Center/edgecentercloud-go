@@ -4,15 +4,14 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/Edge-Center/edgecentercloud-go/client/snapshots/v1/client"
+	"github.com/urfave/cli/v2"
 
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 	"github.com/Edge-Center/edgecentercloud-go/client/flags"
+	"github.com/Edge-Center/edgecentercloud-go/client/snapshots/v1/client"
 	"github.com/Edge-Center/edgecentercloud-go/client/utils"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/snapshot/v1/snapshots"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
-
-	"github.com/urfave/cli/v2"
 )
 
 var snapshotIDText = "snapshot_id is mandatory argument"

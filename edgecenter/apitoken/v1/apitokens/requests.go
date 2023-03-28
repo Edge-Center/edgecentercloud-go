@@ -94,6 +94,6 @@ func Create(client *edgecloud.ServiceClient, clientID int, opts CreateOptsBuilde
 		r.Err = err
 		return
 	}
-	_, r.Err = client.Post(createURL(client, clientID), b, &r.Body, nil) // nolint
+	_, r.Err = client.Post(createURL(client, clientID), b, &r.Body, nil)
 	return
 }

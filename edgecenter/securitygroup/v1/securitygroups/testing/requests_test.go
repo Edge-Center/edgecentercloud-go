@@ -5,16 +5,14 @@ import (
 	"net/http"
 	"testing"
 
-	instancestesting "github.com/Edge-Center/edgecentercloud-go/edgecenter/instance/v1/instances/testing"
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/securitygroup/v1/securitygroups"
-	fake "github.com/Edge-Center/edgecentercloud-go/testhelper/client"
-
+	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/require"
 
-	log "github.com/sirupsen/logrus"
-
+	instancestesting "github.com/Edge-Center/edgecentercloud-go/edgecenter/instance/v1/instances/testing"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/securitygroup/v1/securitygroups"
 	"github.com/Edge-Center/edgecentercloud-go/pagination"
 	th "github.com/Edge-Center/edgecentercloud-go/testhelper"
+	fake "github.com/Edge-Center/edgecentercloud-go/testhelper/client"
 )
 
 func prepareListTestURLParams(projectID int, regionID int) string {
@@ -49,7 +47,7 @@ func prepareDeepCopyTestURL(id string) string {
 	return prepareActionTestURLParams(fake.ProjectID, fake.RegionID, id, "copy")
 }
 
-func prepareGetActionTestURLParams(version string, id string, action string) string { // nolint
+func prepareGetActionTestURLParams(version string, id string, action string) string {
 	return fmt.Sprintf("/%s/securitygroups/%d/%d/%s/%s", version, fake.ProjectID, fake.RegionID, id, action)
 }
 

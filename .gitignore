@@ -2,3 +2,4 @@
 .idea
 .vscode
 ./ec_client
+bin/golangci-lint

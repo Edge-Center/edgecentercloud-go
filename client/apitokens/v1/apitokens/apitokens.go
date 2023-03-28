@@ -5,13 +5,14 @@ import (
 	"strings"
 	"time"
 
+	"github.com/urfave/cli/v2"
+
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 	"github.com/Edge-Center/edgecentercloud-go/client/apitokens/v1/client"
 	"github.com/Edge-Center/edgecentercloud-go/client/flags"
 	"github.com/Edge-Center/edgecentercloud-go/client/utils"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/apitoken/v1/apitokens"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/apitoken/v1/types"
-	"github.com/urfave/cli/v2"
 )
 
 var apiTokenIDText = "apitoken_id is mandatory argument"

@@ -13,7 +13,6 @@ import (
 	"time"
 
 	"github.com/ladydascalie/currency"
-
 	log "github.com/sirupsen/logrus"
 )
 

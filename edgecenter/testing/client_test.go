@@ -6,14 +6,13 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Edge-Center/edgecentercloud-go/testhelper/client"
-
 	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/require"
 
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter"
 	th "github.com/Edge-Center/edgecentercloud-go/testhelper"
+	"github.com/Edge-Center/edgecentercloud-go/testhelper/client"
 )
 
 var testURL = "/v1/magnum/"
@@ -173,7 +172,7 @@ func TestReauthAuthenticatedServiceClientWithBadRefreshToken(t *testing.T) {
 	require.Equal(t, client.RefreshToken, serviceClient.RefreshToken())
 	r := edgecloud.Result{}
 
-	resp, err := serviceClient.Get(fullTestURL, &r.Body, nil) // nolint
+	resp, err := serviceClient.Get(fullTestURL, &r.Body, nil)
 	require.NoError(t, err)
 	require.Equal(t, resp.StatusCode, 200)
 
@@ -223,7 +222,7 @@ func TestReauthTokenServiceClient(t *testing.T) {
 	require.Equal(t, client.RefreshToken, serviceClient.RefreshToken())
 	r := edgecloud.Result{}
 
-	resp, err := serviceClient.Get(fullTestURL, &r.Body, nil) // nolint
+	resp, err := serviceClient.Get(fullTestURL, &r.Body, nil)
 	require.NoError(t, err)
 	require.Equal(t, resp.StatusCode, 200)
 
@@ -234,7 +233,7 @@ func TestReauthTokenServiceClient(t *testing.T) {
 	serviceClient.AccessTokenID = client.AccessToken
 	require.Equal(t, client.AccessToken, serviceClient.AccessToken())
 
-	resp, err = serviceClient.Get(fullTestURL, &r.Body, nil) // nolint
+	resp, err = serviceClient.Get(fullTestURL, &r.Body, nil)
 	require.NoError(t, err)
 	require.Equal(t, resp.StatusCode, 200)
 

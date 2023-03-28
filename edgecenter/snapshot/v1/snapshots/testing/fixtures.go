@@ -3,11 +3,10 @@ package testing
 import (
 	"time"
 
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/snapshot/v1/snapshots"
-	fake "github.com/Edge-Center/edgecentercloud-go/testhelper/client"
-
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/snapshot/v1/snapshots"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
+	fake "github.com/Edge-Center/edgecentercloud-go/testhelper/client"
 )
 
 const ListResponse = `

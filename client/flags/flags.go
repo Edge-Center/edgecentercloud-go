@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/Edge-Center/edgecentercloud-go/client/utils"
-
 	"github.com/urfave/cli/v2"
+
+	"github.com/Edge-Center/edgecentercloud-go/client/utils"
 )
 
 const (

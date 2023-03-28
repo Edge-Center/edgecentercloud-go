@@ -3,10 +3,9 @@ package stacks
 import (
 	"strings"
 
+	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/heat/v1/stack/stacks/types"
 	"github.com/Edge-Center/edgecentercloud-go/pagination"
-
-	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 )
 
 // CreateOptsBuilder is the interface options structs have to satisfy in order

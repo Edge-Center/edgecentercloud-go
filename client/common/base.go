@@ -1,10 +1,11 @@
 package common
 
 import (
+	"github.com/urfave/cli/v2"
+
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 	"github.com/Edge-Center/edgecentercloud-go/client/flags"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter"
-	"github.com/urfave/cli/v2"
 )
 
 func buildTokenClient(c *cli.Context, endpointName, endpointType string, version string) (*edgecloud.ServiceClient, error) {

@@ -6,10 +6,9 @@ import (
 	"net/http"
 	"testing"
 
-	fake "github.com/Edge-Center/edgecentercloud-go/testhelper/client"
-
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/identity/tokens"
 	"github.com/Edge-Center/edgecentercloud-go/testhelper"
+	fake "github.com/Edge-Center/edgecentercloud-go/testhelper/client"
 )
 
 // TokenOutput is a sample response to a AccessToken call.

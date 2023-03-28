@@ -3,8 +3,9 @@ package testing
 import (
 	"testing"
 
-	"github.com/Edge-Center/edgecentercloud-go/client/limits/v2/limits"
 	"github.com/stretchr/testify/require"
+
+	"github.com/Edge-Center/edgecentercloud-go/client/limits/v2/limits"
 )
 
 func TestGlobalUpdateStructFromString(t *testing.T) {

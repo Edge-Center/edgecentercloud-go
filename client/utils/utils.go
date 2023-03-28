@@ -10,13 +10,14 @@ import (
 	"strings"
 	"time"
 
-	edgecloud "github.com/Edge-Center/edgecentercloud-go"
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
 	"github.com/fatih/structs"
 	"github.com/mitchellh/go-homedir"
 	"github.com/olekukonko/tablewriter"
 	"github.com/urfave/cli/v2"
 	"gopkg.in/yaml.v2"
+
+	edgecloud "github.com/Edge-Center/edgecentercloud-go"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
 )
 
 var (
@@ -285,7 +286,7 @@ func WriteToFile(filename string, content []byte) error {
 	if err != nil {
 		return err
 	}
-	err = os.WriteFile(path, content, 0644) // nolint
+	err = os.WriteFile(path, content, 0644)
 	return err
 }
 

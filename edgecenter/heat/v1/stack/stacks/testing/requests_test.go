@@ -5,18 +5,14 @@ import (
 	"net/http"
 	"testing"
 
-	edgecloud "github.com/Edge-Center/edgecentercloud-go"
-
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/heat/v1/stack/stacks"
-
-	fake "github.com/Edge-Center/edgecentercloud-go/testhelper/client"
-
+	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/require"
 
-	log "github.com/sirupsen/logrus"
-
+	edgecloud "github.com/Edge-Center/edgecentercloud-go"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/heat/v1/stack/stacks"
 	"github.com/Edge-Center/edgecentercloud-go/pagination"
 	th "github.com/Edge-Center/edgecentercloud-go/testhelper"
+	fake "github.com/Edge-Center/edgecentercloud-go/testhelper/client"
 )
 
 func prepareListTestURLParams(projectID int, regionID int) string {

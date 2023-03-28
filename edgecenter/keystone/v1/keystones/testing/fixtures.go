@@ -3,10 +3,9 @@ package testing
 import (
 	"time"
 
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/keystone/v1/types"
-
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/keystone/v1/keystones"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/keystone/v1/types"
 )
 
 const ListResponse = `

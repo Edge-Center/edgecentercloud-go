@@ -27,7 +27,7 @@ func prepareListTestURL() string {
 	return prepareListTestURLParams(fake.ProjectID, fake.RegionID)
 }
 
-func prepareActionTestURLParams(projectID int, regionID int, id, action string) string { // nolint
+func prepareActionTestURLParams(projectID int, regionID int, id, action string) string {
 	return fmt.Sprintf("/v1/volumes/%d/%d/%s/%s", projectID, regionID, id, action)
 }
 

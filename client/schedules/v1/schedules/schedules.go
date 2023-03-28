@@ -1,12 +1,13 @@
 package schedules
 
 import (
+	"github.com/urfave/cli/v2"
+
 	"github.com/Edge-Center/edgecentercloud-go/client/flags"
 	"github.com/Edge-Center/edgecentercloud-go/client/schedules/v1/client"
 	"github.com/Edge-Center/edgecentercloud-go/client/utils"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/lifecyclepolicy/v1/lifecyclepolicy"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/schedule/v1/schedules"
-	"github.com/urfave/cli/v2"
 )
 
 var scheduleIDText = "schedule_id is mandatory argument"

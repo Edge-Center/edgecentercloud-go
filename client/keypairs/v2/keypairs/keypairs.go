@@ -1,12 +1,12 @@
 package keypairs
 
 import (
+	"github.com/urfave/cli/v2"
+
 	"github.com/Edge-Center/edgecentercloud-go/client/flags"
 	"github.com/Edge-Center/edgecentercloud-go/client/keypairs/v2/client"
 	"github.com/Edge-Center/edgecentercloud-go/client/utils"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/keypair/v2/keypairs"
-
-	"github.com/urfave/cli/v2"
 )
 
 var keyPairIDText = "keypair_id is mandatory argument"

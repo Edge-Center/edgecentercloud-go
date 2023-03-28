@@ -12,12 +12,11 @@ import (
 	"time"
 
 	log "github.com/sirupsen/logrus"
+	"github.com/stretchr/testify/assert"
 
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 	th "github.com/Edge-Center/edgecentercloud-go/testhelper"
 	"github.com/Edge-Center/edgecentercloud-go/testhelper/client"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestAuthenticatedHeaders(t *testing.T) {
@@ -208,7 +207,7 @@ func TestReauthEndLoop(t *testing.T) {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			_, err := p.Request("GET", fmt.Sprintf("%s/route", th.Endpoint()), reqopts) // nolint
+			_, err := p.Request("GET", fmt.Sprintf("%s/route", th.Endpoint()), reqopts)
 
 			mut.Lock()
 			defer mut.Unlock()
@@ -393,11 +392,10 @@ func TestRequestReauthsAtMostOnce(t *testing.T) {
 		http.Error(w, "unauthorized", http.StatusUnauthorized)
 	})
 
-	// The expected error message indicates that we reauthenticated once (that's
-	// the part before the colon), but when encountering another 401 response, we
-	// did not attempt reauthentication again and just passed that 401 response to
-	// the caller as ErrDefault401.
-	_, err = p.Request("GET", th.Endpoint()+"/route", &edgecloud.RequestOpts{}) // nolint
+	// The expected error message indicates that we reauthenticated once (that's the part before the colon),
+	// but when encountering another 401 response, we did not attempt reauthentication again and just passed
+	// that 401 response to the caller as ErrDefault401.
+	_, err = p.Request("GET", th.Endpoint()+"/route", &edgecloud.RequestOpts{})
 	expectedErrorMessage := "Successfully re-authenticated, but got error executing request: Authentication failed"
 	if err != nil {
 		th.AssertEquals(t, expectedErrorMessage, err.Error())
@@ -429,7 +427,7 @@ func TestRequestWithContext(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	cancel()
-	_, err = p.Request("GET", ts.URL, &edgecloud.RequestOpts{}) // nolint
+	_, err = p.Request("GET", ts.URL, &edgecloud.RequestOpts{})
 	if err == nil {
 		t.Fatal("expecting error, got nil")
 	}

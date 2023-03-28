@@ -1,13 +1,12 @@
 package networks
 
 import (
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/network/v1/extensions"
+	"github.com/urfave/cli/v2"
 
 	"github.com/Edge-Center/edgecentercloud-go/client/flags"
 	"github.com/Edge-Center/edgecentercloud-go/client/networks/v1/client"
 	"github.com/Edge-Center/edgecentercloud-go/client/utils"
-
-	"github.com/urfave/cli/v2"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/network/v1/extensions"
 )
 
 var aliasText = "alias is mandatory argument"

@@ -1,11 +1,12 @@
 package servergroups
 
 import (
+	"github.com/urfave/cli/v2"
+
 	"github.com/Edge-Center/edgecentercloud-go/client/flags"
 	"github.com/Edge-Center/edgecentercloud-go/client/servergroups/v1/client"
 	"github.com/Edge-Center/edgecentercloud-go/client/utils"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/servergroup/v1/servergroups"
-	"github.com/urfave/cli/v2"
 )
 
 var serverGroupIDText = "servergroup_id is mandatory argument"

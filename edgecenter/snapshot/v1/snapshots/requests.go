@@ -187,7 +187,7 @@ func MetadataReplace(client *edgecloud.ServiceClient, id string, opts MetadataSe
 		r.Err = err
 		return
 	}
-	_, r.Err = client.Put(metadataURL(client, id), b, &r.Body, &edgecloud.RequestOpts{ // nolint
+	_, r.Err = client.Put(metadataURL(client, id), b, &r.Body, &edgecloud.RequestOpts{
 		OkCodes: []int{http.StatusNoContent, http.StatusOK},
 	})
 	return

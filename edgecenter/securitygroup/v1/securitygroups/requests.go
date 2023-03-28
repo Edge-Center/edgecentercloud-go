@@ -267,15 +267,15 @@ func MetadataListAll(client *edgecloud.ServiceClient, id string) ([]Metadata, er
 
 // MetadataCreateOrUpdate creates or update a metadata for an security group.
 func MetadataCreateOrUpdate(client *edgecloud.ServiceClient, id string, opts map[string]interface{}) (r MetadataActionResult) {
-	_, r.Err = client.Post(metadataURL(client, id), opts, nil, &edgecloud.RequestOpts{ // nolint
+	_, r.Err = client.Post(metadataURL(client, id), opts, nil, &edgecloud.RequestOpts{
 		OkCodes: []int{http.StatusNoContent, http.StatusOK},
 	})
 	return
 }
 
-// MetadataReplace replace a metadata for an security group.
+// MetadataReplace replace a metadata for a security group.
 func MetadataReplace(client *edgecloud.ServiceClient, id string, opts map[string]interface{}) (r MetadataActionResult) {
-	_, r.Err = client.Put(metadataURL(client, id), opts, nil, &edgecloud.RequestOpts{ // nolint
+	_, r.Err = client.Put(metadataURL(client, id), opts, nil, &edgecloud.RequestOpts{
 		OkCodes: []int{http.StatusNoContent, http.StatusOK},
 	})
 	return
@@ -283,7 +283,7 @@ func MetadataReplace(client *edgecloud.ServiceClient, id string, opts map[string
 
 // MetadataDelete deletes defined metadata key for a security group.
 func MetadataDelete(client *edgecloud.ServiceClient, id string, key string) (r MetadataActionResult) {
-	_, r.Err = client.Delete(metadataItemURL(client, id, key), &edgecloud.RequestOpts{ // nolint
+	_, r.Err = client.Delete(metadataItemURL(client, id, key), &edgecloud.RequestOpts{
 		OkCodes: []int{http.StatusNoContent, http.StatusOK},
 	})
 	return
@@ -293,6 +293,6 @@ func MetadataDelete(client *edgecloud.ServiceClient, id string, key string) (r M
 func MetadataGet(client *edgecloud.ServiceClient, id string, key string) (r MetadataResult) {
 	url := metadataItemURL(client, id, key)
 
-	_, r.Err = client.Get(url, &r.Body, nil) // nolint
+	_, r.Err = client.Get(url, &r.Body, nil)
 	return
 }

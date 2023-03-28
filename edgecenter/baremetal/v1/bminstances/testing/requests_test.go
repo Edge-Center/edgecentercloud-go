@@ -5,12 +5,11 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/instance/v1/instances"
-
 	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/require"
 
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/baremetal/v1/bminstances"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/instance/v1/instances"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/instance/v1/types"
 	th "github.com/Edge-Center/edgecentercloud-go/testhelper"
 	fake "github.com/Edge-Center/edgecentercloud-go/testhelper/client"
@@ -24,7 +23,7 @@ func prepareCreateTestURLV1() string {
 	return prepareListTestURLParams("v1", fake.ProjectID, fake.RegionID)
 }
 
-func prepareRebuildTestURLParams(id string) string { // nolint
+func prepareRebuildTestURLParams(id string) string {
 	return fmt.Sprintf("/v1/bminstances/%d/%d/%s/rebuild", fake.ProjectID, fake.RegionID, id)
 }
 

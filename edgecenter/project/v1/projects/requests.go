@@ -15,7 +15,7 @@ func List(c *edgecloud.ServiceClient) pagination.Pager {
 
 // Get retrieves a specific project based on its unique ID.
 func Get(c *edgecloud.ServiceClient, id int) (r GetResult) {
-	_, r.Err = c.Get(getURL(c, id), &r.Body, nil) // nolint
+	_, r.Err = c.Get(getURL(c, id), &r.Body, nil)
 	return
 }
 
@@ -49,7 +49,7 @@ func Create(c *edgecloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult)
 		r.Err = err
 		return
 	}
-	_, r.Err = c.Post(createURL(c), b, &r.Body, nil) // nolint
+	_, r.Err = c.Post(createURL(c), b, &r.Body, nil)
 	return
 }
 
@@ -81,7 +81,7 @@ func Update(c *edgecloud.ServiceClient, id int, opts UpdateOptsBuilder) (r Updat
 		r.Err = err
 		return
 	}
-	_, r.Err = c.Put(updateURL(c, id), b, &r.Body, &edgecloud.RequestOpts{ // nolint
+	_, r.Err = c.Put(updateURL(c, id), b, &r.Body, &edgecloud.RequestOpts{
 		OkCodes: []int{200, 201},
 	})
 	return
@@ -105,6 +105,6 @@ func ListAll(client *edgecloud.ServiceClient) ([]Project, error) {
 // Delete a project.
 func Delete(client *edgecloud.ServiceClient, id int) (r tasks.Result) {
 	url := deleteURL(client, id)
-	_, r.Err = client.DeleteWithResponse(url, &r.Body, nil) // nolint
+	_, r.Err = client.DeleteWithResponse(url, &r.Body, nil)
 	return
 }

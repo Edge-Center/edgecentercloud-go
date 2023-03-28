@@ -1,11 +1,12 @@
 package apptemplates
 
 import (
+	"github.com/urfave/cli/v2"
+
 	"github.com/Edge-Center/edgecentercloud-go/client/apptemplates/v1/client"
 	"github.com/Edge-Center/edgecentercloud-go/client/flags"
 	"github.com/Edge-Center/edgecentercloud-go/client/utils"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/apptemplate/v1/apptemplates"
-	"github.com/urfave/cli/v2"
 )
 
 var Commands = cli.Command{

@@ -29,7 +29,7 @@ type EnumValidator interface {
 	StringList() []string
 }
 
-func init() { // nolint
+func init() {
 	Validate = validator.New()
 	translator := en.New()
 	uni := ut.New(translator, translator)

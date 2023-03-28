@@ -1,12 +1,12 @@
 package regionsaccess
 
 import (
-	"github.com/Edge-Center/edgecentercloud-go/client/regions/v1/client"
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/regionaccess/v1/regionsaccess"
+	"github.com/urfave/cli/v2"
 
 	"github.com/Edge-Center/edgecentercloud-go/client/flags"
+	"github.com/Edge-Center/edgecentercloud-go/client/regions/v1/client"
 	"github.com/Edge-Center/edgecentercloud-go/client/utils"
-	"github.com/urfave/cli/v2"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/regionaccess/v1/regionsaccess"
 )
 
 var (

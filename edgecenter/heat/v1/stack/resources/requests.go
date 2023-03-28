@@ -3,11 +3,9 @@ package resources
 import (
 	"bytes"
 
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/heat/v1/stack/resources/types"
-
-	"github.com/Edge-Center/edgecentercloud-go/pagination"
-
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/heat/v1/stack/resources/types"
+	"github.com/Edge-Center/edgecentercloud-go/pagination"
 )
 
 // Metadata retrieves metadata for heat resource.

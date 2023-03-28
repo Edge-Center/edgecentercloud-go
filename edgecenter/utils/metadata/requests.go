@@ -28,7 +28,7 @@ func MetadataListAll(client *edgecloud.ServiceClient, id string) ([]Metadata, er
 
 // MetadataCreateOrUpdate creates or update a metadata for a resource.
 func MetadataCreateOrUpdate(client *edgecloud.ServiceClient, id string, opts map[string]string) (r MetadataActionResult) {
-	_, r.Err = client.Post(MetadataURL(client, id), opts, nil, &edgecloud.RequestOpts{ // nolint
+	_, r.Err = client.Post(MetadataURL(client, id), opts, nil, &edgecloud.RequestOpts{
 		OkCodes: []int{http.StatusNoContent, http.StatusOK},
 	})
 	return
@@ -36,7 +36,7 @@ func MetadataCreateOrUpdate(client *edgecloud.ServiceClient, id string, opts map
 
 // MetadataReplace replace a metadata for a resource.
 func MetadataReplace(client *edgecloud.ServiceClient, id string, opts map[string]string) (r MetadataActionResult) {
-	_, r.Err = client.Put(MetadataURL(client, id), opts, nil, &edgecloud.RequestOpts{ // nolint
+	_, r.Err = client.Put(MetadataURL(client, id), opts, nil, &edgecloud.RequestOpts{
 		OkCodes: []int{http.StatusNoContent, http.StatusOK},
 	})
 	return
@@ -44,7 +44,7 @@ func MetadataReplace(client *edgecloud.ServiceClient, id string, opts map[string
 
 // MetadataDelete deletes defined metadata key for a resource.
 func MetadataDelete(client *edgecloud.ServiceClient, id string, key string) (r MetadataActionResult) {
-	_, r.Err = client.Delete(MetadataItemURL(client, id, key), &edgecloud.RequestOpts{ // nolint
+	_, r.Err = client.Delete(MetadataItemURL(client, id, key), &edgecloud.RequestOpts{
 		OkCodes: []int{http.StatusNoContent, http.StatusOK},
 	})
 	return
@@ -54,6 +54,6 @@ func MetadataDelete(client *edgecloud.ServiceClient, id string, key string) (r M
 func MetadataGet(client *edgecloud.ServiceClient, id string, key string) (r MetadataResult) {
 	url := MetadataItemURL(client, id, key)
 
-	_, r.Err = client.Get(url, &r.Body, nil) // nolint
+	_, r.Err = client.Get(url, &r.Body, nil)
 	return
 }

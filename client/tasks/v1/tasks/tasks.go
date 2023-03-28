@@ -3,12 +3,11 @@ package tasks
 import (
 	"fmt"
 
-	"github.com/Edge-Center/edgecentercloud-go/client/tasks/v1/client"
+	"github.com/urfave/cli/v2"
 
+	"github.com/Edge-Center/edgecentercloud-go/client/tasks/v1/client"
 	"github.com/Edge-Center/edgecentercloud-go/client/utils"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
-
-	"github.com/urfave/cli/v2"
 )
 
 var taskIDText = "task_id is mandatory argument"
