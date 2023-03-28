@@ -1,24 +1,87 @@
 run:
-  timeout: 60m
-  go: "1.19"
+  timeout: 10m
+  go: "1.20"
 
 issues:
   max-per-linter: 0
   max-same-issues: 0
+  exclude:
+    # revive, stylecheck: ignore constants in all caps
+    - don't use ALL_CAPS in Go names; use CamelCase
+    - ST1003
+    # gosec
+    - G101
+    - G306
+    - G401
+    - G501
+  exclude-rules:
+    - path: _test|utils.go
+      linters:
+        - errcheck
+    - path: \.go
+      linters:
+        - nolintlint
+      text: should be written without leading space
+    - text: missing cases in switch of type
+      linters:
+        - exhaustive
 
 linters:
-  disable-all: true
-  enable:
-    - asciicheck
-    - errcheck
-    - goimports
-    - govet
-    - ineffassign
-    - nakedret
-    - misspell
-    - staticcheck
-    - typecheck
-    - unconvert
+#  disable-all: true
+#  enable:
+  enable-all: true
+  disable:
+    - deadcode
+    - maligned
+    - varcheck
+    - nosnakecase
+    - interfacer
+    - ifshort
+    - structcheck
+    - golint
+    - scopelint
+    - exhaustivestruct
+    - rowserrcheck
+    - sqlclosecheck
+    - wastedassign
+    # skip
+    - gochecknoglobals # check that no global variables exist
+    - nilnil           # Checks that there is no simultaneous return of nil error and an invalid value.
+    - gomnd            # An analyzer to detect magic numbers.
+    - goerr113         # Golang linter to check the errors handling expressions
+    - exhaustruct      # Checks if all structure fields are initialized
+    - lll              # Reports long lines
+    - godox            # Tool for detection of FIXME, TODO and other comment keywords
+    - wsl              # Whitespace Linter - Forces you to use empty lines!
+    - forcetypeassert  # finds forced type assertions
+    - tagliatelle
+    - nonamedreturns
+    - bodyclose
+    - wrapcheck
     - unparam
-    - vet
-    - vetshadow
+    - ireturn
+    - gochecknoinits
+    - errchkjson
+    # complexity: need to refactor
+    - cyclop
+    - funlen
+    - gocognit
+    - gocyclo
+    - maintidx
+    - nestif
+    - dupl
+    # tests
+    - testpackage
+    - thelper
+    - paralleltest
+
+linters-settings:
+  nlreturn:
+    block-size: 10
+  gci:
+    sections:
+      - standard # Standard section: captures all standard packages.
+      - default # Default section: contains all imports that could not be matched to another section type.
+      - prefix(github.com/Edge-Center)
+  varnamelen:
+    min-name-length: 1
