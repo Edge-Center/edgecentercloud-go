@@ -8,7 +8,7 @@ import (
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 )
 
-// Template is a structure that represents OpenStack Heat templates
+// Template is a structure that represents OpenStack Heat templates.
 type Template struct {
 	TE
 }
@@ -21,7 +21,7 @@ var TemplateFormatVersions = map[string]bool{
 	"AWSTemplateFormatVersion":  true,
 }
 
-// Validate validates the contents of the Template
+// Validate validates the contents of the Template.
 func (t *Template) Validate() error {
 	if t.Parsed == nil {
 		if err := t.Parse(); err != nil {
@@ -121,7 +121,7 @@ func (t *Template) getFileContents(te interface{}, ignoreIf igFunc, recurse bool
 	return nil
 }
 
-// function to choose keys whose values are other template files
+// function to choose keys whose values are other template files.
 func ignoreIfTemplate(key string, value interface{}) bool {
 	// key must be either `get_file` or `type` for value to be a URL
 	if key != "get_file" && key != "type" {

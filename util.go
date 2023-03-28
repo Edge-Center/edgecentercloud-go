@@ -104,7 +104,7 @@ func NormalizePathURL(basePath, rawPath string) (string, error) {
 
 }
 
-// StripLastSlashURL removes last slash symbols from url
+// StripLastSlashURL removes last slash symbols from url.
 func StripLastSlashURL(url string) string {
 	if len(url) == 0 {
 		return url
@@ -116,7 +116,7 @@ func StripLastSlashURL(url string) string {
 	return url[:i+1]
 }
 
-// NativeMapToStruct converts from map to struct
+// NativeMapToStruct converts from map to struct.
 func NativeMapToStruct(nativeMap interface{}, obj interface{}) error {
 
 	var md mapstructure.Metadata

@@ -40,12 +40,12 @@ type GetResult struct {
 	commonResult
 }
 
-// ConfigResult represents the result of kubernetes config
+// ConfigResult represents the result of kubernetes config.
 type ConfigResult struct {
 	edgecloud.Result
 }
 
-// ClusterCertificateCAResult represents the result of CA cluster certificates
+// ClusterCertificateCAResult represents the result of CA cluster certificates.
 type ClusterCertificateCAResult struct {
 	edgecloud.Result
 }
@@ -57,7 +57,7 @@ func (r ClusterCertificateCAResult) Extract() (*ClusterCACertificate, error) {
 	return &c, err
 }
 
-// ClusterCertificateSignResult represents the result of signing cluster certificate operation
+// ClusterCertificateSignResult represents the result of signing cluster certificate operation.
 type ClusterCertificateSignResult struct {
 	edgecloud.Result
 }

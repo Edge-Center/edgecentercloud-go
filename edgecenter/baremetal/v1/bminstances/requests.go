@@ -34,7 +34,7 @@ type CreateNewInterfaceFloatingIPOpts struct {
 	ExistingFloatingID string                 `json:"existing_floating_id" validate:"rfe=Source:existing,sfe=Source:new,omitempty,uuid4"`
 }
 
-// Validate
+// Validate CreateNewInterfaceFloatingIPOpts.
 func (opts CreateNewInterfaceFloatingIPOpts) Validate() error {
 	return edgecloud.ValidateStruct(opts)
 }
@@ -47,7 +47,7 @@ type InterfaceOpts struct {
 	FloatingIP *CreateNewInterfaceFloatingIPOpts `json:"floating_ip,omitempty" validate:"omitempty,dive"`
 }
 
-// Validate
+// Validate InterfaceOpts.
 func (opts InterfaceOpts) Validate() error {
 	return edgecloud.ValidateStruct(opts)
 }
@@ -73,7 +73,7 @@ type CreateOpts struct {
 	Metadata      *instances.MetadataSetOpts `json:"metadata,omitempty" validate:"omitempty,dive"`
 }
 
-// Validate
+// Validate CreateOpts.
 func (opts CreateOpts) Validate() error {
 	return edgecloud.ValidateStruct(opts)
 }

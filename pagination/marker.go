@@ -40,7 +40,7 @@ func (current MarkerPageBase) NextPageURL() (string, error) {
 	return currentURL.String(), nil
 }
 
-// IsEmpty satisifies the IsEmpty method of the Page interface
+// IsEmpty satisifies the IsEmpty method of the Page interface.
 func (current MarkerPageBase) IsEmpty() (bool, error) {
 	if b, ok := current.Body.([]interface{}); ok {
 		return len(b) == 0, nil
@@ -51,8 +51,7 @@ func (current MarkerPageBase) IsEmpty() (bool, error) {
 	return true, err
 }
 
-// GetBody returns the linked page's body. This method is needed to satisfy the
-// Page interface.
+// GetBody returns the linked page's body. This method is needed to satisfy the Page interface.
 func (current MarkerPageBase) GetBody() interface{} {
 	return current.Body
 }

@@ -24,8 +24,7 @@ func (e BaseError) choseErrString() string {
 	return e.DefaultErrString
 }
 
-// ErrMissingInput is the error when input is required in a particular
-// situation but not provided by the user
+// ErrMissingInput is the error when input is required in a particular situation but not provided by the user.
 type ErrMissingInput struct {
 	BaseError
 	Argument string
@@ -48,7 +47,7 @@ func (e ErrInvalidInput) Error() string {
 }
 
 // ErrMissingEnvironmentVariable is the error when environment variable is required
-// in a particular situation but not provided by the user
+// in a particular situation but not provided by the user.
 type ErrMissingEnvironmentVariable struct {
 	BaseError
 	EnvironmentVariable string
@@ -60,7 +59,7 @@ func (e ErrMissingEnvironmentVariable) Error() string {
 }
 
 // ErrMissingAnyoneOfEnvironmentVariables is the error when anyone of the environment variables
-// is required in a particular situation but not provided by the user
+// is required in a particular situation but not provided by the user.
 type ErrMissingAnyoneOfEnvironmentVariables struct {
 	BaseError
 	EnvironmentVariables []string
@@ -384,7 +383,7 @@ func (e ErrMultipleResourcesFound) Error() string {
 	return e.choseErrString()
 }
 
-// ErrUnexpectedType is the error when an unexpected type is encountered
+// ErrUnexpectedType is the error when an unexpected type is encountered.
 type ErrUnexpectedType struct {
 	BaseError
 	Expected string
@@ -450,7 +449,7 @@ func (e ErrDomainIDWithToken) Error() string {
 	return redundantWithTokenErr("DomainID")
 }
 
-// ErrDomainNameWithToken indicates that a DomainName was provided, but token authentication is being used instead.s
+// ErrDomainNameWithToken indicates that a DomainName was provided, but token authentication is being used instead.
 type ErrDomainNameWithToken struct{ BaseError }
 
 func (e ErrDomainNameWithToken) Error() string {
@@ -521,7 +520,7 @@ func (e ErrScopeEmpty) Error() string {
 	return "You must provide either a Project or Domain in a Scope"
 }
 
-// ErrAppCredMissingSecret indicates that no Application Credential Secret was provided with Application Credential ID or Name
+// ErrAppCredMissingSecret indicates that no Application Credential Secret was provided with Application Credential ID or Name.
 type ErrAppCredMissingSecret struct{ BaseError }
 
 func (e ErrAppCredMissingSecret) Error() string {

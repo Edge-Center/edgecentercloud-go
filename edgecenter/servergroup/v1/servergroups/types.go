@@ -47,7 +47,7 @@ func (s ServerGroupPolicy) ValidOrNil() (*ServerGroupPolicy, error) {
 	return &s, nil
 }
 
-// UnmarshalJSON - implements Unmarshaler interface for ServerGroupPolicy
+// UnmarshalJSON - implements Unmarshaler interface for ServerGroupPolicy.
 func (s *ServerGroupPolicy) UnmarshalJSON(data []byte) error {
 	var sg string
 	if err := json.Unmarshal(data, &sg); err != nil {
@@ -62,7 +62,7 @@ func (s *ServerGroupPolicy) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface for ServerGroupPolicy
+// MarshalJSON - implements Marshaler interface for ServerGroupPolicy.
 func (s *ServerGroupPolicy) MarshalJSON() ([]byte, error) {
 	return json.Marshal(s.String())
 }

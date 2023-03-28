@@ -54,7 +54,7 @@ func (ks LimitRequestStatus) StringList() []string {
 	return s
 }
 
-// UnmarshalJSON - implements Unmarshaler interface for LimitRequestStatus
+// UnmarshalJSON - implements Unmarshaler interface for LimitRequestStatus.
 func (ks *LimitRequestStatus) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -69,7 +69,7 @@ func (ks *LimitRequestStatus) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface for LimitRequestStatus
+// MarshalJSON - implements Marshaler interface for LimitRequestStatus.
 func (ks *LimitRequestStatus) MarshalJSON() ([]byte, error) {
 	return json.Marshal(ks.String())
 }

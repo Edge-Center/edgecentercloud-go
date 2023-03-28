@@ -49,7 +49,7 @@ func (gw GatewayType) ValidOrNil() (*GatewayType, error) {
 	return &gw, nil
 }
 
-// UnmarshalJSON - implements Unmarshaler interface for GatewayType
+// UnmarshalJSON - implements Unmarshaler interface for GatewayType.
 func (gw *GatewayType) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -64,7 +64,7 @@ func (gw *GatewayType) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface for GatewayType
+// MarshalJSON - implements Marshaler interface for GatewayType.
 func (gw *GatewayType) MarshalJSON() ([]byte, error) {
 	return json.Marshal(gw.String())
 }
@@ -103,7 +103,7 @@ func (it InterfaceType) ValidOrNil() (*InterfaceType, error) {
 	return &it, nil
 }
 
-// UnmarshalJSON - implements Unmarshaler interface for InterfaceType
+// UnmarshalJSON - implements Unmarshaler interface for InterfaceType.
 func (it *InterfaceType) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -118,7 +118,7 @@ func (it *InterfaceType) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface for InterfaceType
+// MarshalJSON - implements Marshaler interface for InterfaceType.
 func (it *InterfaceType) MarshalJSON() ([]byte, error) {
 	return json.Marshal(it.String())
 }

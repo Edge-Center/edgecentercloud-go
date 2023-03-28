@@ -103,7 +103,7 @@ func (ps ProvisioningStatus) StringList() []string {
 	return s
 }
 
-// UnmarshalJSON - implements Unmarshaler interface
+// UnmarshalJSON - implements Unmarshaler interface.
 func (ps *ProvisioningStatus) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -118,7 +118,7 @@ func (ps *ProvisioningStatus) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface
+// MarshalJSON - implements Marshaler interface.
 func (ps *ProvisioningStatus) MarshalJSON() ([]byte, error) {
 	return json.Marshal(ps.String())
 }
@@ -170,7 +170,7 @@ func (os OperatingStatus) StringList() []string {
 	return s
 }
 
-// UnmarshalJSON - implements Unmarshaler interface
+// UnmarshalJSON - implements Unmarshaler interface.
 func (os *OperatingStatus) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -185,7 +185,7 @@ func (os *OperatingStatus) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface
+// MarshalJSON - implements Marshaler interface.
 func (os *OperatingStatus) MarshalJSON() ([]byte, error) {
 	return json.Marshal(os.String())
 }
@@ -233,7 +233,7 @@ func (lba LoadBalancerAlgorithm) StringList() []string {
 	return s
 }
 
-// UnmarshalJSON - implements Unmarshaler interface
+// UnmarshalJSON - implements Unmarshaler interface.
 func (lba *LoadBalancerAlgorithm) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -248,7 +248,7 @@ func (lba *LoadBalancerAlgorithm) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface
+// MarshalJSON - implements Marshaler interface.
 func (lba *LoadBalancerAlgorithm) MarshalJSON() ([]byte, error) {
 	return json.Marshal(lba.String())
 }
@@ -298,7 +298,7 @@ func (lbspt PersistenceType) StringList() []string {
 	return s
 }
 
-// UnmarshalJSON - implements Unmarshaler interface
+// UnmarshalJSON - implements Unmarshaler interface.
 func (lbspt *PersistenceType) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -313,7 +313,7 @@ func (lbspt *PersistenceType) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface
+// MarshalJSON - implements Marshaler interface.
 func (lbspt *PersistenceType) MarshalJSON() ([]byte, error) {
 	return json.Marshal(lbspt.String())
 }
@@ -353,7 +353,7 @@ func (pt ProtocolType) StringList() []string {
 	return s
 }
 
-// UnmarshalJSON - implements Unmarshaler interface
+// UnmarshalJSON - implements Unmarshaler interface.
 func (pt *ProtocolType) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -368,7 +368,7 @@ func (pt *ProtocolType) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface
+// MarshalJSON - implements Marshaler interface.
 func (pt *ProtocolType) MarshalJSON() ([]byte, error) {
 	return json.Marshal(pt.String())
 }
@@ -424,7 +424,7 @@ func (hm HealthMonitorType) StringList() []string {
 	return s
 }
 
-// UnmarshalJSON - implements Unmarshaler interface
+// UnmarshalJSON - implements Unmarshaler interface.
 func (hm *HealthMonitorType) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -439,7 +439,7 @@ func (hm *HealthMonitorType) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface
+// MarshalJSON - implements Marshaler interface.
 func (hm *HealthMonitorType) MarshalJSON() ([]byte, error) {
 	return json.Marshal(hm.String())
 }
@@ -497,7 +497,7 @@ func (m HTTPMethod) StringList() []string {
 	return s
 }
 
-// UnmarshalJSON - implements Unmarshaler interface
+// UnmarshalJSON - implements Unmarshaler interface.
 func (m *HTTPMethod) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -512,7 +512,7 @@ func (m *HTTPMethod) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface
+// MarshalJSON - implements Marshaler interface.
 func (m *HTTPMethod) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m.String())
 }

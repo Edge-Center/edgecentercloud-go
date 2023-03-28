@@ -148,7 +148,7 @@ func Delete(c *edgecloud.ServiceClient, subnetID string) (r tasks.Result) {
 	return
 }
 
-// ListAll returns all SGs
+// ListAll returns all SGs.
 func ListAll(c *edgecloud.ServiceClient, opts ListOptsBuilder) ([]Subnet, error) {
 	page, err := List(c, opts).AllPages()
 	if err != nil {

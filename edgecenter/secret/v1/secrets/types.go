@@ -63,7 +63,7 @@ func (s SecretType) ValidOrNil() (*SecretType, error) {
 	return &s, nil
 }
 
-// UnmarshalJSON - implements Unmarshaler interface for SecretType
+// UnmarshalJSON - implements Unmarshaler interface for SecretType.
 func (s *SecretType) UnmarshalJSON(data []byte) error {
 	var sg string
 	if err := json.Unmarshal(data, &sg); err != nil {
@@ -78,7 +78,7 @@ func (s *SecretType) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface for SecretType
+// MarshalJSON - implements Marshaler interface for SecretType.
 func (s *SecretType) MarshalJSON() ([]byte, error) {
 	return json.Marshal(s.String())
 }

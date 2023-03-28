@@ -57,7 +57,7 @@ func (et EndpointType) StringList() []string {
 	return s
 }
 
-// UnmarshalJSON - implements Unmarshaler interface for EndpointType
+// UnmarshalJSON - implements Unmarshaler interface for EndpointType.
 func (et *EndpointType) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -72,7 +72,7 @@ func (et *EndpointType) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface for EndpointType
+// MarshalJSON - implements Marshaler interface for EndpointType.
 func (et *EndpointType) MarshalJSON() ([]byte, error) {
 	return json.Marshal(et.String())
 }
@@ -126,7 +126,7 @@ func (rs RegionState) StringList() []string {
 	return s
 }
 
-// UnmarshalJSON - implements Unmarshaler interface for RegionState
+// UnmarshalJSON - implements Unmarshaler interface for RegionState.
 func (rs *RegionState) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -141,7 +141,7 @@ func (rs *RegionState) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface for RegionState
+// MarshalJSON - implements Marshaler interface for RegionState.
 func (rs *RegionState) MarshalJSON() ([]byte, error) {
 	return json.Marshal(rs.String())
 }

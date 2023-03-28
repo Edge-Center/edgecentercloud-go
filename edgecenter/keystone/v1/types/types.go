@@ -57,7 +57,7 @@ func (ks KeystoneState) StringList() []string {
 	return s
 }
 
-// UnmarshalJSON - implements Unmarshaler interface for KeystoneState
+// UnmarshalJSON - implements Unmarshaler interface for KeystoneState.
 func (ks *KeystoneState) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -72,7 +72,7 @@ func (ks *KeystoneState) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface for KeystoneState
+// MarshalJSON - implements Marshaler interface for KeystoneState.
 func (ks *KeystoneState) MarshalJSON() ([]byte, error) {
 	return json.Marshal(ks.String())
 }

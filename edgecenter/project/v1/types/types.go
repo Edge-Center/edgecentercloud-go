@@ -54,7 +54,7 @@ func (rs ProjectState) StringList() []string {
 	return s
 }
 
-// UnmarshalJSON - implements Unmarshaler interface for ProjectState
+// UnmarshalJSON - implements Unmarshaler interface for ProjectState.
 func (rs *ProjectState) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -69,7 +69,7 @@ func (rs *ProjectState) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface for ProjectState
+// MarshalJSON - implements Marshaler interface for ProjectState.
 func (rs *ProjectState) MarshalJSON() ([]byte, error) {
 	return json.Marshal(rs.String())
 }

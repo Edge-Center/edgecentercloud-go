@@ -76,7 +76,7 @@ func (current LinkedPageBase) NextPageURL() (string, error) {
 	}
 }
 
-// IsEmpty satisfies the IsEmpty method of the Page interface
+// IsEmpty satisfies the IsEmpty method of the Page interface.
 func (current LinkedPageBase) IsEmpty() (bool, error) {
 	if b, ok := current.Body.([]interface{}); ok {
 		return len(b) == 0, nil

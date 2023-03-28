@@ -9,7 +9,7 @@ type commonResult struct {
 	edgecloud.Result
 }
 
-// Result represents the operation result that returns tasks
+// Result represents the operation result that returns tasks.
 type Result struct {
 	edgecloud.Result
 }

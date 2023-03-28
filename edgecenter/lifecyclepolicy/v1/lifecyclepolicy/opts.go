@@ -52,13 +52,13 @@ type EstimateOpts struct {
 	Action    PolicyAction `json:"action" validate:"required,enum"`
 }
 
-// EstimateCronOpts represent options for EstimateCronMaxPolicyUsage
+// EstimateCronOpts represent options for EstimateCronMaxPolicyUsage.
 type EstimateCronOpts struct {
 	EstimateOpts
 	Schedules []CreateCronScheduleOpts `json:"schedules"`
 }
 
-// EstimateIntervalOpts represent options for EstimateIntervalMaxPolicyUsage
+// EstimateIntervalOpts represent options for EstimateIntervalMaxPolicyUsage.
 type EstimateIntervalOpts struct {
 	EstimateOpts
 	Schedules []CreateIntervalScheduleOpts `json:"schedules"`

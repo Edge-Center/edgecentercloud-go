@@ -71,7 +71,7 @@ func (vs VolumeSource) StringList() []string {
 	return s
 }
 
-// UnmarshalJSON - implements Unmarshaler interface for VolumeSource
+// UnmarshalJSON - implements Unmarshaler interface for VolumeSource.
 func (vs *VolumeSource) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -86,7 +86,7 @@ func (vs *VolumeSource) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface for VolumeSource
+// MarshalJSON - implements Marshaler interface for VolumeSource.
 func (vs *VolumeSource) MarshalJSON() ([]byte, error) {
 	return json.Marshal(vs.String())
 }
@@ -129,7 +129,7 @@ func (fip FloatingIPSource) StringList() []string {
 	return s
 }
 
-// UnmarshalJSON - implements Unmarshaler interface
+// UnmarshalJSON - implements Unmarshaler interface.
 func (fip *FloatingIPSource) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -144,7 +144,7 @@ func (fip *FloatingIPSource) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface
+// MarshalJSON - implements Marshaler interface.
 func (fip *FloatingIPSource) MarshalJSON() ([]byte, error) {
 	return json.Marshal(fip.String())
 }
@@ -187,7 +187,7 @@ func (at AddressType) StringList() []string {
 	return s
 }
 
-// UnmarshalJSON - implements Unmarshaler interface
+// UnmarshalJSON - implements Unmarshaler interface.
 func (at *AddressType) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -202,7 +202,7 @@ func (at *AddressType) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface
+// MarshalJSON - implements Marshaler interface.
 func (at *AddressType) MarshalJSON() ([]byte, error) {
 	return json.Marshal(at.String())
 }
@@ -247,7 +247,7 @@ func (it InterfaceType) StringList() []string {
 	return s
 }
 
-// UnmarshalJSON - implements Unmarshaler interface
+// UnmarshalJSON - implements Unmarshaler interface.
 func (it *InterfaceType) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -262,7 +262,7 @@ func (it *InterfaceType) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface
+// MarshalJSON - implements Marshaler interface.
 func (it *InterfaceType) MarshalJSON() ([]byte, error) {
 	return json.Marshal(it.String())
 }
@@ -305,7 +305,7 @@ func (u MetricsTimeUnit) StringList() []string {
 	return s
 }
 
-// UnmarshalJSON - implements Unmarshaler interface
+// UnmarshalJSON - implements Unmarshaler interface.
 func (u *MetricsTimeUnit) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -320,7 +320,7 @@ func (u *MetricsTimeUnit) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface
+// MarshalJSON - implements Marshaler interface.
 func (u *MetricsTimeUnit) MarshalJSON() ([]byte, error) {
 	return json.Marshal(u.String())
 }

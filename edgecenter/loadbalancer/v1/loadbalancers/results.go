@@ -43,12 +43,12 @@ type UpdateResult struct {
 	commonResult
 }
 
-// CustomSecurityGroupCreateResult represents the result of a creation of custom security group
+// CustomSecurityGroupCreateResult represents the result of a creation of custom security group.
 type CustomSecurityGroupCreateResult struct {
 	edgecloud.ErrResult
 }
 
-// CustomSecurityGroupGetResult represents the result of a get operation of custom security group
+// CustomSecurityGroupGetResult represents the result of a get operation of custom security group.
 type CustomSecurityGroupGetResult struct {
 	customSecurityGroupResult
 }

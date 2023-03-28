@@ -30,7 +30,7 @@ func (opts ListOpts) ToAPITokenListQuery() (string, error) {
 	return q.String(), err
 }
 
-// List is a convenience function that returns all api tokens
+// List is a convenience function that returns all api tokens.
 func List(c *edgecloud.ServiceClient, clientID int, opts ListOptsBuilder) (r ListResult) {
 	url := listURL(c, clientID)
 	if opts != nil {
@@ -82,7 +82,7 @@ func (opts CreateOpts) ToApiTokenCreateMap() (map[string]interface{}, error) {
 	return edgecloud.BuildRequestBody(opts, "")
 }
 
-// Validate
+// Validate CreateOpts.
 func (opts CreateOpts) Validate() error {
 	return edgecloud.TranslateValidationError(edgecloud.Validate.Struct(opts))
 }

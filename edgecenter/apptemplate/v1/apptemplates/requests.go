@@ -5,14 +5,14 @@ import (
 	"github.com/Edge-Center/edgecentercloud-go/pagination"
 )
 
-// List retrieves list of app templates
+// List retrieves list of app templates.
 func List(c *edgecloud.ServiceClient) pagination.Pager {
 	return pagination.NewPager(c, rootURL(c), func(r pagination.PageResult) pagination.Page {
 		return AppTemplatePage{pagination.LinkedPageBase{PageResult: r}}
 	})
 }
 
-// ListAll retrieves list of app templates
+// ListAll retrieves list of app templates.
 func ListAll(c *edgecloud.ServiceClient) ([]AppTemplate, error) {
 	page, err := List(c).AllPages()
 	if err != nil {

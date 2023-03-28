@@ -151,7 +151,7 @@ type RawSchedule struct {
 	json.RawMessage
 }
 
-// Cook is method for unmarshalling RawSchedule into Schedule
+// Cook is method for unmarshalling RawSchedule into Schedule.
 func (r RawSchedule) Cook() (Schedule, error) {
 	var typeStruct struct {
 		ScheduleType `json:"type"`
@@ -210,7 +210,7 @@ type rawLifecyclePolicy struct {
 	Schedules []RawSchedule `json:"schedules"`
 }
 
-// cook is internal method for unmarshalling rawLifecyclePolicy into LifecyclePolicy
+// cook is internal method for unmarshalling rawLifecyclePolicy into LifecyclePolicy.
 func (rawPolicy rawLifecyclePolicy) cook() (*LifecyclePolicy, error) {
 	schedules := make([]Schedule, len(rawPolicy.Schedules))
 	for i, b := range rawPolicy.Schedules {

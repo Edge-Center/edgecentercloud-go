@@ -20,7 +20,7 @@ type Client interface {
 	Get(string) (*http.Response, error)
 }
 
-// TE is a base structure for both Template and Environment
+// TE is a base structure for both Template and Environment.
 type TE struct {
 	// Bin stores the contents of the template or environment.
 	Bin []byte
@@ -89,7 +89,7 @@ func (t *TE) Fetch() error {
 	return nil
 }
 
-// get the basepath of the TE
+// get the basepath of the TE.
 func getBasePath() (string, error) {
 	basePath, err := filepath.Abs(".")
 	if err != nil {
@@ -103,7 +103,7 @@ func getBasePath() (string, error) {
 }
 
 // get a an HTTP client to retrieve URL's. This client allows the use of `file`
-// scheme since we may need to fetch files from users filesystem
+// scheme since we may need to fetch files from users filesystem.
 func getHTTPClient() Client {
 	transport := &http.Transport{}
 	transport.RegisterProtocol("file", http.NewFileTransport(http.Dir("/")))
@@ -123,16 +123,15 @@ func (t *TE) Parse() error {
 	return t.Validate()
 }
 
-// Validate validates the contents of TE
+// Validate validates the contents of TE.
 func (t *TE) Validate() error {
 	return nil
 }
 
-// igfunc is a parameter used by GetFileContents and GetRRFileContents to check
-// for valid URL's.
+// igfunc is a parameter used by GetFileContents and GetRRFileContents to check for valid URL's.
 type igFunc func(string, interface{}) bool
 
-// convert map[interface{}]interface{} to map[string]interface{}
+// convert map[interface{}]interface{} to map[string]interface{}.
 func toStringKeys(m interface{}) (map[string]interface{}, error) {
 	switch m.(type) {
 	case map[string]interface{}, map[interface{}]interface{}:
@@ -150,8 +149,7 @@ func toStringKeys(m interface{}) (map[string]interface{}, error) {
 	}
 }
 
-// fix the reference to files by replacing relative URL's by absolute
-// URL's
+// fix the reference to files by replacing relative URL's by absolute URL's.
 func (t *TE) fixFileRefs() {
 	tStr := string(t.Bin)
 	if t.fileMaps == nil {

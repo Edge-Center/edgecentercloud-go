@@ -2,19 +2,19 @@ package stacks
 
 import "strings"
 
-// Environment is a structure that represents stack environments
+// Environment is a structure that represents stack environments.
 type Environment struct {
 	TE
 }
 
-// EnvironmentSections is a map containing allowed sections in a stack environment file
+// EnvironmentSections is a map containing allowed sections in a stack environment file.
 var EnvironmentSections = map[string]bool{
 	"parameters":         true,
 	"parameter_defaults": true,
 	"resource_registry":  true,
 }
 
-// Validate validates the contents of the Environment
+// Validate validates the contents of the Environment.
 func (e *Environment) Validate() error {
 	if e.Parsed == nil {
 		if err := e.Parse(); err != nil {
@@ -114,7 +114,7 @@ func (e *Environment) getRRFileContents(ignoreIf igFunc) error {
 	}
 }
 
-// function to choose keys whose values are other environment files
+// ignoreIfEnvironment function to choose keys whose values are other environment files.
 func ignoreIfEnvironment(key string, value interface{}) bool {
 	// base_url and hooks refer to components which cannot have urls
 	if key == "base_url" || key == "hooks" {

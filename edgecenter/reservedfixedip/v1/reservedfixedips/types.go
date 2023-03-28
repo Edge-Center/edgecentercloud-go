@@ -49,7 +49,7 @@ func (t ReservedFixedIPType) ValidOrNil() (*ReservedFixedIPType, error) {
 	return &t, nil
 }
 
-// UnmarshalJSON - implements Unmarshaler interface for ReservedFixedIPType
+// UnmarshalJSON - implements Unmarshaler interface for ReservedFixedIPType.
 func (t *ReservedFixedIPType) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -64,7 +64,7 @@ func (t *ReservedFixedIPType) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface for ReservedFixedIPType
+// MarshalJSON - implements Marshaler interface for ReservedFixedIPType.
 func (t *ReservedFixedIPType) MarshalJSON() ([]byte, error) {
 	return json.Marshal(t.String())
 }

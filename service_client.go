@@ -47,7 +47,7 @@ func (client *ServiceClient) ServiceURL(parts ...string) string {
 	return StripLastSlashURL(client.ResourceBaseURL() + strings.Join(parts, "/"))
 }
 
-// BaseServiceURL constructs a URL for a resource belonging to this provider
+// BaseServiceURL constructs a URL for a resource belonging to this provider.
 func (client *ServiceClient) BaseServiceURL(parts ...string) string {
 	return StripLastSlashURL(client.Endpoint + strings.Join(parts, "/"))
 }
@@ -132,7 +132,7 @@ func (client *ServiceClient) Head(url string, opts *RequestOpts) (*http.Response
 	return client.Request("HEAD", url, opts)
 }
 
-// Request carries out the HTTP operation for the service client
+// Request carries out the HTTP operation for the service client.
 func (client *ServiceClient) Request(method, url string, options *RequestOpts) (*http.Response, error) {
 	if len(client.MoreHeaders) > 0 {
 		if options == nil {

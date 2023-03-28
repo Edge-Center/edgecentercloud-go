@@ -52,7 +52,7 @@ func Delete(c *edgecloud.ServiceClient, serverGroupID string) (r DeleteResult) {
 	return
 }
 
-// ListAll returns all SGs
+// ListAll returns all SGs.
 func ListAll(c *edgecloud.ServiceClient) ([]ServerGroup, error) {
 	page, err := List(c).AllPages()
 	if err != nil {

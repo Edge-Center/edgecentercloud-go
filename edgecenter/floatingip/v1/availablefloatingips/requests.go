@@ -15,7 +15,7 @@ func List(c *edgecloud.ServiceClient) pagination.Pager {
 	})
 }
 
-// ListAll returns all floating IPs
+// ListAll returns all floating IPs.
 func ListAll(c *edgecloud.ServiceClient) ([]floatingips.FloatingIPDetail, error) {
 	page, err := List(c).AllPages()
 	if err != nil {

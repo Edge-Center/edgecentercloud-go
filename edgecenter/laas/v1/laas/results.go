@@ -5,7 +5,7 @@ import (
 	"github.com/Edge-Center/edgecentercloud-go/pagination"
 )
 
-// User represents regenerated laas credentials
+// User represents regenerated laas credentials.
 type User struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
@@ -26,7 +26,7 @@ func (r UserResult) ExtractInto(v interface{}) error {
 	return r.Result.ExtractIntoStructPtr(v, "")
 }
 
-// Status represents laas status
+// Status represents laas status.
 type Status struct {
 	Namespace     string `json:"namespace"`
 	IsInitialized bool   `json:"is_initialized"`
@@ -47,7 +47,7 @@ func (r StatusResult) ExtractInto(v interface{}) error {
 	return r.Result.ExtractIntoStructPtr(v, "")
 }
 
-// Hosts represents kafka/opensearch hosts url
+// Hosts represents kafka/opensearch hosts url.
 type Hosts []string
 
 type HostsResult struct {
@@ -65,7 +65,7 @@ func (r HostsResult) ExtractInto(v interface{}) error {
 	return r.Result.ExtractIntoSlicePtr(v, "hosts")
 }
 
-// Topic represents kafka/opensearch topic
+// Topic represents kafka/opensearch topic.
 type Topic struct {
 	Name string
 }
@@ -124,7 +124,7 @@ func ExtractTopicsInto(r pagination.Page, v interface{}) error {
 	return r.(TopicPage).Result.ExtractIntoSlicePtr(v, "results")
 }
 
-// DeleteResult represents the result of a delete operation
+// DeleteResult represents the result of a delete operation.
 type DeleteResult struct {
 	edgecloud.ErrResult
 }

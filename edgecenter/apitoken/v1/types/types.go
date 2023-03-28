@@ -58,7 +58,7 @@ func (r RoleIDType) StringList() []string {
 	return s
 }
 
-// UnmarshalJSON - implements Unmarshaler interface for RoleIDType
+// UnmarshalJSON - implements Unmarshaler interface for RoleIDType.
 func (r *RoleIDType) UnmarshalJSON(data []byte) error {
 	var s int
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -73,7 +73,7 @@ func (r *RoleIDType) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface for RoleIDType
+// MarshalJSON - implements Marshaler interface for RoleIDType.
 func (r *RoleIDType) MarshalJSON() ([]byte, error) {
 	return json.Marshal(int(*r))
 }
@@ -123,7 +123,7 @@ func (rs RoleNameType) StringList() []string {
 	return s
 }
 
-// UnmarshalJSON - implements Unmarshaler interface for RoleNameType
+// UnmarshalJSON - implements Unmarshaler interface for RoleNameType.
 func (rs *RoleNameType) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -138,7 +138,7 @@ func (rs *RoleNameType) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface for RoleNameType
+// MarshalJSON - implements Marshaler interface for RoleNameType.
 func (rs *RoleNameType) MarshalJSON() ([]byte, error) {
 	return json.Marshal(rs.String())
 }

@@ -99,12 +99,12 @@ func (opts CreateOpts) ToClusterPoolCreateMap() (map[string]interface{}, error) 
 	return edgecloud.BuildRequestBody(opts, "")
 }
 
-// Validate CreateOpts
+// Validate CreateOpts.
 func (opts CreateOpts) Validate() error {
 	return edgecloud.TranslateValidationError(edgecloud.Validate.Struct(opts))
 }
 
-// Create accepts a CreateOpts struct and creates a new cluster Pool using the values provided
+// Create accepts a CreateOpts struct and creates a new cluster Pool using the values provided.
 func Create(c *edgecloud.ServiceClient, clusterID string, opts CreateOptsBuilder) (r tasks.Result) {
 	b, err := opts.ToClusterPoolCreateMap()
 	if err != nil {
@@ -127,7 +127,7 @@ type UpdateOpts struct {
 	MaxNodeCount int    `json:"max_node_count,omitempty" validate:"required_without_all=Name MixNodeCount,omitempty,gt=0,gtefield=MinNodeCount"`
 }
 
-// Validate UpdateOpts
+// Validate UpdateOpts.
 func (opts UpdateOpts) Validate() error {
 	return edgecloud.TranslateValidationError(edgecloud.Validate.Struct(opts))
 }

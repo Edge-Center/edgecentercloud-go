@@ -160,7 +160,7 @@ func (client *ProviderClient) GetAuthResult() AuthResult {
 }
 
 // AccessToken safely reads the value of the auth token from the ProviderClient. Applications should
-// call this method to access the token instead of the AccessTokenID field
+// call this method to access the token instead of the AccessTokenID field.
 func (client *ProviderClient) AccessToken() string {
 	if client.mut != nil {
 		client.mut.RLock()
@@ -170,7 +170,7 @@ func (client *ProviderClient) AccessToken() string {
 }
 
 // RefreshToken safely reads the value of the auth token from the ProviderClient. Applications should
-// call this method to access the token instead of the RefreshTokenID field
+// call this method to access the token instead of the RefreshTokenID field.
 func (client *ProviderClient) RefreshToken() string {
 	if client.mut != nil {
 		client.mut.RLock()
@@ -179,7 +179,7 @@ func (client *ProviderClient) RefreshToken() string {
 	return client.RefreshTokenID
 }
 
-// SetAPIToken safely sets the value of the api token in the ProviderClient
+// SetAPIToken safely sets the value of the api token in the ProviderClient.
 func (client *ProviderClient) SetAPIToken(opt APITokenOptions) error {
 	client.APIToken = opt.APIToken
 	return nil
@@ -303,7 +303,7 @@ func (client *ProviderClient) Reauthenticate(previousToken string) error {
 	return err
 }
 
-// SetDebug for request and response
+// SetDebug for request and response.
 func (client *ProviderClient) SetDebug(debug bool) {
 	client.debug = debug
 	log.SetLevel(log.DebugLevel)
@@ -592,7 +592,7 @@ func (client *ProviderClient) doRequest(method, url string, options *RequestOpts
 	return resp, nil
 }
 
-// ToTokenOptions - TokenOptions from ProviderClient
+// ToTokenOptions - TokenOptions from ProviderClient.
 func (client ProviderClient) ToTokenOptions() TokenOptions {
 	return TokenOptions{
 		RefreshToken: client.RefreshToken(),
@@ -619,7 +619,7 @@ func defaultOkCodes(method string) []int {
 	return []int{}
 }
 
-// NewProviderClient - Default constructor
+// NewProviderClient - Default constructor.
 func NewProviderClient() *ProviderClient {
 	client := new(ProviderClient)
 	return client

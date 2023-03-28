@@ -66,7 +66,7 @@ func (srs StackResourceStatus) StringList() []string {
 	return s
 }
 
-// UnmarshalJSON - implements Unmarshaler interface
+// UnmarshalJSON - implements Unmarshaler interface.
 func (srs *StackResourceStatus) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -81,7 +81,7 @@ func (srs *StackResourceStatus) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface
+// MarshalJSON - implements Marshaler interface.
 func (srs *StackResourceStatus) MarshalJSON() ([]byte, error) {
 	return json.Marshal(srs.String())
 }
@@ -143,7 +143,7 @@ func (sra StackResourceAction) StringList() []string {
 	return s
 }
 
-// UnmarshalJSON - implements Unmarshaler interface
+// UnmarshalJSON - implements Unmarshaler interface.
 func (sra *StackResourceAction) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -158,7 +158,7 @@ func (sra *StackResourceAction) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface
+// MarshalJSON - implements Marshaler interface.
 func (sra *StackResourceAction) MarshalJSON() ([]byte, error) {
 	return json.Marshal(sra.String())
 }

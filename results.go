@@ -313,7 +313,7 @@ const RFC3339Milli = "2006-01-02T15:04:05.999999Z"
 // JSONRFC3339Milli describes time.Time in RFC3339Milli format.
 type JSONRFC3339Milli time.Time
 
-// UnmarshalJSON - implements Unmarshaler interface for JSONRFC3339Milli
+// UnmarshalJSON - implements Unmarshaler interface for JSONRFC3339Milli.
 func (jt *JSONRFC3339Milli) UnmarshalJSON(data []byte) error {
 	b := bytes.NewBuffer(data)
 	dec := json.NewDecoder(b)
@@ -335,7 +335,7 @@ const RFC3339MilliNoZ = "2006-01-02T15:04:05.999999"
 // JSONRFC3339MilliNoZ describes time.Time in RFC3339MilliNoZ format.
 type JSONRFC3339MilliNoZ time.Time
 
-// UnmarshalJSON - implements Unmarshaler interface for JSONRFC3339MilliNoZ
+// UnmarshalJSON - implements Unmarshaler interface for JSONRFC3339MilliNoZ.
 func (jt *JSONRFC3339MilliNoZ) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -355,7 +355,7 @@ func (jt *JSONRFC3339MilliNoZ) UnmarshalJSON(data []byte) error {
 // JSONRFC1123 describes time.Time in time.RFC1123 format.
 type JSONRFC1123 time.Time
 
-// UnmarshalJSON - implements Unmarshaler interface for JSONRFC1123
+// UnmarshalJSON - implements Unmarshaler interface for JSONRFC1123.
 func (jt *JSONRFC1123) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -375,7 +375,7 @@ func (jt *JSONRFC1123) UnmarshalJSON(data []byte) error {
 // JSONUnix describes time.Time in unix format.
 type JSONUnix time.Time
 
-// UnmarshalJSON - implements Unmarshaler interface for JSONUnix
+// UnmarshalJSON - implements Unmarshaler interface for JSONUnix.
 func (jt *JSONUnix) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -401,7 +401,7 @@ type JSONRFC3339NoZ struct {
 	time.Time
 }
 
-// UnmarshalJSON - implements Unmarshaler interface for JSONRFC3339NoZ
+// UnmarshalJSON - implements Unmarshaler interface for JSONRFC3339NoZ.
 func (jt *JSONRFC3339NoZ) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -422,7 +422,7 @@ func (jt *JSONRFC3339NoZ) String() string {
 	return jt.Format(RFC3339NoZ)
 }
 
-// MarshalJSON - implements Marshaler interface for JSONRFC3339NoZ
+// MarshalJSON - implements Marshaler interface for JSONRFC3339NoZ.
 func (jt *JSONRFC3339NoZ) MarshalJSON() ([]byte, error) {
 	return json.Marshal(jt.Format(RFC3339NoZ))
 }
@@ -435,7 +435,7 @@ type JSONRFC3339Z struct {
 	time.Time
 }
 
-// UnmarshalJSON - implements Unmarshaler interface for JSONRFC3339Z
+// UnmarshalJSON - implements Unmarshaler interface for JSONRFC3339Z.
 func (jt *JSONRFC3339Z) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -452,7 +452,7 @@ func (jt *JSONRFC3339Z) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface for JSONRFC3339Z
+// MarshalJSON - implements Marshaler interface for JSONRFC3339Z.
 func (jt *JSONRFC3339Z) MarshalJSON() ([]byte, error) {
 	return json.Marshal(jt.Format(RFC3339Z))
 }
@@ -465,7 +465,7 @@ type JSONRFC3339ZColon struct {
 	time.Time
 }
 
-// UnmarshalJSON - implements Unmarshaler interface for JSONRFC3339ZColon
+// UnmarshalJSON - implements Unmarshaler interface for JSONRFC3339ZColon.
 func (jt *JSONRFC3339ZColon) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -482,7 +482,7 @@ func (jt *JSONRFC3339ZColon) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface for JSONRFC3339ZColon
+// MarshalJSON - implements Marshaler interface for JSONRFC3339ZColon.
 func (jt *JSONRFC3339ZColon) MarshalJSON() ([]byte, error) {
 	return json.Marshal(jt.Format(RFC3339ZColon))
 }
@@ -490,12 +490,12 @@ func (jt *JSONRFC3339ZColon) MarshalJSON() ([]byte, error) {
 // RFC3339ZZ describes a common time format used by some API responses.
 const RFC3339ZZ = "2006-01-02T15:04:05Z"
 
-// JSONRFC3339ZZ describes time.Time in RFC3339ZZ format
+// JSONRFC3339ZZ describes time.Time in RFC3339ZZ format.
 type JSONRFC3339ZZ struct {
 	time.Time
 }
 
-// UnmarshalJSON - implements Unmarshaler interface for JSONRFC3339ZZ
+// UnmarshalJSON - implements Unmarshaler interface for JSONRFC3339ZZ.
 func (jt *JSONRFC3339ZZ) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -512,7 +512,7 @@ func (jt *JSONRFC3339ZZ) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface for JSONRFC3339ZZ
+// MarshalJSON - implements Marshaler interface for JSONRFC3339ZZ.
 func (jt *JSONRFC3339ZZ) MarshalJSON() ([]byte, error) {
 	return json.Marshal(jt.Format(RFC3339ZZ))
 }
@@ -523,7 +523,7 @@ const RFC3339ZNoT = "2006-01-02 15:04:05-07:00"
 // JSONRFC3339ZNoT describes time.Time in RFC3339ZNoT format.
 type JSONRFC3339ZNoT time.Time
 
-// UnmarshalJSON - implements Unmarshaler interface for JSONRFC3339ZNoT
+// UnmarshalJSON - implements Unmarshaler interface for JSONRFC3339ZNoT.
 func (jt *JSONRFC3339ZNoT) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -546,7 +546,7 @@ const RFC3339ZNoTNoZ = "2006-01-02 15:04:05"
 // JSONRFC3339ZNoTNoZ describes time.Time in RFC3339ZNoTNoZ format.
 type JSONRFC3339ZNoTNoZ time.Time
 
-// UnmarshalJSON - implements Unmarshaler interface for JSONRFC3339ZNoTNoZ
+// UnmarshalJSON - implements Unmarshaler interface for JSONRFC3339ZNoTNoZ.
 func (jt *JSONRFC3339ZNoTNoZ) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -566,12 +566,12 @@ func (jt *JSONRFC3339ZNoTNoZ) UnmarshalJSON(data []byte) error {
 // RFC3339Date describes a common time format used by some API responses.
 const RFC3339Date = "2006-01-02"
 
-// JSONRFC3339Date describes time.Time in RFC3339Date format
+// JSONRFC3339Date describes time.Time in RFC3339Date format.
 type JSONRFC3339Date struct {
 	time.Time
 }
 
-// UnmarshalJSON - implements Unmarshaler interface for JSONRFC3339Date
+// UnmarshalJSON - implements Unmarshaler interface for JSONRFC3339Date.
 func (jt *JSONRFC3339Date) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -588,7 +588,7 @@ func (jt *JSONRFC3339Date) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface for JSONRFC3339Date
+// MarshalJSON - implements Marshaler interface for JSONRFC3339Date.
 func (jt *JSONRFC3339Date) MarshalJSON() ([]byte, error) {
 	return json.Marshal(jt.Format(RFC3339Date))
 }
@@ -648,7 +648,7 @@ func ParseCIDRStringOrNil(s string) (*CIDR, error) {
 	return ParseCIDRString(s)
 }
 
-// UnmarshalJSON - implements Unmarshaler interface for CIDR
+// UnmarshalJSON - implements Unmarshaler interface for CIDR.
 func (c *CIDR) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -662,12 +662,12 @@ func (c *CIDR) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface for CIDR
+// MarshalJSON - implements Marshaler interface for CIDR.
 func (c CIDR) MarshalJSON() ([]byte, error) {
 	return json.Marshal(c.String())
 }
 
-// String - implements Stringer
+// String - implements Stringer.
 func (c CIDR) String() string {
 	return c.IPNet.String()
 }
@@ -684,12 +684,12 @@ func ParseCurrency(s string) (*Currency, error) {
 	return &Currency{Currency: c}, nil
 }
 
-// String - implements Stringer
+// String - implements Stringer.
 func (c Currency) String() string {
 	return c.Currency.Code()
 }
 
-// UnmarshalJSON - implements Unmarshaler interface for Currency
+// UnmarshalJSON - implements Unmarshaler interface for Currency.
 func (c *Currency) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -703,7 +703,7 @@ func (c *Currency) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface for Currency
+// MarshalJSON - implements Marshaler interface for Currency.
 func (c Currency) MarshalJSON() ([]byte, error) {
 	return json.Marshal(c.String())
 }
@@ -726,7 +726,7 @@ func ParseMacString(s string) (*MAC, error) {
 	return &MAC{HardwareAddr: mac}, nil
 }
 
-// UnmarshalJSON - implements Unmarshaler interface for MAC
+// UnmarshalJSON - implements Unmarshaler interface for MAC.
 func (m *MAC) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -740,12 +740,12 @@ func (m *MAC) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface for MAC
+// MarshalJSON - implements Marshaler interface for MAC.
 func (m MAC) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m.String())
 }
 
-// String - implements Stringer
+// String - implements Stringer.
 func (m MAC) String() string {
 	return m.HardwareAddr.String()
 }
@@ -777,7 +777,7 @@ func ParseURLNonMandatory(s string) (*URL, error) {
 	return ParseURL(s)
 }
 
-// UnmarshalJSON - implements Unmarshaler interface
+// UnmarshalJSON - implements Unmarshaler interface.
 func (u *URL) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -791,12 +791,12 @@ func (u *URL) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface
+// MarshalJSON - implements Marshaler interface.
 func (u URL) MarshalJSON() ([]byte, error) {
 	return json.Marshal(u.String())
 }
 
-// String - implements Stringer
+// String - implements Stringer.
 func (u URL) String() string {
 	return u.URL.String()
 }

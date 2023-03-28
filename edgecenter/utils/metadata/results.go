@@ -19,7 +19,7 @@ type MetadataPage struct {
 	pagination.LinkedPageBase
 }
 
-// MetadataResult represents the result of a get operation
+// MetadataResult represents the result of a get operation.
 type MetadataResult struct {
 	commonResult
 }
@@ -37,7 +37,7 @@ func ExtractMetadata(r pagination.Page) ([]Metadata, error) {
 	return s, err
 }
 
-// MetadataActionResult represents the result of a creation, delete or update operation(no content)
+// MetadataActionResult represents the result of a creation, delete or update operation(no content).
 type MetadataActionResult struct {
 	edgecloud.ErrResult
 }

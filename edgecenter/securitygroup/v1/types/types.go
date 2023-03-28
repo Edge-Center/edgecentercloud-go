@@ -78,7 +78,7 @@ func (rd RuleDirection) StringList() []string {
 	return s
 }
 
-// UnmarshalJSON - implements Unmarshaler interface
+// UnmarshalJSON - implements Unmarshaler interface.
 func (rd *RuleDirection) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -93,7 +93,7 @@ func (rd *RuleDirection) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface
+// MarshalJSON - implements Marshaler interface.
 func (rd *RuleDirection) MarshalJSON() ([]byte, error) {
 	return json.Marshal(rd.String())
 }
@@ -137,7 +137,7 @@ func (et EtherType) StringList() []string {
 	return s
 }
 
-// UnmarshalJSON - implements Unmarshaler interface
+// UnmarshalJSON - implements Unmarshaler interface.
 func (et *EtherType) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -152,7 +152,7 @@ func (et *EtherType) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface
+// MarshalJSON - implements Marshaler interface.
 func (et *EtherType) MarshalJSON() ([]byte, error) {
 	return json.Marshal(et.String())
 }
@@ -238,7 +238,7 @@ func (p Protocol) StringList() []string {
 	return s
 }
 
-// UnmarshalJSON - implements Unmarshaler interface
+// UnmarshalJSON - implements Unmarshaler interface.
 func (p *Protocol) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -253,7 +253,7 @@ func (p *Protocol) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface
+// MarshalJSON - implements Marshaler interface.
 func (p *Protocol) MarshalJSON() ([]byte, error) {
 	return json.Marshal(p.String())
 }

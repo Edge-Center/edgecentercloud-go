@@ -75,18 +75,18 @@ func (e EnumStringSliceValue) String() string {
 	return fmt.Sprintf("%s", e.selected)
 }
 
-// Serialize allows EnumStringSliceValue to fulfill Serializer
+// Serialize allows EnumStringSliceValue to fulfill Serializer.
 func (e EnumStringSliceValue) Serialize() string {
 	jsonBytes, _ := json.Marshal(e.selected)
 	return fmt.Sprintf("%s%s", slPfx, string(jsonBytes))
 }
 
-// Value returns the slice of strings set by this flag
+// Value returns the slice of strings set by this flag.
 func (e EnumStringSliceValue) Value() []string {
 	return e.selected
 }
 
-// Get returns the slice of strings set by this flag
+// Get returns the slice of strings set by this flag.
 func (e EnumStringSliceValue) Get() interface{} {
 	return e
 }
@@ -349,7 +349,7 @@ type Result struct {
 	Err     error
 }
 
-// Find field name from struct by different key, example by `json`
+// Find field name from struct by different key, example by `json`.
 func getStructFieldName(tag, key string, s interface{}) string {
 	valueG := reflect.ValueOf(s).Elem()
 	rt := valueG.Type()
@@ -367,7 +367,7 @@ func getStructFieldName(tag, key string, s interface{}) string {
 	return ""
 }
 
-// UpdateStructFromString Update struct from string by pattern key=value;
+// UpdateStructFromString Update struct from string by pattern key=value;.
 func UpdateStructFromString(item interface{}, value string) error {
 	entries := strings.Split(value, ";")
 	r := reflect.ValueOf(item)
@@ -391,7 +391,7 @@ func UpdateStructFromString(item interface{}, value string) error {
 	return nil
 }
 
-// StructToString Make string from struct for example or documentation
+// StructToString Make string from struct for example or documentation.
 func StructToString(item interface{}) string {
 	valueG := reflect.ValueOf(item).Elem()
 	var fields []string

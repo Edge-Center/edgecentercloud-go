@@ -5,7 +5,7 @@ import (
 	"github.com/Edge-Center/edgecentercloud-go/pagination"
 )
 
-// Flavor represent loadbalancer's flavor structure
+// Flavor represent loadbalancer's flavor structure.
 type Flavor struct {
 	PricePerMonth       float64             `json:"price_per_month,omitempty"`
 	ResourceClass       string              `json:"resource_class,omitempty"`
@@ -19,7 +19,7 @@ type Flavor struct {
 	FlavorID            string              `json:"flavor_id,omitempty"`
 }
 
-// HardwareDescription represent flavor's hardware description structure
+// HardwareDescription represent flavor's hardware description structure.
 type HardwareDescription struct {
 	SGXEPCSize string `json:"sgx_epc_size"`
 	CPU        string `json:"cpu"`

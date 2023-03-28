@@ -49,7 +49,7 @@ type DeleteOptsBuilder interface {
 	ToInstanceDeleteQuery() (string, error)
 }
 
-// DeleteOpts. Set parameters for delete operation
+// DeleteOpts Set parameters for delete operation.
 type DeleteOpts struct {
 	Volumes         []string `q:"volumes" validate:"omitempty,dive,uuid4" delimiter:"comma"`
 	DeleteFloatings bool     `q:"delete_floatings" validate:"omitempty,allowed_without=FloatingIPs"`
@@ -99,7 +99,7 @@ type CreateNewInterfaceFloatingIPOpts struct {
 	ExistingFloatingID string                 `json:"existing_floating_id" validate:"rfe=Source:existing,sfe=Source:new,omitempty,uuid"`
 }
 
-// Validate
+// Validate CreateNewInterfaceFloatingIPOpts.
 func (opts CreateNewInterfaceFloatingIPOpts) Validate() error {
 	return edgecloud.ValidateStruct(opts)
 }
@@ -113,7 +113,7 @@ type InterfaceOpts struct {
 	FloatingIP *CreateNewInterfaceFloatingIPOpts `json:"floating_ip,omitempty" validate:"omitempty,dive"`
 }
 
-// Validate
+// Validate InterfaceOpts.
 func (opts InterfaceOpts) Validate() error {
 	return edgecloud.ValidateStruct(opts)
 }
@@ -133,7 +133,7 @@ func (opts InterfaceInstanceCreateOpts) ToInterfaceActionMap() (map[string]inter
 	return result, err
 }
 
-// Validate
+// Validate InterfaceInstanceCreateOpts.
 func (opts InterfaceInstanceCreateOpts) Validate() error {
 	return edgecloud.ValidateStruct(opts)
 }
@@ -156,7 +156,7 @@ type CreateOpts struct {
 	ServerGroupID  string                        `json:"servergroup_id,omitempty" validate:"omitempty,uuid4"`
 }
 
-// Validate
+// Validate CreateOpts.
 func (opts CreateOpts) Validate() error {
 	return edgecloud.ValidateStruct(opts)
 }
@@ -324,7 +324,7 @@ func Get(client *edgecloud.ServiceClient, id string) (r GetResult) {
 	return
 }
 
-// ListInterfaces retrieves network interfaces for instance
+// ListInterfaces retrieves network interfaces for instance.
 func ListInterfaces(client *edgecloud.ServiceClient, id string) pagination.Pager {
 	url := interfacesListURL(client, id)
 	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
@@ -364,7 +364,7 @@ func ListInterfacesAll(client *edgecloud.ServiceClient, id string) ([]Interface,
 
 }
 
-// ListSecurityGroups retrieves security groups interfaces for instance
+// ListSecurityGroups retrieves security groups interfaces for instance.
 func ListSecurityGroups(client *edgecloud.ServiceClient, id string) pagination.Pager {
 	url := securityGroupsListURL(client, id)
 	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
@@ -387,7 +387,7 @@ func ListSecurityGroupsAll(client *edgecloud.ServiceClient, id string) ([]edgecl
 	return all, nil
 }
 
-// ListPorts retrieves ports for instance
+// ListPorts retrieves ports for instance.
 func ListPorts(client *edgecloud.ServiceClient, id string) pagination.Pager {
 	url := portsListURL(client, id)
 	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
@@ -625,23 +625,23 @@ type MetadataOptsBuilder interface {
 	ToMetadataMap() (string, error)
 }
 
-// MetadataOpts. Set parameters for Create or Update operation
+// MetadataOpts Set parameters for Create or Update operation.
 type MetadataOpts struct {
 	Key   string `json:"key" validate:"required,max=255"`
 	Value string `json:"value" validate:"required,max=255"`
 }
 
-// MetadataSetOpts. Set parameters for Create or Update operation
+// MetadataSetOpts Set parameters for Create or Update operation.
 type MetadataSetOpts struct {
 	Metadata []MetadataOpts `json:"metadata" validate:"required,min=1,dive"`
 }
 
-// Validate
+// Validate MetadataOpts.
 func (opts MetadataOpts) Validate() error {
 	return edgecloud.ValidateStruct(opts)
 }
 
-// Validate
+// Validate MetadataSetOpts.
 func (opts MetadataSetOpts) Validate() error {
 	return edgecloud.ValidateStruct(opts)
 }
@@ -732,7 +732,7 @@ type ListInstanceLocationOptsBuilder interface {
 	ToListInstanceLocationQuery() (string, error)
 }
 
-// ListInstanceLocationOpts set parameters for search instance location operation
+// ListInstanceLocationOpts set parameters for search instance location operation.
 type ListInstanceLocationOpts struct {
 	Name string `q:"name"`
 	ID   string `q:"id"`

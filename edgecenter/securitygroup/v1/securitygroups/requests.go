@@ -152,7 +152,7 @@ func Delete(c *edgecloud.ServiceClient, securityGroupID string) (r DeleteResult)
 	return
 }
 
-// ListAll returns all SGs
+// ListAll returns all SGs.
 func ListAll(c *edgecloud.ServiceClient, opts ListOptsBuilder) ([]SecurityGroup, error) {
 	page, err := List(c, opts).AllPages()
 	if err != nil {
@@ -172,7 +172,7 @@ func AddRule(c *edgecloud.ServiceClient, securityGroupID string, opts CreateRule
 	return
 }
 
-// ListInstances returns page of instances for SG
+// ListInstances returns page of instances for SG.
 func ListInstances(c *edgecloud.ServiceClient, securityGroupID string) pagination.Pager {
 	url := listInstancesURL(c, securityGroupID)
 	return pagination.NewPager(c, url, func(r pagination.PageResult) pagination.Page {
@@ -180,7 +180,7 @@ func ListInstances(c *edgecloud.ServiceClient, securityGroupID string) paginatio
 	})
 }
 
-// ListAllInstances returns all instances for SG
+// ListAllInstances returns all instances for SG.
 func ListAllInstances(c *edgecloud.ServiceClient, securityGroupID string) ([]instances.Instance, error) {
 	page, err := ListInstances(c, securityGroupID).AllPages()
 	if err != nil {

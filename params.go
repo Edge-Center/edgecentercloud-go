@@ -259,14 +259,13 @@ var (
 	Disabled EnabledState = &iFalse
 )
 
-// IPVersion is a type for the possible IP address versions. Valid instances
-// are IPv4 and IPv6
+// IPVersion is a type for the possible IP address versions. Valid instances are IPv4 and IPv6.
 type IPVersion int
 
 const (
-	// IPv4 is used for IP version 4 addresses
+	// IPv4 is used for IP version 4 addresses.
 	IPv4 IPVersion = 4
-	// IPv6 is used for IP version 6 addresses
+	// IPv6 is used for IP version 6 addresses.
 	IPv6 IPVersion = 6
 )
 
@@ -594,7 +593,7 @@ func BuildHeaders(opts interface{}) (map[string]string, error) {
 
 // IDSliceToQueryString takes a slice of elements and converts them into a query
 // string. For example, if name=foo and slice=[]int{20, 40, 60}, then the
-// result would be `?name=20&name=40&name=60'
+// result would be `?name=20&name=40&name=60'.
 func IDSliceToQueryString(name string, ids []int) string {
 	str := ""
 	for k, v := range ids {

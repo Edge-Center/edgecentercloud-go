@@ -59,7 +59,7 @@ func (ng PoolRole) StringList() []string {
 	return s
 }
 
-// UnmarshalJSON - implements Unmarshaler interface
+// UnmarshalJSON - implements Unmarshaler interface.
 func (ng *PoolRole) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -74,7 +74,7 @@ func (ng *PoolRole) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface
+// MarshalJSON - implements Marshaler interface.
 func (ng *PoolRole) MarshalJSON() ([]byte, error) {
 	return json.Marshal(ng.String())
 }
@@ -120,7 +120,7 @@ func (hs HealthStatus) StringList() []string {
 	return s
 }
 
-// UnmarshalJSON - implements Unmarshaler interface
+// UnmarshalJSON - implements Unmarshaler interface.
 func (hs *HealthStatus) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -135,7 +135,7 @@ func (hs *HealthStatus) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface
+// MarshalJSON - implements Marshaler interface.
 func (hs *HealthStatus) MarshalJSON() ([]byte, error) {
 	return json.Marshal(hs.String())
 }
@@ -181,7 +181,7 @@ func (ic IngressController) StringList() []string {
 	return s
 }
 
-// UnmarshalJSON - implements Unmarshaler interface
+// UnmarshalJSON - implements Unmarshaler interface.
 func (ic *IngressController) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -196,7 +196,7 @@ func (ic *IngressController) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface
+// MarshalJSON - implements Marshaler interface.
 func (ic *IngressController) MarshalJSON() ([]byte, error) {
 	return json.Marshal(ic.String())
 }

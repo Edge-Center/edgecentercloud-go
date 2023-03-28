@@ -10,7 +10,7 @@ type Visibility string
 // HwMachineType virtual chipset type.
 type HwMachineType string
 
-// SshKeyType whether the image supports SSH key or not
+// SshKeyType whether the image supports SSH key or not.
 type SshKeyType string
 
 // OSType the operating system installed on the image.
@@ -77,7 +77,7 @@ func (v Visibility) StringList() []string {
 	return s
 }
 
-// UnmarshalJSON - implements Unmarshaler interface for Visibility
+// UnmarshalJSON - implements Unmarshaler interface for Visibility.
 func (v *Visibility) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -92,7 +92,7 @@ func (v *Visibility) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface for Visibility
+// MarshalJSON - implements Marshaler interface for Visibility.
 func (v *Visibility) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.String())
 }
@@ -132,7 +132,7 @@ func (v HwMachineType) StringList() []string {
 	return s
 }
 
-// UnmarshalJSON - implements Unmarshaler interface for HwMachineType
+// UnmarshalJSON - implements Unmarshaler interface for HwMachineType.
 func (v *HwMachineType) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -147,7 +147,7 @@ func (v *HwMachineType) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface for HwMachineType
+// MarshalJSON - implements Marshaler interface for HwMachineType.
 func (v *HwMachineType) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.String())
 }
@@ -187,7 +187,7 @@ func (v SshKeyType) StringList() []string {
 	return s
 }
 
-// UnmarshalJSON - implements Unmarshaler interface for SshKeyType
+// UnmarshalJSON - implements Unmarshaler interface for SshKeyType.
 func (v *SshKeyType) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -202,7 +202,7 @@ func (v *SshKeyType) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface for SshKeyType
+// MarshalJSON - implements Marshaler interface for SshKeyType.
 func (v *SshKeyType) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.String())
 }
@@ -242,7 +242,7 @@ func (v OSType) StringList() []string {
 	return s
 }
 
-// UnmarshalJSON - implements Unmarshaler interface for OSType
+// UnmarshalJSON - implements Unmarshaler interface for OSType.
 func (v *OSType) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -257,7 +257,7 @@ func (v *OSType) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface for OSType
+// MarshalJSON - implements Marshaler interface for OSType.
 func (v *OSType) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.String())
 }
@@ -297,7 +297,7 @@ func (v HwFirmwareType) StringList() []string {
 	return s
 }
 
-// UnmarshalJSON - implements Unmarshaler interface for HwFirmwareType
+// UnmarshalJSON - implements Unmarshaler interface for HwFirmwareType.
 func (v *HwFirmwareType) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -312,7 +312,7 @@ func (v *HwFirmwareType) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface for HwFirmwareType
+// MarshalJSON - implements Marshaler interface for HwFirmwareType.
 func (v *HwFirmwareType) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.String())
 }
@@ -351,7 +351,7 @@ func (v ImageSourceType) StringList() []string {
 	return s
 }
 
-// UnmarshalJSON - implements Unmarshaler interface for ImageSourceType
+// UnmarshalJSON - implements Unmarshaler interface for ImageSourceType.
 func (v *ImageSourceType) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -366,7 +366,7 @@ func (v *ImageSourceType) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface for ImageSourceType
+// MarshalJSON - implements Marshaler interface for ImageSourceType.
 func (v *ImageSourceType) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.String())
 }

@@ -36,7 +36,7 @@ func (opts CreateOpts) ToKeystoneCreateMap() (map[string]interface{}, error) {
 	return edgecloud.BuildRequestBody(opts, "")
 }
 
-// Validate
+// Validate CreateOpts.
 func (opts CreateOpts) Validate() error {
 	return edgecloud.Validate.Struct(opts)
 }
@@ -70,7 +70,7 @@ func (opts UpdateOpts) ToKeystoneUpdateMap() (map[string]interface{}, error) {
 	return edgecloud.BuildRequestBody(opts, "")
 }
 
-// Validate
+// Validate UpdateOpts.
 func (opts UpdateOpts) Validate() error {
 	return edgecloud.Validate.Struct(opts)
 }

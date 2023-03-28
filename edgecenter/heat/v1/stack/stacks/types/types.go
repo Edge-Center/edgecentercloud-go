@@ -57,7 +57,7 @@ func (sd SortDir) StringList() []string {
 	return s
 }
 
-// UnmarshalJSON - implements Unmarshaler interface
+// UnmarshalJSON - implements Unmarshaler interface.
 func (sd *SortDir) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -72,7 +72,7 @@ func (sd *SortDir) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface
+// MarshalJSON - implements Marshaler interface.
 func (sd *SortDir) MarshalJSON() ([]byte, error) {
 	return json.Marshal(sd.String())
 }
@@ -114,7 +114,7 @@ func (sk SortKey) StringList() []string {
 	return s
 }
 
-// UnmarshalJSON - implements Unmarshaler interface
+// UnmarshalJSON - implements Unmarshaler interface.
 func (sk *SortKey) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -129,7 +129,7 @@ func (sk *SortKey) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface
+// MarshalJSON - implements Marshaler interface.
 func (sk *SortKey) MarshalJSON() ([]byte, error) {
 	return json.Marshal(sk.String())
 }

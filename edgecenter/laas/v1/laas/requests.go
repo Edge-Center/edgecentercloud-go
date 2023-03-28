@@ -44,7 +44,7 @@ func RegenerateUser(c *edgecloud.ServiceClient) (r UserResult) {
 	return
 }
 
-// ListTopic list LaaS Kafka topics within client namespace
+// ListTopic list LaaS Kafka topics within client namespace.
 func ListTopic(c *edgecloud.ServiceClient) pagination.Pager {
 	url := topicsURL(c)
 	return pagination.NewPager(c, url, func(r pagination.PageResult) pagination.Page {
@@ -52,7 +52,7 @@ func ListTopic(c *edgecloud.ServiceClient) pagination.Pager {
 	})
 }
 
-// ListTopicAll list LaaS Kafka topics within client namespace
+// ListTopicAll list LaaS Kafka topics within client namespace.
 func ListTopicAll(c *edgecloud.ServiceClient) ([]Topic, error) {
 	page, err := ListTopic(c).AllPages()
 	if err != nil {
@@ -88,7 +88,7 @@ func CreateTopic(c *edgecloud.ServiceClient, opts CreateTopicOptsBuilder) (r Top
 	return
 }
 
-// DeleteTopic delete LaaS Kafka topic within client namespace
+// DeleteTopic delete LaaS Kafka topic within client namespace.
 func DeleteTopic(c *edgecloud.ServiceClient, name string) (r DeleteResult) {
 	_, r.Err = c.Delete(deleteTopicURL(c, name), nil)
 	return

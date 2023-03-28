@@ -35,7 +35,7 @@ type CreateOptsBuilder interface {
 	ToRegionAccessCreateMap() (map[string]interface{}, error)
 }
 
-// CreateOpts set parameters for Create operation
+// CreateOpts set parameters for Create operation.
 type CreateOpts struct {
 	AccessAllEdgeRegions bool  `json:"access_all_edge_regions"`
 	RegionIDs            []int `json:"region_ids"`
@@ -43,12 +43,12 @@ type CreateOpts struct {
 	ResellerID           *int  `json:"reseller_id"`
 }
 
-// Validate
+// Validate CreateOpts.
 func (opts CreateOpts) Validate() error {
 	return edgecloud.ValidateStruct(opts)
 }
 
-// ToRegionAccessCreateMap builds a request body form CreateOpts
+// ToRegionAccessCreateMap builds a request body form CreateOpts.
 func (opts CreateOpts) ToRegionAccessCreateMap() (map[string]interface{}, error) {
 	if err := opts.Validate(); err != nil {
 		return nil, err

@@ -31,7 +31,7 @@ func (opts ListOpts) ToReservedFixedIPListQuery() (string, error) {
 	return q.String(), err
 }
 
-// ToReservedFixedIPCreateMap allows extensions to add additional parameters to the Create request
+// CreateOptsBuilder allows extensions to add additional parameters to the Create request.
 type CreateOptsBuilder interface {
 	ToReservedFixedIPCreateMap() (map[string]interface{}, error)
 }
@@ -58,7 +58,7 @@ func (opts CreateOpts) ToReservedFixedIPCreateMap() (map[string]interface{}, err
 	return edgecloud.BuildRequestBody(opts, "")
 }
 
-// ToReservedFixedIPSwitchVIPMap allows extensions to add additional parameters to the SwitchVIP request
+// SwitchVIPOptsBuilder allows extensions to add additional parameters to the SwitchVIP request.
 type SwitchVIPOptsBuilder interface {
 	ToReservedFixedIPSwitchVIPMap() (map[string]interface{}, error)
 }
@@ -73,7 +73,7 @@ func (opts SwitchVIPOpts) ToReservedFixedIPSwitchVIPMap() (map[string]interface{
 	return edgecloud.BuildRequestBody(opts, "")
 }
 
-// ToPortsToShareVIPOptsMap allows extensions to add additional parameters to the AddPortsToShareVIP request
+// ToPortsToShareVIPOptsMap allows extensions to add additional parameters to the AddPortsToShareVIP request.
 type PortsToShareVIPOptsBuilder interface {
 	ToPortsToShareVIPOptsMap() (map[string]interface{}, error)
 }

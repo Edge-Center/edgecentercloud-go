@@ -37,7 +37,7 @@ func (opts CreateOpts) ToProjectCreateMap() (map[string]interface{}, error) {
 	return edgecloud.BuildRequestBody(opts, "")
 }
 
-// Validate
+// Validate CreateOpts.
 func (opts CreateOpts) Validate() error {
 	return edgecloud.Validate.Struct(opts)
 }
@@ -69,7 +69,7 @@ func (opts UpdateOpts) ToProjectUpdateMap() (map[string]interface{}, error) {
 	return edgecloud.BuildRequestBody(opts, "")
 }
 
-// Validate
+// Validate UpdateOpts.
 func (opts UpdateOpts) Validate() error {
 	return edgecloud.Validate.Struct(opts)
 }
@@ -102,7 +102,7 @@ func ListAll(client *edgecloud.ServiceClient) ([]Project, error) {
 	return all, nil
 }
 
-// Delete a project
+// Delete a project.
 func Delete(client *edgecloud.ServiceClient, id int) (r tasks.Result) {
 	url := deleteURL(client, id)
 	_, r.Err = client.DeleteWithResponse(url, &r.Body, nil) // nolint

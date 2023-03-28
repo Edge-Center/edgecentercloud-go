@@ -1,6 +1,6 @@
 package edgecloud
 
-// AuthResult interface
+// AuthResult interface.
 type AuthResult interface {
 	ExtractAccessToken() (string, error)
 	ExtractRefreshToken() (string, error)

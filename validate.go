@@ -350,7 +350,7 @@ func suppressedIfFieldEqual(fl validator.FieldLevel) bool {
 	return !found || !hasValue(fl)
 }
 
-// requireCheckField is a func for check field kind
+// requireCheckField is a func for check field kind.
 func requireCheckFieldKind(fl validator.FieldLevel, param string, defaultNotFoundValue bool) bool {
 	field := fl.Field()
 	kind := field.Kind()
@@ -416,7 +416,7 @@ func name(fl validator.FieldLevel) bool {
 	panic(fmt.Sprintf("Bad field type %T", field.Interface()))
 }
 
-// sem is the validation function for validating semantic version
+// sem is the validation function for validating semantic version.
 func sem(fl validator.FieldLevel) bool {
 
 	field := fl.Field()

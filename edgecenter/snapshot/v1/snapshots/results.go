@@ -8,7 +8,7 @@ import (
 	"github.com/Edge-Center/edgecentercloud-go/pagination"
 )
 
-// MetadataActionResult represents the result of a create, delete or update operation(no content)
+// MetadataActionResult represents the result of a create, delete or update operation(no content).
 type MetadataActionResult struct {
 	edgecloud.ErrResult
 }

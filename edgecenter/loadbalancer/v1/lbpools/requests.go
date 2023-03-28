@@ -194,7 +194,7 @@ func Delete(c *edgecloud.ServiceClient, lbpoolID string) (r tasks.Result) {
 	return
 }
 
-// ListAll returns all LB pools
+// ListAll returns all LB pools.
 func ListAll(c *edgecloud.ServiceClient, opts ListOptsBuilder) ([]Pool, error) {
 	page, err := List(c, opts).AllPages()
 	if err != nil {
@@ -203,7 +203,7 @@ func ListAll(c *edgecloud.ServiceClient, opts ListOptsBuilder) ([]Pool, error) {
 	return ExtractPools(page)
 }
 
-// CreateMember creates LB pool member
+// CreateMember creates LB pool member.
 func CreateMember(c *edgecloud.ServiceClient, lbpoolID string, opts CreateMemberOptsBuilder) (r tasks.Result) {
 	b, err := opts.ToLBPoolMemberCreateMap()
 	if err != nil {
@@ -226,7 +226,7 @@ func DeleteHealthMonitor(c *edgecloud.ServiceClient, lbpoolID string) (r DeleteH
 	return
 }
 
-// CreateHealthMonitor creates LB pool healthmonitor
+// CreateHealthMonitor creates LB pool healthmonitor.
 func CreateHealthMonitor(c *edgecloud.ServiceClient, lbpoolID string, opts CreateHealthMonitorOptsBuilder) (r tasks.Result) {
 	b, err := opts.ToHealthMonitorCreateMap()
 	if err != nil {

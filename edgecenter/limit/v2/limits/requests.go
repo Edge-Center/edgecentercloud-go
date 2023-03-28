@@ -196,7 +196,7 @@ func ListAll(c *edgecloud.ServiceClient) ([]LimitResponse, error) {
 	return ExtractLimitResults(page)
 }
 
-// Delete deleted limit request
+// Delete deleted limit request.
 func Delete(c *edgecloud.ServiceClient, id int) (r DeleteResult) {
 	_, r.Err = c.Delete(deleteURL(c, id), &edgecloud.RequestOpts{
 		OkCodes: []int{http.StatusOK},

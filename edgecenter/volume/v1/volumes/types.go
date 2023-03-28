@@ -111,7 +111,7 @@ func (vs VolumeStatus) StringList() []string {
 	return s
 }
 
-// UnmarshalJSON - implements Unmarshaler interface for VolumeStatus
+// UnmarshalJSON - implements Unmarshaler interface for VolumeStatus.
 func (vs *VolumeStatus) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -126,7 +126,7 @@ func (vs *VolumeStatus) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface for VolumeStatus
+// MarshalJSON - implements Marshaler interface for VolumeStatus.
 func (vs *VolumeStatus) MarshalJSON() ([]byte, error) {
 	return json.Marshal(vs.String())
 }
@@ -166,7 +166,7 @@ func (vs VolumeSource) StringList() []string {
 	return s
 }
 
-// UnmarshalJSON - implements Unmarshaler interface for VolumeSource
+// UnmarshalJSON - implements Unmarshaler interface for VolumeSource.
 func (vs *VolumeSource) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -181,7 +181,7 @@ func (vs *VolumeSource) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface for VolumeSource
+// MarshalJSON - implements Marshaler interface for VolumeSource.
 func (vs *VolumeSource) MarshalJSON() ([]byte, error) {
 	return json.Marshal(vs.String())
 }
@@ -221,7 +221,7 @@ func (vt VolumeType) ValidOrNil() (*VolumeType, error) {
 	return &vt, nil
 }
 
-// UnmarshalJSON - implements Unmarshaler interface for VolumeType
+// UnmarshalJSON - implements Unmarshaler interface for VolumeType.
 func (vt *VolumeType) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -236,7 +236,7 @@ func (vt *VolumeType) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface for VolumeType
+// MarshalJSON - implements Marshaler interface for VolumeType.
 func (vt *VolumeType) MarshalJSON() ([]byte, error) {
 	return json.Marshal(vt.String())
 }
