@@ -6,29 +6,18 @@ issues:
   max-per-linter: 0
   max-same-issues: 0
   exclude:
-    # revive, stylecheck: ignore constants in all caps
-    - don't use ALL_CAPS in Go names; use CamelCase
-    - ST1003
     # gosec
     - G101
     - G306
-    - G401
-    - G501
   exclude-rules:
-    - path: _test|utils.go
+    - path: utils.go
       linters:
         - errcheck
-    - path: \.go
-      linters:
-        - nolintlint
-      text: should be written without leading space
     - text: missing cases in switch of type
       linters:
         - exhaustive
 
 linters:
-#  disable-all: true
-#  enable:
   enable-all: true
   disable:
     - deadcode
@@ -67,7 +56,6 @@ linters:
     - funlen
     - gocognit
     - gocyclo
-    - maintidx
     - nestif
     - dupl
     # tests

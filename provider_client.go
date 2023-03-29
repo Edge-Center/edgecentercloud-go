@@ -35,7 +35,7 @@ func (ua *UserAgent) Prepend(s ...string) {
 // Join concatenates all the user-defined User-Agent strings with the default
 // EdgeCenter cloud User-Agent string.
 func (ua *UserAgent) Join() string {
-	// nolint:gocritic
+	//nolint:gocritic
 	uaSlice := append(ua.prepend, DefaultUserAgent)
 	return strings.Join(uaSlice, " ")
 }
@@ -211,8 +211,7 @@ func (client *ProviderClient) SetTokensAndAuthResult(r AuthResult) error {
 	return nil
 }
 
-// CopyTokensFrom safely copies the token from another ProviderClient into the
-// this one.
+// CopyTokensFrom safely copies the token from another ProviderClient into this one.
 func (client *ProviderClient) CopyTokensFrom(other *ProviderClient) {
 	if client.mut != nil {
 		client.mut.Lock()
@@ -385,28 +384,10 @@ func (client *ProviderClient) Request(method, url string, options *RequestOpts) 
 	})
 }
 
-func (client *ProviderClient) doRequest(method, url string, options *RequestOpts, state *requestState) (*http.Response, error) { // nolint: gocyclo
-	var body io.Reader
-	var contentType *string
-
-	// Derive the content body by either encoding an arbitrary object as JSON, or by taking a provided
-	// io.ReadSeeker as-is. Default the content-type to application/json.
-	if options.JSONBody != nil {
-		if options.RawBody != nil {
-			return nil, errors.New("please provide only one of JSONBody or RawBody to edgecloud.Request()")
-		}
-
-		rendered, err := json.Marshal(options.JSONBody)
-		if err != nil {
-			return nil, err
-		}
-
-		body = bytes.NewReader(rendered)
-		contentType = &applicationJSON
-	}
-
-	if options.RawBody != nil {
-		body = options.RawBody
+func (client *ProviderClient) doRequest(method, url string, options *RequestOpts, state *requestState) (*http.Response, error) {
+	body, contentType, err := getRequestBodyAndContentType(options)
+	if err != nil {
+		return nil, err
 	}
 
 	// Construct the http.Request.
@@ -414,66 +395,22 @@ func (client *ProviderClient) doRequest(method, url string, options *RequestOpts
 	if err != nil {
 		return nil, err
 	}
+
 	if client.Context != nil {
 		req = req.WithContext(client.Context)
 	}
-
-	// Populate the request headers. Apply options.MoreHeaders last, to give the caller the chance to
-	// modify or omit any header.
-	if contentType != nil {
-		req.Header.Set("Content-Type", *contentType)
-	}
-	req.Header.Set("Accept", applicationJSON)
-
-	// Set the User-Agent header
-	req.Header.Set("User-Agent", client.UserAgent.Join())
-
-	if options.MoreHeaders != nil {
-		for k, v := range options.MoreHeaders {
-			if v != "" {
-				req.Header.Set(k, v)
-			} else {
-				req.Header.Del(k)
-			}
-		}
-	}
-
-	// get latest token from client
-	for k, v := range client.AuthenticatedHeaders() {
-		req.Header.Set(k, v)
-	}
-
-	// Set connection parameter to close the connection immediately when we've got the response
-	req.Close = true
+	setRequestContextAndHeaders(req, client, options, contentType)
 
 	preReqToken := client.AccessToken()
-
 	client.debugRequest(req)
 
-	// Issue the request.
 	resp, err := client.HTTPClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
-
 	client.debugResponse(resp)
 
-	// Allow default OkCodes if none explicitly set
-	okc := options.OkCodes
-	if okc == nil {
-		okc = defaultOkCodes(method)
-	}
-
-	// Validate the HTTP response status.
-	var ok bool
-	for _, code := range okc {
-		if resp.StatusCode == code {
-			ok = true
-			break
-		}
-	}
-
-	if !ok {
+	if !isResponseCodeValid(resp.StatusCode, method, options) {
 		body, _ := io.ReadAll(resp.Body)
 		err := resp.Body.Close()
 		if err != nil {
@@ -603,6 +540,77 @@ func (client *ProviderClient) doRequest(method, url string, options *RequestOpts
 	}
 
 	return resp, nil
+}
+
+// getRequestBodyAndContentType derive the content body by either encoding an arbitrary object as JSON,
+// or by taking a provided io.ReadSeeker as-is. Default the content-type to application/json.
+func getRequestBodyAndContentType(options *RequestOpts) (io.Reader, *string, error) {
+	var body io.Reader
+	var contentType *string
+
+	if options.JSONBody != nil {
+		if options.RawBody != nil {
+			return nil, nil, errors.New("please provide only one of JSONBody or RawBody to edgecloud.Request()")
+		}
+
+		rendered, err := json.Marshal(options.JSONBody)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		body = bytes.NewReader(rendered)
+		contentType = &applicationJSON
+	}
+
+	if options.RawBody != nil {
+		body = options.RawBody
+	}
+
+	return body, contentType, nil
+}
+
+// setRequestContextAndHeaders populate the request headers. Apply options.MoreHeaders last, to give the caller the chance to modify or omit any header.
+func setRequestContextAndHeaders(req *http.Request, client *ProviderClient, options *RequestOpts, contentType *string) {
+	if contentType != nil {
+		req.Header.Set("Content-Type", *contentType)
+	}
+	req.Header.Set("Accept", applicationJSON)
+	req.Header.Set("User-Agent", client.UserAgent.Join())
+
+	if options.MoreHeaders != nil {
+		for k, v := range options.MoreHeaders {
+			if v != "" {
+				req.Header.Set(k, v)
+			} else {
+				req.Header.Del(k)
+			}
+		}
+	}
+
+	// get the latest token from client
+	for k, v := range client.AuthenticatedHeaders() {
+		req.Header.Set(k, v)
+	}
+
+	// Set connection parameter to close the connection immediately when we've got the response
+	req.Close = true
+}
+
+// isResponseCodeValid validate the HTTP response status.
+func isResponseCodeValid(statusCode int, method string, options *RequestOpts) bool {
+	// Allow default OkCodes if none explicitly set
+	okc := options.OkCodes
+	if okc == nil {
+		okc = defaultOkCodes(method)
+	}
+
+	for _, code := range okc {
+		if statusCode == code {
+			return true
+		}
+	}
+
+	return false
 }
 
 // ToTokenOptions - TokenOptions from ProviderClient.

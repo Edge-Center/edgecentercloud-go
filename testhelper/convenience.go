@@ -50,7 +50,7 @@ type visit struct {
 // Recursively visits the structures of "expected" and "actual". The diffLogger function will be
 // invoked with each different value encountered, including the reference path that was followed
 // to get there.
-func deepDiffEqual(expected, actual reflect.Value, visited map[visit]bool, path []string, logDifference diffLogger) { // nolint: gocyclo
+func deepDiffEqual(expected, actual reflect.Value, visited map[visit]bool, path []string, logDifference diffLogger) {
 	defer func() {
 		// Fall back to the regular reflect.DeepEquals function.
 		if r := recover(); r != nil {
@@ -115,7 +115,7 @@ func deepDiffEqual(expected, actual reflect.Value, visited map[visit]bool, path 
 	switch expected.Kind() {
 	case reflect.Array:
 		for i := 0; i < expected.Len(); i++ {
-			// nolint:gocritic
+			//nolint:gocritic
 			hop := append(path, fmt.Sprintf("[%d]", i))
 			deepDiffEqual(expected.Index(i), actual.Index(i), visited, hop, logDifference)
 		}
@@ -129,7 +129,7 @@ func deepDiffEqual(expected, actual reflect.Value, visited map[visit]bool, path 
 			return
 		}
 		for i := 0; i < expected.Len(); i++ {
-			hop := append(path, fmt.Sprintf("[%d]", i)) // nolint:gocritic
+			hop := append(path, fmt.Sprintf("[%d]", i)) //nolint:gocritic
 			deepDiffEqual(expected.Index(i), actual.Index(i), visited, hop, logDifference)
 		}
 
@@ -147,7 +147,7 @@ func deepDiffEqual(expected, actual reflect.Value, visited map[visit]bool, path 
 	case reflect.Struct:
 		for i, n := 0, expected.NumField(); i < n; i++ {
 			field := expected.Type().Field(i)
-			hop := append(path, "."+field.Name) // nolint:gocritic
+			hop := append(path, "."+field.Name) //nolint:gocritic
 			deepDiffEqual(expected.Field(i), actual.Field(i), visited, hop, logDifference)
 		}
 		return
@@ -180,8 +180,7 @@ func deepDiffEqual(expected, actual reflect.Value, visited map[visit]bool, path 
 				return
 			}
 
-			// nolint:gocritic
-			hop := append(path, fmt.Sprintf("[%v]", k))
+			hop := append(path, fmt.Sprintf("[%v]", k)) //nolint:gocritic
 			deepDiffEqual(expectedValue, actualValue, visited, hop, logDifference)
 		}
 

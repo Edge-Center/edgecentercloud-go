@@ -98,7 +98,12 @@ func TestSubnetsMetadata(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer etest.DeleteTestNetwork(netClient, networkID)
+	defer func(client *edgecloud.ServiceClient, networkID string) {
+		err := etest.DeleteTestNetwork(client, networkID)
+		if err != nil {
+			t.Errorf("error while network delete: %s", err.Error())
+		}
+	}(netClient, networkID)
 
 	optsSubnet := subnets.CreateOpts{
 		Name:      "test-subnet",
@@ -110,7 +115,12 @@ func TestSubnetsMetadata(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	defer deleteTestSubnet(resourceClient, resourceID)
+	defer func(client *edgecloud.ServiceClient, subnetID string) {
+		err := deleteTestSubnet(client, subnetID)
+		if err != nil {
+			t.Errorf("error while subnet delete: %s", err.Error())
+		}
+	}(resourceClient, resourceID)
 
 	err = etest.MetadataTest(func() ([]metadata.Metadata, error) {
 		res, err := subnets.Get(resourceClient, resourceID).Extract()

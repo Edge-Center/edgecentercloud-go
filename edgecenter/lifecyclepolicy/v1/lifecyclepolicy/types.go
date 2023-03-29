@@ -161,7 +161,7 @@ func (r RawSchedule) Cook() (Schedule, error) {
 	var typeStruct struct {
 		ScheduleType `json:"type"`
 	}
-	// nolint:staticcheck
+	//nolint:staticcheck
 	if err := json.Unmarshal(r.RawMessage, &typeStruct); err != nil {
 		return nil, err
 	}

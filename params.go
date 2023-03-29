@@ -42,7 +42,7 @@ var (
 	typeOfURL  = reflect.TypeOf(URL{})
 )
 
-func BuildSliceRequestBody(opts interface{}) ([]map[string]interface{}, error) { // nolint: gocyclo
+func BuildSliceRequestBody(opts interface{}) ([]map[string]interface{}, error) {
 	optsValue := reflect.ValueOf(opts)
 	if optsValue.Kind() == reflect.Ptr {
 		optsValue = optsValue.Elem()
@@ -99,7 +99,7 @@ func skipCustomStructs(v reflect.Value, typeof ...reflect.Type) bool {
 	return false
 }
 
-func BuildRequestBody(opts interface{}, parent string) (map[string]interface{}, error) { // nolint: gocyclo
+func BuildRequestBody(opts interface{}, parent string) (map[string]interface{}, error) {
 	optsValue := reflect.ValueOf(opts)
 	if optsValue.Kind() == reflect.Ptr {
 		optsValue = optsValue.Elem()
@@ -500,11 +500,9 @@ func BuildQueryString(opts interface{}) (*url.URL, error) {
 							params.Add(tags[0], fmt.Sprintf("{%s}", strings.Join(s, ", ")))
 						}
 					}
-				} else { // nolint: gocritic
+				} else if requiredTag == trueTag {
 					// if the field has a 'required' tag, it can't have a zero-value
-					if requiredTag == trueTag {
-						return &url.URL{}, fmt.Errorf("required query parameter [%s] not set", f.Name)
-					}
+					return &url.URL{}, fmt.Errorf("required query parameter [%s] not set", f.Name)
 				}
 			}
 		}
