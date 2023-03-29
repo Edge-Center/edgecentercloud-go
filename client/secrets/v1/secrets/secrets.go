@@ -34,11 +34,11 @@ var secretListCommand = cli.Command{
 		client, err := client.NewSecretClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		results, err := secrets.ListAll(client)
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
 
@@ -59,11 +59,11 @@ var secretGetCommand = cli.Command{
 		client, err := client.NewSecretClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		secret, err := secrets.Get(client, secretID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(secret, c.String("format"))
 
@@ -84,11 +84,11 @@ var secretDeleteCommand = cli.Command{
 		client, err := client.NewSecretClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		result, err := secrets.Delete(client, secretID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		if result != nil {
@@ -164,7 +164,7 @@ var secretCreateCommand = cli.Command{
 		client, err := client.NewSecretClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		opts := secrets.CreateOpts{
@@ -188,7 +188,7 @@ var secretCreateCommand = cli.Command{
 			expirationTime, err := time.Parse(edgecloud.RFC3339NoZ, rawExpTime)
 			if err != nil {
 				_ = cli.ShowSubcommandHelp(c)
-				return cli.NewExitError(err, 1)
+				return cli.Exit(err, 1)
 			}
 			opts.Expiration = &expirationTime
 		}
@@ -199,7 +199,7 @@ var secretCreateCommand = cli.Command{
 
 		results, err := secrets.Create(client, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		return utils.WaitTaskAndShowResult(c, client, results, true, func(task tasks.TaskID) (interface{}, error) {

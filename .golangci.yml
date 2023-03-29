@@ -60,7 +60,6 @@ linters:
     - dupl
     # tests
     - testpackage
-    - thelper
     - paralleltest
 
 linters-settings:

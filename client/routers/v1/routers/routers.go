@@ -38,12 +38,12 @@ var routerListSubCommand = cli.Command{
 		client, err := client.NewRouterClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		opts := routers.ListOpts{}
 		results, err := routers.ListAll(client, opts)
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		if results != nil {
@@ -68,12 +68,12 @@ var routerGetSubCommand = cli.Command{
 		client, err := client.NewRouterClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		result, err := routers.Get(client, routerID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		if result != nil {
@@ -99,12 +99,12 @@ var routerDeleteSubCommand = cli.Command{
 		client, err := client.NewRouterClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		result, err := routers.Delete(client, routerID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		if result != nil {
@@ -157,11 +157,11 @@ var routerCreateSubCommand = cli.Command{
 		client, err := client.NewRouterClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		routes, err := subnets.GetHostRoutes(c)
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		enableSNAT := c.Bool("enable-snat")
@@ -192,7 +192,7 @@ var routerCreateSubCommand = cli.Command{
 
 		results, err := routers.Create(client, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		return utils.WaitTaskAndShowResult(c, client, results, true, func(task tasks.TaskID) (interface{}, error) {
@@ -257,11 +257,11 @@ var routerUpdateSubCommand = cli.Command{
 		client, err := client.NewRouterClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		routes, err := subnets.GetHostRoutes(c)
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		enableSNAT := c.Bool("enable-snat")
@@ -280,7 +280,7 @@ var routerUpdateSubCommand = cli.Command{
 
 		result, err := routers.Update(client, routerID, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		utils.ShowResults(result, c.String("format"))
@@ -311,12 +311,12 @@ var routerAttachSubCommand = cli.Command{
 		client, err := client.NewRouterClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		result, err := routers.Attach(client, routerID, c.String("subnet-id")).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		utils.ShowResults(result, c.String("format"))
@@ -347,12 +347,12 @@ var routerDetachSubCommand = cli.Command{
 		client, err := client.NewRouterClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		result, err := routers.Detach(client, routerID, c.String("subnet-id")).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		utils.ShowResults(result, c.String("format"))

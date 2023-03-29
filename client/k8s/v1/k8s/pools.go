@@ -27,16 +27,16 @@ var poolListSubCommand = cli.Command{
 		clusterID, err := flags.GetFirstStringArg(c, clusterIDText)
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "list")
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		client, err := client.NewK8sClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		results, err := pools.ListAll(client, clusterID, pools.ListOpts{})
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
 
@@ -61,17 +61,17 @@ var poolDeleteSubCommand = cli.Command{
 		poolID, err := flags.GetFirstStringArg(c, poolIDText)
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "delete")
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		clusterID := c.String("cluster-id")
 		client, err := client.NewK8sClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		results, err := pools.Delete(client, clusterID, poolID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		return utils.WaitTaskAndShowResult(c, client, results, false, func(task tasks.TaskID) (interface{}, error) {
@@ -121,13 +121,13 @@ var poolUpdateSubCommand = cli.Command{
 		poolID, err := flags.GetFirstStringArg(c, poolIDText)
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "update")
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		clusterID := c.String("cluster-id")
 		client, err := client.NewK8sClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		opts := pools.UpdateOpts{
@@ -138,7 +138,7 @@ var poolUpdateSubCommand = cli.Command{
 
 		result, err := pools.Update(client, clusterID, poolID, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
 
@@ -163,17 +163,17 @@ var poolGetSubCommand = cli.Command{
 		poolID, err := flags.GetFirstStringArg(c, poolIDText)
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "show")
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		clusterID := c.String("cluster-id")
 		client, err := client.NewK8sClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		result, err := pools.Get(client, clusterID, poolID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
 
@@ -238,12 +238,12 @@ var poolCreateSubCommand = cli.Command{
 		clusterID, err := flags.GetFirstStringArg(c, clusterIDText)
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "create")
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		client, err := client.NewK8sClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		dockerVolumeType := volumes.VolumeType(c.String("docker-volume-type"))
@@ -260,10 +260,10 @@ var poolCreateSubCommand = cli.Command{
 
 		results, err := pools.Create(client, clusterID, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		if results == nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		return utils.WaitTaskAndShowResult(c, client, results, true, func(task tasks.TaskID) (interface{}, error) {
@@ -303,18 +303,18 @@ var poolInstancesSubCommand = cli.Command{
 		poolID, err := flags.GetFirstStringArg(c, poolIDText)
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "instances")
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		clusterID := c.String("cluster-id")
 		client, err := client.NewK8sClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		results, err := pools.InstancesAll(client, clusterID, poolID)
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
 
@@ -339,18 +339,18 @@ var poolVolumesSubCommand = cli.Command{
 		poolID, err := flags.GetFirstStringArg(c, poolIDText)
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "volumes")
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		clusterID := c.String("cluster-id")
 		client, err := client.NewK8sClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		results, err := pools.VolumesAll(client, clusterID, poolID)
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
 

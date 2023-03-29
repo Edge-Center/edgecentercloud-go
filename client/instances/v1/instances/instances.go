@@ -348,7 +348,7 @@ var instanceListCommand = cli.Command{
 		client, err := client.NewInstanceClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		opts := instances.ListOpts{
 			ExcludeSecGroup:   c.String("exclude-security-group"),
@@ -361,7 +361,7 @@ var instanceListCommand = cli.Command{
 		}
 		results, err := instances.ListAll(client, opts)
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
 
@@ -383,11 +383,11 @@ var instanceListInterfacesCommand = cli.Command{
 		client, err := client.NewInstanceClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		results, err := instances.ListInterfacesAll(client, instanceID)
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
 
@@ -409,11 +409,11 @@ var instanceListSecurityGroupsCommand = cli.Command{
 		client, err := client.NewInstanceClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		results, err := instances.ListSecurityGroupsAll(client, instanceID)
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
 
@@ -443,14 +443,14 @@ var instanceRenameCommand = cli.Command{
 		client, err := client.NewInstanceClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		opts := instances.RenameInstanceOpts{Name: c.String("name")}
 
 		instance, err := instances.RenameInstance(client, instanceID, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(instance, c.String("format"))
 
@@ -480,14 +480,14 @@ var instanceAssignSecurityGroupsCommand = cli.Command{
 		client, err := client.NewInstanceClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		opts := instances.SecurityGroupOpts{Name: c.String("name")}
 
 		err = instances.AssignSecurityGroup(client, instanceID, opts).ExtractErr()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		return nil
@@ -516,14 +516,14 @@ var instanceUnAssignSecurityGroupsCommand = cli.Command{
 		client, err := client.NewInstanceClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		opts := instances.SecurityGroupOpts{Name: c.String("name")}
 
 		err = instances.UnAssignSecurityGroup(client, instanceID, opts).ExtractErr()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		return nil
@@ -681,32 +681,32 @@ var instanceCreateCommandV2 = cli.Command{
 		clientV2, err := client2.NewInstanceClientV2(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		clientV1, err := client.NewInstanceClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		userData, err := getUserData(c)
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "create")
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		instanceVolumes, err := getInstanceVolumes(c)
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "create")
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		// todo add security group mapping
 		instanceInterfaces, err := getInterfaces(c)
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "create")
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		securityGroups := getSecurityGroups(c)
@@ -714,7 +714,7 @@ var instanceCreateCommandV2 = cli.Command{
 		metadata, err := StringSliceToMetadataSetOpts(c.StringSlice("metadata"))
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "create")
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		opts := instances.CreateOpts{
@@ -734,12 +734,12 @@ var instanceCreateCommandV2 = cli.Command{
 
 		err = edgecloud.TranslateValidationError(opts.Validate())
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		results, err := instances.Create(clientV2, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		return utils.WaitTaskAndShowResult(c, clientV1, results, true, func(task tasks.TaskID) (interface{}, error) {
@@ -775,11 +775,11 @@ var instanceGetCommand = cli.Command{
 		client, err := client.NewInstanceClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		instance, err := instances.Get(client, instanceID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(instance, c.String("format"))
 
@@ -818,7 +818,7 @@ var instanceDeleteCommand = cli.Command{
 		client, err := client.NewInstanceClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		opts := instances.DeleteOpts{
@@ -829,12 +829,12 @@ var instanceDeleteCommand = cli.Command{
 
 		err = edgecloud.TranslateValidationError(opts.Validate())
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		results, err := instances.Delete(client, instanceID, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		return utils.WaitTaskAndShowResult(c, client, results, false, func(task tasks.TaskID) (interface{}, error) {
@@ -865,12 +865,12 @@ var instanceStartCommand = cli.Command{
 		client, err := client.NewInstanceClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		instance, err := instances.Start(client, instanceID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(instance, c.String("format"))
 
@@ -892,12 +892,12 @@ var instanceStopCommand = cli.Command{
 		client, err := client.NewInstanceClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		instance, err := instances.Stop(client, instanceID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(instance, c.String("format"))
 
@@ -919,12 +919,12 @@ var instancePowerCycleCommand = cli.Command{
 		client, err := client.NewInstanceClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		instance, err := instances.PowerCycle(client, instanceID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(instance, c.String("format"))
 
@@ -946,12 +946,12 @@ var instanceRebootCommand = cli.Command{
 		client, err := client.NewInstanceClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		instance, err := instances.Reboot(client, instanceID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(instance, c.String("format"))
 
@@ -973,12 +973,12 @@ var instanceSuspendCommand = cli.Command{
 		client, err := client.NewInstanceClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		instance, err := instances.Suspend(client, instanceID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(instance, c.String("format"))
 
@@ -1000,12 +1000,12 @@ var instanceResumeCommand = cli.Command{
 		client, err := client.NewInstanceClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		instance, err := instances.Resume(client, instanceID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(instance, c.String("format"))
 
@@ -1034,14 +1034,14 @@ var instanceResizeCommand = cli.Command{
 		client, err := client.NewInstanceClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		opts := instances.ChangeFlavorOpts{FlavorID: c.String("flavor")}
 
 		results, err := instances.Resize(client, instanceID, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		return utils.WaitTaskAndShowResult(c, client, results, true, func(task tasks.TaskID) (interface{}, error) {
@@ -1068,11 +1068,11 @@ var metadataListCommand = cli.Command{
 		client, err := client.NewInstanceClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		metadata, err := instances.MetadataListAll(client, instanceID)
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(metadata, c.String("format"))
 
@@ -1102,11 +1102,11 @@ var metadataGetCommand = cli.Command{
 		client, err := client.NewInstanceClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		metadata, err := instances.MetadataGet(client, instanceID, c.String("metadata")).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(metadata, c.String("format"))
 
@@ -1136,11 +1136,11 @@ var metadataDeleteCommand = cli.Command{
 		client, err := client.NewInstanceClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		err = instances.MetadataDelete(client, instanceID, c.String("metadata")).ExtractErr()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		return nil
@@ -1169,16 +1169,16 @@ var metadataCreateCommand = cli.Command{
 		client, err := client.NewInstanceClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		opts, err := StringSliceToMetadataSetOpts(c.StringSlice("metadata"))
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		err = instances.MetadataCreate(client, instanceID, *opts).ExtractErr()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		return nil
@@ -1207,16 +1207,16 @@ var metadataUpdateCommand = cli.Command{
 		client, err := client.NewInstanceClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		opts, err := StringSliceToMetadataSetOpts(c.StringSlice("metadata"))
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		err = instances.MetadataUpdate(client, instanceID, *opts).ExtractErr()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		return nil
@@ -1309,25 +1309,25 @@ var instanceCreateBaremetalCommand = cli.Command{
 		clientV1, err := client.NewBmInstanceClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		userData, err := getUserData(c)
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "create_baremetal")
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		instanceInterfaces, err := getBaremetalInterfaces(c)
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "create_baremetal")
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		appCfg, err := StringSliceToAppConfigSetOpts(c.StringSlice("appconfig"))
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "create_baremetal")
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		opts := bminstances.CreateOpts{
@@ -1346,7 +1346,7 @@ var instanceCreateBaremetalCommand = cli.Command{
 
 		results, err := bminstances.Create(clientV1, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		return utils.WaitTaskAndShowResult(c, clientV1, results, true, func(task tasks.TaskID) (interface{}, error) {
@@ -1390,13 +1390,13 @@ var instanceAddServerGroupCommand = cli.Command{
 		client, err := client.NewInstanceClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		sgClient, err := sgClient.NewServerGroupClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		sgID := c.String("servergroup")
@@ -1404,7 +1404,7 @@ var instanceAddServerGroupCommand = cli.Command{
 
 		results, err := instances.AddServerGroup(client, instanceID, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		return utils.WaitTaskAndShowResult(c, client, results, true, func(task tasks.TaskID) (interface{}, error) {
@@ -1437,20 +1437,20 @@ var instanceRemoveServerGroupCommand = cli.Command{
 		client, err := client.NewInstanceClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		sgClient, err := sgClient.NewServerGroupClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		sgID := c.String("servergroup")
 
 		results, err := instances.RemoveServerGroup(client, instanceID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		return utils.WaitTaskAndShowResult(c, client, results, true, func(task tasks.TaskID) (interface{}, error) {

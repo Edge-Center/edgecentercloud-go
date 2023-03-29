@@ -31,7 +31,7 @@ var regionAccessListCommand = cli.Command{
 		client, err := client.NewRegionClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		opts := regionsaccess.ListOpts{
@@ -40,7 +40,7 @@ var regionAccessListCommand = cli.Command{
 		}
 		results, err := regionsaccess.ListAll(client, opts)
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
 
@@ -62,11 +62,11 @@ var regionAccessDeleteCommand = cli.Command{
 		client, err := client.NewRegionClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		if err = regionsaccess.Delete(client, resellerID).ExtractErr(); err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		return nil
@@ -101,7 +101,7 @@ var regionAccessCreateCommand = cli.Command{
 		client, err := client.NewRegionClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		clientID := c.Int("client-id")
@@ -116,7 +116,7 @@ var regionAccessCreateCommand = cli.Command{
 
 		result, err := regionsaccess.Create(client, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
 

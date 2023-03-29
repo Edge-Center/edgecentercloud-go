@@ -28,11 +28,11 @@ var appTemplateListSubCommand = cli.Command{
 		client, err := client.NewAppTemplateClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		results, err := apptemplates.ListAll(client)
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		if results != nil {
@@ -57,12 +57,12 @@ var appTemplateGetSubCommand = cli.Command{
 		client, err := client.NewAppTemplateClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		result, err := apptemplates.Get(client, appTemplateID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		if result != nil {

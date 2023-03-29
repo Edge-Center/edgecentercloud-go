@@ -40,7 +40,7 @@ var quotasListCombinedSubCommands = cli.Command{
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
 
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		opts := quotas.ListCombinedOpts{}
@@ -50,7 +50,7 @@ var quotasListCombinedSubCommands = cli.Command{
 		}
 		result, err := quotas.ListCombined(client, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
 
@@ -74,13 +74,13 @@ var quotasListGlobalSubCommands = cli.Command{
 		client, err := client.NewQuotaClientV2(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		clientID := c.Int("client-id")
 		result, err := quotas.ListGlobal(client, clientID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
 
@@ -111,14 +111,14 @@ var quotasListRegionalSubCommands = cli.Command{
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
 
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		clientID := c.Int("client-id")
 		regionID := c.Int("region-id")
 		result, err := quotas.ListRegional(client, clientID, regionID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
 

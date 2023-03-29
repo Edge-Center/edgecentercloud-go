@@ -236,13 +236,13 @@ func WaitTaskAndShowResult(
 ) error {
 	if c.Bool("wait") {
 		if len(results.Tasks) == 0 {
-			return cli.NewExitError(fmt.Errorf("wrong task response"), 1)
+			return cli.Exit(fmt.Errorf("wrong task response"), 1)
 		}
 		task := results.Tasks[0]
 		waitSeconds := c.Int("wait-seconds")
 		result, err := tasks.WaitTaskAndReturnResult(client, task, stopOnTaskError, waitSeconds, infoRetriever)
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		ShowResults(result, c.String("format"))
 	} else {

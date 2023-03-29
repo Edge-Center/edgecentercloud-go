@@ -78,14 +78,14 @@ var getSubCommand = cli.Command{
 		client, err := client.NewLifecyclePolicyClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		opts := lifecyclepolicy.GetOpts{
 			NeedVolumes: c.Bool("volumes"),
 		}
 		result, err := lifecyclepolicy.Get(client, lifecyclePolicyID, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
 
@@ -104,14 +104,14 @@ var listSubCommand = cli.Command{
 		client, err := client.NewLifecyclePolicyClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		opts := lifecyclepolicy.ListOpts{
 			NeedVolumes: c.Bool("volumes"),
 		}
 		result, err := lifecyclepolicy.ListAll(client, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
 
@@ -133,11 +133,11 @@ var deleteSubCommand = cli.Command{
 		client, err := client.NewLifecyclePolicyClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		err = lifecyclepolicy.Delete(client, lifecyclePolicyID)
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		return nil
@@ -166,7 +166,7 @@ var createSubCommand = cli.Command{
 		client, err := client.NewLifecyclePolicyClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		var status lifecyclepolicy.PolicyStatus
 		if c.Bool("paused") {
@@ -181,7 +181,7 @@ var createSubCommand = cli.Command{
 		}
 		result, err := lifecyclepolicy.Create(client, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
 
@@ -223,7 +223,7 @@ var updateSubCommand = cli.Command{
 		client, err := client.NewLifecyclePolicyClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		var status lifecyclepolicy.PolicyStatus
 		if c.Bool("pause") {
@@ -241,7 +241,7 @@ var updateSubCommand = cli.Command{
 		}
 		result, err := lifecyclepolicy.Update(client, lifecyclePolicyID, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
 
@@ -271,14 +271,14 @@ var addVolumeSubCommand = cli.Command{
 		client, err := client.NewLifecyclePolicyClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		opts := lifecyclepolicy.AddVolumesOpts{
 			VolumeIds: []string{c.String("volume")},
 		}
 		result, err := lifecyclepolicy.AddVolumes(client, lifecyclePolicyID, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
 
@@ -308,14 +308,14 @@ var removeVolumeSubCommand = cli.Command{
 		client, err := client.NewLifecyclePolicyClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		opts := lifecyclepolicy.RemoveVolumesOpts{
 			VolumeIds: []string{c.String("volume")},
 		}
 		result, err := lifecyclepolicy.RemoveVolumes(client, lifecyclePolicyID, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
 
@@ -493,11 +493,11 @@ var addScheduleSubCommand = cli.Command{
 		client, err := client.NewLifecyclePolicyClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		retentionTime, err := extractRetentionTime(c)
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		common := lifecyclepolicy.CommonCreateScheduleOpts{
 			Type:                 lifecyclepolicy.ScheduleType(c.String("type")),
@@ -513,13 +513,13 @@ var addScheduleSubCommand = cli.Command{
 			opts, err = extractCreateIntervalScheduleOpts(c)
 		}
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		opts.SetCommonCreateScheduleOpts(common)
 		addOpts := lifecyclepolicy.AddSchedulesOpts{Schedules: []lifecyclepolicy.CreateScheduleOpts{opts}}
 		result, err := lifecyclepolicy.AddSchedules(client, lifecyclePolicyID, addOpts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
 
@@ -549,14 +549,14 @@ var removeScheduleSubCommand = cli.Command{
 		client, err := client.NewLifecyclePolicyClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		opts := lifecyclepolicy.RemoveSchedulesOpts{
 			ScheduleIDs: []string{c.String("schedule")},
 		}
 		result, err := lifecyclepolicy.RemoveSchedules(client, lifecyclePolicyID, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
 

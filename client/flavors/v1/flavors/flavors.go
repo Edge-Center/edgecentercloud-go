@@ -35,7 +35,7 @@ var flavorListCommand = cli.Command{
 		}
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		prices := c.Bool("include_prices")
 		opts := flavors.ListOpts{
@@ -43,7 +43,7 @@ var flavorListCommand = cli.Command{
 		}
 		results, err := flavors.ListAll(cl, opts)
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
 

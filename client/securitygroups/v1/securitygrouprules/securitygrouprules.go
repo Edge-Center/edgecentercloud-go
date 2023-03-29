@@ -36,11 +36,11 @@ var securityGroupRuleDeleteSubCommand = cli.Command{
 		client, err := client.NewSecurityGroupRuleClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		err = securitygrouprules.Delete(client, securityGroupRuleID).ExtractErr()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		return nil
@@ -120,7 +120,7 @@ var securityGroupRuleUpdateSubCommand = cli.Command{
 		client, err := client.NewSecurityGroupRuleClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		opts := securitygroups.CreateSecurityGroupRuleOpts{
@@ -137,7 +137,7 @@ var securityGroupRuleUpdateSubCommand = cli.Command{
 
 		results, err := securitygrouprules.Replace(client, securityGroupRuleID, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
 
@@ -213,7 +213,7 @@ var securityGroupRuleAddSubCommand = cli.Command{
 		client, err := client.NewSecurityGroupClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		opts := securitygroups.CreateSecurityGroupRuleOpts{
@@ -229,7 +229,7 @@ var securityGroupRuleAddSubCommand = cli.Command{
 
 		results, err := securitygroups.AddRule(client, securityGroupID, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
 

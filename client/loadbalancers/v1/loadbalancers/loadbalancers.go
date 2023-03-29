@@ -28,11 +28,11 @@ var loadBalancerListSubCommand = cli.Command{
 		client, err := client.NewLoadbalancerClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		results, err := loadbalancers.ListAll(client, nil)
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
 
@@ -84,7 +84,7 @@ var loadBalancerCreateSubCommand = cli.Command{
 		client, err := client.NewLoadbalancerClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		opts := loadbalancers.CreateOpts{
@@ -102,7 +102,7 @@ var loadBalancerCreateSubCommand = cli.Command{
 
 		results, err := loadbalancers.Create(client, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		return utils.WaitTaskAndShowResult(c, client, results, true, func(task tasks.TaskID) (interface{}, error) {
@@ -139,11 +139,11 @@ var loadBalancerGetSubCommand = cli.Command{
 		client, err := client.NewLoadbalancerClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		result, err := loadbalancers.Get(client, loadBalancerID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
 
@@ -166,11 +166,11 @@ var loadBalancerDeleteSubCommand = cli.Command{
 		client, err := client.NewLoadbalancerClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		results, err := loadbalancers.Delete(client, loadBalancerID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		return utils.WaitTaskAndShowResult(c, client, results, false, func(task tasks.TaskID) (interface{}, error) {
@@ -213,17 +213,17 @@ var loadBalancerUpdateSubCommand = cli.Command{
 		client, err := client.NewLoadbalancerClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		opts := loadbalancers.UpdateOpts{Name: c.String("name")}
 
 		result, err := loadbalancers.Update(client, loadBalancerID, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		if result == nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
 
@@ -239,11 +239,11 @@ var flavorListSubCommand = cli.Command{
 		client, err := client.NewLBFlavorClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		results, err := lbflavors.ListAll(client)
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
 
@@ -265,10 +265,10 @@ var createCustomSecurityGroup = cli.Command{
 		client, err := client.NewLoadbalancerClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		if err := loadbalancers.CreateCustomSecurityGroup(client, loadBalancerID).ExtractErr(); err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		return nil
@@ -289,11 +289,11 @@ var listCustomSecurityGroup = cli.Command{
 		client, err := client.NewLoadbalancerClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		result, err := loadbalancers.ListCustomSecurityGroup(client, loadBalancerID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
 

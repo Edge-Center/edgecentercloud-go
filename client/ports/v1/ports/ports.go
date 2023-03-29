@@ -28,12 +28,12 @@ var portSecurityEnableSubCommand = cli.Command{
 		client, err := client.NewPortClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		iface, err := ports.EnablePortSecurity(client, portID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(iface, c.String("format"))
 
@@ -55,12 +55,12 @@ var portSecurityDisableSubCommand = cli.Command{
 		client, err := client.NewPortClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		iface, err := ports.DisablePortSecurity(client, portID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(iface, c.String("format"))
 
@@ -92,13 +92,13 @@ var assignAllowedAddressPairsSubCommand = cli.Command{
 		client, err := client.NewPortClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		addressPairs, err := getAddressPairs(c.StringSlice("ip-address"), c.StringSlice("mac-address"))
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "assign")
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		opts := ports.AllowAddressPairsOpts{
@@ -107,7 +107,7 @@ var assignAllowedAddressPairsSubCommand = cli.Command{
 
 		result, err := ports.AllowAddressPairs(client, portID, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
 

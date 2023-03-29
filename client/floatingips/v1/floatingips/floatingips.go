@@ -28,11 +28,11 @@ var floatingIPListSubCommand = cli.Command{
 		client, err := client.NewFloatingIPClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		results, err := floatingips.ListAll(client, nil)
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
 
@@ -62,7 +62,7 @@ var floatingIPCreateSubCommand = cli.Command{
 		client, err := client.NewFloatingIPClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		ip := net.ParseIP(c.String("fixed-ip-address"))
@@ -79,7 +79,7 @@ var floatingIPCreateSubCommand = cli.Command{
 
 		results, err := floatingips.Create(client, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		return utils.WaitTaskAndShowResult(c, client, results, true, func(task tasks.TaskID) (interface{}, error) {
@@ -116,11 +116,11 @@ var floatingIPGetSubCommand = cli.Command{
 		client, err := client.NewFloatingIPClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		result, err := floatingips.Get(client, floatingIPID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
 
@@ -143,11 +143,11 @@ var floatingIPDeleteSubCommand = cli.Command{
 		client, err := client.NewFloatingIPClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		results, err := floatingips.Delete(client, floatingIPID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		return utils.WaitTaskAndShowResult(c, client, results, false, func(task tasks.TaskID) (interface{}, error) {
@@ -192,7 +192,7 @@ var floatingIPAssignSubCommand = cli.Command{
 		client, err := client.NewFloatingIPClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		ip := net.ParseIP(c.String("fixed-ip-address"))
@@ -209,7 +209,7 @@ var floatingIPAssignSubCommand = cli.Command{
 
 		floatingIP, err := floatingips.Assign(client, floatingIPID, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(floatingIP, c.String("format"))
 
@@ -231,12 +231,12 @@ var floatingIPUnAssignSubCommand = cli.Command{
 		client, err := client.NewFloatingIPClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		floatingIP, err := floatingips.UnAssign(client, floatingIPID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(floatingIP, c.String("format"))
 

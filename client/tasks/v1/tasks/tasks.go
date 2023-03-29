@@ -20,15 +20,15 @@ var taskListCommand = cli.Command{
 		client, err := client.NewTaskClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		pages, err := tasks.List(client).AllPages()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		results, err := tasks.ExtractTasks(pages)
 		if len(results) == 0 {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
 
@@ -45,19 +45,19 @@ var taskGetCommand = cli.Command{
 		taskID := c.Args().First()
 		if taskID == "" {
 			_ = cli.ShowCommandHelp(c, "show")
-			return cli.NewExitError(fmt.Errorf(taskIDText), 1)
+			return cli.Exit(fmt.Errorf(taskIDText), 1)
 		}
 		client, err := client.NewTaskClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		task, err := tasks.Get(client, taskID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		if task == nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(task, c.String("format"))
 

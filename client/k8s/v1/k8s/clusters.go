@@ -111,11 +111,11 @@ var clusterListSubCommand = cli.Command{
 		client, err := client.NewK8sClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		results, err := clusters.ListAll(client, clusters.ListOpts{})
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
 
@@ -137,11 +137,11 @@ var clusterGetSubCommand = cli.Command{
 		client, err := client.NewK8sClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		result, err := clusters.Get(client, clusterID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
 
@@ -190,17 +190,17 @@ var clusterConfigSubCommand = cli.Command{
 		client, err := client.NewK8sClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		options, err := getK8sConfigFileOptions(c)
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "config")
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		result, err := clusters.GetConfig(client, clusterID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		config := strings.TrimSpace(result.Config)
 		if options.save {
@@ -208,21 +208,21 @@ var clusterConfigSubCommand = cli.Command{
 				if options.force {
 					err := k8sconfig.WriteKubeconfigFile(options.filename, []byte(config))
 					if err != nil {
-						return cli.NewExitError(err, 1)
+						return cli.Exit(err, 1)
 					}
 					return nil
 				}
 				if options.merge {
 					err := k8sconfig.MergeKubeconfigFile(options.filename, []byte(config))
 					if err != nil {
-						return cli.NewExitError(err, 1)
+						return cli.Exit(err, 1)
 					}
 					return nil
 				}
 			} else {
 				err := utils.WriteToFile(options.filename, []byte(config))
 				if err != nil {
-					return cli.NewExitError(err, 1)
+					return cli.Exit(err, 1)
 				}
 				return nil
 			}
@@ -341,22 +341,22 @@ var clusterCreateSubCommand = cli.Command{
 		client, err := client.NewK8sClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		podsIPPool, err := edgecloud.ParseCIDRStringOrNil(c.String("pods-ip-pool"))
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		servicesIPPool, err := edgecloud.ParseCIDRStringOrNil(c.String("services-ip-pool"))
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		clusterPools, err := getPools(c)
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		// todo remove after cloud-api fix
@@ -378,10 +378,10 @@ var clusterCreateSubCommand = cli.Command{
 
 		results, err := clusters.Create(client, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		if results == nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		return utils.WaitTaskAndShowResult(c, client, results, true, func(task tasks.TaskID) (interface{}, error) {
@@ -439,7 +439,7 @@ var clusterResizeSubCommand = cli.Command{
 		client, err := client.NewK8sClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		nodes := c.StringSlice("nodes-to-remove")
@@ -456,7 +456,7 @@ var clusterResizeSubCommand = cli.Command{
 
 		results, err := clusters.Resize(client, clusterID, poolID, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		return utils.WaitTaskAndShowResult(c, client, results, true, func(task tasks.TaskID) (interface{}, error) {
@@ -505,7 +505,7 @@ var clusterUpgradeSubCommand = cli.Command{
 		client, err := client.NewK8sClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		opts := clusters.UpgradeOpts{
@@ -515,7 +515,7 @@ var clusterUpgradeSubCommand = cli.Command{
 
 		results, err := clusters.Upgrade(client, clusterID, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		return utils.WaitTaskAndShowResult(c, client, results, true, func(task tasks.TaskID) (interface{}, error) {
@@ -546,12 +546,12 @@ var clusterVersionsSubCommand = cli.Command{
 		client, err := client.NewK8sClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		results, err := clusters.VersionsAll(client)
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
 
@@ -573,12 +573,12 @@ var clusterInstancesSubCommand = cli.Command{
 		client, err := client.NewK8sClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		results, err := clusters.InstancesAll(client, clusterID)
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
 
@@ -601,11 +601,11 @@ var clusterDeleteSubCommand = cli.Command{
 		client, err := client.NewK8sClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		results, err := clusters.Delete(client, clusterID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		return utils.WaitTaskAndShowResult(c, client, results, false, func(task tasks.TaskID) (interface{}, error) {
@@ -636,12 +636,12 @@ var clusterGetCertificateSubCommand = cli.Command{
 		client, err := client.NewK8sClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		certificate, err := clusters.Certificate(client, clusterID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(certificate, c.String("format"))
 
@@ -680,12 +680,12 @@ var clusterSignCertificateSubCommand = cli.Command{
 		client, err := client.NewK8sClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		signedCertificate, err := clusters.SignCertificate(client, clusterID, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(signedCertificate, c.String("format"))
 

@@ -182,7 +182,7 @@ var lbpoolListSubCommand = cli.Command{
 		client, err := client.NewLBPoolClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		opts := lbpools.ListOpts{
@@ -193,7 +193,7 @@ var lbpoolListSubCommand = cli.Command{
 
 		results, err := lbpools.ListAll(client, opts)
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
 
@@ -215,11 +215,11 @@ var lbpoolGetSubCommand = cli.Command{
 		client, err := client.NewLBPoolClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		result, err := lbpools.Get(client, clusterID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
 
@@ -242,11 +242,11 @@ var lbpoolDeleteSubCommand = cli.Command{
 		client, err := client.NewLBPoolClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		results, err := lbpools.Delete(client, lbpoolID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		return utils.WaitTaskAndShowResult(c, client, results, false, func(task tasks.TaskID) (interface{}, error) {
@@ -445,37 +445,37 @@ var lbpoolCreateSubCommand = cli.Command{
 		client, err := client.NewLBPoolClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		pt := types.ProtocolType(c.String("protocol"))
 		if err := pt.IsValid(); err != nil {
 			_ = cli.ShowCommandHelp(c, "create")
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		lba := types.LoadBalancerAlgorithm(c.String("algorithm"))
 		if err := lba.IsValid(); err != nil {
 			_ = cli.ShowCommandHelp(c, "create")
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		members, err := getPoolMembers(c)
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "create")
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		hm, err := getHealthMonitor(c)
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "create")
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		sp, err := getSessionPersistence(c)
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "create")
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		if members == nil {
@@ -487,7 +487,7 @@ var lbpoolCreateSubCommand = cli.Command{
 
 		if loadBalancerID == nil && listenerID == nil {
 			_ = cli.ShowCommandHelp(c, "create")
-			return cli.NewExitError(fmt.Errorf("either --loadbalancer or --listener should be set"), 1)
+			return cli.Exit(fmt.Errorf("either --loadbalancer or --listener should be set"), 1)
 		}
 
 		timeoutClientData := c.Int("timeout-client-data")
@@ -510,7 +510,7 @@ var lbpoolCreateSubCommand = cli.Command{
 
 		results, err := lbpools.Create(client, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		return utils.WaitTaskAndShowResult(c, client, results, true, func(task tasks.TaskID) (interface{}, error) {
@@ -579,12 +579,12 @@ var lbpoolCreateMemberSubCommand = cli.Command{
 		client, err := client.NewLBPoolClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		address := net.ParseIP(c.String("address"))
 		if address == nil {
-			return cli.NewExitError(fmt.Errorf("malformed address %s", c.String("address")), 1)
+			return cli.Exit(fmt.Errorf("malformed address %s", c.String("address")), 1)
 		}
 
 		opts := lbpools.CreatePoolMemberOpts{
@@ -597,7 +597,7 @@ var lbpoolCreateMemberSubCommand = cli.Command{
 
 		results, err := lbpools.CreateMember(client, lbpoolID, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		return utils.WaitTaskAndShowResult(c, client, results, true, func(task tasks.TaskID) (interface{}, error) {
@@ -642,12 +642,12 @@ var lbpoolDeleteMemberSubCommand = cli.Command{
 		client, err := client.NewLBPoolClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		lbpoolID := c.String("pool-id")
 		results, err := lbpools.DeleteMember(client, lbpoolID, memberID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		return utils.WaitTaskAndShowResult(c, client, results, false, func(task tasks.TaskID) (interface{}, error) {
@@ -822,31 +822,31 @@ var lbpoolUpdateSubCommand = cli.Command{
 		client, err := client.NewLBPoolClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		lba, err := types.LoadBalancerAlgorithm(c.String("algorithm")).ValidOrNil()
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "update")
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		members, err := getPoolMembers(c)
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "update")
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		hm, err := getHealthMonitor(c)
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "update")
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		sp, err := getSessionPersistence(c)
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "update")
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		timeoutClientData := c.Int("timeout-client-data")
@@ -869,10 +869,10 @@ var lbpoolUpdateSubCommand = cli.Command{
 
 		results, err := lbpools.Update(client, lbPoolID, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		if results == nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		return utils.WaitTaskAndShowResult(c, client, results, true, func(task tasks.TaskID) (interface{}, error) {
@@ -961,21 +961,21 @@ var lbpoolCreateHealthMonitorSubCommand = cli.Command{
 		client, err := client.NewLBPoolClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		hm, err := getHealthMonitor(c)
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "create")
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		results, err := lbpools.CreateHealthMonitor(client, lbPoolID, hm).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		if results == nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		return utils.WaitTaskAndShowResult(c, client, results, true, func(task tasks.TaskID) (interface{}, error) {
@@ -1008,11 +1008,11 @@ var lbpoolDeleteHealthMonitorSubCommand = cli.Command{
 		client, err := client.NewLBPoolClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		if err = lbpools.DeleteHealthMonitor(client, lbpoolID).ExtractErr(); err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		return nil

@@ -31,7 +31,7 @@ func listImages(c *cli.Context) error {
 	}
 	if err != nil {
 		_ = cli.ShowAppHelp(c)
-		return cli.NewExitError(err, 1)
+		return cli.Exit(err, 1)
 	}
 
 	opts := images.ListOpts{
@@ -41,7 +41,7 @@ func listImages(c *cli.Context) error {
 
 	results, err := images.ListAll(cl, opts)
 	if err != nil {
-		return cli.NewExitError(err, 1)
+		return cli.Exit(err, 1)
 	}
 	utils.ShowResults(results, c.String("format"))
 
@@ -52,11 +52,11 @@ func listProjectImages(c *cli.Context) error {
 	client, err := client.NewProjectImageClientV1(c)
 	if err != nil {
 		_ = cli.ShowAppHelp(c)
-		return cli.NewExitError(err, 1)
+		return cli.Exit(err, 1)
 	}
 	results, err := images.ListAll(client, nil)
 	if err != nil {
-		return cli.NewExitError(err, 1)
+		return cli.Exit(err, 1)
 	}
 	utils.ShowResults(results, c.String("format"))
 
@@ -157,7 +157,7 @@ var imageCreateCommand = cli.Command{
 		downloadClient, err := client.NewDownloadImageClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		opts := images.CreateOpts{
@@ -173,7 +173,7 @@ var imageCreateCommand = cli.Command{
 
 		results, err := images.Create(downloadClient, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		return utils.WaitTaskAndShowResult(c, downloadClient, results, true, func(task tasks.TaskID) (interface{}, error) {
@@ -213,12 +213,12 @@ var imageShowCommand = cli.Command{
 		client, err := client.NewImageClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		image, err := images.Get(client, imageID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(image, c.String("format"))
 
@@ -272,7 +272,7 @@ var imageUpdateCommand = cli.Command{
 		client, err := client.NewImageClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		opts := images.UpdateOpts{
@@ -286,7 +286,7 @@ var imageUpdateCommand = cli.Command{
 
 		image, err := images.Update(client, imageID, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(image, c.String("format"))
 
@@ -350,7 +350,7 @@ var imageUploadCommand = cli.Command{
 		downloadClient, err := client.NewDownloadImageClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		opts := images.UploadOpts{
@@ -368,7 +368,7 @@ var imageUploadCommand = cli.Command{
 
 		results, err := images.Upload(downloadClient, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		return utils.WaitTaskAndShowResult(c, downloadClient, results, true, func(task tasks.TaskID) (interface{}, error) {
@@ -409,12 +409,12 @@ var imageDeleteCommand = cli.Command{
 		client, err := client.NewImageClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		results, err := images.Delete(client, imageID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		return utils.WaitTaskAndShowResult(c, client, results, false, func(task tasks.TaskID) (interface{}, error) {

@@ -35,18 +35,18 @@ var scheduleGetSubCommand = cli.Command{
 		client, err := client.NewScheduleClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		result, err := schedules.Get(client, scheduleID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		if result != nil {
 			schedule, err := result.Cook()
 			if err != nil {
-				return cli.NewExitError(err, 1)
+				return cli.Exit(err, 1)
 			}
 			utils.ShowResults(schedule, c.String("format"))
 		}
@@ -152,7 +152,7 @@ var scheduleUpdateSubCommand = cli.Command{
 		client, err := client.NewScheduleClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		opts := schedules.UpdateOpts{
@@ -181,13 +181,13 @@ var scheduleUpdateSubCommand = cli.Command{
 
 		result, err := schedules.Update(client, scheduleID, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		if result != nil {
 			schedule, err := result.Cook()
 			if err != nil {
-				return cli.NewExitError(err, 1)
+				return cli.Exit(err, 1)
 			}
 			utils.ShowResults(schedule, c.String("format"))
 		}

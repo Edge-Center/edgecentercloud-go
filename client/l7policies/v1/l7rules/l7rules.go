@@ -43,14 +43,14 @@ var l7RuleListSubCommand = cli.Command{
 		client, err := client.NewL7RulesClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		results, err := l7policies.ListAllRule(client, policyID)
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		if results == nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
 
@@ -82,11 +82,11 @@ var l7RuleGetSubCommand = cli.Command{
 		client, err := client.NewL7RulesClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		result, err := l7policies.GetRule(client, policyID, ruleID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		if result != nil {
@@ -121,11 +121,11 @@ var l7RuleDeleteSubCommand = cli.Command{
 		client, err := client.NewL7RulesClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		result, err := l7policies.DeleteRule(client, policyID, ruleID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		if result != nil {
@@ -180,7 +180,7 @@ var l7RuleCreateSubCommand = cli.Command{
 		client, err := client.NewL7RulesClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		opts := l7policies.CreateRuleOpts{
@@ -193,7 +193,7 @@ var l7RuleCreateSubCommand = cli.Command{
 		}
 		results, err := l7policies.CreateRule(client, policyID, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		return utils.WaitTaskAndShowResult(c, client, results, true, func(task tasks.TaskID) (interface{}, error) {
@@ -267,7 +267,7 @@ var l7RuleReplaceSubCommand = cli.Command{
 		client, err := client.NewL7RulesClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		opts := l7policies.CreateRuleOpts{
@@ -280,7 +280,7 @@ var l7RuleReplaceSubCommand = cli.Command{
 		}
 		results, err := l7policies.ReplaceRule(client, policyID, ruleID, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		return utils.WaitTaskAndShowResult(c, client, results, true, func(task tasks.TaskID) (interface{}, error) {

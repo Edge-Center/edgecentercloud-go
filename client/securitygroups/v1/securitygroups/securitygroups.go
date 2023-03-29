@@ -29,11 +29,11 @@ var securityGroupListSubCommand = cli.Command{
 		client, err := client.NewSecurityGroupClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		results, err := securitygroups.ListAll(client, securitygroups.ListOpts{})
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
 
@@ -120,7 +120,7 @@ var securityGroupCreateSubCommand = cli.Command{
 		client, err := client.NewSecurityGroupClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		protocols := utils.GetEnumStringSliceValue(c, "rule-protocol")
@@ -134,14 +134,14 @@ var securityGroupCreateSubCommand = cli.Command{
 
 		if len(protocols) != len(directions) || len(directions) != len(ethertypes) {
 			_ = cli.ShowCommandHelp(c, "create")
-			return cli.NewExitError(fmt.Errorf("rule-protocol, rule-direction and rule-ethertype parameters number should be same"), 1)
+			return cli.Exit(fmt.Errorf("rule-protocol, rule-direction and rule-ethertype parameters number should be same"), 1)
 		}
 
 		rulesNumber := len(protocols)
 
 		if len(descriptions) > rulesNumber {
 			_ = cli.ShowCommandHelp(c, "create")
-			return cli.NewExitError(
+			return cli.Exit(
 				fmt.Errorf("rule-description parameters number %d is more then number of rules: %d",
 					len(descriptions),
 					rulesNumber,
@@ -150,7 +150,7 @@ var securityGroupCreateSubCommand = cli.Command{
 
 		if len(remoteGroupIDs) > rulesNumber {
 			_ = cli.ShowCommandHelp(c, "create")
-			return cli.NewExitError(
+			return cli.Exit(
 				fmt.Errorf("rule-remote-group-id parameters number %d is more then number of rules: %d",
 					len(remoteGroupIDs),
 					rulesNumber,
@@ -159,7 +159,7 @@ var securityGroupCreateSubCommand = cli.Command{
 
 		if len(remoteIPPrefixes) > rulesNumber {
 			_ = cli.ShowCommandHelp(c, "create")
-			return cli.NewExitError(
+			return cli.Exit(
 				fmt.Errorf("rule-remote-ip-prefix parameters number %d is more then number of rules: %d",
 					len(remoteIPPrefixes),
 					rulesNumber,
@@ -168,7 +168,7 @@ var securityGroupCreateSubCommand = cli.Command{
 
 		if len(portMaxRanges) > rulesNumber {
 			_ = cli.ShowCommandHelp(c, "create")
-			return cli.NewExitError(
+			return cli.Exit(
 				fmt.Errorf("rule-port-range-max parameters number %d is more then number of rules: %d",
 					len(portMaxRanges),
 					rulesNumber,
@@ -177,7 +177,7 @@ var securityGroupCreateSubCommand = cli.Command{
 
 		if len(portMinRanges) > rulesNumber {
 			_ = cli.ShowCommandHelp(c, "create")
-			return cli.NewExitError(
+			return cli.Exit(
 				fmt.Errorf("rule-port-range-min parameters number %d is more then number of rules: %d",
 					len(portMinRanges),
 					rulesNumber,
@@ -236,7 +236,7 @@ var securityGroupCreateSubCommand = cli.Command{
 
 		results, err := securitygroups.Create(client, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
 
@@ -258,11 +258,11 @@ var securityGroupGetSubCommand = cli.Command{
 		client, err := client.NewSecurityGroupClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		result, err := securitygroups.Get(client, securityGroupID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
 
@@ -284,11 +284,11 @@ var securityGroupListInstancesSubCommand = cli.Command{
 		client, err := client.NewSecurityGroupClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		result, err := securitygroups.ListAllInstances(client, securityGroupID)
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
 
@@ -310,11 +310,11 @@ var securityGroupDeleteSubCommand = cli.Command{
 		client, err := client.NewSecurityGroupClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		err = securitygroups.Delete(client, securityGroupID).ExtractErr()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		return nil
@@ -343,17 +343,17 @@ var securityGroupUpdateSubCommand = cli.Command{
 		client, err := client.NewSecurityGroupClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		opts := securitygroups.UpdateOpts{Name: c.String("name")}
 
 		result, err := securitygroups.Update(client, securityGroupID, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		if result == nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
 
@@ -383,13 +383,13 @@ var securityGroupDeepCopySubCommand = cli.Command{
 		client, err := client.NewSecurityGroupClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		opts := securitygroups.DeepCopyOpts{Name: c.String("name")}
 
 		if err := securitygroups.DeepCopy(client, securityGroupID, opts).ExtractErr(); err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		return nil

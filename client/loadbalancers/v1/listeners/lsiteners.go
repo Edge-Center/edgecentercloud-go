@@ -38,14 +38,14 @@ var listenerListSubCommand = cli.Command{
 		client, err := client.NewLBListenerClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		opts := listeners.ListOpts{LoadBalancerID: utils.StringToPointer(c.String("loadbalancer-id"))}
 
 		results, err := listeners.ListAll(client, opts)
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
 
@@ -100,12 +100,12 @@ var listenerCreateSubCommand = cli.Command{
 		client, err := client.NewLBListenerClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		pt := types.ProtocolType(c.String("protocol-type"))
 		if err := pt.IsValid(); err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		opts := listeners.CreateOpts{
@@ -119,7 +119,7 @@ var listenerCreateSubCommand = cli.Command{
 
 		results, err := listeners.Create(client, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		return utils.WaitTaskAndShowResult(c, client, results, true, func(task tasks.TaskID) (interface{}, error) {
@@ -156,11 +156,11 @@ var listenerGetSubCommand = cli.Command{
 		client, err := client.NewLBListenerClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		result, err := listeners.Get(client, clusterID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
 
@@ -183,11 +183,11 @@ var listenerDeleteSubCommand = cli.Command{
 		client, err := client.NewLBListenerClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		results, err := listeners.Delete(client, listenerID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		return utils.WaitTaskAndShowResult(c, client, results, false, func(task tasks.TaskID) (interface{}, error) {
@@ -230,17 +230,17 @@ var listenerUpdateSubCommand = cli.Command{
 		client, err := client.NewLBListenerClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		opts := listeners.UpdateOpts{Name: c.String("name")}
 
 		result, err := listeners.Update(client, clusterID, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		if result == nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
 

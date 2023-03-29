@@ -68,7 +68,7 @@ var volumeListCommand = cli.Command{
 		client, err := client.NewVolumeClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		opts := volumes.ListOpts{
 			InstanceID:     utils.StringToPointer(c.String("instance-id")),
@@ -80,7 +80,7 @@ var volumeListCommand = cli.Command{
 		}
 		results, err := volumes.ListAll(client, opts)
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
 
@@ -102,14 +102,14 @@ var volumeGetCommand = cli.Command{
 		client, err := client.NewVolumeClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		task, err := volumes.Get(client, volumeID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		if task == nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(task, c.String("format"))
 
@@ -140,14 +140,14 @@ var volumeDeleteCommand = cli.Command{
 		client, err := client.NewVolumeClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		opts := volumes.DeleteOpts{
 			Snapshots: c.StringSlice("snapshot"),
 		}
 		results, err := volumes.Delete(client, volumeID, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		return utils.WaitTaskAndShowResult(c, client, results, false, func(task tasks.TaskID) (interface{}, error) {
@@ -230,7 +230,7 @@ var volumeCreateCommand = cli.Command{
 		client, err := client.NewVolumeClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		opts := volumes.CreateOpts{
 			Source:               volumes.VolumeSource(c.String("source")),
@@ -248,10 +248,10 @@ var volumeCreateCommand = cli.Command{
 
 		results, err := volumes.Create(client, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		if results == nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		return utils.WaitTaskAndShowResult(c, client, results, true, func(task tasks.TaskID) (interface{}, error) {
@@ -295,14 +295,14 @@ var volumeAttachCommand = cli.Command{
 		client, err := client.NewVolumeClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		opts := volumes.InstanceOperationOpts{
 			InstanceID: c.String("instance-id"),
 		}
 		volume, err := volumes.Attach(client, volumeID, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(volume, c.String("format"))
 
@@ -332,14 +332,14 @@ var volumeDetachCommand = cli.Command{
 		client, err := client.NewVolumeClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		opts := volumes.InstanceOperationOpts{
 			InstanceID: c.String("instance-id"),
 		}
 		volume, err := volumes.Detach(client, volumeID, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(volume, c.String("format"))
 
@@ -373,7 +373,7 @@ var volumeRetypeCommand = cli.Command{
 		client, err := client.NewVolumeClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		opts := volumes.VolumeTypePropertyOperationOpts{
@@ -381,7 +381,7 @@ var volumeRetypeCommand = cli.Command{
 		}
 		volume, err := volumes.Retype(client, volumeID, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(volume, c.String("format"))
 
@@ -412,7 +412,7 @@ var volumeExtendCommand = cli.Command{
 		client, err := client.NewVolumeClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		size := c.Int("size")
 		opts := volumes.SizePropertyOperationOpts{
@@ -420,10 +420,10 @@ var volumeExtendCommand = cli.Command{
 		}
 		results, err := volumes.Extend(client, volumeID, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		if results == nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		return utils.WaitTaskAndShowResult(c, client, results, true, func(task tasks.TaskID) (interface{}, error) {
@@ -452,14 +452,14 @@ var volumeRevertCommand = cli.Command{
 		client, err := client.NewVolumeClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		results, err := volumes.Revert(client, volumeID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		if results == nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		return utils.WaitTaskAndShowResult(c, client, results, true, func(task tasks.TaskID) (interface{}, error) {

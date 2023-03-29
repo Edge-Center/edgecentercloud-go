@@ -66,16 +66,16 @@ func NewMetadataListCommand(cc ClientConstructor, usage string, argsUsage string
 			client, err := cc(c)
 			if err != nil {
 				_ = cli.ShowAppHelp(c)
-				return cli.NewExitError(err, 1)
+				return cli.Exit(err, 1)
 			}
 			metadataList, err := metadata.ResourceMetadataListAll(client, resourceID)
 			if err != nil {
-				return cli.NewExitError(err, 1)
+				return cli.Exit(err, 1)
 			}
 
 			err = showResults(c, metadataList)
 			if err != nil {
-				return cli.NewExitError(err, 1)
+				return cli.Exit(err, 1)
 			}
 
 			return nil
@@ -112,12 +112,12 @@ func NewMetadataGetCommand(cc ClientConstructor, usage string, argsUsage string,
 			client, err := cc(c)
 			if err != nil {
 				_ = cli.ShowAppHelp(c)
-				return cli.NewExitError(err, 1)
+				return cli.Exit(err, 1)
 			}
 
 			metadata, err := metadata.ResourceMetadataGet(client, resourceID, c.String("metadata")).Extract()
 			if err != nil {
-				return cli.NewExitError(err, 1)
+				return cli.Exit(err, 1)
 			}
 
 			return showResults(c, metadata)
@@ -148,11 +148,11 @@ func NewMetadataDeleteCommand(cc ClientConstructor, usage string, argsUsage stri
 			client, err := cc(c)
 			if err != nil {
 				_ = cli.ShowAppHelp(c)
-				return cli.NewExitError(err, 1)
+				return cli.Exit(err, 1)
 			}
 			err = metadata.ResourceMetadataDelete(client, resourceID, c.String("metadata")).ExtractErr()
 			if err != nil {
-				return cli.NewExitError(err, 1)
+				return cli.Exit(err, 1)
 			}
 
 			return nil
@@ -183,16 +183,16 @@ func NewMetadataCreateCommand(cc ClientConstructor, usage string, argsUsage stri
 			client, err := cc(c)
 			if err != nil {
 				_ = cli.ShowAppHelp(c)
-				return cli.NewExitError(err, 1)
+				return cli.Exit(err, 1)
 			}
 			opts, err := stringSliceToMap(c.StringSlice("metadata"))
 			if err != nil {
 				_ = cli.ShowAppHelp(c)
-				return cli.NewExitError(err, 1)
+				return cli.Exit(err, 1)
 			}
 			err = metadata.ResourceMetadataCreateOrUpdate(client, resourceID, opts).ExtractErr()
 			if err != nil {
-				return cli.NewExitError(err, 1)
+				return cli.Exit(err, 1)
 			}
 
 			return nil
@@ -223,16 +223,16 @@ func NewMetadataUpdateCommand(cc ClientConstructor, usage string, argsUsage stri
 			client, err := cc(c)
 			if err != nil {
 				_ = cli.ShowAppHelp(c)
-				return cli.NewExitError(err, 1)
+				return cli.Exit(err, 1)
 			}
 			opts, err := stringSliceToMap(c.StringSlice("metadata"))
 			if err != nil {
 				_ = cli.ShowAppHelp(c)
-				return cli.NewExitError(err, 1)
+				return cli.Exit(err, 1)
 			}
 			err = metadata.ResourceMetadataCreateOrUpdate(client, resourceID, opts).ExtractErr()
 			if err != nil {
-				return cli.NewExitError(err, 1)
+				return cli.Exit(err, 1)
 			}
 
 			return nil
@@ -263,16 +263,16 @@ func NewMetadataReplaceCommand(cc ClientConstructor, usage string, argsUsage str
 			client, err := cc(c)
 			if err != nil {
 				_ = cli.ShowAppHelp(c)
-				return cli.NewExitError(err, 1)
+				return cli.Exit(err, 1)
 			}
 			opts, err := stringSliceToMap(c.StringSlice("metadata"))
 			if err != nil {
 				_ = cli.ShowAppHelp(c)
-				return cli.NewExitError(err, 1)
+				return cli.Exit(err, 1)
 			}
 			err = metadata.ResourceMetadataReplace(client, resourceID, opts).ExtractErr()
 			if err != nil {
-				return cli.NewExitError(err, 1)
+				return cli.Exit(err, 1)
 			}
 
 			return nil

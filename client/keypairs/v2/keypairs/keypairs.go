@@ -32,7 +32,7 @@ var keypairListCommand = cli.Command{
 		client, err := client.NewKeypairClientV2(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		opts := keypairs.ListOpts{
 			UserID:    c.String("user-id"),
@@ -40,7 +40,7 @@ var keypairListCommand = cli.Command{
 		}
 		results, err := keypairs.ListAll(client, opts)
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
 
@@ -62,11 +62,11 @@ var keypairGetCommand = cli.Command{
 		client, err := client.NewKeypairClientV2(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		task, err := keypairs.Get(client, keypairID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(task, c.String("format"))
 
@@ -89,11 +89,11 @@ var keypairDeleteCommand = cli.Command{
 		client, err := client.NewKeypairClientV2(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		err = keypairs.Delete(client, keypairID).ExtractErr()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		return nil
@@ -127,7 +127,7 @@ var keypairCreateCommand = cli.Command{
 		client, err := client.NewKeypairClientV2(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		sshPublicKeyFile := c.String("ssh-public-key")
 		var sshKeyContent string
@@ -135,7 +135,7 @@ var keypairCreateCommand = cli.Command{
 			data, err := utils.ReadFile(sshPublicKeyFile)
 			if err != nil {
 				_ = cli.ShowCommandHelp(c, "create")
-				return cli.NewExitError(err, 1)
+				return cli.Exit(err, 1)
 			}
 			sshKeyContent = string(data)
 		}
@@ -146,7 +146,7 @@ var keypairCreateCommand = cli.Command{
 		}
 		result, err := keypairs.Create(client, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
 

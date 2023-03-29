@@ -43,11 +43,11 @@ var resourceMetadataSubCommand = cli.Command{
 		client, err := client.NewHeatClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		metadata, err := resources.Metadata(client, c.String("stack"), resourceName).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(metadata, c.String("format"))
 
@@ -83,12 +83,12 @@ var resourceSignalSubCommand = cli.Command{
 		client, err := client.NewHeatClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		data := c.String("signal")
 		err = resources.Signal(client, c.String("stack"), resourceName, []byte(data)).ExtractErr()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		return nil
@@ -118,11 +118,11 @@ var resourceGetSubCommand = cli.Command{
 		client, err := client.NewHeatClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		result, err := resources.Get(client, c.String("stack"), resourceName).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
 
@@ -165,7 +165,7 @@ var resourceMarkUnhealthySubCommand = cli.Command{
 		client, err := client.NewHeatClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		opts := resources.MarkUnhealthyOpts{
@@ -175,7 +175,7 @@ var resourceMarkUnhealthySubCommand = cli.Command{
 
 		err = resources.MarkUnhealthy(client, c.String("stack"), resourceName, opts).ExtractErr()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		return nil
@@ -247,7 +247,7 @@ var resourceListSubCommand = cli.Command{
 		client, err := client.NewHeatClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		opts := resources.ListOpts{
@@ -263,7 +263,7 @@ var resourceListSubCommand = cli.Command{
 
 		result, err := resources.ListAll(client, stackID, opts)
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
 
