@@ -1,15 +1,26 @@
 package testing
 
 import (
+	"fmt"
+	"net"
 	"time"
 
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/flavor/v1/flavors"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/floatingip/v1/floatingips"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/instance/v1/instances"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/utils/metadata"
 )
 
-const ListResponse = `
+const MetadataResponse = `
+{
+  "key": "some_key",
+  "value": "some_val",
+  "read_only": false
+}
+`
+
+var ListResponse = fmt.Sprintf(`
 {
   "count": 1,
   "results": [
@@ -47,12 +58,20 @@ const ListResponse = `
       "created_at": "2019-06-13T13:58:12+0000",
 	  "region": "ED-8",
       "project_id": 1,
-      "region_id": 1
+      "region_id": 1,
+      "metadata": [%s]
     }
   ]
-}`
+}`, MetadataResponse)
 
 var (
+	floatingIPUpdatedAtParsed, _ = time.Parse(edgecloud.RFC3339Z, "2019-06-13T13:58:12+0000")
+	floatingIPCreatedAtParsed, _ = time.Parse(edgecloud.RFC3339Z, "2019-06-13T13:58:12+0000")
+	floatingIPAddress            = net.ParseIP("172.24.4.34")
+
+	floatingIPCreatedAt = edgecloud.JSONRFC3339Z{Time: floatingIPCreatedAtParsed}
+	floatingIPUpdatedAt = edgecloud.JSONRFC3339Z{Time: floatingIPUpdatedAtParsed}
+
 	instanceCreatedAt, _ = time.Parse(edgecloud.RFC3339ZZ, "2019-07-11T06:58:48Z")
 
 	instance = instances.Instance{
@@ -80,9 +99,30 @@ var (
 		Region:           "ED-8",
 		AvailabilityZone: instances.DefaultAvailabilityZone,
 	}
+	ResourceMetadataReadOnly = metadata.Metadata{
+		Key:      "some_key",
+		Value:    "some_val",
+		ReadOnly: false,
+	}
 
 	floatingIPDetails = floatingips.FloatingIPDetail{
-		Instance: instance,
+		FloatingIPAddress: floatingIPAddress,
+		RouterID:          "11005a33-c5ac-4c96-ab6f-8f2827cc7da6",
+		SubnetID:          "",
+		Status:            "ACTIVE",
+		ID:                "c64e5db1-5f1f-43ec-a8d9-5090df85b82d",
+		PortID:            "ee2402d0-f0cd-4503-9b75-69be1d11c5f1",
+		DNSDomain:         "",
+		DNSName:           "",
+		FixedIPAddress:    nil,
+		UpdatedAt:         &floatingIPUpdatedAt,
+		CreatedAt:         floatingIPCreatedAt,
+		CreatorTaskID:     nil,
+		ProjectID:         1,
+		RegionID:          1,
+		Region:            "ED-8",
+		Instance:          instance,
+		Metadata:          []metadata.Metadata{ResourceMetadataReadOnly},
 	}
 
 	ExpectedFloatingIPSlice = []floatingips.FloatingIPDetail{floatingIPDetails}

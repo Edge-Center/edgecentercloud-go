@@ -3,7 +3,6 @@ package edgecloud
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"net"
@@ -84,66 +83,84 @@ func (r Result) extractIntoPtr(to interface{}, label string) error {
 		return err
 	}
 
-	value, ok := m[label]
-	if !ok {
-		return fmt.Errorf("label '%s' not found in result", label)
-	}
-
-	b, err := json.Marshal(value)
+	b, err := json.Marshal(m[label])
 	if err != nil {
 		return err
 	}
-
 	toValue := reflect.ValueOf(to)
-	if toValue.Kind() != reflect.Ptr || toValue.IsNil() {
-		return errors.New("destination must be a non-nil pointer")
+	if toValue.Kind() == reflect.Ptr {
+		toValue = toValue.Elem()
 	}
 
-	if toValue.Elem().Kind() == reflect.Slice {
-		elemType := toValue.Elem().Type().Elem()
-		if elemType.Kind() == reflect.Struct && elemType.NumField() > 0 && elemType.Field(0).Anonymous {
-			slice := reflect.MakeSlice(toValue.Elem().Type(), 0, 0)
+	switch toValue.Kind() {
+	case reflect.Slice:
+		typeOfV := toValue.Type().Elem()
+		if typeOfV.Kind() == reflect.Struct {
+			if typeOfV.NumField() > 0 && typeOfV.Field(0).Anonymous {
+				newSlice := reflect.MakeSlice(reflect.SliceOf(typeOfV), 0, 0)
 
-			if mSlice, ok := value.([]interface{}); ok {
-				for _, v := range mSlice {
-					// For each iteration of the slice, we create a new struct. This is to work around a bug
-					// where elements of a slice are reused and not overwritten when the same copy of the struct is used:
-					//
-					// https://github.com/golang/go/issues/21092
-					// https://github.com/golang/go/issues/24155
-					// https://play.golang.org/p/NHo3ywlPZli
-					newElem := reflect.New(elemType).Elem()
-					b, err := json.Marshal(v)
-					if err != nil {
-						return err
-					}
+				if mSlice, ok := m[label].([]interface{}); ok {
+					for _, v := range mSlice {
+						// For each iteration of the slice, we create a new struct.
+						// This is to work around a bug where elements of a slice
+						// are reused and not overwritten when the same copy of the
+						// struct is used:
+						//
+						// https://github.com/golang/go/issues/21092
+						// https://github.com/golang/go/issues/24155
+						// https://play.golang.org/p/NHo3ywlPZli
+						newType := reflect.New(typeOfV).Elem()
 
-					// This is needed for structs with an UnmarshalJSON method.
-					// Technically this is just unmarshalling the response into a struct that is never used,
-					// but it's good enough to trigger the UnmarshalJSON method.
-					for i := 0; i < newElem.NumField(); i++ {
-						s := newElem.Field(i).Addr().Interface()
-						// Unmarshal is used rather than NewDecoder to also work around the above-mentioned bug.
-						err = json.Unmarshal(b, s)
+						b, err := json.Marshal(v)
 						if err != nil {
 							return err
 						}
+
+						// This is needed for structs with an UnmarshalJSON method.
+						// Technically this is just unmarshalling the response into
+						// a struct that is never used, but it's good enough to
+						// trigger the UnmarshalJSON method.
+						for i := 0; i < newType.NumField(); i++ {
+							s := newType.Field(i).Addr().Interface()
+
+							// Unmarshal is used rather than NewDecoder to also work
+							// around the above-mentioned bug.
+							err = json.Unmarshal(b, s)
+							if err != nil {
+								return err
+							}
+						}
+
+						newSlice = reflect.Append(newSlice, newType)
 					}
-					slice = reflect.Append(slice, newElem)
+				}
+
+				// "to" should now be properly modeled to receive the
+				// JSON response body and unmarshal into all the correct
+				// fields of the struct or composed extension struct
+				// at the end of this method.
+				toValue.Set(newSlice)
+			}
+		}
+	case reflect.Struct:
+		typeOfV := toValue.Type()
+		if typeOfV.NumField() > 0 && typeOfV.Field(0).Anonymous {
+			for i := 0; i < toValue.NumField(); i++ {
+				toField := toValue.Field(i)
+				if toField.Kind() == reflect.Struct {
+					s := toField.Addr().Interface()
+					err = json.NewDecoder(bytes.NewReader(b)).Decode(s)
+					if err != nil {
+						return err
+					}
 				}
 			}
-
-			toValue.Elem().Set(slice)
-
-			return nil
 		}
 	}
 
-	if toValue.Elem().Kind() == reflect.Struct {
-		return json.Unmarshal(b, to)
-	}
+	err = json.Unmarshal(b, &to)
 
-	return fmt.Errorf("unsupported destination type: %T", to)
+	return err
 }
 
 // ExtractIntoStructPtr will unmarshal the Result (r) into the provided interface{} (to).

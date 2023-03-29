@@ -8,9 +8,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	"golang.org/x/text/cases"
-	"golang.org/x/text/language"
+	"unicode"
 )
 
 /*
@@ -116,8 +114,7 @@ func BuildRequestBody(opts interface{}, parent string) (map[string]interface{}, 
 		for i := 0; i < optsValue.NumField(); i++ {
 			v := optsValue.Field(i)
 			f := optsType.Field(i)
-
-			if f.Name != cases.Title(language.English).String(f.Name) {
+			if r := []rune(f.Name); !unicode.IsUpper(r[0]) {
 				continue
 			}
 

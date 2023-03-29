@@ -19,3 +19,6 @@ jobs:
 
       - name: Linters
         run: make linters
+
+      - name: Tests
+        run: make tests

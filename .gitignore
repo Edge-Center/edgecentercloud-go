@@ -3,3 +3,5 @@
 .vscode
 ./ec_client
 bin/golangci-lint
+jq
+vault
