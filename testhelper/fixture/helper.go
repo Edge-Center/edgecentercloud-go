@@ -12,6 +12,7 @@ import (
 )
 
 func SetupHandler(t *testing.T, url, method, requestBody, responseBody string, status int) {
+	t.Helper()
 	th.Mux.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, method)
 		th.TestHeader(t, r, "X-Auth-AccessToken", client.TokenID)

@@ -26,6 +26,7 @@ var expectedToken = tokens.Token{
 }
 
 func getTokenResult(t *testing.T) tokens.TokenResult {
+	t.Helper()
 	result := tokens.TokenResult{}
 	result.Header = http.Header{
 		"Authorization": []string{fmt.Sprintf("Bearer %s", fake.AccessToken)},

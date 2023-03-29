@@ -17,6 +17,7 @@ import (
 
 // authTokenPost verifies that providing certain AuthOptions results in an expected JSON structure.
 func authTokenPost(t *testing.T, options edgecloud.AuthOptions, requestJSON string) *tokens.Token {
+	t.Helper()
 	testhelper.SetupHTTP()
 	defer testhelper.TeardownHTTP()
 
@@ -46,6 +47,7 @@ func authTokenPost(t *testing.T, options edgecloud.AuthOptions, requestJSON stri
 }
 
 func authTokenPostErr(t *testing.T, options edgecloud.AuthOptions, includeToken bool, expectedErr error) {
+	t.Helper()
 	testhelper.SetupHTTP()
 	defer testhelper.TeardownHTTP()
 

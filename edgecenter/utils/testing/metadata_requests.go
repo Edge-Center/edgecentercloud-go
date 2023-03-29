@@ -46,6 +46,7 @@ func prepareTestParams(resourceName string, urlFunc func(c *edgecloud.ServiceCli
 
 func BuildTestMetadataListAll(resourceName string, resourceID string, extraParams ...string) TestFunc {
 	return func(t *testing.T) {
+		t.Helper()
 		th.SetupHTTP()
 		defer th.TeardownHTTP()
 
@@ -73,6 +74,7 @@ func BuildTestMetadataListAll(resourceName string, resourceID string, extraParam
 
 func BuildTestMetadataGet(resourceName string, resourceID string, extraParams ...string) TestFunc {
 	return func(t *testing.T) {
+		t.Helper()
 		th.SetupHTTP()
 		defer th.TeardownHTTP()
 
@@ -100,6 +102,7 @@ func BuildTestMetadataGet(resourceName string, resourceID string, extraParams ..
 
 func BuildTestMetadataCreate(resourceName string, resourceID string, extraParams ...string) TestFunc {
 	return func(t *testing.T) {
+		t.Helper()
 		th.SetupHTTP()
 		defer th.TeardownHTTP()
 
@@ -128,6 +131,7 @@ func BuildTestMetadataCreate(resourceName string, resourceID string, extraParams
 
 func BuildTestMetadataUpdate(resourceName string, resourceID string, extraParams ...string) TestFunc {
 	return func(t *testing.T) {
+		t.Helper()
 		th.SetupHTTP()
 		defer th.TeardownHTTP()
 
@@ -156,6 +160,7 @@ func BuildTestMetadataUpdate(resourceName string, resourceID string, extraParams
 
 func BuildTestMetadataDelete(resourceName string, resourceID string, extraParams ...string) TestFunc {
 	return func(t *testing.T) {
+		t.Helper()
 		th.SetupHTTP()
 		defer th.TeardownHTTP()
 
