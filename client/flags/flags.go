@@ -53,7 +53,7 @@ var commonFlags = []cli.Flag{
 			Destination: &ClientType,
 		},
 		Hidden: true,
-		Usage:  "client type. Either use prepared token for edgecloud API access, get an access token via gcloud platform or use an api token",
+		Usage:  "client type. Either use prepared token for edgecloud API access, get an access token via edgecloud platform or use an api token",
 	},
 }
 
@@ -101,7 +101,7 @@ var tokenFlags = []cli.Flag{
 var platformFlags = []cli.Flag{
 	&cli.StringFlag{
 		Name:        "auth-url",
-		DefaultText: "In case absent parameter it would take if from environ: GCLOUD_AUTH_URL",
+		DefaultText: "In case absent parameter it would take if from environ: EC_CLOUD_AUTH_URL",
 		Usage:       "Auth base url",
 		Required:    false,
 	},

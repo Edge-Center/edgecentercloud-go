@@ -83,10 +83,10 @@ type clientCommands struct {
 }
 
 func buildClientCommands(commands []*cli.Command) clientCommands {
-	clientType := os.Getenv("GCLOUD_CLIENT_TYPE")
-	tokenClientUsage := fmt.Sprintf("GCloud API client\n%s", flags.TokenClientHelpText)
-	platformClientUsage := fmt.Sprintf("GCloud API client\n%s", flags.PlatformClientHelpText)
-	apiTokenClientUsage := fmt.Sprintf("GCloud API client\n%s", flags.APITokenClientHelpText)
+	clientType := os.Getenv("EC_CLOUD_CLIENT_TYPE")
+	tokenClientUsage := fmt.Sprintf("EdgeCloud API client\n%s", flags.TokenClientHelpText)
+	platformClientUsage := fmt.Sprintf("EdgeCloud API client\n%s", flags.PlatformClientHelpText)
+	apiTokenClientUsage := fmt.Sprintf("EdgeCloud API client\n%s", flags.APITokenClientHelpText)
 	switch clientType {
 	case flags.ClientTypeToken:
 		flags.ClientType = clientType
@@ -110,7 +110,7 @@ func buildClientCommands(commands []*cli.Command) clientCommands {
 			usage:    apiTokenClientUsage,
 		}
 	}
-	mainClientUsage := fmt.Sprintf("GCloud API client\n%s", flags.MainClientHelpText)
+	mainClientUsage := fmt.Sprintf("EdgeCloud API client\n%s", flags.MainClientHelpText)
 
 	return clientCommands{
 		commands: []*cli.Command{

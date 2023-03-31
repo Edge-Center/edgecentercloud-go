@@ -1,10 +1,11 @@
 # ENVS
 PROJECT_DIR = $(shell pwd)
-BUILD_DIR = $(PROJECT_DIR)/bin
+BIN_DIR = $(PROJECT_DIR)/bin
 ENV_TESTS_FILE = .env
 OS := $(shell uname | tr '[:upper:]' '[:lower:]')
 ARCH := $(shell uname -m)
-export VAULT_ADDR = https://vault.p.ecnl.ru/
+
+export VAULT_ADDR=$(shell grep VAULT_ADDR .env | cut -d '=' -f 2-)
 
 # BUILD
 GOOS		?= $(shell go env GOOS)
@@ -13,7 +14,7 @@ VERSION		?= $(shell git describe --tags 2> /dev/null || \
 GOARCH		?= $(shell go env GOARCH)
 LDFLAGS		:= "-w -s -X 'main.AppVersion=${VERSION}'"
 CMD_PACKAGE := ./cmd/ec_client
-BINARY 		:= ./ec_client
+BINARY 		:= $(BIN_DIR)/ec_client
 
 build:
 	CGO_ENABLED=0 GOOS=$(GOOS) GOARCH=$(GOARCH) go build -ldflags $(LDFLAGS) -o $(BINARY) $(CMD_PACKAGE)
@@ -28,23 +29,24 @@ tests: envs_reader
 	godotenv -f $(ENV_TESTS_FILE) go test -count=1 -timeout=2m $(TESTS_LIST) | { grep -v 'no test files'; true; }
 
 # local test run (need to export VAULT_TOKEN env)
-jq:
+install_jq:
 	if test "$(OS)" = "linux"; then \
-		curl -L -o jq https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64; \
+		curl -L -o $(BIN_DIR)/jq https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64; \
 	else \
-		curl -L -o jq https://github.com/stedolan/jq/releases/download/jq-1.6/jq-osx-amd64; \
+		curl -L -o $(BIN_DIR)/jq https://github.com/stedolan/jq/releases/download/jq-1.6/jq-osx-amd64; \
 	fi
-	chmod +x jq
+	chmod +x $(BIN_DIR)/jq
 
-vault:
+install_vault:
 	curl -L -o vault.zip https://releases.hashicorp.com/vault/1.12.3/vault_1.12.3_$(OS)_$(ARCH).zip
 	unzip vault.zip && rm -f vault.zip && chmod +x vault
+	mv vault $(BIN_DIR)/
 
-envs:
-	vault login -method=token $(VAULT_TOKEN)
-	vault kv get -format=json --field data /CLOUD/edgecentercloud-go | jq -r 'to_entries|map("\(.key)=\(.value)")|.[]' > $(ENV_TESTS_FILE)
+download_env_file:
+	$(BIN_DIR)/vault login -method=token $(VAULT_TOKEN)
+	$(BIN_DIR)/vault kv get -format=json --field data /CLOUD/edgecentercloud-go | $(BIN_DIR)/jq -r 'to_entries|map("\(.key)=\(.value)")|.[]' > $(ENV_TESTS_FILE)
 
-local_tests: envs_reader
+run_local_tests: envs_reader
 	godotenv -f $(ENV_TESTS_FILE) go test -count=1 $(TESTS_LIST) | { grep -v 'no test files'; true; }
 
 # CHECKS
@@ -61,7 +63,7 @@ gofumpt:
 checks: vet fmt gofumpt
 
 linters:
-	@test -f $(BUILD_DIR)/golangci-lint || curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v1.52.2
-	@$(BUILD_DIR)/golangci-lint run
+	@test -f $(BIN_DIR)/golangci-lint || curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v1.52.2
+	@$(BIN_DIR)/golangci-lint run
 
-.PHONY: vet fmt linters gofumpt
+.PHONY: vet fmt gofumpt linters run_local_tests download_env_file install_vault install_jq tests envs_reader build

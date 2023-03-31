@@ -24,7 +24,7 @@ func RefreshPlatform(c *edgecloud.ServiceClient, opts edgecloud.TokenOptionsBuil
 	return processToken(c, opts, refreshURL(c))
 }
 
-// RefreshECCloud token with gcloud API.
+// RefreshECCloud token with EdgeCloud API.
 func RefreshECCloud(c *edgecloud.ServiceClient, opts edgecloud.TokenOptionsBuilder) (r TokenResult) {
 	return processToken(c, opts, refreshECCloudURL(c))
 }

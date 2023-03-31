@@ -20,6 +20,7 @@ issues:
 linters:
   enable-all: true
   disable:
+    # deprecated
     - deadcode
     - maligned
     - varcheck
@@ -33,34 +34,34 @@ linters:
     - rowserrcheck
     - sqlclosecheck
     - wastedassign
-    # skip
-    - gochecknoglobals # check that no global variables exist
+    # skip: dubious benefit
+    - gochecknoglobals # Checks that no global variables exist.
     - nilnil           # Checks that there is no simultaneous return of nil error and an invalid value.
     - gomnd            # An analyzer to detect magic numbers.
-    - goerr113         # Golang linter to check the errors handling expressions
-    - exhaustruct      # Checks if all structure fields are initialized
-    - lll              # Reports long lines
+    - goerr113         # Golang linter to check the errors handling expressions.
+    - exhaustruct      # Checks if all structure fields are initialized.
+    - lll              # Reports long lines.
     - godox            # Tool for detection of FIXME, TODO and other comment keywords
     - wsl              # Whitespace Linter - Forces you to use empty lines!
-    - forcetypeassert  # finds forced type assertions
-    - tagliatelle
-    - nonamedreturns
-    - bodyclose
-    - wrapcheck
-    - unparam
-    - ireturn
-    - gochecknoinits
-    - errchkjson
+    - forcetypeassert  # Finds forced type assertions.
+    - tagliatelle      # Checks the struct tags.
+    - nonamedreturns   # Reports all named returns.
+    - bodyclose        # Checks whether HTTP response body is closed successfully.
+    - wrapcheck        # Checks that errors returned from external packages are wrapped.
+    - unparam          # Reports unused function parameters.
+    - ireturn          # Accept Interfaces, Return Concrete Types.
+    - gochecknoinits   # Checks that no init functions are present in Go code.
+    - errchkjson       # Reports unsupported types and optionally reports occasions, where the check for the returned error can be omitted.
     # complexity: need to refactor
-    - cyclop
-    - funlen
-    - gocognit
-    - gocyclo
-    - nestif
-    - dupl
+    - cyclop           # Checks function and package cyclomatic complexity.
+    - funlen           # Tool for detection of long functions.
+    - gocognit         # Computes and checks the cognitive complexity of functions.
+    - gocyclo          # Computes and checks the cyclomatic complexity of functions.
+    - nestif           # Reports deeply nested if statements.
+    - dupl             # Tool for code clone detection.
     # tests
-    - testpackage
-    - paralleltest
+    - testpackage      # Makes you use a separate _test package.
+    - paralleltest     # Detects missing usage of t.Parallel() method in your Go test.
 
 linters-settings:
   nlreturn:
@@ -68,7 +69,7 @@ linters-settings:
   gci:
     sections:
       - standard # Standard section: captures all standard packages.
-      - default # Default section: contains all imports that could not be matched to another section type.
+      - default  # Default section: contains all imports that could not be matched to another section type.
       - prefix(github.com/Edge-Center)
   varnamelen:
     min-name-length: 1

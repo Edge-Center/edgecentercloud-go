@@ -1,5 +1,5 @@
 /*
-Package flavors contains functionality for working GCLoud flavors API resources
+Package flavors contains functionality for working EdgeCloud flavors API resources
 
 Example to List Flavors
 
