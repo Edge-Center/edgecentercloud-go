@@ -5,8 +5,6 @@ ENV_TESTS_FILE = .env
 OS := $(shell uname | tr '[:upper:]' '[:lower:]')
 ARCH := $(shell uname -m)
 
-export VAULT_ADDR=$(shell grep VAULT_ADDR .env | cut -d '=' -f 2-)
-
 # BUILD
 GOOS		?= $(shell go env GOOS)
 VERSION		?= $(shell git describe --tags 2> /dev/null || \
@@ -25,8 +23,8 @@ TESTS_LIST = $(shell go list ./... | grep -v ./client)
 envs_reader:
 	go install github.com/joho/godotenv/cmd/godotenv@latest
 
-tests: envs_reader
-	godotenv -f $(ENV_TESTS_FILE) go test -count=1 -timeout=2m $(TESTS_LIST) | { grep -v 'no test files'; true; }
+tests:
+	go test -count=1 -timeout=2m $(TESTS_LIST) | { grep -v 'no test files'; true; }
 
 # local test run (need to export VAULT_TOKEN env)
 install_jq:
@@ -42,9 +40,10 @@ install_vault:
 	unzip vault.zip && rm -f vault.zip && chmod +x vault
 	mv vault $(BIN_DIR)/
 
-download_env_file:
-	$(BIN_DIR)/vault login -method=token $(VAULT_TOKEN)
-	$(BIN_DIR)/vault kv get -format=json --field data /CLOUD/edgecentercloud-go | $(BIN_DIR)/jq -r 'to_entries|map("\(.key)=\(.value)")|.[]' > $(ENV_TESTS_FILE)
+download_env_file: envs_reader
+	echo "VAULT_ADDR=https://vault.p.ecnl.ru/" > $(ENV_TESTS_FILE)
+	godotenv -f $(ENV_TESTS_FILE) $(BIN_DIR)/vault login -method=token $(VAULT_TOKEN)
+	godotenv -f $(ENV_TESTS_FILE) $(BIN_DIR)/vault kv get -format=json --field data /CLOUD/edgecentercloud-go | $(BIN_DIR)/jq -r 'to_entries|map("\(.key)=\(.value)")|.[]' >> $(ENV_TESTS_FILE)
 
 run_local_tests: envs_reader
 	godotenv -f $(ENV_TESTS_FILE) go test -count=1 $(TESTS_LIST) | { grep -v 'no test files'; true; }
