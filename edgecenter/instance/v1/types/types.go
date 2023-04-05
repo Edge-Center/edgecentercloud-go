@@ -6,9 +6,13 @@ import (
 )
 
 type AddressType string
+
 type VolumeSource string
+
 type FloatingIPSource string
+
 type InterfaceType string
+
 type MetricsTimeUnit string
 
 const (
@@ -23,7 +27,7 @@ const (
 	SubnetInterfaceType    InterfaceType    = "subnet"
 	AnySubnetInterfaceType InterfaceType    = "any_subnet"
 	ExternalInterfaceType  InterfaceType    = "external"
-	ReservedFixedIpType    InterfaceType    = "reserved_fixed_ip"
+	ReservedFixedIPType    InterfaceType    = "reserved_fixed_ip"
 	HourMetricsTimeUnit    MetricsTimeUnit  = "hour"
 	DayMetricsTimeUnit     MetricsTimeUnit  = "day"
 )
@@ -64,14 +68,15 @@ func (vs VolumeSource) Bootable() bool {
 }
 
 func (vs VolumeSource) StringList() []string {
-	var s []string
-	for _, v := range vs.List() {
-		s = append(s, v.String())
+	lst := vs.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
-// UnmarshalJSON - implements Unmarshaler interface for VolumeSource
+// UnmarshalJSON - implements Unmarshaler interface for VolumeSource.
 func (vs *VolumeSource) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -83,10 +88,11 @@ func (vs *VolumeSource) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*vs = v
+
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface for VolumeSource
+// MarshalJSON - implements Marshaler interface for VolumeSource.
 func (vs *VolumeSource) MarshalJSON() ([]byte, error) {
 	return json.Marshal(vs.String())
 }
@@ -122,14 +128,15 @@ func (fip FloatingIPSource) List() []FloatingIPSource {
 }
 
 func (fip FloatingIPSource) StringList() []string {
-	var s []string
-	for _, v := range fip.List() {
-		s = append(s, v.String())
+	lst := fip.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
-// UnmarshalJSON - implements Unmarshaler interface
+// UnmarshalJSON - implements Unmarshaler interface.
 func (fip *FloatingIPSource) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -141,10 +148,11 @@ func (fip *FloatingIPSource) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*fip = v
+
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface
+// MarshalJSON - implements Marshaler interface.
 func (fip *FloatingIPSource) MarshalJSON() ([]byte, error) {
 	return json.Marshal(fip.String())
 }
@@ -180,14 +188,15 @@ func (at AddressType) List() []AddressType {
 }
 
 func (at AddressType) StringList() []string {
-	var s []string
-	for _, v := range at.List() {
-		s = append(s, v.String())
+	lst := at.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
-// UnmarshalJSON - implements Unmarshaler interface
+// UnmarshalJSON - implements Unmarshaler interface.
 func (at *AddressType) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -199,17 +208,18 @@ func (at *AddressType) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*at = v
+
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface
+// MarshalJSON - implements Marshaler interface.
 func (at *AddressType) MarshalJSON() ([]byte, error) {
 	return json.Marshal(at.String())
 }
 
 func (it InterfaceType) IsValid() error {
 	switch it {
-	case ExternalInterfaceType, SubnetInterfaceType, AnySubnetInterfaceType, ReservedFixedIpType:
+	case ExternalInterfaceType, SubnetInterfaceType, AnySubnetInterfaceType, ReservedFixedIPType:
 		return nil
 	}
 	return fmt.Errorf("invalid InterfaceType type: %v", it)
@@ -235,19 +245,20 @@ func (it InterfaceType) List() []InterfaceType {
 		ExternalInterfaceType,
 		SubnetInterfaceType,
 		AnySubnetInterfaceType,
-		ReservedFixedIpType,
+		ReservedFixedIPType,
 	}
 }
 
 func (it InterfaceType) StringList() []string {
-	var s []string
-	for _, v := range it.List() {
-		s = append(s, v.String())
+	lst := it.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
-// UnmarshalJSON - implements Unmarshaler interface
+// UnmarshalJSON - implements Unmarshaler interface.
 func (it *InterfaceType) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -259,10 +270,11 @@ func (it *InterfaceType) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*it = v
+
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface
+// MarshalJSON - implements Marshaler interface.
 func (it *InterfaceType) MarshalJSON() ([]byte, error) {
 	return json.Marshal(it.String())
 }
@@ -298,14 +310,15 @@ func (u MetricsTimeUnit) List() []MetricsTimeUnit {
 }
 
 func (u MetricsTimeUnit) StringList() []string {
-	var s []string
-	for _, v := range u.List() {
-		s = append(s, v.String())
+	lst := u.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
-// UnmarshalJSON - implements Unmarshaler interface
+// UnmarshalJSON - implements Unmarshaler interface.
 func (u *MetricsTimeUnit) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -317,10 +330,11 @@ func (u *MetricsTimeUnit) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*u = v
+
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface
+// MarshalJSON - implements Marshaler interface.
 func (u *MetricsTimeUnit) MarshalJSON() ([]byte, error) {
 	return json.Marshal(u.String())
 }

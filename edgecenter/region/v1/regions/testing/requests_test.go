@@ -5,19 +5,15 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/region/v1/types"
-
-	edgecloud "github.com/Edge-Center/edgecentercloud-go"
-
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/region/v1/regions"
-	fake "github.com/Edge-Center/edgecentercloud-go/testhelper/client"
-
+	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/require"
 
-	log "github.com/sirupsen/logrus"
-
+	edgecloud "github.com/Edge-Center/edgecentercloud-go"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/region/v1/regions"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/region/v1/types"
 	"github.com/Edge-Center/edgecentercloud-go/pagination"
 	th "github.com/Edge-Center/edgecentercloud-go/testhelper"
+	fake "github.com/Edge-Center/edgecentercloud-go/testhelper/client"
 )
 
 func prepareListTestURL() string {
@@ -87,11 +83,9 @@ func TestListAll(t *testing.T) {
 	ct := results[0]
 	require.Equal(t, Region1, ct)
 	require.Equal(t, ExpectedRegionSlice, results)
-
 }
 
 func TestGet(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -117,7 +111,6 @@ func TestGet(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, Region1, *ct)
 	require.Equal(t, createdTime, ct.CreatedOn)
-
 }
 
 func TestCreate(t *testing.T) {
@@ -160,7 +153,6 @@ func TestCreate(t *testing.T) {
 }
 
 func TestUpdate(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -195,5 +187,4 @@ func TestUpdate(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, Region1, *region)
 	require.Equal(t, createdTime, region.CreatedOn)
-
 }

@@ -6,6 +6,7 @@ import (
 )
 
 type StackResourceStatus string
+
 type StackResourceAction string
 
 const (
@@ -59,14 +60,15 @@ func (srs StackResourceStatus) List() []StackResourceStatus {
 }
 
 func (srs StackResourceStatus) StringList() []string {
-	var s []string
-	for _, v := range srs.List() {
+	lst := srs.List()
+	s := make([]string, 0, len(lst))
+	for _, v := range lst {
 		s = append(s, v.String())
 	}
 	return s
 }
 
-// UnmarshalJSON - implements Unmarshaler interface
+// UnmarshalJSON - implements Unmarshaler interface.
 func (srs *StackResourceStatus) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -78,10 +80,11 @@ func (srs *StackResourceStatus) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*srs = v
+
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface
+// MarshalJSON - implements Marshaler interface.
 func (srs *StackResourceStatus) MarshalJSON() ([]byte, error) {
 	return json.Marshal(srs.String())
 }
@@ -101,6 +104,7 @@ func (sra StackResourceAction) IsValid() error {
 		StackResourceActionUpdated:
 		return nil
 	}
+
 	return fmt.Errorf("invalid StackResourceAction type: %v", sra)
 }
 
@@ -136,14 +140,15 @@ func (sra StackResourceAction) List() []StackResourceAction {
 }
 
 func (sra StackResourceAction) StringList() []string {
-	var s []string
-	for _, v := range sra.List() {
+	lst := sra.List()
+	s := make([]string, 0, len(lst))
+	for _, v := range lst {
 		s = append(s, v.String())
 	}
 	return s
 }
 
-// UnmarshalJSON - implements Unmarshaler interface
+// UnmarshalJSON - implements Unmarshaler interface.
 func (sra *StackResourceAction) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -155,10 +160,11 @@ func (sra *StackResourceAction) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*sra = v
+
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface
+// MarshalJSON - implements Marshaler interface.
 func (sra *StackResourceAction) MarshalJSON() ([]byte, error) {
 	return json.Marshal(sra.String())
 }

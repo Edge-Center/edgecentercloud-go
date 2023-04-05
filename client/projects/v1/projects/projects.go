@@ -1,10 +1,11 @@
 package projects
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
+	"github.com/urfave/cli/v2"
 
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 	"github.com/Edge-Center/edgecentercloud-go/client/flags"
@@ -12,7 +13,7 @@ import (
 	"github.com/Edge-Center/edgecentercloud-go/client/utils"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/project/v1/projects"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/project/v1/types"
-	"github.com/urfave/cli/v2"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
 )
 
 var (
@@ -28,13 +29,14 @@ var projectListCommand = cli.Command{
 		client, err := client.NewProjectClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		results, err := projects.ListAll(client)
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
+
 		return nil
 	},
 }
@@ -53,13 +55,14 @@ var projectGetCommand = cli.Command{
 		client, err := client.NewProjectClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		task, err := projects.Get(client, projectID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(task, c.String("format"))
+
 		return nil
 	},
 }
@@ -97,20 +100,21 @@ var projectUpdateCommand = cli.Command{
 		err = edgecloud.TranslateValidationError(opts.Validate())
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "update")
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		client, err := client.NewProjectClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		result, err := projects.Update(client, projectID, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
+
 		return nil
 	},
 }
@@ -131,12 +135,12 @@ var projectDeleteCommand = cli.Command{
 		client, err := client.NewProjectClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		results, err := projects.Delete(client, projectID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		return utils.WaitTaskAndShowResult(c, client, results, false, func(task tasks.TaskID) (interface{}, error) {
@@ -144,14 +148,12 @@ var projectDeleteCommand = cli.Command{
 			if err == nil {
 				return nil, fmt.Errorf("cannot delete project with ID: %d", projectID)
 			}
-			switch err.(type) {
-			case edgecloud.ErrDefault404:
+			var e edgecloud.Default404Error
+			if errors.As(err, &e) {
 				return nil, nil
-			default:
-				return nil, err
 			}
+			return nil, err
 		})
-
 	},
 }
 
@@ -187,7 +189,6 @@ var projectCreateCommand = cli.Command{
 		},
 	},
 	Action: func(c *cli.Context) error {
-
 		opts := projects.CreateOpts{
 			ClientID:    c.Int("client-id"),
 			State:       types.ProjectState(c.String("state")),
@@ -198,20 +199,21 @@ var projectCreateCommand = cli.Command{
 		err := edgecloud.TranslateValidationError(opts.Validate())
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "create")
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		client, err := client.NewProjectClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		result, err := projects.Create(client, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
+
 		return nil
 	},
 }

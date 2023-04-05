@@ -5,11 +5,12 @@ import (
 	"net/http"
 	"testing"
 
+	log "github.com/sirupsen/logrus"
+	"github.com/stretchr/testify/require"
+
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/quota/v2/quotas"
 	th "github.com/Edge-Center/edgecentercloud-go/testhelper"
 	fake "github.com/Edge-Center/edgecentercloud-go/testhelper/client"
-	log "github.com/sirupsen/logrus"
-	"github.com/stretchr/testify/require"
 )
 
 func prepareListCombinedTestURL() string {
@@ -25,7 +26,6 @@ func prepareListRegionalTestURL(clientID, regionID int) string {
 }
 
 func TestListCombined(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -52,7 +52,6 @@ func TestListCombined(t *testing.T) {
 }
 
 func TestListGlobal(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -79,7 +78,6 @@ func TestListGlobal(t *testing.T) {
 }
 
 func TestListRegional(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 

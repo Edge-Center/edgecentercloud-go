@@ -6,7 +6,7 @@ type availableNodesResult struct {
 	edgecloud.Result
 }
 
-// Extract is a function that accepts a result and extracts amount of available baremetal nodes
+// Extract is a function that accepts a result and extracts amount of available baremetal nodes.
 func (r availableNodesResult) Extract() (*AvailableNodes, error) {
 	var c AvailableNodes
 	err := r.ExtractInto(&c)
@@ -18,7 +18,7 @@ func (r availableNodesResult) ExtractInto(v interface{}) error {
 	return r.Result.ExtractIntoStructPtr(v, "")
 }
 
-// AvailableNodes represents available baremetal nodes
+// AvailableNodes represents available baremetal nodes.
 type AvailableNodes struct {
 	Capacity map[string]int `json:"capacity"`
 }

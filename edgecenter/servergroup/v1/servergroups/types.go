@@ -21,11 +21,12 @@ func (s ServerGroupPolicy) List() []ServerGroupPolicy {
 }
 
 func (s ServerGroupPolicy) StringList() []string {
-	var sg []string
-	for _, v := range s.List() {
-		sg = append(sg, v.String())
+	lst := s.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return sg
+	return strings
 }
 
 func (s ServerGroupPolicy) IsValid() error {
@@ -47,7 +48,7 @@ func (s ServerGroupPolicy) ValidOrNil() (*ServerGroupPolicy, error) {
 	return &s, nil
 }
 
-// UnmarshalJSON - implements Unmarshaler interface for ServerGroupPolicy
+// UnmarshalJSON - implements Unmarshaler interface for ServerGroupPolicy.
 func (s *ServerGroupPolicy) UnmarshalJSON(data []byte) error {
 	var sg string
 	if err := json.Unmarshal(data, &sg); err != nil {
@@ -59,10 +60,11 @@ func (s *ServerGroupPolicy) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*s = v
+
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface for ServerGroupPolicy
+// MarshalJSON - implements Marshaler interface for ServerGroupPolicy.
 func (s *ServerGroupPolicy) MarshalJSON() ([]byte, error) {
 	return json.Marshal(s.String())
 }

@@ -27,7 +27,7 @@ func prepareListTestURL() string {
 	return prepareListTestURLParams(fake.ProjectID, fake.RegionID)
 }
 
-func prepareActionTestURLParams(projectID int, regionID int, id, action string) string { // nolint
+func prepareActionTestURLParams(projectID int, regionID int, id, action string) string {
 	return fmt.Sprintf("/v1/volumes/%d/%d/%s/%s", projectID, regionID, id, action)
 }
 
@@ -124,7 +124,6 @@ func TestListAll(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -151,7 +150,6 @@ func TestGet(t *testing.T) {
 	require.Equal(t, Volume1, *ct)
 	require.Equal(t, createdTime, ct.CreatedAt)
 	require.Equal(t, updatedTime, ct.UpdatedAt)
-
 }
 
 func TestCreate(t *testing.T) {
@@ -394,7 +392,6 @@ func TestMetadataCreate(t *testing.T) {
 
 func TestMetadataUpdate(t *testing.T) {
 	etest.BuildTestMetadataUpdate("volumes", Volume1.ID)(t)
-
 }
 
 func TestMetadataDelete(t *testing.T) {

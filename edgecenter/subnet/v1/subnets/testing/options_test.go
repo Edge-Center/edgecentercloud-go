@@ -5,8 +5,9 @@ import (
 	"net"
 	"testing"
 
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/subnet/v1/subnets"
 	"github.com/stretchr/testify/require"
+
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/subnet/v1/subnets"
 )
 
 func TestCreateOptsNoGW(t *testing.T) {

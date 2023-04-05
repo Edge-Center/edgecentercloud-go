@@ -1,6 +1,7 @@
 package images
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 
@@ -30,7 +31,7 @@ func listImages(c *cli.Context) error {
 	}
 	if err != nil {
 		_ = cli.ShowAppHelp(c)
-		return cli.NewExitError(err, 1)
+		return cli.Exit(err, 1)
 	}
 
 	opts := images.ListOpts{
@@ -40,9 +41,10 @@ func listImages(c *cli.Context) error {
 
 	results, err := images.ListAll(cl, opts)
 	if err != nil {
-		return cli.NewExitError(err, 1)
+		return cli.Exit(err, 1)
 	}
 	utils.ShowResults(results, c.String("format"))
+
 	return nil
 }
 
@@ -50,13 +52,14 @@ func listProjectImages(c *cli.Context) error {
 	client, err := client.NewProjectImageClientV1(c)
 	if err != nil {
 		_ = cli.ShowAppHelp(c)
-		return cli.NewExitError(err, 1)
+		return cli.Exit(err, 1)
 	}
 	results, err := images.ListAll(client, nil)
 	if err != nil {
-		return cli.NewExitError(err, 1)
+		return cli.Exit(err, 1)
 	}
 	utils.ShowResults(results, c.String("format"))
+
 	return nil
 }
 
@@ -154,13 +157,13 @@ var imageCreateCommand = cli.Command{
 		downloadClient, err := client.NewDownloadImageClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		opts := images.CreateOpts{
 			Name:           c.String("name"),
 			HwMachineType:  types.HwMachineType(c.String("hw-machine-type")),
-			SshKey:         types.SshKeyType(c.String("ssh-key")),
+			SSHKey:         types.SSHKeyType(c.String("ssh-key")),
 			OSType:         types.OSType(c.String("os-type")),
 			IsBaremetal:    utils.BoolToPointer(c.Bool("is-baremetal")),
 			HwFirmwareType: types.HwFirmwareType(c.String("hw-firmware-type")),
@@ -170,8 +173,9 @@ var imageCreateCommand = cli.Command{
 
 		results, err := images.Create(downloadClient, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
+
 		return utils.WaitTaskAndShowResult(c, downloadClient, results, true, func(task tasks.TaskID) (interface{}, error) {
 			taskInfo, err := tasks.Get(downloadClient, string(task)).Extract()
 			if err != nil {
@@ -189,6 +193,7 @@ var imageCreateCommand = cli.Command{
 			if err != nil {
 				return nil, fmt.Errorf("cannot get image with ID: %s. Error: %w", instanceID, err)
 			}
+
 			return instance, nil
 		})
 	},
@@ -208,14 +213,15 @@ var imageShowCommand = cli.Command{
 		client, err := client.NewImageClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		image, err := images.Get(client, imageID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(image, c.String("format"))
+
 		return nil
 	},
 }
@@ -266,13 +272,13 @@ var imageUpdateCommand = cli.Command{
 		client, err := client.NewImageClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		opts := images.UpdateOpts{
 			Name:           c.String("name"),
 			HwMachineType:  types.HwMachineType(c.String("hw-machine-type")),
-			SshKey:         types.SshKeyType(c.String("ssh-key")),
+			SSHKey:         types.SSHKeyType(c.String("ssh-key")),
 			OSType:         types.OSType(c.String("os-type")),
 			IsBaremetal:    utils.BoolToPointer(c.Bool("is-baremetal")),
 			HwFirmwareType: types.HwFirmwareType(c.String("hw-firmware-type")),
@@ -280,9 +286,10 @@ var imageUpdateCommand = cli.Command{
 
 		image, err := images.Update(client, imageID, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(image, c.String("format"))
+
 		return nil
 	},
 }
@@ -343,13 +350,13 @@ var imageUploadCommand = cli.Command{
 		downloadClient, err := client.NewDownloadImageClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		opts := images.UploadOpts{
 			OsVersion:      c.String("os-version"),
 			HwMachineType:  types.HwMachineType(c.String("hw-machine-type")),
-			SshKey:         types.SshKeyType(c.String("ssh-key")),
+			SSHKey:         types.SSHKeyType(c.String("ssh-key")),
 			Name:           c.String("name"),
 			OsDistro:       c.String("os-distro"),
 			OSType:         types.OSType(c.String("os-type")),
@@ -361,8 +368,9 @@ var imageUploadCommand = cli.Command{
 
 		results, err := images.Upload(downloadClient, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
+
 		return utils.WaitTaskAndShowResult(c, downloadClient, results, true, func(task tasks.TaskID) (interface{}, error) {
 			taskInfo, err := tasks.Get(downloadClient, string(task)).Extract()
 			if err != nil {
@@ -380,6 +388,7 @@ var imageUploadCommand = cli.Command{
 			if err != nil {
 				return nil, fmt.Errorf("cannot get image with ID: %s. Error: %w", instanceID, err)
 			}
+
 			return instance, nil
 		})
 	},
@@ -400,24 +409,24 @@ var imageDeleteCommand = cli.Command{
 		client, err := client.NewImageClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		results, err := images.Delete(client, imageID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
+
 		return utils.WaitTaskAndShowResult(c, client, results, false, func(task tasks.TaskID) (interface{}, error) {
 			_, err := images.Get(client, imageID).Extract()
 			if err == nil {
 				return nil, fmt.Errorf("cannot delete image with ID: %s", imageID)
 			}
-			switch err.(type) {
-			case edgecloud.ErrDefault404:
+			var e edgecloud.Default404Error
+			if errors.As(err, &e) {
 				return nil, nil
-			default:
-				return nil, err
 			}
+			return nil, err
 		})
 	},
 }

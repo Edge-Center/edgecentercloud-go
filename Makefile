@@ -1,111 +1,68 @@
-# ec_client Makefile
+# ENVS
+PROJECT_DIR = $(shell pwd)
+BIN_DIR = $(PROJECT_DIR)/bin
+ENV_TESTS_FILE = .env
+OS := $(shell uname | tr '[:upper:]' '[:lower:]')
+ARCH := $(shell uname -m)
 
-PWD := $(shell pwd)
-BASE_DIR := $(shell basename $(PWD))
-# Keep an existing GOPATH, make a private one if it is undefined
-GOPATH_DEFAULT := $(PWD)/.go
-export GOPATH ?= $(GOPATH_DEFAULT)
-GOBIN_DEFAULT := $(GOPATH)/bin
-export GOBIN ?= $(GOBIN_DEFAULT)
-export GO111MODULE := on
-TESTARGS_DEFAULT := -v -race
-TESTARGS ?= $(TESTARGS_DEFAULT)
-PKG := $(shell awk '/^module/ { print $$2 }' go.mod)
-DEST := $(GOPATH)/src/$(GIT_HOST)/$(BASE_DIR)
-SOURCES := $(shell find $(DEST) -name '*.go' 2>/dev/null)
-HAS_GOLANGCI := $(shell command -v golangci-lint;)
-HAS_GOIMPORTS := $(shell command -v $(GOBIN)/goimports;)
-
-TARGETS		?= darwin/amd64 linux/amd64 linux/386 linux/arm linux/arm64 linux/ppc64le linux/s390x
-DIST_DIRS	= find * -type d -exec
-
-TEMP_DIR	:=$(shell mktemp -d)
-
+# BUILD
 GOOS		?= $(shell go env GOOS)
 VERSION		?= $(shell git describe --tags 2> /dev/null || \
 			   git describe --match=$(git rev-parse --short=8 HEAD) --always --dirty --abbrev=8)
 GOARCH		?= $(shell go env GOARCH)
-TAGS		:=
 LDFLAGS		:= "-w -s -X 'main.AppVersion=${VERSION}'"
 CMD_PACKAGE := ./cmd/ec_client
-BINARY 		:= ./ec_client
-
-# CTI targets
-
-$(GOBIN):
-	echo "create gobin"
-	mkdir -p $(GOBIN)
-
-work: $(GOBIN)
+BINARY 		:= $(BIN_DIR)/ec_client
 
 build:
-	CGO_ENABLED=0 GOOS=$(GOOS) GOARCH=$(GOARCH) go build \
-	-ldflags $(LDFLAGS) \
-	-o $(BINARY) \
-	$(CMD_PACKAGE)
+	CGO_ENABLED=0 GOOS=$(GOOS) GOARCH=$(GOARCH) go build -ldflags $(LDFLAGS) -o $(BINARY) $(CMD_PACKAGE)
 
-install:
-	CGO_ENABLED=0 GOOS=$(GOOS) GOARCH=$(GOARCH) go install \
-	-ldflags $(LDFLAGS) \
-	$(CMD_PACKAGE)
+# TESTS
+TESTS_LIST = $(shell go list ./... | grep -v ./client)
 
-test: unit functional
+envs_reader:
+	go install github.com/joho/godotenv/cmd/godotenv@latest
 
-check: work fmt vet goimports linters
-unit: work
-	go test -count=1 -v $(TESTARGS) ./...
+tests:
+	go test -count=1 -timeout=2m $(TESTS_LIST) | { grep -v 'no test files'; true; }
 
-functional:
-	@echo "$@ not yet implemented"
+# local test run (need to export VAULT_TOKEN env)
+install_jq:
+	if test "$(OS)" = "linux"; then \
+		curl -L -o $(BIN_DIR)/jq https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64; \
+	else \
+		curl -L -o $(BIN_DIR)/jq https://github.com/stedolan/jq/releases/download/jq-1.6/jq-osx-amd64; \
+	fi
+	chmod +x $(BIN_DIR)/jq
+
+install_vault:
+	curl -L -o vault.zip https://releases.hashicorp.com/vault/1.12.3/vault_1.12.3_$(OS)_$(ARCH).zip
+	unzip vault.zip && rm -f vault.zip && chmod +x vault
+	mv vault $(BIN_DIR)/
+
+download_env_file: envs_reader
+	echo "VAULT_ADDR=https://vault.p.ecnl.ru/" > $(ENV_TESTS_FILE)
+	godotenv -f $(ENV_TESTS_FILE) $(BIN_DIR)/vault login -method=token $(VAULT_TOKEN)
+	godotenv -f $(ENV_TESTS_FILE) $(BIN_DIR)/vault kv get -format=json --field data /CLOUD/edgecentercloud-go | $(BIN_DIR)/jq -r 'to_entries|map("\(.key)=\(.value)")|.[]' >> $(ENV_TESTS_FILE)
+
+run_local_tests: envs_reader
+	godotenv -f $(ENV_TESTS_FILE) go test -count=1 $(TESTS_LIST) | { grep -v 'no test files'; true; }
+
+# CHECKS
+vet:
+	go vet ./...
 
 fmt:
 	go fmt ./...
 
-goimports:
-ifndef HAS_GOIMPORTS
-	echo "installing goimports"
-	go install -mod=mod golang.org/x/tools/cmd/goimports
-endif
-	$(GOBIN)/goimports -w -d $(shell find . -iname "*.go" -and -not -path "*/.go*")
+gofumpt:
+	go install mvdan.cc/gofumpt@v0.4.0
+	gofumpt -l -w .
 
-vet:
-	go vet ./...
+checks: vet fmt gofumpt
 
 linters:
-	golangci-lint run ./...
+	@test -f $(BIN_DIR)/golangci-lint || curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v1.52.2
+	@$(BIN_DIR)/golangci-lint run
 
-cover: work
-	go test $(TESTARGS) -tags=unit -cover -coverpkg=./ ./...
-
-
-prepare:
-ifndef HAS_GOLANGCI
-	curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.26.0
-endif
-	echo "golangci-lint already installed"
-ifndef HAS_GOIMPORTS
-	echo "installing goimports"
-	go install -mod=mod golang.org/x/tools/cmd/goimports
-endif
-	echo "goimports already installed"
-
-env:
-	@echo "PWD: $(PWD)"
-	@echo "BASE_DIR: $(BASE_DIR)"
-	@echo "GOPATH: $(GOPATH)"
-	@echo "GOROOT: $(GOROOT)"
-	@echo "DEST: $(DEST)"
-	@echo "PKG: $(PKG)"
-	go version
-	go env
-
-shell:
-	$(SHELL) -i
-
-clean: work
-	rm -rf $(BINARY)
-
-version:
-	@echo ${VERSION}
-
-.PHONY: bindep install build cover work fmt functional test version clean prepare
+.PHONY: vet fmt gofumpt linters run_local_tests download_env_file install_vault install_jq tests envs_reader build

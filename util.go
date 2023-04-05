@@ -7,9 +7,8 @@ import (
 	"strings"
 	"time"
 
-	log "github.com/sirupsen/logrus"
-
 	"github.com/mitchellh/mapstructure"
+	log "github.com/sirupsen/logrus"
 )
 
 var defaultSleepTimeout = 1
@@ -100,11 +99,11 @@ func NormalizePathURL(basePath, rawPath string) (string, error) {
 	absPathSys = filepath.Join(basePath, rawPath)
 	u.Path = filepath.ToSlash(absPathSys)
 	u.Scheme = "file"
-	return u.String(), nil
 
+	return u.String(), nil
 }
 
-// StripLastSlashURL removes last slash symbols from url
+// StripLastSlashURL removes last slash symbols from url.
 func StripLastSlashURL(url string) string {
 	if len(url) == 0 {
 		return url
@@ -116,9 +115,8 @@ func StripLastSlashURL(url string) string {
 	return url[:i+1]
 }
 
-// NativeMapToStruct converts from map to struct
+// NativeMapToStruct converts from map to struct.
 func NativeMapToStruct(nativeMap interface{}, obj interface{}) error {
-
 	var md mapstructure.Metadata
 	config := &mapstructure.DecoderConfig{
 		Metadata: &md,
@@ -130,10 +128,7 @@ func NativeMapToStruct(nativeMap interface{}, obj interface{}) error {
 		return err
 	}
 
-	if err := decoder.Decode(nativeMap); err != nil {
-		return err
-	}
-	return nil
+	return decoder.Decode(nativeMap)
 }
 
 func FailOnErrorF(err error, msg string, args ...interface{}) {

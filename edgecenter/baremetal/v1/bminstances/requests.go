@@ -34,7 +34,7 @@ type CreateNewInterfaceFloatingIPOpts struct {
 	ExistingFloatingID string                 `json:"existing_floating_id" validate:"rfe=Source:existing,sfe=Source:new,omitempty,uuid4"`
 }
 
-// Validate
+// Validate CreateNewInterfaceFloatingIPOpts.
 func (opts CreateNewInterfaceFloatingIPOpts) Validate() error {
 	return edgecloud.ValidateStruct(opts)
 }
@@ -47,7 +47,7 @@ type InterfaceOpts struct {
 	FloatingIP *CreateNewInterfaceFloatingIPOpts `json:"floating_ip,omitempty" validate:"omitempty,dive"`
 }
 
-// Validate
+// Validate InterfaceOpts.
 func (opts InterfaceOpts) Validate() error {
 	return edgecloud.ValidateStruct(opts)
 }
@@ -73,7 +73,7 @@ type CreateOpts struct {
 	Metadata      *instances.MetadataSetOpts `json:"metadata,omitempty" validate:"omitempty,dive"`
 }
 
-// Validate
+// Validate CreateOpts.
 func (opts CreateOpts) Validate() error {
 	return edgecloud.ValidateStruct(opts)
 }
@@ -106,6 +106,7 @@ func (opts CreateOpts) ToInstanceCreateMap() (map[string]interface{}, error) {
 	} else {
 		delete(mp, "metadata")
 	}
+
 	return mp, nil
 }
 
@@ -116,7 +117,7 @@ func Create(client *edgecloud.ServiceClient, opts CreateOptsBuilder) (r tasks.Re
 		r.Err = err
 		return
 	}
-	_, r.Err = client.Post(createURL(client), b, &r.Body, nil) // nolint
+	_, r.Err = client.Post(createURL(client), b, &r.Body, nil)
 	return
 }
 
@@ -147,7 +148,6 @@ func ListAll(client *edgecloud.ServiceClient, opts ListOptsBuilder) ([]instances
 	}
 
 	return all, nil
-
 }
 
 // RebuildInstanceOptsBuilder allows extensions to add additional parameters to the Rebuild request.
@@ -173,6 +173,6 @@ func Rebuild(client *edgecloud.ServiceClient, instanceID string, opts RebuildIns
 		r.Err = err
 		return
 	}
-	_, r.Err = client.Post(rebuildURL(client, instanceID), b, &r.Body, nil) // nolint
+	_, r.Err = client.Post(rebuildURL(client, instanceID), b, &r.Body, nil)
 	return
 }

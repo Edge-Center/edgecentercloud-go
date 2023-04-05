@@ -5,16 +5,13 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/port/v1/ports"
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/reservedfixedip/v1/reservedfixedips"
-
-	fake "github.com/Edge-Center/edgecentercloud-go/testhelper/client"
-
+	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/require"
 
-	log "github.com/sirupsen/logrus"
-
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/port/v1/ports"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/reservedfixedip/v1/reservedfixedips"
 	th "github.com/Edge-Center/edgecentercloud-go/testhelper"
+	fake "github.com/Edge-Center/edgecentercloud-go/testhelper/client"
 )
 
 func prepareActionTestURLParams(projectID int, regionID int, id, action string) string {

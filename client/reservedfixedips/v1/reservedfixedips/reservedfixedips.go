@@ -61,7 +61,7 @@ var reservedFixedIPListSubCommand = cli.Command{
 		client, err := client.NewReservedFixedIPClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		opts := reservedfixedips.ListOpts{
@@ -73,12 +73,13 @@ var reservedFixedIPListSubCommand = cli.Command{
 		}
 		results, err := reservedfixedips.ListAll(client, opts)
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		if results != nil {
 			utils.ShowResults(results, c.String("format"))
 		}
+
 		return nil
 	},
 }
@@ -97,17 +98,18 @@ var reservedFixedIPGetSubCommand = cli.Command{
 		client, err := client.NewReservedFixedIPClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		result, err := reservedfixedips.Get(client, portID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		if result != nil {
 			utils.ShowResults(result, c.String("format"))
 		}
+
 		return nil
 	},
 }
@@ -126,17 +128,18 @@ var reservedFixedIPDeleteSubCommand = cli.Command{
 		client, err := client.NewReservedFixedIPClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		result, err := reservedfixedips.Delete(client, portID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		if result != nil {
 			utils.ShowResults(result, c.String("format"))
 		}
+
 		return nil
 	},
 }
@@ -172,7 +175,7 @@ var reservedFixedIPCreateSubCommand = cli.Command{
 		client, err := client.NewReservedFixedIPClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		opts := reservedfixedips.CreateOpts{
@@ -188,8 +191,9 @@ var reservedFixedIPCreateSubCommand = cli.Command{
 
 		results, err := reservedfixedips.Create(client, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
+
 		return utils.WaitTaskAndShowResult(c, client, results, true, func(task tasks.TaskID) (interface{}, error) {
 			taskInfo, err := tasks.Get(client, string(task)).Extract()
 			if err != nil {
@@ -204,6 +208,7 @@ var reservedFixedIPCreateSubCommand = cli.Command{
 				return nil, fmt.Errorf("cannot get reserved fixed ip with port ID: %s. Error: %w", portID, err)
 			}
 			utils.ShowResults(reservedFixedIP, c.String("format"))
+
 			return nil, nil
 		})
 	},
@@ -230,7 +235,7 @@ var reservedFixedIPSwitchVIPSubCommand = cli.Command{
 		client, err := client.NewReservedFixedIPClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		opts := reservedfixedips.SwitchVIPOpts{
@@ -238,12 +243,13 @@ var reservedFixedIPSwitchVIPSubCommand = cli.Command{
 		}
 		results, err := reservedfixedips.SwitchVIP(client, portID, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		if results != nil {
 			utils.ShowResults(results, c.String("format"))
 		}
+
 		return nil
 	},
 }
@@ -262,22 +268,23 @@ var reservedFixedIPListInstancePortSubCommand = cli.Command{
 		client, err := client.NewReservedFixedIPClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		pages, err := reservedfixedips.ListConnectedDevice(client, portID).AllPages()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		result, err := reservedfixedips.ExtractReservedFixedIPs(pages)
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		if result != nil {
 			utils.ShowResults(result, c.String("format"))
 		}
+
 		return nil
 	},
 }
@@ -296,17 +303,18 @@ var reservedFixedIPListAvailablePortSubCommand = cli.Command{
 		client, err := client.NewReservedFixedIPClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		results, err := reservedfixedips.ListAllAvailableDevice(client, portID)
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		if results != nil {
 			utils.ShowResults(results, c.String("format"))
 		}
+
 		return nil
 	},
 }
@@ -332,7 +340,7 @@ var reservedFixedIPAddPortSubCommand = cli.Command{
 		client, err := client.NewReservedFixedIPClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		opts := reservedfixedips.PortsToShareVIPOpts{
@@ -340,12 +348,13 @@ var reservedFixedIPAddPortSubCommand = cli.Command{
 		}
 		results, err := reservedfixedips.AddPortsToShareVIP(client, portID, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		if results != nil {
 			utils.ShowResults(results, c.String("format"))
 		}
+
 		return nil
 	},
 }
@@ -371,7 +380,7 @@ var reservedFixedIPReplacePortSubCommand = cli.Command{
 		client, err := client.NewReservedFixedIPClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		opts := reservedfixedips.PortsToShareVIPOpts{
@@ -379,12 +388,13 @@ var reservedFixedIPReplacePortSubCommand = cli.Command{
 		}
 		results, err := reservedfixedips.ReplacePortsToShareVIP(client, portID, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		if results != nil {
 			utils.ShowResults(results, c.String("format"))
 		}
+
 		return nil
 	},
 }

@@ -1,23 +1,21 @@
 package k8s
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/volume/v1/volumes"
+	"github.com/urfave/cli/v2"
 
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/k8s/v1/pools"
-
 	"github.com/Edge-Center/edgecentercloud-go/client/flags"
 	"github.com/Edge-Center/edgecentercloud-go/client/k8s/v1/client"
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
-
 	"github.com/Edge-Center/edgecentercloud-go/client/utils"
 	"github.com/Edge-Center/edgecentercloud-go/client/utils/k8sconfig"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/k8s/v1/clusters"
-
-	"github.com/urfave/cli/v2"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/k8s/v1/pools"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/volume/v1/volumes"
 )
 
 var (
@@ -26,7 +24,6 @@ var (
 )
 
 func getPools(c *cli.Context) ([]pools.CreateOpts, error) {
-
 	poolNames := c.StringSlice("pool-name")
 	poolFlavors := c.StringSlice("flavor-id")
 	poolNodesCount := c.IntSlice("node-count")
@@ -39,7 +36,7 @@ func getPools(c *cli.Context) ([]pools.CreateOpts, error) {
 		return nil, fmt.Errorf("parameters number should be same for pool names, flavors, node-count, min-node-count and max-node-count: %w", err)
 	}
 
-	var result []pools.CreateOpts
+	result := make([]pools.CreateOpts, 0, len(poolNames))
 
 	for idx, name := range poolNames {
 		pool := pools.CreateOpts{
@@ -63,11 +60,9 @@ func getPools(c *cli.Context) ([]pools.CreateOpts, error) {
 		}
 
 		result = append(result, pool)
-
 	}
 
 	return result, nil
-
 }
 
 type k8sConfigFileOptions struct {
@@ -104,6 +99,7 @@ func getK8sConfigFileOptions(c *cli.Context) (k8sConfigFileOptions, error) {
 			return opts, err
 		}
 	}
+
 	return opts, nil
 }
 
@@ -115,13 +111,14 @@ var clusterListSubCommand = cli.Command{
 		client, err := client.NewK8sClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		results, err := clusters.ListAll(client, clusters.ListOpts{})
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
+
 		return nil
 	},
 }
@@ -140,13 +137,14 @@ var clusterGetSubCommand = cli.Command{
 		client, err := client.NewK8sClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		result, err := clusters.Get(client, clusterID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
+
 		return nil
 	},
 }
@@ -192,17 +190,17 @@ var clusterConfigSubCommand = cli.Command{
 		client, err := client.NewK8sClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		options, err := getK8sConfigFileOptions(c)
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "config")
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		result, err := clusters.GetConfig(client, clusterID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		config := strings.TrimSpace(result.Config)
 		if options.save {
@@ -210,27 +208,26 @@ var clusterConfigSubCommand = cli.Command{
 				if options.force {
 					err := k8sconfig.WriteKubeconfigFile(options.filename, []byte(config))
 					if err != nil {
-						return cli.NewExitError(err, 1)
+						return cli.Exit(err, 1)
 					}
 					return nil
 				}
 				if options.merge {
 					err := k8sconfig.MergeKubeconfigFile(options.filename, []byte(config))
 					if err != nil {
-						return cli.NewExitError(err, 1)
+						return cli.Exit(err, 1)
 					}
 					return nil
 				}
 			} else {
 				err := utils.WriteToFile(options.filename, []byte(config))
 				if err != nil {
-					return cli.NewExitError(err, 1)
+					return cli.Exit(err, 1)
 				}
 				return nil
 			}
-		} else {
-			fmt.Println(strings.TrimSpace(config))
 		}
+
 		return nil
 	},
 }
@@ -344,23 +341,22 @@ var clusterCreateSubCommand = cli.Command{
 		client, err := client.NewK8sClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		podsIPPool, err := edgecloud.ParseCIDRStringOrNil(c.String("pods-ip-pool"))
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		servicesIPPool, err := edgecloud.ParseCIDRStringOrNil(c.String("services-ip-pool"))
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		clusterPools, err := getPools(c)
-
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		// todo remove after cloud-api fix
@@ -382,10 +378,10 @@ var clusterCreateSubCommand = cli.Command{
 
 		results, err := clusters.Create(client, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		if results == nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		return utils.WaitTaskAndShowResult(c, client, results, true, func(task tasks.TaskID) (interface{}, error) {
@@ -402,6 +398,7 @@ var clusterCreateSubCommand = cli.Command{
 				return nil, fmt.Errorf("cannot get cluster with ID: %s. Error: %w", clusterID, err)
 			}
 			utils.ShowResults(cluster, c.String("format"))
+
 			return nil, nil
 		})
 	},
@@ -442,7 +439,7 @@ var clusterResizeSubCommand = cli.Command{
 		client, err := client.NewK8sClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		nodes := c.StringSlice("nodes-to-remove")
@@ -459,7 +456,7 @@ var clusterResizeSubCommand = cli.Command{
 
 		results, err := clusters.Resize(client, clusterID, poolID, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		return utils.WaitTaskAndShowResult(c, client, results, true, func(task tasks.TaskID) (interface{}, error) {
@@ -475,9 +472,9 @@ var clusterResizeSubCommand = cli.Command{
 			if err != nil {
 				return nil, fmt.Errorf("cannot get cluster with ID: %s. Error: %w", clusterID, err)
 			}
+
 			return cluster, nil
 		})
-
 	},
 }
 
@@ -508,7 +505,7 @@ var clusterUpgradeSubCommand = cli.Command{
 		client, err := client.NewK8sClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		opts := clusters.UpgradeOpts{
@@ -518,7 +515,7 @@ var clusterUpgradeSubCommand = cli.Command{
 
 		results, err := clusters.Upgrade(client, clusterID, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		return utils.WaitTaskAndShowResult(c, client, results, true, func(task tasks.TaskID) (interface{}, error) {
@@ -535,9 +532,9 @@ var clusterUpgradeSubCommand = cli.Command{
 				return nil, fmt.Errorf("cannot get cluster with ID: %s. Error: %w", clusterID, err)
 			}
 			utils.ShowResults(cluster, c.String("format"))
+
 			return nil, nil
 		})
-
 	},
 }
 
@@ -549,12 +546,12 @@ var clusterVersionsSubCommand = cli.Command{
 		client, err := client.NewK8sClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		results, err := clusters.VersionsAll(client)
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
 
@@ -576,12 +573,12 @@ var clusterInstancesSubCommand = cli.Command{
 		client, err := client.NewK8sClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		results, err := clusters.InstancesAll(client, clusterID)
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
 
@@ -604,11 +601,11 @@ var clusterDeleteSubCommand = cli.Command{
 		client, err := client.NewK8sClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		results, err := clusters.Delete(client, clusterID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		return utils.WaitTaskAndShowResult(c, client, results, false, func(task tasks.TaskID) (interface{}, error) {
@@ -616,14 +613,12 @@ var clusterDeleteSubCommand = cli.Command{
 			if err == nil {
 				return nil, fmt.Errorf("cannot delete cluster with ID: %s", clusterID)
 			}
-			switch err.(type) {
-			case edgecloud.ErrDefault404:
+			var e edgecloud.Default404Error
+			if errors.As(err, &e) {
 				return nil, nil
-			default:
-				return nil, err
 			}
+			return nil, err
 		})
-
 	},
 }
 
@@ -641,16 +636,16 @@ var clusterGetCertificateSubCommand = cli.Command{
 		client, err := client.NewK8sClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		certificate, err := clusters.Certificate(client, clusterID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(certificate, c.String("format"))
-		return nil
 
+		return nil
 	},
 }
 
@@ -685,16 +680,16 @@ var clusterSignCertificateSubCommand = cli.Command{
 		client, err := client.NewK8sClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		signedCertificate, err := clusters.SignCertificate(client, clusterID, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(signedCertificate, c.String("format"))
-		return nil
 
+		return nil
 	},
 }
 

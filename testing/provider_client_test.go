@@ -2,6 +2,7 @@ package testing
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -12,12 +13,11 @@ import (
 	"time"
 
 	log "github.com/sirupsen/logrus"
+	"github.com/stretchr/testify/assert"
 
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 	th "github.com/Edge-Center/edgecentercloud-go/testhelper"
 	"github.com/Edge-Center/edgecentercloud-go/testhelper/client"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestAuthenticatedHeaders(t *testing.T) {
@@ -50,7 +50,7 @@ func TestUserAgent(t *testing.T) {
 }
 
 func TestConcurrentReauth(t *testing.T) {
-	var info = struct {
+	info := struct {
 		numreauths  int
 		failedAuths int
 		mut         *sync.RWMutex
@@ -153,7 +153,7 @@ func TestConcurrentReauth(t *testing.T) {
 }
 
 func TestReauthEndLoop(t *testing.T) {
-	var info = struct {
+	info := struct {
 		reauthAttempts   int
 		maxReauthReached bool
 		mut              *sync.RWMutex
@@ -208,20 +208,20 @@ func TestReauthEndLoop(t *testing.T) {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			_, err := p.Request("GET", fmt.Sprintf("%s/route", th.Endpoint()), reqopts) // nolint
+			_, err := p.Request("GET", fmt.Sprintf("%s/route", th.Endpoint()), reqopts)
 
 			mut.Lock()
 			defer mut.Unlock()
 
-			// ErrErrorAfter... will happen after a successful reauthentication,
-			// but the service still responds with a 401.
-			if _, ok := err.(*edgecloud.ErrErrorAfterReauthentication); ok {
+			// ErrErrorAfter... will happen after a successful reauthentication, but the service still responds with a 401.
+			var errorAfter *edgecloud.AfterReauthenticationError
+			if errors.As(err, &errorAfter) {
 				errAfter++
 			}
 
-			// ErrErrorUnable... will happen when the custom reauth func reports
-			// an error.
-			if _, ok := err.(*edgecloud.ErrUnableToReauthenticate); ok {
+			// ErrErrorUnable... will happen when the custom reauth func reports an error.
+			var errorUnable *edgecloud.UnableToReauthenticateError
+			if errors.As(err, &errorUnable) {
 				errUnable++
 			}
 		}()
@@ -235,7 +235,7 @@ func TestReauthEndLoop(t *testing.T) {
 }
 
 func TestRequestThatCameDuringReauthWaitsUntilItIsCompleted(t *testing.T) {
-	var info = struct {
+	info := struct {
 		numreauths  int
 		failedAuths int
 		reauthCh    chan struct{}
@@ -276,6 +276,7 @@ func TestRequestThatCameDuringReauthWaitsUntilItIsCompleted(t *testing.T) {
 		info.mut.Unlock()
 		p.AccessTokenID = postReAuthToken
 		p.SetThrowaway(false)
+
 		return nil
 	}
 
@@ -393,11 +394,10 @@ func TestRequestReauthsAtMostOnce(t *testing.T) {
 		http.Error(w, "unauthorized", http.StatusUnauthorized)
 	})
 
-	// The expected error message indicates that we reauthenticated once (that's
-	// the part before the colon), but when encountering another 401 response, we
-	// did not attempt reauthentication again and just passed that 401 response to
-	// the caller as ErrDefault401.
-	_, err = p.Request("GET", th.Endpoint()+"/route", &edgecloud.RequestOpts{}) // nolint
+	// The expected error message indicates that we reauthenticated once (that's the part before the colon),
+	// but when encountering another 401 response, we did not attempt reauthentication again and just passed
+	// that 401 response to the caller as Default401Error.
+	_, err = p.Request("GET", th.Endpoint()+"/route", &edgecloud.RequestOpts{})
 	expectedErrorMessage := "Successfully re-authenticated, but got error executing request: Authentication failed"
 	if err != nil {
 		th.AssertEquals(t, expectedErrorMessage, err.Error())
@@ -429,7 +429,7 @@ func TestRequestWithContext(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	cancel()
-	_, err = p.Request("GET", ts.URL, &edgecloud.RequestOpts{}) // nolint
+	_, err = p.Request("GET", ts.URL, &edgecloud.RequestOpts{})
 	if err == nil {
 		t.Fatal("expecting error, got nil")
 	}

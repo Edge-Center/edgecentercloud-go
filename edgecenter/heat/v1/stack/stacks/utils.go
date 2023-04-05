@@ -9,8 +9,9 @@ import (
 	"reflect"
 	"strings"
 
-	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 	"gopkg.in/yaml.v2"
+
+	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 )
 
 // Client is an interface that expects a Get method similar to http.Get. This
@@ -20,7 +21,7 @@ type Client interface {
 	Get(string) (*http.Response, error)
 }
 
-// TE is a base structure for both Template and Environment
+// TE is a base structure for both Template and Environment.
 type TE struct {
 	// Bin stores the contents of the template or environment.
 	Bin []byte
@@ -86,10 +87,11 @@ func (t *TE) Fetch() error {
 		return err
 	}
 	t.Bin = body
+
 	return nil
 }
 
-// get the basepath of the TE
+// get the basepath of the TE.
 func getBasePath() (string, error) {
 	basePath, err := filepath.Abs(".")
 	if err != nil {
@@ -102,11 +104,15 @@ func getBasePath() (string, error) {
 	return u, nil
 }
 
-// get a an HTTP client to retrieve URL's. This client allows the use of `file`
-// scheme since we may need to fetch files from users filesystem
+// get an HTTP client to retrieve URL's. This client allows the use of `file`
+// scheme since we may need to fetch files from users filesystem.
 func getHTTPClient() Client {
 	transport := &http.Transport{}
-	transport.RegisterProtocol("file", http.NewFileTransport(http.Dir("/")))
+	absRootDir, err := filepath.Abs("/")
+	if err != nil {
+		panic(err)
+	}
+	transport.RegisterProtocol("file", http.NewFileTransport(http.Dir(absRootDir)))
 	return &http.Client{Transport: transport}
 }
 
@@ -117,22 +123,21 @@ func (t *TE) Parse() error {
 	}
 	if jerr := json.Unmarshal(t.Bin, &t.Parsed); jerr != nil {
 		if yerr := yaml.Unmarshal(t.Bin, &t.Parsed); yerr != nil {
-			return ErrInvalidDataFormat{}
+			return InvalidDataFormatError{}
 		}
 	}
 	return t.Validate()
 }
 
-// Validate validates the contents of TE
+// Validate validates the contents of TE.
 func (t *TE) Validate() error {
 	return nil
 }
 
-// igfunc is a parameter used by GetFileContents and GetRRFileContents to check
-// for valid URL's.
+// igfunc is a parameter used by GetFileContents and GetRRFileContents to check for valid URL's.
 type igFunc func(string, interface{}) bool
 
-// convert map[interface{}]interface{} to map[string]interface{}
+// convert map[interface{}]interface{} to map[string]interface{}.
 func toStringKeys(m interface{}) (map[string]interface{}, error) {
 	switch m.(type) {
 	case map[string]interface{}, map[interface{}]interface{}:
@@ -146,12 +151,11 @@ func toStringKeys(m interface{}) (map[string]interface{}, error) {
 		}
 		return typedMap, nil
 	default:
-		return nil, edgecloud.ErrUnexpectedType{Expected: "map[string]interface{}/map[interface{}]interface{}", Actual: fmt.Sprintf("%v", reflect.TypeOf(m))}
+		return nil, edgecloud.UnexpectedTypeError{Expected: "map[string]interface{}/map[interface{}]interface{}", Actual: fmt.Sprintf("%v", reflect.TypeOf(m))}
 	}
 }
 
-// fix the reference to files by replacing relative URL's by absolute
-// URL's
+// fix the reference to files by replacing relative URL's by absolute URL's.
 func (t *TE) fixFileRefs() {
 	tStr := string(t.Bin)
 	if t.fileMaps == nil {

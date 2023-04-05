@@ -23,11 +23,12 @@ func (t ReservedFixedIPType) List() []ReservedFixedIPType {
 }
 
 func (t ReservedFixedIPType) StringList() []string {
-	var s []string
-	for _, v := range t.List() {
-		s = append(s, v.String())
+	lst := t.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
 func (t ReservedFixedIPType) IsValid() error {
@@ -49,7 +50,7 @@ func (t ReservedFixedIPType) ValidOrNil() (*ReservedFixedIPType, error) {
 	return &t, nil
 }
 
-// UnmarshalJSON - implements Unmarshaler interface for ReservedFixedIPType
+// UnmarshalJSON - implements Unmarshaler interface for ReservedFixedIPType.
 func (t *ReservedFixedIPType) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -61,10 +62,11 @@ func (t *ReservedFixedIPType) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*t = v
+
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface for ReservedFixedIPType
+// MarshalJSON - implements Marshaler interface for ReservedFixedIPType.
 func (t *ReservedFixedIPType) MarshalJSON() ([]byte, error) {
 	return json.Marshal(t.String())
 }

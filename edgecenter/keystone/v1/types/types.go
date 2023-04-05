@@ -50,14 +50,15 @@ func (ks KeystoneState) List() []KeystoneState {
 }
 
 func (ks KeystoneState) StringList() []string {
-	var s []string
-	for _, v := range ks.List() {
-		s = append(s, v.String())
+	lst := ks.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
-// UnmarshalJSON - implements Unmarshaler interface for KeystoneState
+// UnmarshalJSON - implements Unmarshaler interface for KeystoneState.
 func (ks *KeystoneState) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -69,10 +70,11 @@ func (ks *KeystoneState) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*ks = v
+
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface for KeystoneState
+// MarshalJSON - implements Marshaler interface for KeystoneState.
 func (ks *KeystoneState) MarshalJSON() ([]byte, error) {
 	return json.Marshal(ks.String())
 }

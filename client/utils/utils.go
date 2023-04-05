@@ -10,18 +10,17 @@ import (
 	"strings"
 	"time"
 
-	edgecloud "github.com/Edge-Center/edgecentercloud-go"
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
 	"github.com/fatih/structs"
 	"github.com/mitchellh/go-homedir"
 	"github.com/olekukonko/tablewriter"
 	"github.com/urfave/cli/v2"
 	"gopkg.in/yaml.v2"
+
+	edgecloud "github.com/Edge-Center/edgecentercloud-go"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
 )
 
-var (
-	slPfx = fmt.Sprintf("sl:::%d:::", time.Now().UTC().UnixNano())
-)
+var slPfx = fmt.Sprintf("sl:::%d:::", time.Now().UTC().UnixNano())
 
 type EnumValue struct {
 	Enum        []string
@@ -75,18 +74,18 @@ func (e EnumStringSliceValue) String() string {
 	return fmt.Sprintf("%s", e.selected)
 }
 
-// Serialize allows EnumStringSliceValue to fulfill Serializer
+// Serialize allows EnumStringSliceValue to fulfill Serializer.
 func (e EnumStringSliceValue) Serialize() string {
 	jsonBytes, _ := json.Marshal(e.selected)
 	return fmt.Sprintf("%s%s", slPfx, string(jsonBytes))
 }
 
-// Value returns the slice of strings set by this flag
+// Value returns the slice of strings set by this flag.
 func (e EnumStringSliceValue) Value() []string {
 	return e.selected
 }
 
-// Get returns the slice of strings set by this flag
+// Get returns the slice of strings set by this flag.
 func (e EnumStringSliceValue) Get() interface{} {
 	return e
 }
@@ -100,8 +99,8 @@ func tableHeaderFromStruct(m interface{}) []string {
 }
 
 func tableRowFromStruct(m interface{}) []string {
-	var res []string
 	values := structs.Values(m)
+	res := make([]string, 0, len(values))
 	for _, v := range values {
 		value, _ := json.Marshal(v)
 		res = append(res, string(value))
@@ -148,6 +147,7 @@ func interfaceToSlice(input interface{}) []interface{} {
 	for i := 0; i < object.Len(); i++ {
 		records = append(records, object.Index(i).Interface())
 	}
+
 	return records
 }
 
@@ -155,11 +155,10 @@ func renderJSON(input interface{}) error {
 	if input == nil || (reflect.TypeOf(input).Kind() == reflect.Slice && reflect.ValueOf(input).Len() == 0) {
 		return nil
 	}
-	res, err := json.MarshalIndent(input, "", "  ")
+	_, err := json.MarshalIndent(input, "", "  ")
 	if err != nil {
 		return err
 	}
-	fmt.Println(string(res))
 	return nil
 }
 
@@ -167,17 +166,13 @@ func renderYAML(input interface{}) {
 	if input == nil || (reflect.TypeOf(input).Kind() == reflect.Slice && reflect.ValueOf(input).Len() == 0) {
 		return
 	}
-	res, _ := yaml.Marshal(input)
-	fmt.Println(string(res))
+	yaml.Marshal(input)
 }
 
 func ShowResults(input interface{}, format string) {
 	switch format {
 	case "json":
-		err := renderJSON(input)
-		if err != nil {
-			fmt.Println(err)
-		}
+		renderJSON(input)
 	case "table":
 		renderTable(input)
 	case "yaml":
@@ -241,18 +236,19 @@ func WaitTaskAndShowResult(
 ) error {
 	if c.Bool("wait") {
 		if len(results.Tasks) == 0 {
-			return cli.NewExitError(fmt.Errorf("wrong task response"), 1)
+			return cli.Exit(fmt.Errorf("wrong task response"), 1)
 		}
 		task := results.Tasks[0]
 		waitSeconds := c.Int("wait-seconds")
 		result, err := tasks.WaitTaskAndReturnResult(client, task, stopOnTaskError, waitSeconds, infoRetriever)
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		ShowResults(result, c.String("format"))
 	} else {
 		ShowResults(results, c.String("format"))
 	}
+
 	return nil
 }
 
@@ -285,7 +281,9 @@ func WriteToFile(filename string, content []byte) error {
 	if err != nil {
 		return err
 	}
-	err = os.WriteFile(path, content, 0644) // nolint
+
+	err = os.WriteFile(path, content, 0o644)
+
 	return err
 }
 
@@ -337,11 +335,11 @@ func ValidateEqualSlicesLength(slices ...interface{}) error {
 			return fmt.Errorf("element %v has different length than %v", slice, slices[0])
 		}
 	}
+
 	return nil
 }
 
-type Item interface {
-}
+type Item interface{}
 
 type Result struct {
 	Item    Item
@@ -349,7 +347,7 @@ type Result struct {
 	Err     error
 }
 
-// Find field name from struct by different key, example by `json`
+// Find field name from struct by different key, example by `json`.
 func getStructFieldName(tag, key string, s interface{}) string {
 	valueG := reflect.ValueOf(s).Elem()
 	rt := valueG.Type()
@@ -364,10 +362,11 @@ func getStructFieldName(tag, key string, s interface{}) string {
 			return f.Name
 		}
 	}
+
 	return ""
 }
 
-// UpdateStructFromString Update struct from string by pattern key=value;
+// UpdateStructFromString Update struct from string by pattern key=value;.
 func UpdateStructFromString(item interface{}, value string) error {
 	entries := strings.Split(value, ";")
 	r := reflect.ValueOf(item)
@@ -388,10 +387,11 @@ func UpdateStructFromString(item interface{}, value string) error {
 		}
 		field.SetInt(value)
 	}
+
 	return nil
 }
 
-// StructToString Make string from struct for example or documentation
+// StructToString Make string from struct for example or documentation.
 func StructToString(item interface{}) string {
 	valueG := reflect.ValueOf(item).Elem()
 	var fields []string
@@ -406,5 +406,6 @@ func StructToString(item interface{}) string {
 		fields = append(fields, defaultName)
 	}
 	result := strings.Join(fields, ";")
+
 	return result
 }

@@ -1,9 +1,10 @@
 package heat
 
 import (
+	"github.com/urfave/cli/v2"
+
 	"github.com/Edge-Center/edgecentercloud-go/client/heat/v1/resources"
 	"github.com/Edge-Center/edgecentercloud-go/client/heat/v1/stacks"
-	"github.com/urfave/cli/v2"
 )
 
 var Commands = cli.Command{

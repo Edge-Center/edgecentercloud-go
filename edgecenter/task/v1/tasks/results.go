@@ -9,7 +9,7 @@ type commonResult struct {
 	edgecloud.Result
 }
 
-// Result represents the operation result that returns tasks
+// Result represents the operation result that returns tasks.
 type Result struct {
 	edgecloud.Result
 }
@@ -56,12 +56,13 @@ type DeleteResult struct {
 	edgecloud.ErrResult
 }
 
-// ClusterPage is the page returned by a pager when traversing over a collection of tasks.
+// TaskPage is the page returned by a pager when traversing over a collection of tasks.
 type TaskPage struct {
 	pagination.LinkedPageBase
 }
 
 type TaskID string
+
 type TaskState string
 
 const (

@@ -5,18 +5,15 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/volume/v1/volumes"
-
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/k8s/v1/pools"
-
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/k8s/v1/clusters"
-	fake "github.com/Edge-Center/edgecentercloud-go/testhelper/client"
+	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/require"
 
-	log "github.com/sirupsen/logrus"
-
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/k8s/v1/clusters"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/k8s/v1/pools"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/volume/v1/volumes"
 	"github.com/Edge-Center/edgecentercloud-go/pagination"
 	th "github.com/Edge-Center/edgecentercloud-go/testhelper"
+	fake "github.com/Edge-Center/edgecentercloud-go/testhelper/client"
 )
 
 func prepareListTestURLParams(projectID int, regionID int) string {
@@ -38,6 +35,7 @@ func prepareActionTestURLParams(projectID int, regionID int, id, action string) 
 func prepareClusterTestURLParams(projectID int, regionID int, id, name string) string {
 	return fmt.Sprintf("/v1/k8s/clusters/%d/%d/%s/%s", projectID, regionID, id, name)
 }
+
 func prepareListTestURL() string {
 	return prepareListTestURLParams(fake.ProjectID, fake.RegionID)
 }
@@ -148,7 +146,6 @@ func TestVersionAll(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -174,7 +171,6 @@ func TestGet(t *testing.T) {
 	require.Equal(t, createdTime, ct.CreatedAt)
 	require.Equal(t, updatedTime, *ct.UpdatedAt)
 	require.NotNil(t, ct.HealthStatus)
-
 }
 
 func TestCreate(t *testing.T) {
@@ -269,11 +265,9 @@ func TestResize(t *testing.T) {
 	tasks, err := clusters.Resize(client, Cluster1.UUID, pool, options).Extract()
 	require.NoError(t, err)
 	require.Equal(t, Tasks1, *tasks)
-
 }
 
 func TestGetConfig(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -296,7 +290,6 @@ func TestGetConfig(t *testing.T) {
 
 	require.NoError(t, err)
 	require.Equal(t, Config1, *cfg)
-
 }
 
 func TestUpgrade(t *testing.T) {
@@ -327,11 +320,9 @@ func TestUpgrade(t *testing.T) {
 	tasks, err := clusters.Upgrade(client, Cluster1.UUID, options).Extract()
 	require.NoError(t, err)
 	require.Equal(t, Tasks1, *tasks)
-
 }
 
 func TestGetCACertificate(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -354,11 +345,9 @@ func TestGetCACertificate(t *testing.T) {
 
 	require.NoError(t, err)
 	require.Equal(t, ClusterCertificate, *ct)
-
 }
 
 func TestSignCertificate(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -387,5 +376,4 @@ func TestSignCertificate(t *testing.T) {
 
 	require.NoError(t, err)
 	require.Equal(t, ClusterSignedCertificate, *ct)
-
 }

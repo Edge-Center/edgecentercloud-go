@@ -4,17 +4,15 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/Edge-Center/edgecentercloud-go/client/limits/v2/client"
-	"github.com/Edge-Center/edgecentercloud-go/client/utils"
+	"github.com/urfave/cli/v2"
 
 	"github.com/Edge-Center/edgecentercloud-go/client/flags"
+	"github.com/Edge-Center/edgecentercloud-go/client/limits/v2/client"
+	"github.com/Edge-Center/edgecentercloud-go/client/utils"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/limit/v2/limits"
-	"github.com/urfave/cli/v2"
 )
 
-var (
-	limitIDText = "limit_id is mandatory argument"
-)
+var limitIDText = "limit_id is mandatory argument"
 
 func buildLimitFromFlags(c *cli.Context) (limits.Limit, error) {
 	var err error
@@ -41,6 +39,7 @@ func buildLimitFromFlags(c *cli.Context) (limits.Limit, error) {
 			limit.RegionalLimits = append(limit.RegionalLimits, newRegionalLimits)
 		}
 	}
+
 	return limit, nil
 }
 
@@ -52,13 +51,14 @@ var limitListCommand = cli.Command{
 		client, err := client.NewLimitClientV2(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		limit, err := limits.ListAll(client)
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(limit, c.String("format"))
+
 		return nil
 	},
 }
@@ -77,13 +77,14 @@ var limitGetCommand = cli.Command{
 		client, err := client.NewLimitClientV2(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		limitRequest, err := limits.Get(client, limitID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(limitRequest, c.String("format"))
+
 		return nil
 	},
 }
@@ -102,12 +103,13 @@ var limitDeleteCommand = cli.Command{
 		client, err := client.NewLimitClientV2(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		err = limits.Delete(client, limitID).ExtractErr()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
+
 		return nil
 	},
 }
@@ -135,6 +137,7 @@ func (g RegionLimitsFlag) Set(value string) error {
 
 		g[newRegion.RegionID] = newRegion
 	}
+
 	return nil
 }
 
@@ -165,12 +168,10 @@ var limitCreateCommand = cli.Command{
 		},
 	},
 	Action: func(c *cli.Context) error {
-
 		requestedLimits, err := buildLimitFromFlags(c)
-
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "create")
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		opts := limits.CreateOpts{
@@ -181,15 +182,16 @@ var limitCreateCommand = cli.Command{
 		client, err := client.NewLimitClientV2(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		result, err := limits.Create(client, opts).Extract()
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "create")
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
+
 		return nil
 	},
 }

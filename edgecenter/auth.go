@@ -7,8 +7,10 @@ import (
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 )
 
-var nilAuthOptions = edgecloud.AuthOptions{}
-var nilTokenOptions = edgecloud.TokenOptions{}
+var (
+	nilAuthOptions  = edgecloud.AuthOptions{}
+	nilTokenOptions = edgecloud.TokenOptions{}
+)
 
 /*
 AuthOptionsFromEnv fills out an identity.AuthOptions structure with the
@@ -25,21 +27,21 @@ func AuthOptionsFromEnv() (edgecloud.AuthOptions, error) {
 	password := os.Getenv("EC_CLOUD_PASSWORD")
 
 	if authURL == "" {
-		err := edgecloud.ErrMissingEnvironmentVariable{
+		err := edgecloud.MissingEnvironmentVariableError{
 			EnvironmentVariable: "EC_CLOUD_AUTH_URL",
 		}
 		return nilAuthOptions, err
 	}
 
 	if username == "" {
-		err := edgecloud.ErrMissingEnvironmentVariable{
+		err := edgecloud.MissingEnvironmentVariableError{
 			EnvironmentVariable: "EC_CLOUD_USERNAME",
 		}
 		return nilAuthOptions, err
 	}
 
 	if password == "" {
-		err := edgecloud.ErrMissingEnvironmentVariable{
+		err := edgecloud.MissingEnvironmentVariableError{
 			EnvironmentVariable: "EC_CLOUD_PASSWORD",
 		}
 		return nilAuthOptions, err
@@ -55,27 +57,26 @@ func AuthOptionsFromEnv() (edgecloud.AuthOptions, error) {
 }
 
 func TokenOptionsFromEnv() (edgecloud.TokenOptions, error) {
-
 	apiURL := os.Getenv("EC_CLOUD_API_URL")
 	accessToken := os.Getenv("EC_CLOUD_ACCESS_TOKEN")
 	refreshToken := os.Getenv("EC_CLOUD_REFRESH_TOKEN")
 
 	if apiURL == "" {
-		err := edgecloud.ErrMissingEnvironmentVariable{
+		err := edgecloud.MissingEnvironmentVariableError{
 			EnvironmentVariable: "EC_CLOUD_API_URL",
 		}
 		return nilTokenOptions, err
 	}
 
 	if accessToken == "" {
-		err := edgecloud.ErrMissingEnvironmentVariable{
+		err := edgecloud.MissingEnvironmentVariableError{
 			EnvironmentVariable: "EC_CLOUD_ACCESS_TOKEN",
 		}
 		return nilTokenOptions, err
 	}
 
 	if refreshToken == "" {
-		err := edgecloud.ErrMissingEnvironmentVariable{
+		err := edgecloud.MissingEnvironmentVariableError{
 			EnvironmentVariable: "EC_CLOUD_REFRESH_TOKEN",
 		}
 		return nilTokenOptions, err

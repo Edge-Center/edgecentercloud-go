@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"testing"
 
-	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 	"github.com/stretchr/testify/require"
+
+	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 )
 
 type enum string

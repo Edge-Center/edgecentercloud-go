@@ -6,6 +6,7 @@ import (
 )
 
 type GatewayType string
+
 type InterfaceType string
 
 const (
@@ -23,11 +24,12 @@ func (gw GatewayType) List() []GatewayType {
 }
 
 func (gw GatewayType) StringList() []string {
-	var s []string
-	for _, v := range gw.List() {
-		s = append(s, v.String())
+	lst := gw.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
 func (gw GatewayType) IsValid() error {
@@ -49,7 +51,7 @@ func (gw GatewayType) ValidOrNil() (*GatewayType, error) {
 	return &gw, nil
 }
 
-// UnmarshalJSON - implements Unmarshaler interface for GatewayType
+// UnmarshalJSON - implements Unmarshaler interface for GatewayType.
 func (gw *GatewayType) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -61,10 +63,11 @@ func (gw *GatewayType) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*gw = v
+
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface for GatewayType
+// MarshalJSON - implements Marshaler interface for GatewayType.
 func (gw *GatewayType) MarshalJSON() ([]byte, error) {
 	return json.Marshal(gw.String())
 }
@@ -78,11 +81,12 @@ func (it InterfaceType) List() []GatewayType {
 }
 
 func (it InterfaceType) StringList() []string {
-	var s []string
-	for _, v := range it.List() {
-		s = append(s, v.String())
+	lst := it.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
 func (it InterfaceType) IsValid() error {
@@ -103,7 +107,7 @@ func (it InterfaceType) ValidOrNil() (*InterfaceType, error) {
 	return &it, nil
 }
 
-// UnmarshalJSON - implements Unmarshaler interface for InterfaceType
+// UnmarshalJSON - implements Unmarshaler interface for InterfaceType.
 func (it *InterfaceType) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -115,10 +119,11 @@ func (it *InterfaceType) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*it = v
+
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface for InterfaceType
+// MarshalJSON - implements Marshaler interface for InterfaceType.
 func (it *InterfaceType) MarshalJSON() ([]byte, error) {
 	return json.Marshal(it.String())
 }

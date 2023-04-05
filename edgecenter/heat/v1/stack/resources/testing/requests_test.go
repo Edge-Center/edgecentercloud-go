@@ -5,20 +5,19 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/Edge-Center/edgecentercloud-go/pagination"
-
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/heat/v1/stack/resources"
-	fake "github.com/Edge-Center/edgecentercloud-go/testhelper/client"
-
+	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/require"
 
-	log "github.com/sirupsen/logrus"
-
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/heat/v1/stack/resources"
+	"github.com/Edge-Center/edgecentercloud-go/pagination"
 	th "github.com/Edge-Center/edgecentercloud-go/testhelper"
+	fake "github.com/Edge-Center/edgecentercloud-go/testhelper/client"
 )
 
-var stackID = "stack"
-var resourceName = "resource"
+var (
+	stackID      = "stack"
+	resourceName = "resource"
+)
 
 func prepareResourceActionTestURLParams(projectID int, regionID int, stackID, resourceName, action string) string {
 	return fmt.Sprintf("/v1/heat/%d/%d/stacks/%s/resources/%s/%s", projectID, regionID, stackID, resourceName, action)
@@ -106,14 +105,12 @@ func TestGetResource(t *testing.T) {
 		if err != nil {
 			log.Error(err)
 		}
-
 	})
 
 	client := fake.ServiceTokenClient("heat", "v1")
 	resource, err := resources.Get(client, stackID, resourceName).Extract()
 	require.NoError(t, err)
 	require.Equal(t, StackResource1, *resource)
-
 }
 
 func TestList(t *testing.T) {
@@ -176,7 +173,6 @@ func TestListAll(t *testing.T) {
 	require.Equal(t, StackResourceList1, ct)
 	require.Equal(t, ExpectedStackResourceList1, actual)
 	th.AssertNoErr(t, err)
-
 }
 
 func TestMarkUnhealthyResource(t *testing.T) {
@@ -194,7 +190,6 @@ func TestMarkUnhealthyResource(t *testing.T) {
 		if err != nil {
 			log.Error(err)
 		}
-
 	})
 
 	opts := resources.MarkUnhealthyOpts{

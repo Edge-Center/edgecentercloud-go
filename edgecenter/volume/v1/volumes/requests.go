@@ -6,27 +6,27 @@ import (
 	"github.com/Edge-Center/edgecentercloud-go/pagination"
 )
 
-// CreateOptsBuilder allows extensions to add additional parameters to the Create request
+// CreateOptsBuilder allows extensions to add additional parameters to the Create request.
 type CreateOptsBuilder interface {
 	ToVolumeCreateMap() (map[string]interface{}, error)
 }
 
-// UpdateOptsBuilder allows extensions to add additional parameters to the Update request
+// UpdateOptsBuilder allows extensions to add additional parameters to the Update request.
 type UpdateOptsBuilder interface {
 	ToVolumeUpdateMap() (map[string]interface{}, error)
 }
 
-// InstanceOperationOptsBuilder prepare data to proceed with Attach and Detach requests
+// InstanceOperationOptsBuilder prepare data to proceed with Attach and Detach requests.
 type InstanceOperationOptsBuilder interface {
 	ToVolumeInstanceOperationMap() (map[string]interface{}, error)
 }
 
-// PropertiesOperationOptsBuilder prepare data to proceed with Retype and Extend requests
+// PropertiesOperationOptsBuilder prepare data to proceed with Retype and Extend requests.
 type PropertiesOperationOptsBuilder interface {
 	ToVolumePropertiesOperationMap() (map[string]interface{}, error)
 }
 
-// DeleteOptsBuilder allows extensions to add additional parameters to the Delete request
+// DeleteOptsBuilder allows extensions to add additional parameters to the Delete request.
 type DeleteOptsBuilder interface {
 	ToVolumeDeleteQuery() (string, error)
 }
@@ -101,7 +101,7 @@ type DeleteOpts struct {
 	Snapshots []string `q:"snapshots" delimiter:"comma"`
 }
 
-// InstanceOperationOpts allows prepare data for Attach and Detach requests
+// InstanceOperationOpts allows prepare data for Attach and Detach requests.
 type InstanceOperationOpts struct {
 	InstanceID string `json:"instance_id" required:"true" validate:"required,uuid4"`
 }
@@ -156,7 +156,7 @@ func (opts SizePropertyOperationOpts) ToVolumePropertiesOperationMap() (map[stri
 	return edgecloud.BuildRequestBody(opts, "")
 }
 
-// List retrieves list of volumes
+// List retrieves list of volumes.
 func List(c *edgecloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 	url := listURL(c)
 	if opts != nil {
@@ -196,11 +196,13 @@ func Delete(c *edgecloud.ServiceClient, volumeID string, opts DeleteOptsBuilder)
 		query, err := opts.ToVolumeDeleteQuery()
 		if err != nil {
 			r.Err = err
+
 			return
 		}
 		url += query
 	}
 	_, r.Err = c.DeleteWithResponse(url, &r.Body, nil)
+
 	return
 }
 
@@ -295,10 +297,10 @@ func IDFromName(client *edgecloud.ServiceClient, name string) (string, error) {
 
 	switch count {
 	case 0:
-		return "", edgecloud.ErrResourceNotFound{Name: name, ResourceType: "volumes"}
+		return "", edgecloud.ResourceNotFoundError{Name: name, ResourceType: "volumes"}
 	case 1:
 		return id, nil
 	default:
-		return "", edgecloud.ErrMultipleResourcesFound{Name: name, Count: count, ResourceType: "volumes"}
+		return "", edgecloud.MultipleResourcesFoundError{Name: name, Count: count, ResourceType: "volumes"}
 	}
 }

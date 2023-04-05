@@ -3,10 +3,10 @@ package testing
 import (
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/project/v1/projects"
-
-	"github.com/stretchr/testify/require"
 )
 
 func TestUpdateOptsValidation(t *testing.T) {

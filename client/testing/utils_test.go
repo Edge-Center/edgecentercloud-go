@@ -3,8 +3,9 @@ package testing
 import (
 	"testing"
 
-	"github.com/Edge-Center/edgecentercloud-go/client/utils"
 	"github.com/stretchr/testify/require"
+
+	"github.com/Edge-Center/edgecentercloud-go/client/utils"
 )
 
 func TestValidateEqualSlicesLength(t *testing.T) {

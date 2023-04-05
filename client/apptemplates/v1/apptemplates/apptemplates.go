@@ -1,11 +1,12 @@
 package apptemplates
 
 import (
+	"github.com/urfave/cli/v2"
+
 	"github.com/Edge-Center/edgecentercloud-go/client/apptemplates/v1/client"
 	"github.com/Edge-Center/edgecentercloud-go/client/flags"
 	"github.com/Edge-Center/edgecentercloud-go/client/utils"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/apptemplate/v1/apptemplates"
-	"github.com/urfave/cli/v2"
 )
 
 var Commands = cli.Command{
@@ -27,16 +28,17 @@ var appTemplateListSubCommand = cli.Command{
 		client, err := client.NewAppTemplateClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		results, err := apptemplates.ListAll(client)
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		if results != nil {
 			utils.ShowResults(results, c.String("format"))
 		}
+
 		return nil
 	},
 }
@@ -55,17 +57,18 @@ var appTemplateGetSubCommand = cli.Command{
 		client, err := client.NewAppTemplateClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		result, err := apptemplates.Get(client, appTemplateID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		if result != nil {
 			utils.ShowResults(result, c.String("format"))
 		}
+
 		return nil
 	},
 }

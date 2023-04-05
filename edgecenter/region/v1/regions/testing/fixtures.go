@@ -3,13 +3,11 @@ package testing
 import (
 	"time"
 
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/keystone/v1/keystones"
-
-	keystonetypes "github.com/Edge-Center/edgecentercloud-go/edgecenter/keystone/v1/types"
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/region/v1/types"
-
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/keystone/v1/keystones"
+	keystonetypes "github.com/Edge-Center/edgecentercloud-go/edgecenter/keystone/v1/types"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/region/v1/regions"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/region/v1/types"
 )
 
 const ListResponse = `
@@ -81,8 +79,10 @@ const UpdateRequest = `
 }	
 `
 
-const CreateResponse = GetResponse
-const UpdateResponse = GetResponse
+const (
+	CreateResponse = GetResponse
+	UpdateResponse = GetResponse
+)
 
 var (
 	createdTimeString    = "2020-04-10T11:37:58"

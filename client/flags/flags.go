@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/Edge-Center/edgecentercloud-go/client/utils"
-
 	"github.com/urfave/cli/v2"
+
+	"github.com/Edge-Center/edgecentercloud-go/client/utils"
 )
 
 const (
@@ -53,7 +53,7 @@ var commonFlags = []cli.Flag{
 			Destination: &ClientType,
 		},
 		Hidden: true,
-		Usage:  "client type. Either use prepared token for edgecloud API access, get an access token via gcloud platform or use an api token",
+		Usage:  "client type. Either use prepared token for edgecloud API access, get an access token via edgecloud platform or use an api token",
 	},
 }
 
@@ -101,7 +101,7 @@ var tokenFlags = []cli.Flag{
 var platformFlags = []cli.Flag{
 	&cli.StringFlag{
 		Name:        "auth-url",
-		DefaultText: "In case absent parameter it would take if from environ: GCLOUD_AUTH_URL",
+		DefaultText: "In case absent parameter it would take if from environ: EC_CLOUD_AUTH_URL",
 		Usage:       "Auth base url",
 		Required:    false,
 	},
@@ -156,9 +156,11 @@ func buildAPITokenClientFlags() []cli.Flag {
 	return flags
 }
 
-var TokenClientFlags = buildTokenClientFlags()
-var PlatformClientFlags = buildPlatformClientFlags()
-var APITokenClientFlags = buildAPITokenClientFlags()
+var (
+	TokenClientFlags    = buildTokenClientFlags()
+	PlatformClientFlags = buildPlatformClientFlags()
+	APITokenClientFlags = buildAPITokenClientFlags()
+)
 
 var TokenClientHelpText = `
    Environment variables example:
@@ -217,7 +219,7 @@ func AddOutputFlags(commands []*cli.Command) {
 func GetFirstStringArg(c *cli.Context, errorText string) (string, error) {
 	arg := c.Args().First()
 	if arg == "" {
-		return "", cli.NewExitError(fmt.Errorf(errorText), 1)
+		return "", cli.Exit(fmt.Errorf(errorText), 1)
 	}
 	return arg, nil
 }
@@ -225,11 +227,11 @@ func GetFirstStringArg(c *cli.Context, errorText string) (string, error) {
 func GetFirstIntArg(c *cli.Context, errorText string) (int, error) {
 	arg := c.Args().First()
 	if arg == "" {
-		return 0, cli.NewExitError(fmt.Errorf(errorText), 1)
+		return 0, cli.Exit(fmt.Errorf(errorText), 1)
 	}
 	res, err := strconv.Atoi(arg)
 	if err != nil {
-		return 0, cli.NewExitError(err, 1)
+		return 0, cli.Exit(err, 1)
 	}
 	return res, nil
 }

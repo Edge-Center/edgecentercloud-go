@@ -3,9 +3,10 @@ package testing
 import (
 	"testing"
 
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/volume/v1/volumes"
 	"github.com/fatih/structs"
 	"github.com/stretchr/testify/require"
+
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/volume/v1/volumes"
 )
 
 func TestCreateOpts(t *testing.T) {
@@ -123,5 +124,4 @@ func TestCreateOpts(t *testing.T) {
 	_, err = options.ToVolumeCreateMap()
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "TypeName is a required field")
-
 }

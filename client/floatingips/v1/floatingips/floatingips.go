@@ -1,6 +1,7 @@
 package floatingips
 
 import (
+	"errors"
 	"fmt"
 	"net"
 
@@ -17,9 +18,7 @@ import (
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/volume/v1/volumes"
 )
 
-var (
-	floatingIPIDText = "floatingip_id is mandatory argument"
-)
+var floatingIPIDText = "floatingip_id is mandatory argument"
 
 var floatingIPListSubCommand = cli.Command{
 	Name:     "list",
@@ -29,13 +28,14 @@ var floatingIPListSubCommand = cli.Command{
 		client, err := client.NewFloatingIPClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
-		results, err := floatingips.ListAll(client)
+		results, err := floatingips.ListAll(client, nil)
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
+
 		return nil
 	},
 }
@@ -62,7 +62,7 @@ var floatingIPCreateSubCommand = cli.Command{
 		client, err := client.NewFloatingIPClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		ip := net.ParseIP(c.String("fixed-ip-address"))
@@ -79,7 +79,7 @@ var floatingIPCreateSubCommand = cli.Command{
 
 		results, err := floatingips.Create(client, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		return utils.WaitTaskAndShowResult(c, client, results, true, func(task tasks.TaskID) (interface{}, error) {
@@ -96,9 +96,9 @@ var floatingIPCreateSubCommand = cli.Command{
 				return nil, fmt.Errorf("cannot get floating IP ID: %s. Error: %w", floatingIPID, err)
 			}
 			utils.ShowResults(volume, c.String("format"))
+
 			return nil, nil
 		})
-
 	},
 }
 
@@ -116,13 +116,14 @@ var floatingIPGetSubCommand = cli.Command{
 		client, err := client.NewFloatingIPClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		result, err := floatingips.Get(client, floatingIPID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
+
 		return nil
 	},
 }
@@ -142,11 +143,11 @@ var floatingIPDeleteSubCommand = cli.Command{
 		client, err := client.NewFloatingIPClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		results, err := floatingips.Delete(client, floatingIPID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		return utils.WaitTaskAndShowResult(c, client, results, false, func(task tasks.TaskID) (interface{}, error) {
@@ -154,14 +155,12 @@ var floatingIPDeleteSubCommand = cli.Command{
 			if err == nil {
 				return nil, fmt.Errorf("cannot delete floating IP with ID: %s", floatingIPID)
 			}
-			switch err.(type) {
-			case edgecloud.ErrDefault404:
+			var e edgecloud.Default404Error
+			if errors.As(err, &e) {
 				return nil, nil
-			default:
-				return nil, err
 			}
+			return nil, err
 		})
-
 	},
 }
 
@@ -193,7 +192,7 @@ var floatingIPAssignSubCommand = cli.Command{
 		client, err := client.NewFloatingIPClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		ip := net.ParseIP(c.String("fixed-ip-address"))
@@ -210,9 +209,10 @@ var floatingIPAssignSubCommand = cli.Command{
 
 		floatingIP, err := floatingips.Assign(client, floatingIPID, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(floatingIP, c.String("format"))
+
 		return nil
 	},
 }
@@ -231,14 +231,15 @@ var floatingIPUnAssignSubCommand = cli.Command{
 		client, err := client.NewFloatingIPClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		floatingIP, err := floatingips.UnAssign(client, floatingIPID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(floatingIP, c.String("format"))
+
 		return nil
 	},
 }

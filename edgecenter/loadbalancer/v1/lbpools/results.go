@@ -90,7 +90,7 @@ func (p Pool) IsDeleted() bool {
 	return p.ProvisioningStatus == types.ProvisioningStatusDeleted
 }
 
-// HealthMonitor for LB pool
+// HealthMonitor for LB pool.
 type HealthMonitor struct {
 	ID             string                  `json:"id"`
 	Type           types.HealthMonitorType `json:"type"`

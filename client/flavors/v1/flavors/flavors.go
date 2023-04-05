@@ -1,12 +1,12 @@
 package flavors
 
 import (
+	"github.com/urfave/cli/v2"
+
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 	"github.com/Edge-Center/edgecentercloud-go/client/flavors/v1/client"
 	"github.com/Edge-Center/edgecentercloud-go/client/utils"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/flavor/v1/flavors"
-
-	"github.com/urfave/cli/v2"
 )
 
 var flavorListCommand = cli.Command{
@@ -35,7 +35,7 @@ var flavorListCommand = cli.Command{
 		}
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		prices := c.Bool("include_prices")
 		opts := flavors.ListOpts{
@@ -43,9 +43,10 @@ var flavorListCommand = cli.Command{
 		}
 		results, err := flavors.ListAll(cl, opts)
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
+
 		return nil
 	},
 }

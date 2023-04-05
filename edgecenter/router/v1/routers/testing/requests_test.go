@@ -6,19 +6,16 @@ import (
 	"net/http"
 	"testing"
 
-	edgecloud "github.com/Edge-Center/edgecentercloud-go"
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/router/v1/types"
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/subnet/v1/subnets"
-
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/router/v1/routers"
-	fake "github.com/Edge-Center/edgecentercloud-go/testhelper/client"
-
+	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/require"
 
-	log "github.com/sirupsen/logrus"
-
+	edgecloud "github.com/Edge-Center/edgecentercloud-go"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/router/v1/routers"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/router/v1/types"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/subnet/v1/subnets"
 	"github.com/Edge-Center/edgecentercloud-go/pagination"
 	th "github.com/Edge-Center/edgecentercloud-go/testhelper"
+	fake "github.com/Edge-Center/edgecentercloud-go/testhelper/client"
 )
 
 func prepareListTestURLParams(projectID int, regionID int) string {
@@ -104,11 +101,9 @@ func TestListAll(t *testing.T) {
 	ct := results[0]
 	require.Equal(t, Router1, ct)
 	require.Equal(t, ExpectedRouterSlice, results)
-
 }
 
 func TestGet(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -208,7 +203,6 @@ func TestDelete(t *testing.T) {
 }
 
 func TestUpdate(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 

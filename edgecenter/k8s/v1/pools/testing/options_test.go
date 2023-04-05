@@ -3,16 +3,14 @@ package testing
 import (
 	"testing"
 
-	edgecloud "github.com/Edge-Center/edgecentercloud-go"
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
-
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/k8s/v1/pools"
-
 	"github.com/stretchr/testify/require"
+
+	edgecloud "github.com/Edge-Center/edgecentercloud-go"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/k8s/v1/pools"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
 )
 
 func TestUpdateOpts(t *testing.T) {
-
 	options := pools.UpdateOpts{
 		MinNodeCount: 5,
 		MaxNodeCount: 3,
@@ -40,11 +38,9 @@ func TestUpdateOpts(t *testing.T) {
 	require.Contains(t, err.Error(), "MaxNodeCount")
 	require.Contains(t, err.Error(), "MinNodeCount")
 	require.Contains(t, err.Error(), "Name")
-
 }
 
 func TestCreateOpts(t *testing.T) {
-
 	options := pools.CreateOpts{
 		Name:             "",
 		FlavorID:         "",
@@ -91,7 +87,6 @@ func TestCreateOpts(t *testing.T) {
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "MinNodeCount")
 	require.Contains(t, err.Error(), "NodeCount")
-
 }
 
 func TestDecodePoolTask(t *testing.T) {

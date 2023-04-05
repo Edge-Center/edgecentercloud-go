@@ -1,11 +1,12 @@
 package servergroups
 
 import (
+	"github.com/urfave/cli/v2"
+
 	"github.com/Edge-Center/edgecentercloud-go/client/flags"
 	"github.com/Edge-Center/edgecentercloud-go/client/servergroups/v1/client"
 	"github.com/Edge-Center/edgecentercloud-go/client/utils"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/servergroup/v1/servergroups"
-	"github.com/urfave/cli/v2"
 )
 
 var serverGroupIDText = "servergroup_id is mandatory argument"
@@ -28,13 +29,14 @@ var serverGroupListCommand = cli.Command{
 		client, err := client.NewServerGroupClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		results, err := servergroups.ListAll(client)
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
+
 		return nil
 	},
 }
@@ -52,13 +54,14 @@ var serverGroupGetCommand = cli.Command{
 		client, err := client.NewServerGroupClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		sg, err := servergroups.Get(client, serverGroupID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(sg, c.String("format"))
+
 		return nil
 	},
 }
@@ -76,12 +79,13 @@ var serverGroupDeleteCommand = cli.Command{
 		client, err := client.NewServerGroupClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		err = servergroups.Delete(client, serverGroupID).ExtractErr()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
+
 		return nil
 	},
 }
@@ -107,7 +111,7 @@ var serverGroupCreateCommand = cli.Command{
 		client, err := client.NewServerGroupClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		opts := servergroups.CreateOpts{
@@ -116,9 +120,10 @@ var serverGroupCreateCommand = cli.Command{
 		}
 		result, err := servergroups.Create(client, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
+
 		return nil
 	},
 }

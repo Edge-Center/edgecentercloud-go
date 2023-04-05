@@ -20,18 +20,18 @@ func (r commonResult) ExtractInto(v interface{}) error {
 	return r.Result.ExtractIntoStructPtr(v, "")
 }
 
-// GetResult represents the result of a get operation. Call its Extract
+// GetResult represents the result of a get operation. Call its Extract.
 // method to interpret it as a ServerGroup.
 type GetResult struct {
 	commonResult
 }
 
-// DeleteResult represents the result of a delete operation
+// DeleteResult represents the result of a delete operation.
 type DeleteResult struct {
 	edgecloud.ErrResult
 }
 
-// ServerGroupInstance represent an instances in server group
+// ServerGroupInstance represent an instances in server group.
 type ServerGroupInstance struct {
 	InstanceID   string `json:"instance_id"`
 	InstanceName string `json:"instance_name"`

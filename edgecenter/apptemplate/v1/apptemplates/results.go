@@ -79,7 +79,7 @@ type AppTemplate struct {
 	Description      string                   `json:"description"`
 	ShortDescription string                   `json:"short_description"`
 	RegionID         *int                     `json:"region_id"`
-	MinRam           int                      `json:"min_ram"`
+	MinRAM           int                      `json:"min_ram"`
 	AppConfig        []map[string]interface{} `json:"app_config"`
 	Version          string                   `json:"version"`
 	MinDisk          int                      `json:"min_disk"`

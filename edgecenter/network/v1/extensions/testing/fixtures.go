@@ -3,9 +3,8 @@ package testing
 import (
 	"time"
 
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/network/v1/extensions"
-
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/network/v1/extensions"
 )
 
 const ListResponse = `
@@ -37,9 +36,11 @@ const GetResponse = `
 }
 `
 
-var updatedTimeString = "2006-01-02T15:04:05-0700"
-var updatedTimeParsed, _ = time.Parse(edgecloud.RFC3339Z, updatedTimeString)
-var updatedTime = edgecloud.JSONRFC3339Z{Time: updatedTimeParsed}
+var (
+	updatedTimeString    = "2006-01-02T15:04:05-0700"
+	updatedTimeParsed, _ = time.Parse(edgecloud.RFC3339Z, updatedTimeString)
+	updatedTime          = edgecloud.JSONRFC3339Z{Time: updatedTimeParsed}
+)
 
 var (
 	Extension1 = extensions.Extension{

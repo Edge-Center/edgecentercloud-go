@@ -3,21 +3,19 @@ package resources
 import (
 	"bytes"
 
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/heat/v1/stack/resources/types"
-
-	"github.com/Edge-Center/edgecentercloud-go/pagination"
-
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/heat/v1/stack/resources/types"
+	"github.com/Edge-Center/edgecentercloud-go/pagination"
 )
 
-// Metadata retrieves metadata for heat resource
+// Metadata retrieves metadata for heat resource.
 func Metadata(c *edgecloud.ServiceClient, id, resource string) (r MetadataResult) {
 	url := MetadataURL(c, id, resource)
 	_, r.Err = c.Get(url, &r.Body, nil)
 	return
 }
 
-// Signal set heat resource status
+// Signal set heat resource status.
 func Signal(c *edgecloud.ServiceClient, id, resource string, body []byte) (r SignalResult) {
 	url := SignalURL(c, id, resource)
 	_, r.Err = c.Post(url, nil, nil, &edgecloud.RequestOpts{
@@ -65,7 +63,7 @@ type MarkUnhealthyOpts struct {
 }
 
 // MarkUnhealthyOptsBuilder is the interface options structs have to satisfy in order
-// to be used in the MarkUnhealthy operation in this package
+// to be used in the MarkUnhealthy operation in this package.
 type MarkUnhealthyOptsBuilder interface {
 	ToMarkUnhealthyMap() (map[string]interface{}, error)
 }
@@ -126,5 +124,4 @@ func ListAll(client *edgecloud.ServiceClient, stackID string, opts ListOptsBuild
 	}
 
 	return all, nil
-
 }

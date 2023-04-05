@@ -53,6 +53,7 @@ func deepCopyURL(c *edgecloud.ServiceClient, id string) string {
 func metadataURL(c *edgecloud.ServiceClient, id string) string {
 	return resourceActionURL(c, id, "metadata")
 }
+
 func metadataItemURL(c *edgecloud.ServiceClient, id string, key string) string {
 	return resourceActionURL(c, id, fmt.Sprintf("metadata_item?key=%s", key))
 }

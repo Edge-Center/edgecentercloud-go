@@ -8,7 +8,7 @@ import (
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 )
 
-// Template is a structure that represents OpenStack Heat templates
+// Template is a structure that represents OpenStack Heat templates.
 type Template struct {
 	TE
 }
@@ -21,7 +21,7 @@ var TemplateFormatVersions = map[string]bool{
 	"AWSTemplateFormatVersion":  true,
 }
 
-// Validate validates the contents of the Template
+// Validate validates the contents of the Template.
 func (t *Template) Validate() error {
 	if t.Parsed == nil {
 		if err := t.Parse(); err != nil {
@@ -35,7 +35,8 @@ func (t *Template) Validate() error {
 		}
 		invalid = key
 	}
-	return ErrInvalidTemplateFormatVersion{Version: invalid}
+
+	return InvalidTemplateFormatVersionError{Version: invalid}
 }
 
 // GetFileContents recursively parses a template to search for urls. These urls
@@ -101,9 +102,9 @@ func (t *Template) getFileContents(te interface{}, ignoreIf igFunc, recurse bool
 				// At this point, the child template has been parsed recursively.
 				t.fileMaps[value] = childTemplate.URL
 				t.Files[childTemplate.URL] = string(childTemplate.Bin)
-
 			}
 		}
+
 		return nil
 	// if te is a slice, call the function on each element of the slice.
 	case []interface{}:
@@ -116,12 +117,13 @@ func (t *Template) getFileContents(te interface{}, ignoreIf igFunc, recurse bool
 	case string, bool, float64, nil, int:
 		return nil
 	default:
-		return edgecloud.ErrUnexpectedType{Actual: fmt.Sprintf("%v", reflect.TypeOf(te))}
+		return edgecloud.UnexpectedTypeError{Actual: fmt.Sprintf("%v", reflect.TypeOf(te))}
 	}
+
 	return nil
 }
 
-// function to choose keys whose values are other template files
+// function to choose keys whose values are other template files.
 func ignoreIfTemplate(key string, value interface{}) bool {
 	// key must be either `get_file` or `type` for value to be a URL
 	if key != "get_file" && key != "type" {
@@ -136,5 +138,6 @@ func ignoreIfTemplate(key string, value interface{}) bool {
 	if key == "type" && !(strings.HasSuffix(valueString, ".template") || strings.HasSuffix(valueString, ".yaml")) {
 		return true
 	}
+
 	return false
 }

@@ -30,7 +30,7 @@ func (opts ListOpts) ToAPITokenListQuery() (string, error) {
 	return q.String(), err
 }
 
-// List is a convenience function that returns all api tokens
+// List is a convenience function that returns all api tokens.
 func List(c *edgecloud.ServiceClient, clientID int, opts ListOptsBuilder) (r ListResult) {
 	url := listURL(c, clientID)
 	if opts != nil {
@@ -42,6 +42,7 @@ func List(c *edgecloud.ServiceClient, clientID int, opts ListOptsBuilder) (r Lis
 		url += query
 	}
 	_, r.Err = c.Get(url, &r.Body, nil)
+
 	return
 }
 
@@ -59,7 +60,7 @@ func Delete(c *edgecloud.ServiceClient, clientID, tokenID int) (r DeleteResult) 
 
 // CreateOptsBuilder allows extensions to add additional parameters to the Create request.
 type CreateOptsBuilder interface {
-	ToApiTokenCreateMap() (map[string]interface{}, error)
+	ToAPITokenCreateMap() (map[string]interface{}, error)
 }
 
 // CreateOpts represents options used to create an api token.
@@ -74,26 +75,26 @@ type CreateClientUser struct {
 	Role ClientRole `json:"role" validate:"dive"`
 }
 
-// ToApiTokenCreateMap builds a request body from CreateOpts.
-func (opts CreateOpts) ToApiTokenCreateMap() (map[string]interface{}, error) {
+// ToAPITokenCreateMap builds a request body from CreateOpts.
+func (opts CreateOpts) ToAPITokenCreateMap() (map[string]interface{}, error) {
 	if err := opts.Validate(); err != nil {
 		return nil, err
 	}
 	return edgecloud.BuildRequestBody(opts, "")
 }
 
-// Validate
+// Validate CreateOpts.
 func (opts CreateOpts) Validate() error {
 	return edgecloud.TranslateValidationError(edgecloud.Validate.Struct(opts))
 }
 
 // Create creates an APIToken.
 func Create(client *edgecloud.ServiceClient, clientID int, opts CreateOptsBuilder) (r CreateResult) {
-	b, err := opts.ToApiTokenCreateMap()
+	b, err := opts.ToAPITokenCreateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	_, r.Err = client.Post(createURL(client, clientID), b, &r.Body, nil) // nolint
+	_, r.Err = client.Post(createURL(client, clientID), b, &r.Body, nil)
 	return
 }

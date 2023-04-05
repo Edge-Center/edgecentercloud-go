@@ -82,7 +82,7 @@ var (
 		Usage:            "tf2server.usage",
 		Description:      "tf2server.description",
 		ShortDescription: "tf2server.short_description",
-		MinRam:           1024,
+		MinRAM:           1024,
 		AppConfig: []map[string]interface{}{
 			{
 				"default":     "Server name",

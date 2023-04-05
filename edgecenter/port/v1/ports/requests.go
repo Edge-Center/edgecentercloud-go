@@ -25,24 +25,24 @@ func (opts AllowAddressPairsOpts) ToAllowAddressPairsMap() (map[string]interface
 	return edgecloud.BuildRequestBody(opts, "")
 }
 
-// Validate
+// Validate AllowAddressPairsOpts.
 func (opts AllowAddressPairsOpts) Validate() error {
 	return edgecloud.TranslateValidationError(edgecloud.Validate.Struct(opts))
 }
 
-// EnablePortSecurity
+// EnablePortSecurity by portID.
 func EnablePortSecurity(c *edgecloud.ServiceClient, portID string) (r UpdateResult) {
 	_, r.Err = c.Post(enablePortSecurityURL(c, portID), nil, &r.Body, nil)
 	return
 }
 
-// DisablePortSecurity
+// DisablePortSecurity by portID.
 func DisablePortSecurity(c *edgecloud.ServiceClient, portID string) (r UpdateResult) {
 	_, r.Err = c.Post(disablePortSecurityURL(c, portID), nil, &r.Body, nil)
 	return
 }
 
-// AllowAddressPairs assign allowed address pairs for instance port
+// AllowAddressPairs assign allowed address pairs for instance port.
 func AllowAddressPairs(c *edgecloud.ServiceClient, portID string, opts AllowAddressPairsOptsBuilder) (r AssignResult) {
 	b, err := opts.ToAllowAddressPairsMap()
 	if err != nil {

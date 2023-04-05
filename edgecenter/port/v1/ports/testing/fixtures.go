@@ -4,11 +4,10 @@ import (
 	"net"
 	"time"
 
+	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/instance/v1/instances"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/port/v1/ports"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/reservedfixedip/v1/reservedfixedips"
-
-	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 )
 
 const EnableResponse = `

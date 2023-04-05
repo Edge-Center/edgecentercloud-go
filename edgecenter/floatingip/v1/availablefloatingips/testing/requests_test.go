@@ -5,17 +5,14 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/floatingip/v1/availablefloatingips"
-
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/floatingip/v1/floatingips"
-	fake "github.com/Edge-Center/edgecentercloud-go/testhelper/client"
-
+	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/require"
 
-	log "github.com/sirupsen/logrus"
-
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/floatingip/v1/availablefloatingips"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/floatingip/v1/floatingips"
 	"github.com/Edge-Center/edgecentercloud-go/pagination"
 	th "github.com/Edge-Center/edgecentercloud-go/testhelper"
+	fake "github.com/Edge-Center/edgecentercloud-go/testhelper/client"
 )
 
 func prepareListTestURLParams(projectID int, regionID int) string {
@@ -85,5 +82,4 @@ func TestListAll(t *testing.T) {
 	ct := groups[0]
 	require.Equal(t, floatingIPDetails, ct)
 	require.Equal(t, ExpectedFloatingIPSlice, groups)
-
 }

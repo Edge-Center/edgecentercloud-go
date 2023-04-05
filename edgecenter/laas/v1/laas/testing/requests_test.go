@@ -5,21 +5,20 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/laas/v1/laas"
-	"github.com/Edge-Center/edgecentercloud-go/pagination"
-	fake "github.com/Edge-Center/edgecentercloud-go/testhelper/client"
+	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/require"
 
-	log "github.com/sirupsen/logrus"
-
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/laas/v1/laas"
+	"github.com/Edge-Center/edgecentercloud-go/pagination"
 	th "github.com/Edge-Center/edgecentercloud-go/testhelper"
+	fake "github.com/Edge-Center/edgecentercloud-go/testhelper/client"
 )
 
-func prepareSectionTestURLParams(projectID int, regionID int, section string) string { // nolint
+func prepareSectionTestURLParams(projectID int, regionID int, section string) string {
 	return fmt.Sprintf("/v1/laas/%d/%d/%s", projectID, regionID, section)
 }
 
-func prepareActionTestURLParams(projectID int, regionID int, section, action string) string { // nolint
+func prepareActionTestURLParams(projectID int, regionID int, section, action string) string {
 	return fmt.Sprintf("/v1/laas/%d/%d/%s/%s", projectID, regionID, section, action)
 }
 
@@ -39,11 +38,11 @@ func prepareTopicsDeleteTestURL(topicName string) string {
 	return prepareActionTestURLParams(fake.ProjectID, fake.RegionID, "topics", topicName)
 }
 
-func prepareOpenSearchTestURL() string { // nolint
+func prepareOpenSearchTestURL() string {
 	return fmt.Sprintf("/v1/laas/%d/opensearch_hosts", fake.RegionID)
 }
 
-func prepareKafkaTestURL() string { // nolint
+func prepareKafkaTestURL() string {
 	return fmt.Sprintf("/v1/laas/%d/kafka_hosts", fake.RegionID)
 }
 

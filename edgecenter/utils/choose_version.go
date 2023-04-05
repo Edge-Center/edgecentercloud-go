@@ -63,7 +63,6 @@ func ChooseVersion(client *edgecloud.ProviderClient, recognized []*Version) (*Ve
 		JSONResponse: &resp,
 		OkCodes:      []int{200, 300},
 	})
-
 	if err != nil {
 		return nil, "", err
 	}

@@ -5,18 +5,17 @@ import "fmt"
 func MapInterfaceToMapString(mapInterface interface{}) (map[string]string, error) {
 	mapString := make(map[string]string)
 
-	switch mapInterface.(type) {
+	switch v := mapInterface.(type) {
 	default:
-		return nil, fmt.Errorf("Unexpected type %T", mapInterface)
+		return nil, fmt.Errorf("unexpected type %T", mapInterface)
 	case map[string]interface{}:
-		for key, value := range mapInterface.(map[string]interface{}) {
+		for key, value := range v {
 			mapString[key] = fmt.Sprintf("%v", value)
 		}
 	case map[interface{}]interface{}:
-		for key, value := range mapInterface.(map[interface{}]interface{}) {
+		for key, value := range v {
 			mapString[fmt.Sprintf("%v", key)] = fmt.Sprintf("%v", value)
 		}
-
 	}
 
 	return mapString, nil

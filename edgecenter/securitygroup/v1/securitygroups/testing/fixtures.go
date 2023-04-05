@@ -4,10 +4,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/securitygroup/v1/types"
-
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/securitygroup/v1/securitygroups"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/securitygroup/v1/types"
 	fake "github.com/Edge-Center/edgecentercloud-go/testhelper/client"
 )
 
@@ -212,11 +211,13 @@ const MetadataResponse = `
   "read_only": false
 }
 `
+
 const ResourceMetadataRequest = `
 {
 "some_key": "some_val"
 }
 `
+
 const MetadataCreateRequest = `
 {
 "test1": "test1", 

@@ -59,7 +59,7 @@ func intIntoPathPath(value int) string {
 	return ""
 }
 
-// DefaultEndpointLocator - function to prepare API endpoint
+// DefaultEndpointLocator - function to prepare API endpoint.
 func DefaultEndpointLocator(endpoint string) EndpointLocator {
 	return func(eo EndpointOpts) (string, error) {
 		params := []string{

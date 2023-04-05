@@ -3,10 +3,9 @@ package testing
 import (
 	"net"
 
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/volume/v1/volumes"
-
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/k8s/v1/pools"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/volume/v1/volumes"
 )
 
 const ListResponse = `
@@ -42,10 +41,10 @@ const GetResponse1 = `
   "docker_volume_type": "standard",
   "min_node_count": 1,
   "labels": {
-	"gcloud_project_id":    "1",
-	"gcloud_region_id":     "1",
-	"gcloud_access_token":  "token",
-	"gcloud_refresh_token": "token"
+	"ec_cloud_project_id":    "1",
+	"ec_cloud_region_id":     "1",
+	"ec_cloud_access_token":  "token",
+	"ec_cloud_refresh_token": "token"
   },
   "role": "worker",
   "project_id": "46beed3938e6474390b530fefd6173d2",
@@ -87,6 +86,7 @@ const CreateResponse = `
   ]
 }
 `
+
 const DeleteResponse = `
 {
   "tasks": [
@@ -101,10 +101,10 @@ var (
 	}
 	nodeAddress = net.ParseIP("192.168.0.5")
 	labels      = map[string]string{
-		"gcloud_project_id":    "1",
-		"gcloud_region_id":     "1",
-		"gcloud_access_token":  "token",
-		"gcloud_refresh_token": "token",
+		"ec_cloud_project_id":    "1",
+		"ec_cloud_region_id":     "1",
+		"ec_cloud_access_token":  "token",
+		"ec_cloud_refresh_token": "token",
 	}
 	PoolList1 = pools.ClusterListPool{
 		UUID:             "908338b2-9217-4673-af0e-f0093139fbac",

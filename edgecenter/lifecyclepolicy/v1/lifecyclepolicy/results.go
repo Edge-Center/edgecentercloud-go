@@ -94,5 +94,6 @@ func (r ListResult) Extract() ([]LifecyclePolicy, error) {
 		}
 		policies[i] = *p
 	}
+
 	return policies, err
 }

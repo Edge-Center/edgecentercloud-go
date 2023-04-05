@@ -112,7 +112,6 @@ func ListAll(client *edgecloud.ServiceClient, opts ListOptsBuilder) ([]Snapshot,
 	}
 
 	return all, nil
-
 }
 
 // IDFromName is a convenience function that returns a snapshot ID, given its name.
@@ -134,11 +133,11 @@ func IDFromName(client *edgecloud.ServiceClient, name string, opts ListOptsBuild
 
 	switch count {
 	case 0:
-		return "", edgecloud.ErrResourceNotFound{Name: name, ResourceType: "snapshots"}
+		return "", edgecloud.ResourceNotFoundError{Name: name, ResourceType: "snapshots"}
 	case 1:
 		return id, nil
 	default:
-		return "", edgecloud.ErrMultipleResourcesFound{Name: name, Count: count, ResourceType: "snapshots"}
+		return "", edgecloud.MultipleResourcesFoundError{Name: name, Count: count, ResourceType: "snapshots"}
 	}
 }
 
@@ -147,23 +146,23 @@ type MetadataOptsBuilder interface {
 	ToMetadataMap() (string, error)
 }
 
-// MetadataOpts. Set parameters for Create or Update operation
+// MetadataOpts set parameters for Create or Update operation.
 type MetadataOpts struct {
 	Key   string `json:"key" validate:"required,max=255"`
 	Value string `json:"value" validate:"required,max=255"`
 }
 
-// MetadataSetOpts. Set parameters for Create or Update operation
+// MetadataSetOpts set parameters for Create or Update operation.
 type MetadataSetOpts struct {
 	Metadata []MetadataOpts `json:"metadata"`
 }
 
-// Validate
+// Validate MetadataOpts.
 func (opts MetadataOpts) Validate() error {
 	return edgecloud.ValidateStruct(opts)
 }
 
-// Validate
+// Validate MetadataSetOpts.
 func (opts MetadataSetOpts) Validate() error {
 	return edgecloud.ValidateStruct(opts)
 }
@@ -187,7 +186,7 @@ func MetadataReplace(client *edgecloud.ServiceClient, id string, opts MetadataSe
 		r.Err = err
 		return
 	}
-	_, r.Err = client.Put(metadataURL(client, id), b, &r.Body, &edgecloud.RequestOpts{ // nolint
+	_, r.Err = client.Put(metadataURL(client, id), b, &r.Body, &edgecloud.RequestOpts{
 		OkCodes: []int{http.StatusNoContent, http.StatusOK},
 	})
 	return

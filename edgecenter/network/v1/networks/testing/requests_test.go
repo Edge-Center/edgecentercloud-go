@@ -5,17 +5,14 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/utils/metadata"
-
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/network/v1/networks"
-	fake "github.com/Edge-Center/edgecentercloud-go/testhelper/client"
-
+	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/require"
 
-	log "github.com/sirupsen/logrus"
-
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/network/v1/networks"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/utils/metadata"
 	"github.com/Edge-Center/edgecentercloud-go/pagination"
 	th "github.com/Edge-Center/edgecentercloud-go/testhelper"
+	fake "github.com/Edge-Center/edgecentercloud-go/testhelper/client"
 )
 
 func prepareListTestURLParams(projectID int, regionID int) string {
@@ -42,7 +39,7 @@ func prepareListInstancePortTestURL(id string) string {
 	return prepareActionTestURLParams(fake.ProjectID, fake.RegionID, id, "ports")
 }
 
-func prepareGetActionTestURLParams(version string, id string, action string) string { // nolint
+func prepareGetActionTestURLParams(version string, id string, action string) string {
 	return fmt.Sprintf("/%s/networks/%d/%d/%s/%s", version, fake.ProjectID, fake.RegionID, id, action)
 }
 
@@ -113,7 +110,6 @@ func TestListAll(t *testing.T) {
 	ct := actual[0]
 	require.Equal(t, Network1, ct)
 	require.Equal(t, ExpectedNetworkSlice, actual)
-
 }
 
 func TestGet(t *testing.T) {
@@ -143,7 +139,6 @@ func TestGet(t *testing.T) {
 	require.Equal(t, Network1, *ct)
 	require.Equal(t, createdTime, ct.CreatedAt)
 	require.Equal(t, updatedTime, *ct.UpdatedAt)
-
 }
 
 func TestCreate(t *testing.T) {
@@ -194,11 +189,9 @@ func TestDelete(t *testing.T) {
 	tasks, err := networks.Delete(client, Network1.ID).Extract()
 	require.NoError(t, err)
 	require.Equal(t, Tasks1, *tasks)
-
 }
 
 func TestUpdate(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -232,7 +225,6 @@ func TestUpdate(t *testing.T) {
 	require.Equal(t, Network1.Name, ct.Name)
 	require.Equal(t, createdTime, ct.CreatedAt)
 	require.Equal(t, updatedTime, *ct.UpdatedAt)
-
 }
 
 func TestListAllInstancePort(t *testing.T) {
@@ -258,7 +250,6 @@ func TestListAllInstancePort(t *testing.T) {
 	ct := actual[0]
 	require.Equal(t, InstancePort1, ct)
 	require.Equal(t, ExpectedInstancePortSlice, actual)
-
 }
 
 func TestMetadataListAll(t *testing.T) {
@@ -279,7 +270,7 @@ func TestMetadataListAll(t *testing.T) {
 
 	client := fake.ServiceTokenClient("networks", "v1")
 
-	actual, err := metadata.MetadataListAll(client, Network1.ID)
+	actual, err := metadata.ResourceMetadataListAll(client, Network1.ID)
 	require.NoError(t, err)
 	ct := actual[0]
 	require.Equal(t, Metadata1, ct)
@@ -304,7 +295,7 @@ func TestMetadataGet(t *testing.T) {
 
 	client := fake.ServiceTokenClient("networks", "v1")
 
-	actual, err := metadata.MetadataGet(client, Network1.ID, ResourceMetadataReadOnly.Key).Extract()
+	actual, err := metadata.ResourceMetadataGet(client, Network1.ID, ResourceMetadataReadOnly.Key).Extract()
 	require.NoError(t, err)
 	require.Equal(t, &ResourceMetadataReadOnly, actual)
 }
@@ -325,7 +316,7 @@ func TestMetadataCreate(t *testing.T) {
 	})
 
 	client := fake.ServiceTokenClient("networks", "v1")
-	err := metadata.MetadataCreateOrUpdate(client, Network1.ID, map[string]string{
+	err := metadata.ResourceMetadataCreateOrUpdate(client, Network1.ID, map[string]string{
 		"test1": "test1",
 		"test2": "test2",
 	}).ExtractErr()
@@ -348,7 +339,7 @@ func TestMetadataUpdate(t *testing.T) {
 	})
 
 	client := fake.ServiceTokenClient("networks", "v1")
-	err := metadata.MetadataReplace(client, Network1.ID, map[string]string{
+	err := metadata.ResourceMetadataReplace(client, Network1.ID, map[string]string{
 		"test1": "test1",
 		"test2": "test2",
 	}).ExtractErr()
@@ -368,6 +359,6 @@ func TestMetadataDelete(t *testing.T) {
 	})
 
 	client := fake.ServiceTokenClient("networks", "v1")
-	err := metadata.MetadataDelete(client, Network1.ID, Metadata1.Key).ExtractErr()
+	err := metadata.ResourceMetadataDelete(client, Network1.ID, Metadata1.Key).ExtractErr()
 	require.NoError(t, err)
 }

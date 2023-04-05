@@ -35,7 +35,7 @@ func (ua *UserAgent) Prepend(s ...string) {
 // Join concatenates all the user-defined User-Agent strings with the default
 // EdgeCenter cloud User-Agent string.
 func (ua *UserAgent) Join() string {
-	// nolint:gocritic
+	//nolint:gocritic
 	uaSlice := append(ua.prepend, DefaultUserAgent)
 	return strings.Join(uaSlice, " ")
 }
@@ -85,7 +85,7 @@ type ProviderClient struct {
 	Throwaway bool
 
 	// Context is the context passed to the HTTP request.
-	Context context.Context
+	Context context.Context //nolint: containedctx
 
 	// mut is a mutex for the client. It protects read and write access to client attributes such as getting
 	// and setting the AccessTokenID.
@@ -135,6 +135,7 @@ func (client *ProviderClient) AuthenticatedHeaders() (m map[string]string) {
 	if t == "" {
 		return
 	}
+
 	return map[string]string{"Authorization": fmt.Sprintf("Bearer %s", t)}
 }
 
@@ -160,7 +161,7 @@ func (client *ProviderClient) GetAuthResult() AuthResult {
 }
 
 // AccessToken safely reads the value of the auth token from the ProviderClient. Applications should
-// call this method to access the token instead of the AccessTokenID field
+// call this method to access the token instead of the AccessTokenID field.
 func (client *ProviderClient) AccessToken() string {
 	if client.mut != nil {
 		client.mut.RLock()
@@ -170,7 +171,7 @@ func (client *ProviderClient) AccessToken() string {
 }
 
 // RefreshToken safely reads the value of the auth token from the ProviderClient. Applications should
-// call this method to access the token instead of the RefreshTokenID field
+// call this method to access the token instead of the RefreshTokenID field.
 func (client *ProviderClient) RefreshToken() string {
 	if client.mut != nil {
 		client.mut.RLock()
@@ -179,7 +180,7 @@ func (client *ProviderClient) RefreshToken() string {
 	return client.RefreshTokenID
 }
 
-// SetAPIToken safely sets the value of the api token in the ProviderClient
+// SetAPIToken safely sets the value of the api token in the ProviderClient.
 func (client *ProviderClient) SetAPIToken(opt APITokenOptions) error {
 	client.APIToken = opt.APIToken
 	return nil
@@ -206,11 +207,11 @@ func (client *ProviderClient) SetTokensAndAuthResult(r AuthResult) error {
 	client.AccessTokenID = accessTokenID
 	client.RefreshTokenID = refreshTokenID
 	client.authResult = r
+
 	return nil
 }
 
-// CopyTokensFrom safely copies the token from another ProviderClient into the
-// this one.
+// CopyTokensFrom safely copies the token from another ProviderClient into this one.
 func (client *ProviderClient) CopyTokensFrom(other *ProviderClient) {
 	if client.mut != nil {
 		client.mut.Lock()
@@ -300,10 +301,11 @@ func (client *ProviderClient) Reauthenticate(previousToken string) error {
 			responseChannel <- err
 		}
 	}()
+
 	return err
 }
 
-// SetDebug for request and response
+// SetDebug for request and response.
 func (client *ProviderClient) SetDebug(debug bool) {
 	client.debug = debug
 	log.SetLevel(log.DebugLevel)
@@ -382,28 +384,10 @@ func (client *ProviderClient) Request(method, url string, options *RequestOpts) 
 	})
 }
 
-func (client *ProviderClient) doRequest(method, url string, options *RequestOpts, state *requestState) (*http.Response, error) { // nolint: gocyclo
-	var body io.Reader
-	var contentType *string
-
-	// Derive the content body by either encoding an arbitrary object as JSON, or by taking a provided
-	// io.ReadSeeker as-is. Default the content-type to application/json.
-	if options.JSONBody != nil {
-		if options.RawBody != nil {
-			return nil, errors.New("please provide only one of JSONBody or RawBody to edgecloud.Request()")
-		}
-
-		rendered, err := json.Marshal(options.JSONBody)
-		if err != nil {
-			return nil, err
-		}
-
-		body = bytes.NewReader(rendered)
-		contentType = &applicationJSON
-	}
-
-	if options.RawBody != nil {
-		body = options.RawBody
+func (client *ProviderClient) doRequest(method, url string, options *RequestOpts, state *requestState) (*http.Response, error) {
+	body, contentType, err := getRequestBodyAndContentType(options)
+	if err != nil {
+		return nil, err
 	}
 
 	// Construct the http.Request.
@@ -411,72 +395,28 @@ func (client *ProviderClient) doRequest(method, url string, options *RequestOpts
 	if err != nil {
 		return nil, err
 	}
+
 	if client.Context != nil {
 		req = req.WithContext(client.Context)
 	}
-
-	// Populate the request headers. Apply options.MoreHeaders last, to give the caller the chance to
-	// modify or omit any header.
-	if contentType != nil {
-		req.Header.Set("Content-Type", *contentType)
-	}
-	req.Header.Set("Accept", applicationJSON)
-
-	// Set the User-Agent header
-	req.Header.Set("User-Agent", client.UserAgent.Join())
-
-	if options.MoreHeaders != nil {
-		for k, v := range options.MoreHeaders {
-			if v != "" {
-				req.Header.Set(k, v)
-			} else {
-				req.Header.Del(k)
-			}
-		}
-	}
-
-	// get latest token from client
-	for k, v := range client.AuthenticatedHeaders() {
-		req.Header.Set(k, v)
-	}
-
-	// Set connection parameter to close the connection immediately when we've got the response
-	req.Close = true
+	setRequestContextAndHeaders(req, client, options, contentType)
 
 	preReqToken := client.AccessToken()
-
 	client.debugRequest(req)
 
-	// Issue the request.
 	resp, err := client.HTTPClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
-
 	client.debugResponse(resp)
 
-	// Allow default OkCodes if none explicitly set
-	okc := options.OkCodes
-	if okc == nil {
-		okc = defaultOkCodes(method)
-	}
-
-	// Validate the HTTP response status.
-	var ok bool
-	for _, code := range okc {
-		if resp.StatusCode == code {
-			ok = true
-			break
-		}
-	}
-
-	if !ok {
+	if !isResponseCodeValid(resp.StatusCode, method, options) {
 		body, _ := io.ReadAll(resp.Body)
 		err := resp.Body.Close()
 		if err != nil {
 			log.Error(err)
 		}
-		respErr := ErrUnexpectedResponseCode{
+		respErr := UnexpectedResponseCodeError{
 			URL:      url,
 			Method:   method,
 			Expected: options.OkCodes,
@@ -487,15 +427,16 @@ func (client *ProviderClient) doRequest(method, url string, options *RequestOpts
 		errType := options.ErrorContext
 		switch resp.StatusCode {
 		case http.StatusBadRequest:
-			err = ErrDefault400{respErr}
-			if error400er, ok := errType.(Err400er); ok {
+			err = Default400Error{respErr}
+			var error400er Err400er
+			if errors.As(errType, &error400er) {
 				err = error400er.Error400(respErr)
 			}
 		case http.StatusUnauthorized:
 			if client.ReauthFunc != nil && !state.hasReauthenticated {
 				err = client.Reauthenticate(preReqToken)
 				if err != nil {
-					e := &ErrUnableToReauthenticate{}
+					e := &UnableToReauthenticateError{}
 					e.ErrOriginal = respErr
 					return nil, e
 				}
@@ -510,61 +451,70 @@ func (client *ProviderClient) doRequest(method, url string, options *RequestOpts
 				state.hasReauthenticated = true
 				resp, err = client.doRequest(method, url, options, state)
 				if err != nil {
-					switch err := err.(type) {
-					case *ErrUnexpectedResponseCode:
-						e := &ErrErrorAfterReauthentication{}
-						e.ErrOriginal = err
-						return nil, e
-					default:
-						e := &ErrErrorAfterReauthentication{}
-						e.ErrOriginal = err
+					var unexpectedErr *UnexpectedResponseCodeError
+					if errors.As(err, &unexpectedErr) {
+						e := &AfterReauthenticationError{}
+						e.ErrOriginal = unexpectedErr
 						return nil, e
 					}
+					e := &AfterReauthenticationError{}
+					e.ErrOriginal = err
+					return nil, e
 				}
+
 				return resp, nil
 			}
-			err = ErrDefault401{respErr}
-			if error401er, ok := errType.(Err401er); ok {
+			err = Default401Error{respErr}
+			var error401er Err401er
+			if errors.As(errType, &error401er) {
 				err = error401er.Error401(respErr)
 			}
 		case http.StatusForbidden:
-			err = ErrDefault403{respErr}
-			if error403er, ok := errType.(Err403er); ok {
+			err = Default403Error{respErr}
+			var error403er Err403er
+			if errors.As(errType, &error403er) {
 				err = error403er.Error403(respErr)
 			}
 		case http.StatusNotFound:
-			err = ErrDefault404{respErr}
-			if error404er, ok := errType.(Err404er); ok {
+			err = Default404Error{respErr}
+			var error404er Err404er
+			if errors.As(errType, &error404er) {
 				err = error404er.Error404(respErr)
 			}
 		case http.StatusMethodNotAllowed:
-			err = ErrDefault405{respErr}
-			if error405er, ok := errType.(Err405er); ok {
+			err = Default405Error{respErr}
+			var error405er Err405er
+			if errors.As(errType, &error405er) {
 				err = error405er.Error405(respErr)
 			}
 		case http.StatusRequestTimeout:
-			err = ErrDefault408{respErr}
-			if error408er, ok := errType.(Err408er); ok {
+			err = Default408Error{respErr}
+			var error408er Err408er
+			if errors.As(errType, &error408er) {
 				err = error408er.Error408(respErr)
 			}
 		case http.StatusConflict:
-			err = ErrDefault409{respErr}
-			if error409er, ok := errType.(Err409er); ok {
+			err = Default409Error{respErr}
+			var error409er Err409er
+			if errors.As(errType, &error409er) {
 				err = error409er.Error409(respErr)
 			}
-		case 429:
-			err = ErrDefault429{respErr}
-			if error429er, ok := errType.(Err429er); ok {
+		case http.StatusTooManyRequests:
+			err = Default429Error{respErr}
+			var error429er Err429er
+			if errors.As(errType, &error429er) {
 				err = error429er.Error429(respErr)
 			}
 		case http.StatusInternalServerError:
-			err = ErrDefault500{respErr}
-			if error500er, ok := errType.(Err500er); ok {
+			err = Default500Error{respErr}
+			var error500er Err500er
+			if errors.As(errType, &error500er) {
 				err = error500er.Error500(respErr)
 			}
 		case http.StatusServiceUnavailable:
-			err = ErrDefault503{respErr}
-			if error503er, ok := errType.(Err503er); ok {
+			err = Default503Error{respErr}
+			var error503er Err503er
+			if errors.As(errType, &error503er) {
 				err = error503er.Error503(respErr)
 			}
 		}
@@ -592,7 +542,78 @@ func (client *ProviderClient) doRequest(method, url string, options *RequestOpts
 	return resp, nil
 }
 
-// ToTokenOptions - TokenOptions from ProviderClient
+// getRequestBodyAndContentType derive the content body by either encoding an arbitrary object as JSON,
+// or by taking a provided io.ReadSeeker as-is. Default the content-type to application/json.
+func getRequestBodyAndContentType(options *RequestOpts) (io.Reader, *string, error) {
+	var body io.Reader
+	var contentType *string
+
+	if options.JSONBody != nil {
+		if options.RawBody != nil {
+			return nil, nil, errors.New("please provide only one of JSONBody or RawBody to edgecloud.Request()")
+		}
+
+		rendered, err := json.Marshal(options.JSONBody)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		body = bytes.NewReader(rendered)
+		contentType = &applicationJSON
+	}
+
+	if options.RawBody != nil {
+		body = options.RawBody
+	}
+
+	return body, contentType, nil
+}
+
+// setRequestContextAndHeaders populate the request headers. Apply options.MoreHeaders last, to give the caller the chance to modify or omit any header.
+func setRequestContextAndHeaders(req *http.Request, client *ProviderClient, options *RequestOpts, contentType *string) {
+	if contentType != nil {
+		req.Header.Set("Content-Type", *contentType)
+	}
+	req.Header.Set("Accept", applicationJSON)
+	req.Header.Set("User-Agent", client.UserAgent.Join())
+
+	if options.MoreHeaders != nil {
+		for k, v := range options.MoreHeaders {
+			if v != "" {
+				req.Header.Set(k, v)
+			} else {
+				req.Header.Del(k)
+			}
+		}
+	}
+
+	// get the latest token from client
+	for k, v := range client.AuthenticatedHeaders() {
+		req.Header.Set(k, v)
+	}
+
+	// Set connection parameter to close the connection immediately when we've got the response
+	req.Close = true
+}
+
+// isResponseCodeValid validate the HTTP response status.
+func isResponseCodeValid(statusCode int, method string, options *RequestOpts) bool {
+	// Allow default OkCodes if none explicitly set
+	okc := options.OkCodes
+	if okc == nil {
+		okc = defaultOkCodes(method)
+	}
+
+	for _, code := range okc {
+		if statusCode == code {
+			return true
+		}
+	}
+
+	return false
+}
+
+// ToTokenOptions - TokenOptions from ProviderClient.
 func (client ProviderClient) ToTokenOptions() TokenOptions {
 	return TokenOptions{
 		RefreshToken: client.RefreshToken(),
@@ -619,7 +640,7 @@ func defaultOkCodes(method string) []int {
 	return []int{}
 }
 
-// NewProviderClient - Default constructor
+// NewProviderClient - Default constructor.
 func NewProviderClient() *ProviderClient {
 	client := new(ProviderClient)
 	return client

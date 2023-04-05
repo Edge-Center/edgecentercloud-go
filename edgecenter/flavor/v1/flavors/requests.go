@@ -28,7 +28,7 @@ func (opts ListOpts) ToFlavorListQuery() (string, error) {
 	return q.String(), err
 }
 
-// List retrieves list of flavors
+// List retrieves list of flavors.
 func List(c *edgecloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 	url := listURL(c)
 	if opts != nil {
@@ -43,7 +43,7 @@ func List(c *edgecloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 	})
 }
 
-// ListAll retrieves list of flavors
+// ListAll retrieves list of flavors.
 func ListAll(c *edgecloud.ServiceClient, opts ListOptsBuilder) ([]Flavor, error) {
 	results, err := List(c, opts).AllPages()
 	if err != nil {
@@ -76,10 +76,10 @@ func IDFromName(client *edgecloud.ServiceClient, name string) (string, error) {
 
 	switch count {
 	case 0:
-		return "", edgecloud.ErrResourceNotFound{Name: name, ResourceType: "flavors"}
+		return "", edgecloud.ResourceNotFoundError{Name: name, ResourceType: "flavors"}
 	case 1:
 		return id, nil
 	default:
-		return "", edgecloud.ErrMultipleResourcesFound{Name: name, Count: count, ResourceType: "flavors"}
+		return "", edgecloud.MultipleResourcesFoundError{Name: name, Count: count, ResourceType: "flavors"}
 	}
 }

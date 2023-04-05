@@ -6,7 +6,9 @@ import (
 )
 
 type VolumeSource string
+
 type VolumeType string
+
 type VolumeStatus string
 
 const (
@@ -59,8 +61,10 @@ func (vs VolumeStatus) IsValid() error {
 		Uploading,
 		Retyping,
 		Extending:
+
 		return nil
 	}
+
 	return fmt.Errorf("invalid VolumeStatus type: %v", vs)
 }
 
@@ -104,14 +108,15 @@ func (vs VolumeStatus) List() []VolumeStatus {
 }
 
 func (vs VolumeStatus) StringList() []string {
-	var s []string
-	for _, v := range vs.List() {
-		s = append(s, v.String())
+	lst := vs.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
-// UnmarshalJSON - implements Unmarshaler interface for VolumeStatus
+// UnmarshalJSON - implements Unmarshaler interface for VolumeStatus.
 func (vs *VolumeStatus) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -123,10 +128,11 @@ func (vs *VolumeStatus) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*vs = v
+
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface for VolumeStatus
+// MarshalJSON - implements Marshaler interface for VolumeStatus.
 func (vs *VolumeStatus) MarshalJSON() ([]byte, error) {
 	return json.Marshal(vs.String())
 }
@@ -159,14 +165,15 @@ func (vs VolumeSource) List() []VolumeSource {
 }
 
 func (vs VolumeSource) StringList() []string {
-	var s []string
-	for _, v := range vs.List() {
-		s = append(s, v.String())
+	lst := vs.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
-// UnmarshalJSON - implements Unmarshaler interface for VolumeSource
+// UnmarshalJSON - implements Unmarshaler interface for VolumeSource.
 func (vs *VolumeSource) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -178,10 +185,11 @@ func (vs *VolumeSource) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*vs = v
+
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface for VolumeSource
+// MarshalJSON - implements Marshaler interface for VolumeSource.
 func (vs *VolumeSource) MarshalJSON() ([]byte, error) {
 	return json.Marshal(vs.String())
 }
@@ -195,11 +203,12 @@ func (vt VolumeType) List() []VolumeType {
 }
 
 func (vt VolumeType) StringList() []string {
-	var s []string
-	for _, v := range vt.List() {
-		s = append(s, v.String())
+	lst := vt.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
 func (vt VolumeType) IsValid() error {
@@ -221,7 +230,7 @@ func (vt VolumeType) ValidOrNil() (*VolumeType, error) {
 	return &vt, nil
 }
 
-// UnmarshalJSON - implements Unmarshaler interface for VolumeType
+// UnmarshalJSON - implements Unmarshaler interface for VolumeType.
 func (vt *VolumeType) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -233,10 +242,11 @@ func (vt *VolumeType) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*vt = v
+
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface for VolumeType
+// MarshalJSON - implements Marshaler interface for VolumeType.
 func (vt *VolumeType) MarshalJSON() ([]byte, error) {
 	return json.Marshal(vt.String())
 }

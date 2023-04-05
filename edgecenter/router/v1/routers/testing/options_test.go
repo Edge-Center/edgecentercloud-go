@@ -5,11 +5,12 @@ import (
 	"net"
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/router/v1/routers"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/router/v1/types"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/subnet/v1/subnets"
-	"github.com/stretchr/testify/require"
 )
 
 func TestCreateOpts(t *testing.T) {

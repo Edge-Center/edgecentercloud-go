@@ -6,7 +6,9 @@ import (
 )
 
 type PoolRole string
+
 type HealthStatus string
+
 type IngressController string
 
 const (
@@ -52,14 +54,15 @@ func (ng PoolRole) List() []PoolRole {
 }
 
 func (ng PoolRole) StringList() []string {
-	var s []string
-	for _, v := range ng.List() {
-		s = append(s, v.String())
+	lst := ng.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
-// UnmarshalJSON - implements Unmarshaler interface
+// UnmarshalJSON - implements Unmarshaler interface.
 func (ng *PoolRole) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -71,10 +74,11 @@ func (ng *PoolRole) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*ng = v
+
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface
+// MarshalJSON - implements Marshaler interface.
 func (ng *PoolRole) MarshalJSON() ([]byte, error) {
 	return json.Marshal(ng.String())
 }
@@ -113,14 +117,15 @@ func (hs HealthStatus) List() []HealthStatus {
 }
 
 func (hs HealthStatus) StringList() []string {
-	var s []string
-	for _, v := range hs.List() {
-		s = append(s, v.String())
+	lst := hs.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
-// UnmarshalJSON - implements Unmarshaler interface
+// UnmarshalJSON - implements Unmarshaler interface.
 func (hs *HealthStatus) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -132,10 +137,11 @@ func (hs *HealthStatus) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*hs = v
+
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface
+// MarshalJSON - implements Marshaler interface.
 func (hs *HealthStatus) MarshalJSON() ([]byte, error) {
 	return json.Marshal(hs.String())
 }
@@ -174,14 +180,15 @@ func (ic IngressController) List() []IngressController {
 }
 
 func (ic IngressController) StringList() []string {
-	var s []string
-	for _, v := range ic.List() {
-		s = append(s, v.String())
+	lst := ic.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
-// UnmarshalJSON - implements Unmarshaler interface
+// UnmarshalJSON - implements Unmarshaler interface.
 func (ic *IngressController) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -193,10 +200,11 @@ func (ic *IngressController) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*ic = v
+
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface
+// MarshalJSON - implements Marshaler interface.
 func (ic *IngressController) MarshalJSON() ([]byte, error) {
 	return json.Marshal(ic.String())
 }

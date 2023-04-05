@@ -6,7 +6,9 @@ import (
 )
 
 type RuleDirection string
+
 type EtherType string
+
 type Protocol string
 
 const (
@@ -71,14 +73,15 @@ func (rd RuleDirection) List() []RuleDirection {
 }
 
 func (rd RuleDirection) StringList() []string {
-	var s []string
-	for _, v := range rd.List() {
-		s = append(s, v.String())
+	lst := rd.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
-// UnmarshalJSON - implements Unmarshaler interface
+// UnmarshalJSON - implements Unmarshaler interface.
 func (rd *RuleDirection) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -90,18 +93,18 @@ func (rd *RuleDirection) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*rd = v
+
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface
+// MarshalJSON - implements Marshaler interface.
 func (rd *RuleDirection) MarshalJSON() ([]byte, error) {
 	return json.Marshal(rd.String())
 }
 
 func (et EtherType) IsValid() error {
 	switch et {
-	case EtherTypeIPv4,
-		EtherTypeIPv6:
+	case EtherTypeIPv4, EtherTypeIPv6:
 		return nil
 	}
 	return fmt.Errorf("invalid EtherType: %v", et)
@@ -130,14 +133,15 @@ func (et EtherType) List() []EtherType {
 }
 
 func (et EtherType) StringList() []string {
-	var s []string
-	for _, v := range et.List() {
-		s = append(s, v.String())
+	lst := et.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
-// UnmarshalJSON - implements Unmarshaler interface
+// UnmarshalJSON - implements Unmarshaler interface.
 func (et *EtherType) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -149,10 +153,11 @@ func (et *EtherType) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*et = v
+
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface
+// MarshalJSON - implements Marshaler interface.
 func (et *EtherType) MarshalJSON() ([]byte, error) {
 	return json.Marshal(et.String())
 }
@@ -184,6 +189,7 @@ func (p Protocol) IsValid() error {
 		ProtocolIPIP:
 		return nil
 	}
+
 	return fmt.Errorf("invalid Protocol: %v", p)
 }
 
@@ -231,14 +237,15 @@ func (p Protocol) List() []Protocol {
 }
 
 func (p Protocol) StringList() []string {
-	var s []string
-	for _, v := range p.List() {
-		s = append(s, v.String())
+	lst := p.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
-// UnmarshalJSON - implements Unmarshaler interface
+// UnmarshalJSON - implements Unmarshaler interface.
 func (p *Protocol) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -250,10 +257,11 @@ func (p *Protocol) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*p = v
+
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface
+// MarshalJSON - implements Marshaler interface.
 func (p *Protocol) MarshalJSON() ([]byte, error) {
 	return json.Marshal(p.String())
 }

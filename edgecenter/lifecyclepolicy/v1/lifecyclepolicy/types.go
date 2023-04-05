@@ -4,8 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 
-	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 	"github.com/shopspring/decimal"
+
+	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 )
 
 type (
@@ -31,8 +32,9 @@ func (t ScheduleType) String() string {
 }
 
 func (t ScheduleType) StringList() []string {
-	var strings []string
-	for _, x := range t.List() {
+	lst := t.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
 		strings = append(strings, x.String())
 	}
 	return strings
@@ -56,8 +58,9 @@ func (s PolicyStatus) String() string {
 }
 
 func (s PolicyStatus) StringList() []string {
-	var strings []string
-	for _, x := range s.List() {
+	lst := s.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
 		strings = append(strings, x.String())
 	}
 	return strings
@@ -81,11 +84,12 @@ func (a PolicyAction) String() string {
 }
 
 func (a PolicyAction) StringList() []string {
-	var strings []string
-	for _, x := range a.List() {
-		strings = append(strings, x.String())
+	lst := a.List()
+	s := make([]string, 0, len(lst))
+	for _, x := range lst {
+		s = append(s, x.String())
 	}
-	return strings
+	return s
 }
 
 func (a PolicyAction) IsValid() error {
@@ -142,6 +146,7 @@ type CronSchedule struct {
 func (s CronSchedule) GetCommonSchedule() CommonSchedule {
 	return s.CommonSchedule
 }
+
 func (s IntervalSchedule) GetCommonSchedule() CommonSchedule {
 	return s.CommonSchedule
 }
@@ -151,12 +156,12 @@ type RawSchedule struct {
 	json.RawMessage
 }
 
-// Cook is method for unmarshalling RawSchedule into Schedule
+// Cook is method for unmarshalling RawSchedule into Schedule.
 func (r RawSchedule) Cook() (Schedule, error) {
 	var typeStruct struct {
 		ScheduleType `json:"type"`
 	}
-	// nolint:staticcheck
+	//nolint:staticcheck
 	if err := json.Unmarshal(r.RawMessage, &typeStruct); err != nil {
 		return nil, err
 	}
@@ -210,7 +215,7 @@ type rawLifecyclePolicy struct {
 	Schedules []RawSchedule `json:"schedules"`
 }
 
-// cook is internal method for unmarshalling rawLifecyclePolicy into LifecyclePolicy
+// cook is internal method for unmarshalling rawLifecyclePolicy into LifecyclePolicy.
 func (rawPolicy rawLifecyclePolicy) cook() (*LifecyclePolicy, error) {
 	schedules := make([]Schedule, len(rawPolicy.Schedules))
 	for i, b := range rawPolicy.Schedules {
@@ -230,6 +235,7 @@ func (rawPolicy rawLifecyclePolicy) cook() (*LifecyclePolicy, error) {
 		return nil, err
 	}
 	policy.Schedules = schedules
+
 	return &policy, nil
 }
 

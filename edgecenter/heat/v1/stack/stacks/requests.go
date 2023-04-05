@@ -3,10 +3,9 @@ package stacks
 import (
 	"strings"
 
+	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/heat/v1/stack/stacks/types"
 	"github.com/Edge-Center/edgecentercloud-go/pagination"
-
-	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 )
 
 // CreateOptsBuilder is the interface options structs have to satisfy in order
@@ -165,7 +164,7 @@ func (opts ListOpts) ToStackListQuery() (string, error) {
 	return q.String(), nil
 }
 
-// List all stacks
+// List of stacks.
 func List(c *edgecloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 	url := listURL(c)
 	if opts != nil {
@@ -180,7 +179,7 @@ func List(c *edgecloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 	})
 }
 
-// List all stacks
+// ListAll stacks.
 func ListAll(c *edgecloud.ServiceClient, opts ListOptsBuilder) ([]StackList, error) {
 	page, err := List(c, opts).AllPages()
 	if err != nil {
@@ -203,7 +202,7 @@ type UpdateOptsBuilder interface {
 }
 
 // UpdatePatchOptsBuilder is the interface options structs have to satisfy in order
-// to be used in the UpdatePatch operation in this package
+// to be used in the UpdatePatch operation in this package.
 type UpdatePatchOptsBuilder interface {
 	ToStackUpdatePatchMap() (map[string]interface{}, error)
 }
@@ -228,7 +227,7 @@ type UpdateOpts struct {
 // the toStackUpdateMap private function.
 func (opts UpdateOpts) ToStackUpdateMap() (map[string]interface{}, error) {
 	if opts.TemplateOpts == nil {
-		return nil, ErrTemplateRequired{}
+		return nil, TemplateRequiredError{}
 	}
 	return toStackUpdateMap(opts)
 }

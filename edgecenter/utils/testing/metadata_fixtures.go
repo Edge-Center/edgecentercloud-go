@@ -9,12 +9,14 @@ const MetadataResponse = `
   "read_only": false
 }
 `
+
 const MetadataCreateRequest = `
 {
 "test1": "test1", 
 "test2": "test2"
 }
 `
+
 const MetadataListResponse = `
 {
   "count": 2,

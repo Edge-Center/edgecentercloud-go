@@ -1,12 +1,13 @@
 package schedules
 
 import (
+	"github.com/urfave/cli/v2"
+
 	"github.com/Edge-Center/edgecentercloud-go/client/flags"
 	"github.com/Edge-Center/edgecentercloud-go/client/schedules/v1/client"
 	"github.com/Edge-Center/edgecentercloud-go/client/utils"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/lifecyclepolicy/v1/lifecyclepolicy"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/schedule/v1/schedules"
-	"github.com/urfave/cli/v2"
 )
 
 var scheduleIDText = "schedule_id is mandatory argument"
@@ -34,21 +35,22 @@ var scheduleGetSubCommand = cli.Command{
 		client, err := client.NewScheduleClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		result, err := schedules.Get(client, scheduleID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		if result != nil {
 			schedule, err := result.Cook()
 			if err != nil {
-				return cli.NewExitError(err, 1)
+				return cli.Exit(err, 1)
 			}
 			utils.ShowResults(schedule, c.String("format"))
 		}
+
 		return nil
 	},
 }
@@ -150,7 +152,7 @@ var scheduleUpdateSubCommand = cli.Command{
 		client, err := client.NewScheduleClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		opts := schedules.UpdateOpts{
@@ -179,16 +181,17 @@ var scheduleUpdateSubCommand = cli.Command{
 
 		result, err := schedules.Update(client, scheduleID, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		if result != nil {
 			schedule, err := result.Cook()
 			if err != nil {
-				return cli.NewExitError(err, 1)
+				return cli.Exit(err, 1)
 			}
 			utils.ShowResults(schedule, c.String("format"))
 		}
+
 		return nil
 	},
 }

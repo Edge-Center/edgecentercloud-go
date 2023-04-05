@@ -38,7 +38,7 @@ type UpdateResult struct {
 	commonResult
 }
 
-// DeleteResult represents the result of a delete operation
+// DeleteResult represents the result of a delete operation.
 type DeleteResult struct {
 	edgecloud.ErrResult
 }

@@ -1,10 +1,11 @@
 package quotas
 
 import (
+	"github.com/urfave/cli/v2"
+
 	"github.com/Edge-Center/edgecentercloud-go/client/quotas/v2/client"
 	"github.com/Edge-Center/edgecentercloud-go/client/utils"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/quota/v2/quotas"
-	"github.com/urfave/cli/v2"
 )
 
 var Commands = cli.Command{
@@ -38,7 +39,8 @@ var quotasListCombinedSubCommands = cli.Command{
 		client, err := client.NewQuotaClientV2(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+
+			return cli.Exit(err, 1)
 		}
 
 		opts := quotas.ListCombinedOpts{}
@@ -48,9 +50,10 @@ var quotasListCombinedSubCommands = cli.Command{
 		}
 		result, err := quotas.ListCombined(client, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
+
 		return nil
 	},
 }
@@ -71,15 +74,16 @@ var quotasListGlobalSubCommands = cli.Command{
 		client, err := client.NewQuotaClientV2(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		clientID := c.Int("client-id")
 		result, err := quotas.ListGlobal(client, clientID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
+
 		return nil
 	},
 }
@@ -106,16 +110,18 @@ var quotasListRegionalSubCommands = cli.Command{
 		client, err := client.NewQuotaClientV2(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+
+			return cli.Exit(err, 1)
 		}
 
 		clientID := c.Int("client-id")
 		regionID := c.Int("region-id")
 		result, err := quotas.ListRegional(client, clientID, regionID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
+
 		return nil
 	},
 }

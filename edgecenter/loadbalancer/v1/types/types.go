@@ -6,11 +6,17 @@ import (
 )
 
 type ProvisioningStatus string
+
 type OperatingStatus string
+
 type LoadBalancerAlgorithm string
+
 type PersistenceType string
+
 type ProtocolType string
+
 type HealthMonitorType string
+
 type HTTPMethod string
 
 const (
@@ -96,14 +102,15 @@ func (ps ProvisioningStatus) List() []ProvisioningStatus {
 }
 
 func (ps ProvisioningStatus) StringList() []string {
-	var s []string
-	for _, v := range ps.List() {
-		s = append(s, v.String())
+	lst := ps.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
-// UnmarshalJSON - implements Unmarshaler interface
+// UnmarshalJSON - implements Unmarshaler interface.
 func (ps *ProvisioningStatus) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -115,10 +122,11 @@ func (ps *ProvisioningStatus) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*ps = v
+
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface
+// MarshalJSON - implements Marshaler interface.
 func (ps *ProvisioningStatus) MarshalJSON() ([]byte, error) {
 	return json.Marshal(ps.String())
 }
@@ -163,14 +171,15 @@ func (os OperatingStatus) List() []OperatingStatus {
 }
 
 func (os OperatingStatus) StringList() []string {
-	var s []string
-	for _, v := range os.List() {
-		s = append(s, v.String())
+	lst := os.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
-// UnmarshalJSON - implements Unmarshaler interface
+// UnmarshalJSON - implements Unmarshaler interface.
 func (os *OperatingStatus) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -182,10 +191,11 @@ func (os *OperatingStatus) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*os = v
+
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface
+// MarshalJSON - implements Marshaler interface.
 func (os *OperatingStatus) MarshalJSON() ([]byte, error) {
 	return json.Marshal(os.String())
 }
@@ -226,14 +236,15 @@ func (lba LoadBalancerAlgorithm) List() []LoadBalancerAlgorithm {
 }
 
 func (lba LoadBalancerAlgorithm) StringList() []string {
-	var s []string
-	for _, v := range lba.List() {
-		s = append(s, v.String())
+	lst := lba.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
-// UnmarshalJSON - implements Unmarshaler interface
+// UnmarshalJSON - implements Unmarshaler interface.
 func (lba *LoadBalancerAlgorithm) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -245,10 +256,11 @@ func (lba *LoadBalancerAlgorithm) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*lba = v
+
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface
+// MarshalJSON - implements Marshaler interface.
 func (lba *LoadBalancerAlgorithm) MarshalJSON() ([]byte, error) {
 	return json.Marshal(lba.String())
 }
@@ -291,14 +303,15 @@ func (lbspt PersistenceType) List() []PersistenceType {
 }
 
 func (lbspt PersistenceType) StringList() []string {
-	var s []string
-	for _, v := range lbspt.List() {
-		s = append(s, v.String())
+	lst := lbspt.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
-// UnmarshalJSON - implements Unmarshaler interface
+// UnmarshalJSON - implements Unmarshaler interface.
 func (lbspt *PersistenceType) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -310,10 +323,11 @@ func (lbspt *PersistenceType) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*lbspt = v
+
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface
+// MarshalJSON - implements Marshaler interface.
 func (lbspt *PersistenceType) MarshalJSON() ([]byte, error) {
 	return json.Marshal(lbspt.String())
 }
@@ -346,14 +360,15 @@ func (pt ProtocolType) List() []ProtocolType {
 }
 
 func (pt ProtocolType) StringList() []string {
-	var s []string
-	for _, v := range pt.List() {
-		s = append(s, v.String())
+	lst := pt.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
-// UnmarshalJSON - implements Unmarshaler interface
+// UnmarshalJSON - implements Unmarshaler interface.
 func (pt *ProtocolType) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -365,10 +380,11 @@ func (pt *ProtocolType) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*pt = v
+
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface
+// MarshalJSON - implements Marshaler interface.
 func (pt *ProtocolType) MarshalJSON() ([]byte, error) {
 	return json.Marshal(pt.String())
 }
@@ -417,14 +433,15 @@ func (hm HealthMonitorType) List() []HealthMonitorType {
 }
 
 func (hm HealthMonitorType) StringList() []string {
-	var s []string
-	for _, v := range hm.List() {
-		s = append(s, v.String())
+	lst := hm.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
-// UnmarshalJSON - implements Unmarshaler interface
+// UnmarshalJSON - implements Unmarshaler interface.
 func (hm *HealthMonitorType) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -436,10 +453,11 @@ func (hm *HealthMonitorType) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*hm = v
+
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface
+// MarshalJSON - implements Marshaler interface.
 func (hm *HealthMonitorType) MarshalJSON() ([]byte, error) {
 	return json.Marshal(hm.String())
 }
@@ -457,6 +475,7 @@ func (m HTTPMethod) IsValid() error {
 		HTTPMethodTRACE:
 		return nil
 	}
+
 	return fmt.Errorf("invalid HTTPMethod: %v", m)
 }
 
@@ -490,14 +509,15 @@ func (m HTTPMethod) List() []HTTPMethod {
 }
 
 func (m HTTPMethod) StringList() []string {
-	var s []string
-	for _, v := range m.List() {
-		s = append(s, v.String())
+	lst := m.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
-// UnmarshalJSON - implements Unmarshaler interface
+// UnmarshalJSON - implements Unmarshaler interface.
 func (m *HTTPMethod) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -509,10 +529,11 @@ func (m *HTTPMethod) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*m = v
+
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface
+// MarshalJSON - implements Marshaler interface.
 func (m *HTTPMethod) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m.String())
 }

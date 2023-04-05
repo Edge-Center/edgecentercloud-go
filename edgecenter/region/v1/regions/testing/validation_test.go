@@ -4,12 +4,11 @@ import (
 	"testing"
 
 	uuid "github.com/satori/go.uuid"
+	"github.com/stretchr/testify/require"
 
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/region/v1/types"
-
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/region/v1/regions"
-	"github.com/stretchr/testify/require"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/region/v1/types"
 )
 
 func TestUpdateOptsValidation(t *testing.T) {
@@ -52,5 +51,4 @@ func TestUpdateOptsValidation(t *testing.T) {
 	}
 	err = edgecloud.ValidateStruct(opts)
 	require.NoError(t, err)
-
 }

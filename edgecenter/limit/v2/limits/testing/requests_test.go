@@ -5,12 +5,13 @@ import (
 	"net/http"
 	"testing"
 
+	log "github.com/sirupsen/logrus"
+	"github.com/stretchr/testify/require"
+
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/limit/v2/limits"
 	"github.com/Edge-Center/edgecentercloud-go/pagination"
 	th "github.com/Edge-Center/edgecentercloud-go/testhelper"
 	fake "github.com/Edge-Center/edgecentercloud-go/testhelper/client"
-	log "github.com/sirupsen/logrus"
-	"github.com/stretchr/testify/require"
 )
 
 func prepareListTestURL() string {
@@ -114,7 +115,6 @@ func TestCreate(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -141,7 +141,6 @@ func TestGet(t *testing.T) {
 }
 
 func TestDelete(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 

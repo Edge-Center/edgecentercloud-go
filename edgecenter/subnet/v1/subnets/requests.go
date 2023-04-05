@@ -148,7 +148,7 @@ func Delete(c *edgecloud.ServiceClient, subnetID string) (r tasks.Result) {
 	return
 }
 
-// ListAll returns all SGs
+// ListAll returns all SGs.
 func ListAll(c *edgecloud.ServiceClient, opts ListOptsBuilder) ([]Subnet, error) {
 	page, err := List(c, opts).AllPages()
 	if err != nil {
@@ -181,10 +181,10 @@ func IDFromName(client *edgecloud.ServiceClient, name string) (string, error) {
 
 	switch count {
 	case 0:
-		return "", edgecloud.ErrResourceNotFound{Name: name, ResourceType: "subnets"}
+		return "", edgecloud.ResourceNotFoundError{Name: name, ResourceType: "subnets"}
 	case 1:
 		return id, nil
 	default:
-		return "", edgecloud.ErrMultipleResourcesFound{Name: name, Count: count, ResourceType: "subnets"}
+		return "", edgecloud.MultipleResourcesFoundError{Name: name, Count: count, ResourceType: "subnets"}
 	}
 }

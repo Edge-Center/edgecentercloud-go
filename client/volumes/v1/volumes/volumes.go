@@ -1,6 +1,7 @@
 package volumes
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 
@@ -67,7 +68,7 @@ var volumeListCommand = cli.Command{
 		client, err := client.NewVolumeClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		opts := volumes.ListOpts{
 			InstanceID:     utils.StringToPointer(c.String("instance-id")),
@@ -79,9 +80,10 @@ var volumeListCommand = cli.Command{
 		}
 		results, err := volumes.ListAll(client, opts)
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
+
 		return nil
 	},
 }
@@ -100,16 +102,17 @@ var volumeGetCommand = cli.Command{
 		client, err := client.NewVolumeClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		task, err := volumes.Get(client, volumeID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		if task == nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(task, c.String("format"))
+
 		return nil
 	},
 }
@@ -137,14 +140,14 @@ var volumeDeleteCommand = cli.Command{
 		client, err := client.NewVolumeClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		opts := volumes.DeleteOpts{
 			Snapshots: c.StringSlice("snapshot"),
 		}
 		results, err := volumes.Delete(client, volumeID, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		return utils.WaitTaskAndShowResult(c, client, results, false, func(task tasks.TaskID) (interface{}, error) {
@@ -152,14 +155,12 @@ var volumeDeleteCommand = cli.Command{
 			if err == nil {
 				return nil, fmt.Errorf("cannot delete volume with ID: %s", volumeID)
 			}
-			switch err.(type) {
-			case edgecloud.ErrDefault404:
+			var e edgecloud.Default404Error
+			if errors.As(err, &e) {
 				return nil, nil
-			default:
-				return nil, err
 			}
+			return nil, err
 		})
-
 	},
 }
 
@@ -229,7 +230,7 @@ var volumeCreateCommand = cli.Command{
 		client, err := client.NewVolumeClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		opts := volumes.CreateOpts{
 			Source:               volumes.VolumeSource(c.String("source")),
@@ -247,11 +248,12 @@ var volumeCreateCommand = cli.Command{
 
 		results, err := volumes.Create(client, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		if results == nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
+
 		return utils.WaitTaskAndShowResult(c, client, results, true, func(task tasks.TaskID) (interface{}, error) {
 			taskInfo, err := tasks.Get(client, string(task)).Extract()
 			if err != nil {
@@ -265,6 +267,7 @@ var volumeCreateCommand = cli.Command{
 			if err != nil {
 				return nil, fmt.Errorf("cannot get volume with ID: %s. Error: %w", volumeID, err)
 			}
+
 			return volume, nil
 		})
 	},
@@ -292,16 +295,17 @@ var volumeAttachCommand = cli.Command{
 		client, err := client.NewVolumeClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		opts := volumes.InstanceOperationOpts{
 			InstanceID: c.String("instance-id"),
 		}
 		volume, err := volumes.Attach(client, volumeID, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(volume, c.String("format"))
+
 		return nil
 	},
 }
@@ -328,16 +332,17 @@ var volumeDetachCommand = cli.Command{
 		client, err := client.NewVolumeClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		opts := volumes.InstanceOperationOpts{
 			InstanceID: c.String("instance-id"),
 		}
 		volume, err := volumes.Detach(client, volumeID, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(volume, c.String("format"))
+
 		return nil
 	},
 }
@@ -368,7 +373,7 @@ var volumeRetypeCommand = cli.Command{
 		client, err := client.NewVolumeClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		opts := volumes.VolumeTypePropertyOperationOpts{
@@ -376,9 +381,10 @@ var volumeRetypeCommand = cli.Command{
 		}
 		volume, err := volumes.Retype(client, volumeID, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(volume, c.String("format"))
+
 		return nil
 	},
 }
@@ -406,7 +412,7 @@ var volumeExtendCommand = cli.Command{
 		client, err := client.NewVolumeClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		size := c.Int("size")
 		opts := volumes.SizePropertyOperationOpts{
@@ -414,11 +420,12 @@ var volumeExtendCommand = cli.Command{
 		}
 		results, err := volumes.Extend(client, volumeID, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		if results == nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
+
 		return utils.WaitTaskAndShowResult(c, client, results, true, func(task tasks.TaskID) (interface{}, error) {
 			volume, err := volumes.Get(client, volumeID).Extract()
 			if err != nil {
@@ -445,15 +452,16 @@ var volumeRevertCommand = cli.Command{
 		client, err := client.NewVolumeClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		results, err := volumes.Revert(client, volumeID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		if results == nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
+
 		return utils.WaitTaskAndShowResult(c, client, results, true, func(task tasks.TaskID) (interface{}, error) {
 			volume, err := volumes.Get(client, volumeID).Extract()
 			if err != nil {

@@ -51,7 +51,7 @@ func (r commonResult) ExtractInto(v interface{}) error {
 	return r.Result.ExtractIntoStructPtr(v, "")
 }
 
-// Stack struct
+// StackList struct.
 type StackList struct {
 	CreationTime       time.Time        `json:"creation_time"`
 	DeletionTime       *time.Time       `json:"deletion_time"`
@@ -68,7 +68,7 @@ type StackList struct {
 	Tags               []string         `json:"tags"`
 }
 
-// Stack struct
+// Stack struct.
 type Stack struct {
 	*StackList
 	Capabilities        []string                 `json:"capabilities"`

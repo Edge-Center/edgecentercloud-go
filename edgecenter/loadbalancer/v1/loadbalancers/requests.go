@@ -183,7 +183,7 @@ func Delete(c *edgecloud.ServiceClient, loadbalancerID string) (r tasks.Result) 
 	return
 }
 
-// ListAll returns all LBs
+// ListAll returns all LBs.
 func ListAll(c *edgecloud.ServiceClient, opts ListOptsBuilder) ([]LoadBalancer, error) {
 	page, err := List(c, opts).AllPages()
 	if err != nil {

@@ -2,19 +2,19 @@ package stacks
 
 import "strings"
 
-// Environment is a structure that represents stack environments
+// Environment is a structure that represents stack environments.
 type Environment struct {
 	TE
 }
 
-// EnvironmentSections is a map containing allowed sections in a stack environment file
+// EnvironmentSections is a map containing allowed sections in a stack environment file.
 var EnvironmentSections = map[string]bool{
 	"parameters":         true,
 	"parameter_defaults": true,
 	"resource_registry":  true,
 }
 
-// Validate validates the contents of the Environment
+// Validate validates the contents of the Environment.
 func (e *Environment) Validate() error {
 	if e.Parsed == nil {
 		if err := e.Parse(); err != nil {
@@ -23,9 +23,10 @@ func (e *Environment) Validate() error {
 	}
 	for key := range e.Parsed {
 		if _, ok := EnvironmentSections[key]; !ok {
-			return ErrInvalidEnvironment{Section: key}
+			return InvalidEnvironmentError{Section: key}
 		}
 	}
+
 	return nil
 }
 
@@ -108,13 +109,14 @@ func (e *Environment) getRRFileContents(ignoreIf igFunc) error {
 		// if the resource registry contained any URL's, store them. This can
 		// then be passed as parameter to api calls to Heat api.
 		e.Files = tempTemplate.Files
+
 		return nil
 	default:
 		return nil
 	}
 }
 
-// function to choose keys whose values are other environment files
+// ignoreIfEnvironment function to choose keys whose values are other environment files.
 func ignoreIfEnvironment(key string, value interface{}) bool {
 	// base_url and hooks refer to components which cannot have urls
 	if key == "base_url" || key == "hooks" {
@@ -130,5 +132,6 @@ func ignoreIfEnvironment(key string, value interface{}) bool {
 	if strings.Contains(valueString, "::") {
 		return true
 	}
+
 	return false
 }

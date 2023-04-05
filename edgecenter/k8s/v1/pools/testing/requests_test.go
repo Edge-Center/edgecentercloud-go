@@ -5,15 +5,13 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/k8s/v1/pools"
-	fake "github.com/Edge-Center/edgecentercloud-go/testhelper/client"
-
+	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/require"
 
-	log "github.com/sirupsen/logrus"
-
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/k8s/v1/pools"
 	"github.com/Edge-Center/edgecentercloud-go/pagination"
 	th "github.com/Edge-Center/edgecentercloud-go/testhelper"
+	fake "github.com/Edge-Center/edgecentercloud-go/testhelper/client"
 )
 
 func prepareListTestURLParams(projectID int, regionID int, clusterID string) string {
@@ -92,11 +90,9 @@ func TestListAll(t *testing.T) {
 	ng1 := groups[0]
 	require.Equal(t, PoolList1, ng1)
 	require.Equal(t, ExpectedClusterListPoolSlice, groups)
-
 }
 
 func TestGet(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -120,7 +116,6 @@ func TestGet(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, Pool1, *ct)
 	th.CheckDeepEquals(t, &Pool1, ct)
-
 }
 
 func TestCreate(t *testing.T) {
@@ -174,11 +169,9 @@ func TestDelete(t *testing.T) {
 	tasks, err := pools.Delete(client, Pool1.ClusterID, Pool1.UUID).Extract()
 	require.NoError(t, err)
 	require.Equal(t, Tasks1, *tasks)
-
 }
 
 func TestUpdate(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -207,5 +200,4 @@ func TestUpdate(t *testing.T) {
 
 	require.NoError(t, err)
 	require.Equal(t, Tasks1, *tasks)
-
 }

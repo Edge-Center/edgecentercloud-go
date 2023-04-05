@@ -36,16 +36,17 @@ var l7policyListSubCommand = cli.Command{
 		client, err := client.NewL7PoliciesClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		results, err := l7policies.ListAll(client)
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		if results == nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
+
 		return nil
 	},
 }
@@ -64,17 +65,18 @@ var l7policyGetSubCommand = cli.Command{
 		client, err := client.NewL7PoliciesClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		result, err := l7policies.Get(client, policyID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		if result != nil {
 			utils.ShowResults(result, c.String("format"))
 		}
+
 		return nil
 	},
 }
@@ -94,17 +96,18 @@ var l7policyDeleteSubCommand = cli.Command{
 		client, err := client.NewL7PoliciesClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		result, err := l7policies.Delete(client, policyID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		if result != nil {
 			utils.ShowResults(result, c.String("format"))
 		}
+
 		return nil
 	},
 }
@@ -158,7 +161,7 @@ var l7policyCreateSubCommand = cli.Command{
 		client, err := client.NewL7PoliciesClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		opts := l7policies.CreateOpts{
 			Name:             c.String("name"),
@@ -173,8 +176,9 @@ var l7policyCreateSubCommand = cli.Command{
 		}
 		results, err := l7policies.Create(client, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
+
 		return utils.WaitTaskAndShowResult(c, client, results, true, func(task tasks.TaskID) (interface{}, error) {
 			taskInfo, err := tasks.Get(client, string(task)).Extract()
 			if err != nil {
@@ -189,6 +193,7 @@ var l7policyCreateSubCommand = cli.Command{
 				return nil, fmt.Errorf("cannot get policy with ID: %s. Error: %w", policyID, err)
 			}
 			utils.ShowResults(router, c.String("format"))
+
 			return nil, nil
 		})
 	},
@@ -245,7 +250,7 @@ var l7policyReplaceSubCommand = cli.Command{
 		client, err := client.NewL7PoliciesClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		opts := l7policies.ReplaceOpts{
 			Name:             c.String("name"),
@@ -259,8 +264,9 @@ var l7policyReplaceSubCommand = cli.Command{
 		}
 		results, err := l7policies.Replace(client, policyID, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
+
 		return utils.WaitTaskAndShowResult(c, client, results, true, func(task tasks.TaskID) (interface{}, error) {
 			taskInfo, err := tasks.Get(client, string(task)).Extract()
 			if err != nil {
@@ -275,6 +281,7 @@ var l7policyReplaceSubCommand = cli.Command{
 				return nil, fmt.Errorf("cannot get policy with ID: %s. Error: %w", policyID, err)
 			}
 			utils.ShowResults(router, c.String("format"))
+
 			return nil, nil
 		})
 	},

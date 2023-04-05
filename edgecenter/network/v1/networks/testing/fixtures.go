@@ -4,11 +4,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/utils/metadata"
-
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/network/v1/networks"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/utils/metadata"
 	fake "github.com/Edge-Center/edgecentercloud-go/testhelper/client"
 )
 
@@ -78,11 +77,13 @@ const CreateRequest = `
 	"create_router": true
 }	
 `
+
 const UpdateRequest = `
 {
 	"name": "private"
 }	
 `
+
 const CreateResponse = `
 {
   "tasks": [
@@ -106,12 +107,14 @@ const MetadataResponse = `
   "read_only": false
 }
 `
+
 const MetadataCreateRequest = `
 {
 "test1": "test1", 
 "test2": "test2"
 }
 `
+
 const MetadataListResponse = `
 {
   "count": 2,
@@ -130,12 +133,14 @@ const MetadataListResponse = `
 }
 `
 
-var createdTimeString = "2020-03-05T12:03:24+0000"
-var updatedTimeString = "2020-03-05T12:03:25+0000"
-var createdTimeParsed, _ = time.Parse(edgecloud.RFC3339Z, createdTimeString)
-var createdTime = edgecloud.JSONRFC3339Z{Time: createdTimeParsed}
-var updatedTimeParsed, _ = time.Parse(edgecloud.RFC3339Z, updatedTimeString)
-var updatedTime = edgecloud.JSONRFC3339Z{Time: updatedTimeParsed}
+var (
+	createdTimeString    = "2020-03-05T12:03:24+0000"
+	updatedTimeString    = "2020-03-05T12:03:25+0000"
+	createdTimeParsed, _ = time.Parse(edgecloud.RFC3339Z, createdTimeString)
+	createdTime          = edgecloud.JSONRFC3339Z{Time: createdTimeParsed}
+	updatedTimeParsed, _ = time.Parse(edgecloud.RFC3339Z, updatedTimeString)
+	updatedTime          = edgecloud.JSONRFC3339Z{Time: updatedTimeParsed}
+)
 
 var (
 	Network1 = networks.Network{

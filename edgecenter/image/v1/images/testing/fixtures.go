@@ -7,6 +7,7 @@ import (
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/image/v1/images"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/utils/metadata"
 )
 
 var ListResponse = fmt.Sprintf(`
@@ -44,6 +45,7 @@ const MetadataResponse = `
   "read_only": false
 }
 `
+
 const MetadataResponseKV = `
 {
   "some_key": "some_val"
@@ -151,9 +153,16 @@ var (
 		TaskID:        nil,
 		DiskFormat:    "qcow2",
 		Region:        "RegionOne",
+		Metadata:      []metadata.Metadata{ResourceMetadataReadOnly},
 	}
 	ExpectedImagesSlice = []images.Image{Image1}
 	Tasks1              = tasks.TaskResults{
 		Tasks: []tasks.TaskID{"50f53a35-42ed-40c4-82b2-5a37fb3e00bc"},
+	}
+
+	ResourceMetadataReadOnly = metadata.Metadata{
+		Key:      "some_key",
+		Value:    "some_val",
+		ReadOnly: false,
 	}
 )

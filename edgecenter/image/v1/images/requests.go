@@ -38,7 +38,7 @@ type CreateOptsBuilder interface {
 type CreateOpts struct {
 	Name           string                `json:"name" required:"true" validate:"required"`
 	HwMachineType  types.HwMachineType   `json:"hw_machine_type" validate:"required,enum"`
-	SshKey         types.SshKeyType      `json:"ssh_key" validate:"required,enum"`
+	SSHKey         types.SSHKeyType      `json:"ssh_key" validate:"required,enum"`
 	OSType         types.OSType          `json:"os_type" validate:"required,enum"`
 	IsBaremetal    *bool                 `json:"is_baremetal,omitempty"`
 	HwFirmwareType types.HwFirmwareType  `json:"hw_firmware_type" validate:"required,enum"`
@@ -64,7 +64,7 @@ type UpdateOptsBuilder interface {
 // UpdateOpts represents options used to create an image.
 type UpdateOpts struct {
 	HwMachineType  types.HwMachineType  `json:"hw_machine_type" validate:"required,enum"`
-	SshKey         types.SshKeyType     `json:"ssh_key" validate:"required,enum"`
+	SSHKey         types.SSHKeyType     `json:"ssh_key" validate:"required,enum"`
 	Name           string               `json:"name" required:"true"`
 	OSType         types.OSType         `json:"os_type" validate:"required,enum"`
 	IsBaremetal    *bool                `json:"is_baremetal,omitempty"`
@@ -90,7 +90,7 @@ type UploadOptsBuilder interface {
 type UploadOpts struct {
 	OsVersion      string               `json:"os_version,omitempty"`
 	HwMachineType  types.HwMachineType  `json:"hw_machine_type" validate:"required,enum"`
-	SshKey         types.SshKeyType     `json:"ssh_key" validate:"required,enum"`
+	SSHKey         types.SSHKeyType     `json:"ssh_key" validate:"required,enum"`
 	Name           string               `json:"name" required:"true" validate:"required"`
 	OsDistro       string               `json:"os_distro,omitempty"`
 	OSType         types.OSType         `json:"os_type" validate:"required,enum"`
@@ -128,7 +128,7 @@ func List(client *edgecloud.ServiceClient, opts ListOptsBuilder) pagination.Page
 // Get retrieves a specific image based on its unique ID.
 func Get(client *edgecloud.ServiceClient, id string) (r GetResult) {
 	url := getURL(client, id)
-	_, r.Err = client.Get(url, &r.Body, nil) // nolint
+	_, r.Err = client.Get(url, &r.Body, nil)
 	return
 }
 
@@ -144,7 +144,6 @@ func ListAll(client *edgecloud.ServiceClient, opts ListOptsBuilder) ([]Image, er
 	}
 
 	return all, nil
-
 }
 
 // Create an image.
@@ -154,14 +153,14 @@ func Create(client *edgecloud.ServiceClient, opts CreateOptsBuilder) (r tasks.Re
 		r.Err = err
 		return
 	}
-	_, r.Err = client.Post(createURL(client), b, &r.Body, nil) // nolint
+	_, r.Err = client.Post(createURL(client), b, &r.Body, nil)
 	return
 }
 
 // Delete an image.
 func Delete(client *edgecloud.ServiceClient, imageID string) (r tasks.Result) {
 	url := deleteURL(client, imageID)
-	_, r.Err = client.DeleteWithResponse(url, &r.Body, nil) // nolint
+	_, r.Err = client.DeleteWithResponse(url, &r.Body, nil)
 	return
 }
 
@@ -173,7 +172,7 @@ func Update(client *edgecloud.ServiceClient, id string, opts UpdateOptsBuilder) 
 		r.Err = err
 		return
 	}
-	_, r.Err = client.Patch(url, b, &r.Body, nil) // nolint
+	_, r.Err = client.Patch(url, b, &r.Body, nil)
 	return
 }
 
@@ -184,6 +183,6 @@ func Upload(client *edgecloud.ServiceClient, opts UploadOptsBuilder) (r tasks.Re
 		r.Err = err
 		return
 	}
-	_, r.Err = client.Post(uploadURL(client), b, &r.Body, nil) // nolint
+	_, r.Err = client.Post(uploadURL(client), b, &r.Body, nil)
 	return
 }

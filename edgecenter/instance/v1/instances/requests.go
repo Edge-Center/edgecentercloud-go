@@ -4,14 +4,11 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/flavor/v1/flavors"
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
-
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/instance/v1/types"
-
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/volume/v1/volumes"
-
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/flavor/v1/flavors"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/instance/v1/types"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/volume/v1/volumes"
 	"github.com/Edge-Center/edgecentercloud-go/pagination"
 )
 
@@ -49,7 +46,7 @@ type DeleteOptsBuilder interface {
 	ToInstanceDeleteQuery() (string, error)
 }
 
-// DeleteOpts. Set parameters for delete operation
+// DeleteOpts Set parameters for delete operation.
 type DeleteOpts struct {
 	Volumes         []string `q:"volumes" validate:"omitempty,dive,uuid4" delimiter:"comma"`
 	DeleteFloatings bool     `q:"delete_floatings" validate:"omitempty,allowed_without=FloatingIPs"`
@@ -99,7 +96,7 @@ type CreateNewInterfaceFloatingIPOpts struct {
 	ExistingFloatingID string                 `json:"existing_floating_id" validate:"rfe=Source:existing,sfe=Source:new,omitempty,uuid"`
 }
 
-// Validate
+// Validate CreateNewInterfaceFloatingIPOpts.
 func (opts CreateNewInterfaceFloatingIPOpts) Validate() error {
 	return edgecloud.ValidateStruct(opts)
 }
@@ -109,11 +106,11 @@ type InterfaceOpts struct {
 	NetworkID  string                            `json:"network_id,omitempty" validate:"rfe=Type:any_subnet,omitempty,uuid4"`
 	SubnetID   string                            `json:"subnet_id,omitempty" validate:"rfe=Type:subnet,omitempty,uuid4"`
 	PortID     string                            `json:"port_id,omitempty" validate:"rfe=Type:reserved_fixed_ip,allowed_without_all=NetworkID SubnetID,omitempty,uuid4"`
-	IpAddress  string                            `json:"ip_address,omitempty" validate:"allowed_without_all=Type NetworkID SubnetID FloatingIP,omitempty"`
+	IPAddress  string                            `json:"ip_address,omitempty" validate:"allowed_without_all=Type NetworkID SubnetID FloatingIP,omitempty"`
 	FloatingIP *CreateNewInterfaceFloatingIPOpts `json:"floating_ip,omitempty" validate:"omitempty,dive"`
 }
 
-// Validate
+// Validate InterfaceOpts.
 func (opts InterfaceOpts) Validate() error {
 	return edgecloud.ValidateStruct(opts)
 }
@@ -133,7 +130,7 @@ func (opts InterfaceInstanceCreateOpts) ToInterfaceActionMap() (map[string]inter
 	return result, err
 }
 
-// Validate
+// Validate InterfaceInstanceCreateOpts.
 func (opts InterfaceInstanceCreateOpts) Validate() error {
 	return edgecloud.ValidateStruct(opts)
 }
@@ -156,7 +153,7 @@ type CreateOpts struct {
 	ServerGroupID  string                        `json:"servergroup_id,omitempty" validate:"omitempty,uuid4"`
 }
 
-// Validate
+// Validate CreateOpts.
 func (opts CreateOpts) Validate() error {
 	return edgecloud.ValidateStruct(opts)
 }
@@ -195,6 +192,7 @@ func (opts CreateOpts) ToInstanceCreateMap() (map[string]interface{}, error) {
 	} else {
 		delete(mp, "configuration")
 	}
+
 	return mp, nil
 }
 
@@ -207,7 +205,7 @@ type RenameInstanceOpts struct {
 	Name string `json:"name" required:"true" validate:"required"`
 }
 
-// Validate.
+// Validate RenameInstanceOpts.
 func (opts RenameInstanceOpts) Validate() error {
 	return edgecloud.ValidateStruct(opts)
 }
@@ -235,7 +233,7 @@ type PortSecurityGroupNames struct {
 	SecurityGroupNames []string `json:"security_group_names"`
 }
 
-// Validate.
+// Validate SecurityGroupOpts.
 func (opts SecurityGroupOpts) Validate() error {
 	return edgecloud.ValidateStruct(opts)
 }
@@ -320,11 +318,11 @@ func List(client *edgecloud.ServiceClient, opts ListOptsBuilder) pagination.Page
 // Get retrieves a specific instance based on its unique ID.
 func Get(client *edgecloud.ServiceClient, id string) (r GetResult) {
 	url := getURL(client, id)
-	_, r.Err = client.Get(url, &r.Body, nil) // nolint
+	_, r.Err = client.Get(url, &r.Body, nil)
 	return
 }
 
-// ListInterfaces retrieves network interfaces for instance
+// ListInterfaces retrieves network interfaces for instance.
 func ListInterfaces(client *edgecloud.ServiceClient, id string) pagination.Pager {
 	url := interfacesListURL(client, id)
 	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
@@ -345,7 +343,6 @@ func ListAll(client *edgecloud.ServiceClient, opts ListOptsBuilder) ([]Instance,
 	}
 
 	return all, nil
-
 }
 
 // ListInterfacesAll is a convenience function that returns all instance interfaces.
@@ -361,10 +358,9 @@ func ListInterfacesAll(client *edgecloud.ServiceClient, id string) ([]Interface,
 	}
 
 	return all, nil
-
 }
 
-// ListSecurityGroups retrieves security groups interfaces for instance
+// ListSecurityGroups retrieves security groups interfaces for instance.
 func ListSecurityGroups(client *edgecloud.ServiceClient, id string) pagination.Pager {
 	url := securityGroupsListURL(client, id)
 	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
@@ -387,7 +383,7 @@ func ListSecurityGroupsAll(client *edgecloud.ServiceClient, id string) ([]edgecl
 	return all, nil
 }
 
-// ListPorts retrieves ports for instance
+// ListPorts retrieves ports for instance.
 func ListPorts(client *edgecloud.ServiceClient, id string) pagination.Pager {
 	url := portsListURL(client, id)
 	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
@@ -417,7 +413,7 @@ func RenameInstance(client *edgecloud.ServiceClient, id string, opts RenameInsta
 		r.Err = err
 		return
 	}
-	_, r.Err = client.Patch(renameInstanceURL(client, id), b, &r.Body, &edgecloud.RequestOpts{ // nolint
+	_, r.Err = client.Patch(renameInstanceURL(client, id), b, &r.Body, &edgecloud.RequestOpts{
 		OkCodes: []int{http.StatusOK},
 	})
 	return
@@ -430,7 +426,7 @@ func AssignSecurityGroup(client *edgecloud.ServiceClient, id string, opts Securi
 		r.Err = err
 		return
 	}
-	_, r.Err = client.Post(addSecurityGroupsURL(client, id), b, nil, &edgecloud.RequestOpts{ // nolint
+	_, r.Err = client.Post(addSecurityGroupsURL(client, id), b, nil, &edgecloud.RequestOpts{
 		OkCodes: []int{http.StatusNoContent, http.StatusOK},
 	})
 	return
@@ -443,7 +439,7 @@ func UnAssignSecurityGroup(client *edgecloud.ServiceClient, id string, opts Secu
 		r.Err = err
 		return
 	}
-	_, r.Err = client.Post(deleteSecurityGroupsURL(client, id), b, nil, &edgecloud.RequestOpts{ // nolint
+	_, r.Err = client.Post(deleteSecurityGroupsURL(client, id), b, nil, &edgecloud.RequestOpts{
 		OkCodes: []int{http.StatusNoContent, http.StatusOK},
 	})
 	return
@@ -456,7 +452,7 @@ func AddServerGroup(client *edgecloud.ServiceClient, id string, opts ServerGroup
 		r.Err = err
 		return
 	}
-	_, r.Err = client.Post(putIntoServerGroupURL(client, id), b, &r.Body, &edgecloud.RequestOpts{ // nolint
+	_, r.Err = client.Post(putIntoServerGroupURL(client, id), b, &r.Body, &edgecloud.RequestOpts{
 		OkCodes: []int{http.StatusNoContent, http.StatusOK},
 	})
 	return
@@ -464,7 +460,7 @@ func AddServerGroup(client *edgecloud.ServiceClient, id string, opts ServerGroup
 
 // RemoveServerGroup removes a server group from the instance.
 func RemoveServerGroup(client *edgecloud.ServiceClient, id string) (r tasks.Result) {
-	_, r.Err = client.Post(removeFromServerGroupURL(client, id), nil, &r.Body, &edgecloud.RequestOpts{ // nolint
+	_, r.Err = client.Post(removeFromServerGroupURL(client, id), nil, &r.Body, &edgecloud.RequestOpts{
 		OkCodes: []int{http.StatusNoContent, http.StatusOK},
 	})
 	return
@@ -477,7 +473,7 @@ func AttachInterface(client *edgecloud.ServiceClient, id string, opts InterfaceO
 		r.Err = err
 		return
 	}
-	_, r.Err = client.Post(attachInterfaceURL(client, id), b, &r.Body, &edgecloud.RequestOpts{ // nolint
+	_, r.Err = client.Post(attachInterfaceURL(client, id), b, &r.Body, &edgecloud.RequestOpts{
 		OkCodes: []int{http.StatusNoContent, http.StatusOK},
 	})
 	return
@@ -490,7 +486,7 @@ func DetachInterface(client *edgecloud.ServiceClient, id string, opts InterfaceO
 		r.Err = err
 		return
 	}
-	_, r.Err = client.Post(detachInterfaceURL(client, id), b, &r.Body, &edgecloud.RequestOpts{ // nolint
+	_, r.Err = client.Post(detachInterfaceURL(client, id), b, &r.Body, &edgecloud.RequestOpts{
 		OkCodes: []int{http.StatusNoContent, http.StatusOK},
 	})
 	return
@@ -503,7 +499,7 @@ func Create(client *edgecloud.ServiceClient, opts CreateOptsBuilder) (r tasks.Re
 		r.Err = err
 		return
 	}
-	_, r.Err = client.Post(createURL(client), b, &r.Body, nil) // nolint
+	_, r.Err = client.Post(createURL(client), b, &r.Body, nil)
 	return
 }
 
@@ -517,43 +513,44 @@ func Delete(client *edgecloud.ServiceClient, instanceID string, opts DeleteOptsB
 		}
 		url += query
 	}
-	_, r.Err = client.DeleteWithResponse(url, &r.Body, nil) // nolint
+	_, r.Err = client.DeleteWithResponse(url, &r.Body, nil)
+
 	return
 }
 
 // Start instance.
 func Start(client *edgecloud.ServiceClient, id string) (r UpdateResult) {
-	_, r.Err = client.Post(startInstanceURL(client, id), nil, &r.Body, nil) // nolint
+	_, r.Err = client.Post(startInstanceURL(client, id), nil, &r.Body, nil)
 	return
 }
 
 // Stop instance.
 func Stop(client *edgecloud.ServiceClient, id string) (r UpdateResult) {
-	_, r.Err = client.Post(stopInstanceURL(client, id), nil, &r.Body, nil) // nolint
+	_, r.Err = client.Post(stopInstanceURL(client, id), nil, &r.Body, nil)
 	return
 }
 
 // PowerCycle instance.
 func PowerCycle(client *edgecloud.ServiceClient, id string) (r UpdateResult) {
-	_, r.Err = client.Post(powerCycleInstanceURL(client, id), nil, &r.Body, nil) // nolint
+	_, r.Err = client.Post(powerCycleInstanceURL(client, id), nil, &r.Body, nil)
 	return
 }
 
 // Reboot instance.
 func Reboot(client *edgecloud.ServiceClient, id string) (r UpdateResult) {
-	_, r.Err = client.Post(rebootInstanceURL(client, id), nil, &r.Body, nil) // nolint
+	_, r.Err = client.Post(rebootInstanceURL(client, id), nil, &r.Body, nil)
 	return
 }
 
 // Suspend instance.
 func Suspend(client *edgecloud.ServiceClient, id string) (r UpdateResult) {
-	_, r.Err = client.Post(suspendInstanceURL(client, id), nil, &r.Body, nil) // nolint
+	_, r.Err = client.Post(suspendInstanceURL(client, id), nil, &r.Body, nil)
 	return
 }
 
 // Resume instance.
 func Resume(client *edgecloud.ServiceClient, id string) (r UpdateResult) {
-	_, r.Err = client.Post(resumeInstanceURL(client, id), nil, &r.Body, nil) // nolint
+	_, r.Err = client.Post(resumeInstanceURL(client, id), nil, &r.Body, nil)
 	return
 }
 
@@ -564,7 +561,7 @@ func Resize(client *edgecloud.ServiceClient, id string, opts ChangeFlavorOptsBui
 		r.Err = err
 		return
 	}
-	_, r.Err = client.Post(changeFlavorInstanceURL(client, id), b, &r.Body, nil) // nolint
+	_, r.Err = client.Post(changeFlavorInstanceURL(client, id), b, &r.Body, nil)
 	return
 }
 
@@ -592,12 +589,11 @@ func (opts ListMetricsOpts) ToListMetricsMap() (map[string]interface{}, error) {
 
 // ListInstanceMetrics retrieves instance's metrics.
 func ListInstanceMetrics(client *edgecloud.ServiceClient, id string, opts ListMetricsOptsBuilder) (r ListMetricsResult) {
-
 	b, err := opts.ToListMetricsMap()
 	if err != nil {
 		return
 	}
-	_, r.Err = client.Post(listInstanceMetricsURL(client, id), b, &r.Body, nil) // nolint
+	_, r.Err = client.Post(listInstanceMetricsURL(client, id), b, &r.Body, nil)
 	return
 }
 
@@ -625,23 +621,23 @@ type MetadataOptsBuilder interface {
 	ToMetadataMap() (string, error)
 }
 
-// MetadataOpts. Set parameters for Create or Update operation
+// MetadataOpts Set parameters for Create or Update operation.
 type MetadataOpts struct {
 	Key   string `json:"key" validate:"required,max=255"`
 	Value string `json:"value" validate:"required,max=255"`
 }
 
-// MetadataSetOpts. Set parameters for Create or Update operation
+// MetadataSetOpts Set parameters for Create or Update operation.
 type MetadataSetOpts struct {
 	Metadata []MetadataOpts `json:"metadata" validate:"required,min=1,dive"`
 }
 
-// Validate
+// Validate MetadataOpts.
 func (opts MetadataOpts) Validate() error {
 	return edgecloud.ValidateStruct(opts)
 }
 
-// Validate
+// Validate MetadataSetOpts.
 func (opts MetadataSetOpts) Validate() error {
 	return edgecloud.ValidateStruct(opts)
 }
@@ -665,7 +661,7 @@ func MetadataCreate(client *edgecloud.ServiceClient, id string, opts MetadataSet
 		r.Err = err
 		return
 	}
-	_, r.Err = client.Post(metadataURL(client, id), b, nil, &edgecloud.RequestOpts{ // nolint
+	_, r.Err = client.Post(metadataURL(client, id), b, nil, &edgecloud.RequestOpts{
 		OkCodes: []int{http.StatusNoContent, http.StatusOK},
 	})
 	return
@@ -678,7 +674,7 @@ func MetadataUpdate(client *edgecloud.ServiceClient, id string, opts MetadataSet
 		r.Err = err
 		return
 	}
-	_, r.Err = client.Put(metadataURL(client, id), b, nil, &edgecloud.RequestOpts{ // nolint
+	_, r.Err = client.Put(metadataURL(client, id), b, nil, &edgecloud.RequestOpts{
 		OkCodes: []int{http.StatusNoContent, http.StatusOK},
 	})
 	return
@@ -686,7 +682,7 @@ func MetadataUpdate(client *edgecloud.ServiceClient, id string, opts MetadataSet
 
 // MetadataDelete deletes defined metadata key for an instance.
 func MetadataDelete(client *edgecloud.ServiceClient, id string, key string) (r MetadataActionResult) {
-	_, r.Err = client.Delete(metadataDetailsURL(client, id, key), &edgecloud.RequestOpts{ // nolint
+	_, r.Err = client.Delete(metadataDetailsURL(client, id, key), &edgecloud.RequestOpts{
 		OkCodes: []int{http.StatusNoContent, http.StatusOK},
 	})
 	return
@@ -695,7 +691,7 @@ func MetadataDelete(client *edgecloud.ServiceClient, id string, key string) (r M
 // MetadataGet gets defined metadata key for an instance.
 func MetadataGet(client *edgecloud.ServiceClient, id string, key string) (r MetadataResult) {
 	url := metadataDetailsURL(client, id, key)
-	_, r.Err = client.Get(url, &r.Body, nil) // nolint
+	_, r.Err = client.Get(url, &r.Body, nil)
 	return
 }
 
@@ -716,14 +712,14 @@ func ListAvailableFlavors(client *edgecloud.ServiceClient, id string, opts flavo
 // GetSpiceConsole retrieves a specific spice console based on instance unique ID.
 func GetSpiceConsole(client *edgecloud.ServiceClient, id string) (r RemoteConsoleResult) {
 	url := getSpiceConsoleURL(client, id)
-	_, r.Err = client.Get(url, &r.Body, nil) // nolint
+	_, r.Err = client.Get(url, &r.Body, nil)
 	return
 }
 
 // GetInstanceConsole retrieves a specific spice console based on instance unique ID.
 func GetInstanceConsole(client *edgecloud.ServiceClient, id string) (r RemoteConsoleResult) {
 	url := getInstanceConsoleURL(client, id)
-	_, r.Err = client.Get(url, &r.Body, nil) // nolint
+	_, r.Err = client.Get(url, &r.Body, nil)
 	return
 }
 
@@ -732,7 +728,7 @@ type ListInstanceLocationOptsBuilder interface {
 	ToListInstanceLocationQuery() (string, error)
 }
 
-// ListInstanceLocationOpts set parameters for search instance location operation
+// ListInstanceLocationOpts set parameters for search instance location operation.
 type ListInstanceLocationOpts struct {
 	Name string `q:"name"`
 	ID   string `q:"id"`
@@ -750,6 +746,7 @@ func (opts ListInstanceLocationOpts) ToListInstanceLocationQuery() (string, erro
 	return q.String(), err
 }
 
+// Validate ListInstanceLocationOpts.
 func (opts *ListInstanceLocationOpts) Validate() error {
 	return edgecloud.ValidateStruct(opts)
 }

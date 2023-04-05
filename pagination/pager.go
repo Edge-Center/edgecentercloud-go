@@ -1,18 +1,12 @@
 package pagination
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
 	"reflect"
 	"strings"
 
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
-)
-
-var (
-	// ErrPageNotAvailable is returned from a Pager when a next or previous page is requested, but does not exist.
-	ErrPageNotAvailable = errors.New("the requested page does not exist")
 )
 
 // Page must be satisfied by the result type of any resource collection.
@@ -169,13 +163,13 @@ func (p Pager) AllPages() (Page, error) {
 				// If it's a linked page, we don't want the `links`, we want the other one.
 				if !strings.HasSuffix(k, "links") {
 					// check the field's type. we only want []interface{} (which is really []map[string]interface{})
-					switch vt := v.(type) { // nolint: gocritic
-					case []interface{}:
+					if vt, ok := v.([]interface{}); ok {
 						key = k
 						pagesSlice = append(pagesSlice, vt...)
 					}
 				}
 			}
+
 			return true, nil
 		})
 		if err != nil {
@@ -224,7 +218,7 @@ func (p Pager) AllPages() (Page, error) {
 			body.Index(i).Set(reflect.ValueOf(s))
 		}
 	default:
-		err := edgecloud.ErrUnexpectedType{}
+		err := edgecloud.UnexpectedTypeError{}
 		err.Expected = "map[string]interface{}/[]byte/[]interface{}"
 		err.Actual = fmt.Sprintf("%T", pb)
 		return nil, err

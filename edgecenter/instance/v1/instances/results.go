@@ -78,27 +78,27 @@ type UpdateResult struct {
 	commonResult
 }
 
-// DeleteResult represents the result of a delete operation
+// DeleteResult represents the result of a delete operation.
 type DeleteResult struct {
 	commonResult
 }
 
-// MetadataActionResult represents the result of a create, delete or update operation(no content)
+// MetadataActionResult represents the result of a create, delete or update operation(no content).
 type MetadataActionResult struct {
 	edgecloud.ErrResult
 }
 
-// MetadataResult represents the result of a get operation
+// MetadataResult represents the result of a get operation.
 type MetadataResult struct {
 	commonResult
 }
 
-// SecurityGroupActionResult represents the result of a actions operation(no content)
+// SecurityGroupActionResult represents the result of a actions operation(no content).
 type SecurityGroupActionResult struct {
 	edgecloud.ErrResult
 }
 
-// InterfaceActionResult represents the result of a actions operation(no content)
+// InterfaceActionResult represents the result of a actions operation(no content).
 type InterfaceActionResult struct {
 	edgecloud.ErrResult
 }
@@ -121,7 +121,7 @@ type InstanceAddress struct {
 	SubnetName *string           `json:"subnet_name,omitempty"`
 }
 
-// InstanceMetrics represent a instance metrics struct
+// InstanceMetrics represent a instance metrics struct.
 type InstanceMetrics struct {
 	CPUUtil           float64                 `json:"cpu_util"`
 	Disks             []DiskMetrics           `json:"disks"`
@@ -175,7 +175,7 @@ type Interface struct {
 	SubPorts            []SubPort     `json:"sub_ports"`
 }
 
-// SubPort represent a instance sub port interface
+// SubPort represent a instance sub port interface.
 type SubPort struct {
 	PortID            string        `json:"port_id"`
 	MacAddress        edgecloud.MAC `json:"mac_address"`
@@ -187,7 +187,7 @@ type SubPort struct {
 	SegmentationType  string        `json:"segmentation_type"`
 }
 
-// PortIP
+// PortIP represents an IPAddress and a SubnetID.
 type PortIP struct {
 	IPAddress net.IP `json:"ip_address"`
 	SubnetID  string `json:"subnet_id"`
@@ -213,7 +213,7 @@ type FloatingIP struct {
 	Metadata          []metadata.Metadata     `json:"metadata"`
 }
 
-// Subnet port subnet
+// Subnet port subnet.
 type Subnet struct {
 	ID            string                  `json:"id"`
 	Name          string                  `json:"name"`
@@ -449,15 +449,13 @@ func ExtractMetadataInto(r pagination.Page, v interface{}) error {
 	return r.(MetadataPage).Result.ExtractIntoSlicePtr(v, "results")
 }
 
-// UnmarshalJSON - implements Unmarshaler interface
+// UnmarshalJSON - implements Unmarshaler interface.
 func (i *Instance) UnmarshalJSON(data []byte) error {
 	i.AvailabilityZone = DefaultAvailabilityZone
 	type Alias Instance
 	tmp := (*Alias)(i)
-	if err := json.Unmarshal(data, &tmp); err != nil {
-		return err
-	}
-	return nil
+
+	return json.Unmarshal(data, &tmp)
 }
 
 type InstanceTaskResult struct {

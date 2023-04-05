@@ -3,11 +3,11 @@ package testing
 import (
 	"testing"
 
-	edgecloud "github.com/Edge-Center/edgecentercloud-go"
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/keystone/v1/types"
-
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/keystone/v1/keystones"
 	"github.com/stretchr/testify/require"
+
+	edgecloud "github.com/Edge-Center/edgecentercloud-go"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/keystone/v1/keystones"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/keystone/v1/types"
 )
 
 func TestUpdateOptsValidation(t *testing.T) {

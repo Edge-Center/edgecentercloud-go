@@ -1,9 +1,8 @@
 package projects
 
 import (
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/project/v1/types"
-
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/project/v1/types"
 	"github.com/Edge-Center/edgecentercloud-go/pagination"
 )
 

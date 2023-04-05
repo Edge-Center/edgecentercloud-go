@@ -4,7 +4,6 @@ import (
 	"os"
 
 	"github.com/imdario/mergo"
-
 	"k8s.io/client-go/tools/clientcmd"
 
 	"github.com/Edge-Center/edgecentercloud-go/client/utils"
@@ -42,6 +41,7 @@ func MergeKubeconfigFile(filename string, content []byte) (err error) {
 	if err != nil {
 		return
 	}
+
 	return clientcmd.WriteToFile(*config, configPath)
 }
 

@@ -182,7 +182,7 @@ func TestBuildRequestBody(t *testing.T) {
 		OrFields *orFields `json:"or_fields,omitempty"`
 	}
 
-	var successCases = []struct {
+	successCases := []struct {
 		opts     AuthOptions
 		expected map[string]interface{}
 	}{
@@ -224,7 +224,7 @@ func TestBuildRequestBody(t *testing.T) {
 		th.AssertDeepEquals(t, successCase.expected, actual)
 	}
 
-	var failCases = []struct {
+	failCases := []struct {
 		opts     AuthOptions
 		expected error
 	}{
@@ -233,7 +233,7 @@ func TestBuildRequestBody(t *testing.T) {
 				TenantID:   "987654321",
 				TenantName: "me",
 			},
-			edgecloud.ErrMissingInput{},
+			edgecloud.MissingInputError{},
 		},
 		{
 			AuthOptions{
@@ -245,7 +245,7 @@ func TestBuildRequestBody(t *testing.T) {
 					Password: "swordfish",
 				},
 			},
-			edgecloud.ErrMissingInput{},
+			edgecloud.MissingInputError{},
 		},
 		{
 			AuthOptions{
@@ -253,7 +253,7 @@ func TestBuildRequestBody(t *testing.T) {
 					Password: "swordfish",
 				},
 			},
-			edgecloud.ErrMissingInput{},
+			edgecloud.MissingInputError{},
 		},
 		{
 			AuthOptions{
@@ -265,7 +265,7 @@ func TestBuildRequestBody(t *testing.T) {
 					Filler: 2,
 				},
 			},
-			edgecloud.ErrMissingInput{},
+			edgecloud.MissingInputError{},
 		},
 	}
 
@@ -274,8 +274,8 @@ func TestBuildRequestBody(t *testing.T) {
 		th.AssertDeepEquals(t, reflect.TypeOf(failCase.expected), reflect.TypeOf(err))
 	}
 
-	createdAt := time.Date(2018, 1, 4, 10, 00, 12, 0, time.UTC)
-	var complexFields = struct {
+	createdAt := time.Date(2018, 1, 4, 10, 0o0, 12, 0, time.UTC)
+	complexFields := struct {
 		Username  string     `json:"username" required:"true"`
 		CreatedAt *time.Time `json:"-"`
 	}{
@@ -290,11 +290,9 @@ func TestBuildRequestBody(t *testing.T) {
 	actual, err := edgecloud.BuildRequestBody(complexFields, "")
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, expectedComplexFields, actual)
-
 }
 
 func TestZeroQueryOpts(t *testing.T) {
-
 	type Opts struct {
 		Value bool `q:"value" zero:"true"`
 	}

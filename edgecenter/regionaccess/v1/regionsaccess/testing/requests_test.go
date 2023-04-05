@@ -5,12 +5,13 @@ import (
 	"net/http"
 	"testing"
 
+	log "github.com/sirupsen/logrus"
+	"github.com/stretchr/testify/require"
+
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/regionaccess/v1/regionsaccess"
 	th "github.com/Edge-Center/edgecentercloud-go/testhelper"
 	fake "github.com/Edge-Center/edgecentercloud-go/testhelper/client"
-	log "github.com/sirupsen/logrus"
-	"github.com/stretchr/testify/require"
 )
 
 func prepareRootTestURL() string {
@@ -94,5 +95,4 @@ func TestDelete(t *testing.T) {
 	client := fake.ServiceTokenClient("reseller_region", "v1")
 	err := regionsaccess.Delete(client, resellerID).ExtractErr()
 	require.NoError(t, err)
-
 }

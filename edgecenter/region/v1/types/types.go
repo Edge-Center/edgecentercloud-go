@@ -6,7 +6,9 @@ import (
 )
 
 type RegionState string
+
 type KeystoneState string
+
 type EndpointType string
 
 const (
@@ -50,14 +52,15 @@ func (et EndpointType) List() []EndpointType {
 }
 
 func (et EndpointType) StringList() []string {
-	var s []string
-	for _, v := range et.List() {
-		s = append(s, v.String())
+	lst := et.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
-// UnmarshalJSON - implements Unmarshaler interface for EndpointType
+// UnmarshalJSON - implements Unmarshaler interface for EndpointType.
 func (et *EndpointType) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -69,10 +72,11 @@ func (et *EndpointType) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*et = v
+
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface for EndpointType
+// MarshalJSON - implements Marshaler interface for EndpointType.
 func (et *EndpointType) MarshalJSON() ([]byte, error) {
 	return json.Marshal(et.String())
 }
@@ -88,6 +92,7 @@ func (rs RegionState) IsValid() error {
 		RegionStateNew:
 		return nil
 	}
+
 	return fmt.Errorf("invalid RegionState type: %v", rs)
 }
 
@@ -119,14 +124,15 @@ func (rs RegionState) List() []RegionState {
 }
 
 func (rs RegionState) StringList() []string {
-	var s []string
-	for _, v := range rs.List() {
-		s = append(s, v.String())
+	lst := rs.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
-// UnmarshalJSON - implements Unmarshaler interface for RegionState
+// UnmarshalJSON - implements Unmarshaler interface for RegionState.
 func (rs *RegionState) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -138,10 +144,11 @@ func (rs *RegionState) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*rs = v
+
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface for RegionState
+// MarshalJSON - implements Marshaler interface for RegionState.
 func (rs *RegionState) MarshalJSON() ([]byte, error) {
 	return json.Marshal(rs.String())
 }

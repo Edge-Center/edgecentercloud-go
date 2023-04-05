@@ -4,15 +4,14 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/Edge-Center/edgecentercloud-go/client/snapshots/v1/client"
+	"github.com/urfave/cli/v2"
 
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 	"github.com/Edge-Center/edgecentercloud-go/client/flags"
+	"github.com/Edge-Center/edgecentercloud-go/client/snapshots/v1/client"
 	"github.com/Edge-Center/edgecentercloud-go/client/utils"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/snapshot/v1/snapshots"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
-
-	"github.com/urfave/cli/v2"
 )
 
 var snapshotIDText = "snapshot_id is mandatory argument"
@@ -39,7 +38,7 @@ var snapshotListCommand = cli.Command{
 		client, err := client.NewSnapshotClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		opts := snapshots.ListOpts{
 			VolumeID:   c.String("volume-id"),
@@ -47,9 +46,10 @@ var snapshotListCommand = cli.Command{
 		}
 		results, err := snapshots.ListAll(client, opts)
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
+
 		return nil
 	},
 }
@@ -68,16 +68,17 @@ var snapshotGetCommand = cli.Command{
 		client, err := client.NewSnapshotClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		snapshot, err := snapshots.Get(client, snapshotID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		if snapshot == nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(snapshot, c.String("format"))
+
 		return nil
 	},
 }
@@ -97,14 +98,14 @@ var snapshotDeleteCommand = cli.Command{
 		client, err := client.NewSnapshotClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		results, err := snapshots.Delete(client, snapshotID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		if results == nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		return utils.WaitTaskAndShowResult(c, client, results, false, func(task tasks.TaskID) (interface{}, error) {
@@ -112,14 +113,12 @@ var snapshotDeleteCommand = cli.Command{
 			if err == nil {
 				return nil, fmt.Errorf("cannot delete snapshot with ID: %s", snapshotID)
 			}
-			switch err.(type) {
-			case edgecloud.ErrDefault404:
+			var e edgecloud.Default404Error
+			if errors.As(err, &e) {
 				return nil, nil
-			default:
-				return nil, err
 			}
+			return nil, err
 		})
-
 	},
 }
 
@@ -161,12 +160,12 @@ var snapshotCreateCommand = cli.Command{
 		client, err := client.NewSnapshotClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		meta, err := parseMetadata(c.StringSlice("meta-key"), c.StringSlice("meta-value"))
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		opts := snapshots.CreateOpts{
@@ -178,11 +177,12 @@ var snapshotCreateCommand = cli.Command{
 
 		results, err := snapshots.Create(client, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		if results == nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
+
 		return utils.WaitTaskAndShowResult(c, client, results, true, func(task tasks.TaskID) (interface{}, error) {
 			taskInfo, err := tasks.Get(client, string(task)).Extract()
 			if err != nil {
@@ -197,6 +197,7 @@ var snapshotCreateCommand = cli.Command{
 				return nil, fmt.Errorf("cannot get snapshot with ID: %s. Error: %w", snapshotID, err)
 			}
 			utils.ShowResults(snapshot, c.String("format"))
+
 			return nil, nil
 		})
 	},
@@ -211,10 +212,10 @@ func parseMetadata(keys []string, values []string) (map[string]string, error) {
 	}
 
 	meta := map[string]string{}
-	// nolint:gosimple
-	for i, _ := range keys {
+	for i := range keys {
 		meta[keys[i]] = values[i]
 	}
+
 	return meta, nil
 }
 
@@ -243,12 +244,12 @@ var metadataReplaceCommand = cli.Command{
 		client, err := client.NewSnapshotClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		meta, err := parseMetadata(c.StringSlice("meta-key"), c.StringSlice("meta-value"))
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		metaData := make([]snapshots.MetadataOpts, 0, len(meta))
@@ -259,9 +260,10 @@ var metadataReplaceCommand = cli.Command{
 
 		snapshot, err := snapshots.MetadataReplace(client, snapshotID, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(snapshot, c.String("format"))
+
 		return nil
 	},
 }

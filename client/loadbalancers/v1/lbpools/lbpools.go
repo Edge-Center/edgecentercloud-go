@@ -1,6 +1,7 @@
 package lbpools
 
 import (
+	"errors"
 	"fmt"
 	"net"
 	"strings"
@@ -27,7 +28,6 @@ var (
 )
 
 func getHealthMonitor(c *cli.Context) (*lbpools.CreateHealthMonitorOpts, error) {
-
 	healthMonitorType, err := types.HealthMonitorType(c.String("healthmonitor-type")).ValidOrNil()
 	if err != nil || healthMonitorType == nil {
 		return nil, err
@@ -65,11 +65,11 @@ func getHealthMonitor(c *cli.Context) (*lbpools.CreateHealthMonitorOpts, error) 
 		}
 		hm.URLPath = httpMethodURLPath
 	}
+
 	return &hm, nil
 }
 
 func getSessionPersistence(c *cli.Context) (*lbpools.CreateSessionPersistenceOpts, error) {
-
 	sessionPersistenceType, err := types.PersistenceType(c.String("session-persistence-type")).ValidOrNil()
 	if err != nil || sessionPersistenceType == nil {
 		return nil, err
@@ -93,6 +93,7 @@ func getPoolMembers(c *cli.Context) ([]lbpools.CreatePoolMemberOpts, error) {
 	if len(memberAddresses) == 0 {
 		return nil, nil
 	}
+
 	memberPorts := c.IntSlice("member-port")
 	if len(memberAddresses) != len(memberPorts) {
 		return nil, fmt.Errorf("number of --member-address should be equal --member-port")
@@ -100,7 +101,7 @@ func getPoolMembers(c *cli.Context) ([]lbpools.CreatePoolMemberOpts, error) {
 	memberWeights := c.IntSlice("member-weight")
 	memberSubnetIDs := c.StringSlice("member-subnet-id")
 	memberInstanceIDs := c.StringSlice("member-instance-id")
-	var members []lbpools.CreatePoolMemberOpts
+	members := make([]lbpools.CreatePoolMemberOpts, 0, len(memberAddresses))
 
 	type addressPortPair struct {
 		ip   string
@@ -150,7 +151,6 @@ func getPoolMembers(c *cli.Context) ([]lbpools.CreatePoolMemberOpts, error) {
 	}
 
 	return members, nil
-
 }
 
 var lbpoolListSubCommand = cli.Command{
@@ -182,7 +182,7 @@ var lbpoolListSubCommand = cli.Command{
 		client, err := client.NewLBPoolClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		opts := lbpools.ListOpts{
@@ -193,9 +193,10 @@ var lbpoolListSubCommand = cli.Command{
 
 		results, err := lbpools.ListAll(client, opts)
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
+
 		return nil
 	},
 }
@@ -214,13 +215,14 @@ var lbpoolGetSubCommand = cli.Command{
 		client, err := client.NewLBPoolClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		result, err := lbpools.Get(client, clusterID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
+
 		return nil
 	},
 }
@@ -240,12 +242,13 @@ var lbpoolDeleteSubCommand = cli.Command{
 		client, err := client.NewLBPoolClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		results, err := lbpools.Delete(client, lbpoolID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
+
 		return utils.WaitTaskAndShowResult(c, client, results, false, func(task tasks.TaskID) (interface{}, error) {
 			lbpool, err := lbpools.Get(client, lbpoolID).Extract()
 			if err == nil {
@@ -254,12 +257,12 @@ var lbpoolDeleteSubCommand = cli.Command{
 				}
 				return nil, fmt.Errorf("cannot delete lbpool with ID: %s", lbpoolID)
 			}
-			switch err.(type) {
-			case edgecloud.ErrDefault404:
+			var e edgecloud.Default404Error
+			if errors.As(err, &e) {
 				return nil, nil
-			default:
-				return nil, err
 			}
+
+			return nil, err
 		})
 	},
 }
@@ -442,37 +445,37 @@ var lbpoolCreateSubCommand = cli.Command{
 		client, err := client.NewLBPoolClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		pt := types.ProtocolType(c.String("protocol"))
 		if err := pt.IsValid(); err != nil {
 			_ = cli.ShowCommandHelp(c, "create")
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		lba := types.LoadBalancerAlgorithm(c.String("algorithm"))
 		if err := lba.IsValid(); err != nil {
 			_ = cli.ShowCommandHelp(c, "create")
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		members, err := getPoolMembers(c)
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "create")
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		hm, err := getHealthMonitor(c)
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "create")
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		sp, err := getSessionPersistence(c)
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "create")
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		if members == nil {
@@ -484,7 +487,7 @@ var lbpoolCreateSubCommand = cli.Command{
 
 		if loadBalancerID == nil && listenerID == nil {
 			_ = cli.ShowCommandHelp(c, "create")
-			return cli.NewExitError(fmt.Errorf("either --loadbalancer or --listener should be set"), 1)
+			return cli.Exit(fmt.Errorf("either --loadbalancer or --listener should be set"), 1)
 		}
 
 		timeoutClientData := c.Int("timeout-client-data")
@@ -507,8 +510,9 @@ var lbpoolCreateSubCommand = cli.Command{
 
 		results, err := lbpools.Create(client, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
+
 		return utils.WaitTaskAndShowResult(c, client, results, true, func(task tasks.TaskID) (interface{}, error) {
 			taskInfo, err := tasks.Get(client, string(task)).Extract()
 			if err != nil {
@@ -523,6 +527,7 @@ var lbpoolCreateSubCommand = cli.Command{
 				return nil, fmt.Errorf("cannot get lbpool with ID: %s. Error: %w", lbpoolID, err)
 			}
 			utils.ShowResults(lbpool, c.String("format"))
+
 			return nil, nil
 		})
 	},
@@ -574,12 +579,12 @@ var lbpoolCreateMemberSubCommand = cli.Command{
 		client, err := client.NewLBPoolClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		address := net.ParseIP(c.String("address"))
 		if address == nil {
-			return cli.NewExitError(fmt.Errorf("malformed address %s", c.String("address")), 1)
+			return cli.Exit(fmt.Errorf("malformed address %s", c.String("address")), 1)
 		}
 
 		opts := lbpools.CreatePoolMemberOpts{
@@ -592,8 +597,9 @@ var lbpoolCreateMemberSubCommand = cli.Command{
 
 		results, err := lbpools.CreateMember(client, lbpoolID, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
+
 		return utils.WaitTaskAndShowResult(c, client, results, true, func(task tasks.TaskID) (interface{}, error) {
 			taskInfo, err := tasks.Get(client, string(task)).Extract()
 			if err != nil {
@@ -608,6 +614,7 @@ var lbpoolCreateMemberSubCommand = cli.Command{
 				return nil, fmt.Errorf("cannot get lbpool with ID: %s. Error: %w", memberID, err)
 			}
 			utils.ShowResults(lbpool, c.String("format"))
+
 			return nil, nil
 		})
 	},
@@ -635,13 +642,14 @@ var lbpoolDeleteMemberSubCommand = cli.Command{
 		client, err := client.NewLBPoolClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		lbpoolID := c.String("pool-id")
 		results, err := lbpools.DeleteMember(client, lbpoolID, memberID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
+
 		return utils.WaitTaskAndShowResult(c, client, results, false, func(task tasks.TaskID) (interface{}, error) {
 			lbpool, err := lbpools.Get(client, lbpoolID).Extract()
 			if err != nil {
@@ -653,6 +661,7 @@ var lbpoolDeleteMemberSubCommand = cli.Command{
 					return nil, fmt.Errorf("cannot delete loadbalancer pool member with ID: %s", memberID)
 				}
 			}
+
 			return nil, nil
 		})
 	},
@@ -813,31 +822,31 @@ var lbpoolUpdateSubCommand = cli.Command{
 		client, err := client.NewLBPoolClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		lba, err := types.LoadBalancerAlgorithm(c.String("algorithm")).ValidOrNil()
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "update")
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		members, err := getPoolMembers(c)
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "update")
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		hm, err := getHealthMonitor(c)
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "update")
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		sp, err := getSessionPersistence(c)
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "update")
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		timeoutClientData := c.Int("timeout-client-data")
@@ -860,11 +869,12 @@ var lbpoolUpdateSubCommand = cli.Command{
 
 		results, err := lbpools.Update(client, lbPoolID, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		if results == nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
+
 		return utils.WaitTaskAndShowResult(c, client, results, true, func(task tasks.TaskID) (interface{}, error) {
 			_, err := tasks.Get(client, string(task)).Extract()
 			if err != nil {
@@ -951,22 +961,23 @@ var lbpoolCreateHealthMonitorSubCommand = cli.Command{
 		client, err := client.NewLBPoolClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		hm, err := getHealthMonitor(c)
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "create")
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		results, err := lbpools.CreateHealthMonitor(client, lbPoolID, hm).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		if results == nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
+
 		return utils.WaitTaskAndShowResult(c, client, results, true, func(task tasks.TaskID) (interface{}, error) {
 			_, err := tasks.Get(client, string(task)).Extract()
 			if err != nil {
@@ -997,12 +1008,13 @@ var lbpoolDeleteHealthMonitorSubCommand = cli.Command{
 		client, err := client.NewLBPoolClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		if err = lbpools.DeleteHealthMonitor(client, lbpoolID).ExtractErr(); err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
+
 		return nil
 	},
 }

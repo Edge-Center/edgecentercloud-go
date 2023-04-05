@@ -6,14 +6,13 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Edge-Center/edgecentercloud-go/testhelper/client"
-
 	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/require"
 
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter"
 	th "github.com/Edge-Center/edgecentercloud-go/testhelper"
+	"github.com/Edge-Center/edgecentercloud-go/testhelper/client"
 )
 
 var testURL = "/v1/magnum/"
@@ -117,7 +116,6 @@ func TestReauthAuthenticatedServiceClient(t *testing.T) {
 	require.Equal(t, client.RefreshToken, serviceClient.RefreshToken())
 
 	require.Equal(t, reauthCount, 2)
-
 }
 
 func TestReauthAuthenticatedServiceClientWithBadRefreshToken(t *testing.T) {
@@ -173,7 +171,7 @@ func TestReauthAuthenticatedServiceClientWithBadRefreshToken(t *testing.T) {
 	require.Equal(t, client.RefreshToken, serviceClient.RefreshToken())
 	r := edgecloud.Result{}
 
-	resp, err := serviceClient.Get(fullTestURL, &r.Body, nil) // nolint
+	resp, err := serviceClient.Get(fullTestURL, &r.Body, nil)
 	require.NoError(t, err)
 	require.Equal(t, resp.StatusCode, 200)
 
@@ -182,7 +180,6 @@ func TestReauthAuthenticatedServiceClientWithBadRefreshToken(t *testing.T) {
 
 	require.Equal(t, reauthCount, 1)
 	require.Equal(t, authCount, 2)
-
 }
 
 func TestReauthTokenServiceClient(t *testing.T) {
@@ -223,7 +220,7 @@ func TestReauthTokenServiceClient(t *testing.T) {
 	require.Equal(t, client.RefreshToken, serviceClient.RefreshToken())
 	r := edgecloud.Result{}
 
-	resp, err := serviceClient.Get(fullTestURL, &r.Body, nil) // nolint
+	resp, err := serviceClient.Get(fullTestURL, &r.Body, nil)
 	require.NoError(t, err)
 	require.Equal(t, resp.StatusCode, 200)
 
@@ -234,7 +231,7 @@ func TestReauthTokenServiceClient(t *testing.T) {
 	serviceClient.AccessTokenID = client.AccessToken
 	require.Equal(t, client.AccessToken, serviceClient.AccessToken())
 
-	resp, err = serviceClient.Get(fullTestURL, &r.Body, nil) // nolint
+	resp, err = serviceClient.Get(fullTestURL, &r.Body, nil)
 	require.NoError(t, err)
 	require.Equal(t, resp.StatusCode, 200)
 
@@ -242,7 +239,6 @@ func TestReauthTokenServiceClient(t *testing.T) {
 	require.Equal(t, client.RefreshToken, serviceClient.RefreshToken())
 
 	require.Equal(t, reauthCount, 2)
-
 }
 
 func TestServiceClientURL(t *testing.T) {
@@ -312,5 +308,4 @@ func TestServiceClientURL(t *testing.T) {
 	require.NoError(t, err)
 	actual = c.ServiceURL("more", "parts", "here")
 	require.Equal(t, "http://test.com/v1/test/1/1/more/parts/here", actual)
-
 }

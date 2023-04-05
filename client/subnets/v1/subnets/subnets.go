@@ -1,6 +1,7 @@
 package subnets
 
 import (
+	"errors"
 	"fmt"
 	"net"
 
@@ -19,7 +20,7 @@ var subnetIDText = "subnet_id is mandatory argument"
 
 func getDNSNameservers(c *cli.Context) ([]net.IP, error) {
 	dns := c.StringSlice("dns-nameserver")
-	var result []net.IP
+	result := make([]net.IP, 0, len(dns))
 	for _, server := range dns {
 		ip := net.ParseIP(server)
 		if ip == nil {
@@ -36,7 +37,7 @@ func GetHostRoutes(c *cli.Context) ([]subnets.HostRoute, error) {
 	if len(destinations) > 0 && len(destinations) != len(hops) {
 		return nil, fmt.Errorf("should be equal number of route-destination and route-nexthop arguments")
 	}
-	var result []subnets.HostRoute
+	result := make([]subnets.HostRoute, 0, len(destinations))
 	for idx, desc := range destinations {
 		dst, err := edgecloud.ParseCIDRString(desc)
 		if err != nil {
@@ -51,6 +52,7 @@ func GetHostRoutes(c *cli.Context) ([]subnets.HostRoute, error) {
 			NextHop:     hop,
 		})
 	}
+
 	return result, nil
 }
 
@@ -70,7 +72,7 @@ var subnetListCommand = cli.Command{
 		client, err := client.NewSubnetClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		opts := subnets.ListOpts{
 			NetworkID: c.String("network_id"),
@@ -78,13 +80,14 @@ var subnetListCommand = cli.Command{
 
 		pages, err := subnets.List(client, opts).AllPages()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		results, err := subnets.ExtractSubnets(pages)
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
+
 		return nil
 	},
 }
@@ -103,16 +106,17 @@ var subnetGetCommand = cli.Command{
 		client, err := client.NewSubnetClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		task, err := subnets.Get(client, subnetID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		if task == nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(task, c.String("format"))
+
 		return nil
 	},
 }
@@ -132,14 +136,14 @@ var subnetDeleteCommand = cli.Command{
 		client, err := client.NewSubnetClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		results, err := subnets.Delete(client, subnetID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		if results == nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		return utils.WaitTaskAndShowResult(c, client, results, false, func(task tasks.TaskID) (interface{}, error) {
@@ -147,14 +151,12 @@ var subnetDeleteCommand = cli.Command{
 			if err == nil {
 				return nil, fmt.Errorf("cannot delete subnet with ID: %s", subnetID)
 			}
-			switch err.(type) {
-			case edgecloud.ErrDefault404:
+			var e edgecloud.Default404Error
+			if errors.As(err, &e) {
 				return nil, nil
-			default:
-				return nil, err
 			}
+			return nil, err
 		})
-
 	},
 }
 
@@ -192,16 +194,16 @@ var subnetUpdateCommand = cli.Command{
 		client, err := client.NewSubnetClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		dns, err := getDNSNameservers(c)
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		hostRoutes, err := GetHostRoutes(c)
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		opts := subnets.UpdateOpts{
 			Name:           c.String("name"),
@@ -211,14 +213,14 @@ var subnetUpdateCommand = cli.Command{
 
 		subnet, err := subnets.Update(client, subnetID, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		if subnet == nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(subnet, c.String("format"))
-		return nil
 
+		return nil
 	},
 }
 
@@ -285,19 +287,19 @@ var subnetCreateCommand = cli.Command{
 		client, err := client.NewSubnetClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		cidr, err := edgecloud.ParseCIDRString(c.String("cidr"))
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		dns, err := getDNSNameservers(c)
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		hostRoutes, err := GetHostRoutes(c)
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		opts := subnets.CreateOpts{
@@ -318,11 +320,12 @@ var subnetCreateCommand = cli.Command{
 
 		results, err := subnets.Create(client, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		if results == nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
+
 		return utils.WaitTaskAndShowResult(c, client, results, true, func(task tasks.TaskID) (interface{}, error) {
 			taskInfo, err := tasks.Get(client, string(task)).Extract()
 			if err != nil {
@@ -337,6 +340,7 @@ var subnetCreateCommand = cli.Command{
 				return nil, fmt.Errorf("cannot get subnet with ID: %s. Error: %w", subnetID, err)
 			}
 			utils.ShowResults(subnet, c.String("format"))
+
 			return nil, nil
 		})
 	},

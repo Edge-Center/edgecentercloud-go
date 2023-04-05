@@ -32,11 +32,12 @@ func (s SecretType) List() []SecretType {
 }
 
 func (s SecretType) StringList() []string {
-	var sg []string
-	for _, v := range s.List() {
-		sg = append(sg, v.String())
+	lst := s.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return sg
+	return strings
 }
 
 func (s SecretType) IsValid() error {
@@ -63,7 +64,7 @@ func (s SecretType) ValidOrNil() (*SecretType, error) {
 	return &s, nil
 }
 
-// UnmarshalJSON - implements Unmarshaler interface for SecretType
+// UnmarshalJSON - implements Unmarshaler interface for SecretType.
 func (s *SecretType) UnmarshalJSON(data []byte) error {
 	var sg string
 	if err := json.Unmarshal(data, &sg); err != nil {
@@ -75,10 +76,11 @@ func (s *SecretType) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*s = v
+
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface for SecretType
+// MarshalJSON - implements Marshaler interface for SecretType.
 func (s *SecretType) MarshalJSON() ([]byte, error) {
 	return json.Marshal(s.String())
 }

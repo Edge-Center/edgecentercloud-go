@@ -99,7 +99,6 @@ func TestListAll(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -126,7 +125,6 @@ func TestGet(t *testing.T) {
 	require.Equal(t, LoadBalancer1, *ct)
 	require.Equal(t, createdTime, ct.CreatedAt)
 	require.Equal(t, updatedTime, *ct.UpdatedAt)
-
 }
 
 func TestCreate(t *testing.T) {
@@ -167,19 +165,21 @@ func TestCreate(t *testing.T) {
 			Pools: []loadbalancers.CreatePoolOpts{{
 				Name:     "pool_name",
 				Protocol: types.ProtocolTypeHTTP,
-				Members: []loadbalancers.CreatePoolMemberOpts{{
-					InstanceID:   instanceID1,
-					Address:      net.ParseIP("192.168.1.101"),
-					ProtocolPort: 8000,
-					Weight:       memberWeight1,
-					SubnetID:     "",
-				}, {
-					Address:      net.ParseIP("192.168.1.102"),
-					ProtocolPort: 8000,
-					Weight:       memberWeight2,
-					SubnetID:     "",
-					InstanceID:   instanceID2,
-				},
+				Members: []loadbalancers.CreatePoolMemberOpts{
+					{
+						InstanceID:   instanceID1,
+						Address:      net.ParseIP("192.168.1.101"),
+						ProtocolPort: 8000,
+						Weight:       memberWeight1,
+						SubnetID:     "",
+					},
+					{
+						Address:      net.ParseIP("192.168.1.102"),
+						ProtocolPort: 8000,
+						Weight:       memberWeight2,
+						SubnetID:     "",
+						InstanceID:   instanceID2,
+					},
 				},
 				HealthMonitor: &loadbalancers.CreateHealthMonitorOpts{
 					Type:           types.HealthMonitorTypeHTTP,
@@ -222,11 +222,9 @@ func TestDelete(t *testing.T) {
 	tasks, err := loadbalancers.Delete(client, LoadBalancer1.ID).Extract()
 	require.NoError(t, err)
 	require.Equal(t, Tasks1, *tasks)
-
 }
 
 func TestUpdate(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -260,7 +258,6 @@ func TestUpdate(t *testing.T) {
 	require.Equal(t, LoadBalancer1.Name, ct.Name)
 	require.Equal(t, createdTime, ct.CreatedAt)
 	require.Equal(t, updatedTime, *ct.UpdatedAt)
-
 }
 
 func TestGetCustomSecurityGroup(t *testing.T) {
@@ -289,7 +286,6 @@ func TestGetCustomSecurityGroup(t *testing.T) {
 }
 
 func TestCreateCustomSecurityGroup(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -320,7 +316,6 @@ func TestMetadataCreate(t *testing.T) {
 
 func TestMetadataUpdate(t *testing.T) {
 	etest.BuildTestMetadataUpdate("loadbalancers", LoadBalancer1.ID)(t)
-
 }
 
 func TestMetadataDelete(t *testing.T) {

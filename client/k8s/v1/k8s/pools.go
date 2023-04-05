@@ -1,10 +1,11 @@
 package k8s
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/volume/v1/volumes"
+	"github.com/urfave/cli/v2"
 
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 	"github.com/Edge-Center/edgecentercloud-go/client/flags"
@@ -12,13 +13,10 @@ import (
 	"github.com/Edge-Center/edgecentercloud-go/client/utils"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/k8s/v1/pools"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
-
-	"github.com/urfave/cli/v2"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/volume/v1/volumes"
 )
 
-var (
-	poolIDText = "pool_id is mandatory argument"
-)
+var poolIDText = "pool_id is mandatory argument"
 
 var poolListSubCommand = cli.Command{
 	Name:      "list",
@@ -29,18 +27,19 @@ var poolListSubCommand = cli.Command{
 		clusterID, err := flags.GetFirstStringArg(c, clusterIDText)
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "list")
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		client, err := client.NewK8sClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		results, err := pools.ListAll(client, clusterID, pools.ListOpts{})
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
+
 		return nil
 	},
 }
@@ -62,17 +61,17 @@ var poolDeleteSubCommand = cli.Command{
 		poolID, err := flags.GetFirstStringArg(c, poolIDText)
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "delete")
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		clusterID := c.String("cluster-id")
 		client, err := client.NewK8sClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		results, err := pools.Delete(client, clusterID, poolID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		return utils.WaitTaskAndShowResult(c, client, results, false, func(task tasks.TaskID) (interface{}, error) {
@@ -80,14 +79,12 @@ var poolDeleteSubCommand = cli.Command{
 			if err == nil {
 				return nil, fmt.Errorf("cannot delete pool with ID: %s", poolID)
 			}
-			switch err.(type) {
-			case edgecloud.ErrDefault404:
+			var e edgecloud.Default404Error
+			if errors.As(err, &e) {
 				return nil, nil
-			default:
-				return nil, err
 			}
+			return nil, err
 		})
-
 	},
 }
 
@@ -124,13 +121,13 @@ var poolUpdateSubCommand = cli.Command{
 		poolID, err := flags.GetFirstStringArg(c, poolIDText)
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "update")
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		clusterID := c.String("cluster-id")
 		client, err := client.NewK8sClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		opts := pools.UpdateOpts{
@@ -141,9 +138,10 @@ var poolUpdateSubCommand = cli.Command{
 
 		result, err := pools.Update(client, clusterID, poolID, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
+
 		return nil
 	},
 }
@@ -165,19 +163,20 @@ var poolGetSubCommand = cli.Command{
 		poolID, err := flags.GetFirstStringArg(c, poolIDText)
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "show")
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		clusterID := c.String("cluster-id")
 		client, err := client.NewK8sClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		result, err := pools.Get(client, clusterID, poolID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
+
 		return nil
 	},
 }
@@ -239,12 +238,12 @@ var poolCreateSubCommand = cli.Command{
 		clusterID, err := flags.GetFirstStringArg(c, clusterIDText)
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "create")
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		client, err := client.NewK8sClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		dockerVolumeType := volumes.VolumeType(c.String("docker-volume-type"))
@@ -261,10 +260,10 @@ var poolCreateSubCommand = cli.Command{
 
 		results, err := pools.Create(client, clusterID, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		if results == nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		return utils.WaitTaskAndShowResult(c, client, results, true, func(task tasks.TaskID) (interface{}, error) {
@@ -281,6 +280,7 @@ var poolCreateSubCommand = cli.Command{
 				return nil, fmt.Errorf("cannot get pool with ID: %s. Error: %w", poolID, err)
 			}
 			utils.ShowResults(pool, c.String("format"))
+
 			return nil, nil
 		})
 	},
@@ -303,18 +303,18 @@ var poolInstancesSubCommand = cli.Command{
 		poolID, err := flags.GetFirstStringArg(c, poolIDText)
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "instances")
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		clusterID := c.String("cluster-id")
 		client, err := client.NewK8sClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		results, err := pools.InstancesAll(client, clusterID, poolID)
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
 
@@ -339,18 +339,18 @@ var poolVolumesSubCommand = cli.Command{
 		poolID, err := flags.GetFirstStringArg(c, poolIDText)
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "volumes")
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		clusterID := c.String("cluster-id")
 		client, err := client.NewK8sClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		results, err := pools.VolumesAll(client, clusterID, poolID)
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
 

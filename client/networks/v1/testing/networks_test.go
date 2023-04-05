@@ -3,6 +3,7 @@ package testing
 import (
 	"testing"
 
+	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 	"github.com/Edge-Center/edgecentercloud-go/client/networks/v1/client"
 	etest "github.com/Edge-Center/edgecentercloud-go/client/testing"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/network/v1/networks"
@@ -27,7 +28,12 @@ func TestNetworksMetadata(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer etest.DeleteTestNetwork(resourceClient, resourceID)
+	defer func(client *edgecloud.ServiceClient, networkID string) {
+		err := etest.DeleteTestNetwork(client, networkID)
+		if err != nil {
+			t.Errorf("error while network delete: %s", err.Error())
+		}
+	}(resourceClient, resourceID)
 
 	err = etest.MetadataTest(func() ([]metadata.Metadata, error) {
 		res, err := networks.Get(resourceClient, resourceID).Extract()

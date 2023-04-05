@@ -7,7 +7,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"reflect"
 
 	"github.com/urfave/cli/v2"
@@ -27,7 +27,7 @@ func flagSet(name string, flags []cli.Flag) (*flag.FlagSet, error) {
 			return nil, err
 		}
 	}
-	set.SetOutput(ioutil.Discard)
+	set.SetOutput(io.Discard)
 	return set, nil
 }
 
@@ -79,26 +79,26 @@ func NormalizeMetadata(metadata interface{}, defaults ...bool) (map[string]inter
 		readOnly = defaults[0]
 	}
 
-	switch metadata.(type) {
+	switch v := metadata.(type) {
 	default:
 		return nil, fmt.Errorf("unexpected type %T", metadata)
 	case []map[string]interface{}:
-		for _, v := range metadata.([]map[string]interface{}) {
-			normalizedMetadata[v["key"].(string)] = v
+		for _, m := range v {
+			normalizedMetadata[m["key"].(string)] = m
 		}
 	case map[string]interface{}:
-		for k, v := range metadata.(map[string]interface{}) {
+		for k, val := range v {
 			normalizedMetadata[k] = map[string]interface{}{
 				"key":       k,
-				"value":     v,
+				"value":     val,
 				"read_only": readOnly,
 			}
 		}
 	case map[string]string:
-		for k, v := range metadata.(map[string]string) {
+		for k, val := range v {
 			normalizedMetadata[k] = map[string]interface{}{
 				"key":       k,
-				"value":     v,
+				"value":     val,
 				"read_only": readOnly,
 			}
 		}
@@ -120,6 +120,7 @@ func CompareMetadata(srcMeta interface{}, dstMeta interface{}) (bool, error) {
 
 	return CheckMapInMap(src, dst), nil
 }
+
 func InitTestApp(args []string) (*cli.App, *cli.Context) {
 	a := cmd.NewApp(args)
 	a.Setup()
@@ -165,7 +166,6 @@ func MetadataTest(getMetadata FuncGetMetadata, a *cli.App, resourceName string, 
 	}
 
 	isEqual, err := CompareMetadata(map[string]string{"key1": "val1", "key2": "val2"}, meta)
-
 	if err != nil {
 		return err
 	}
@@ -226,8 +226,10 @@ func MetadataTest(getMetadata FuncGetMetadata, a *cli.App, resourceName string, 
 	return nil
 }
 
-const networkDeleting int = 1200
-const networkCreatingTimeout int = 1200
+const (
+	networkDeleting        int = 1200
+	networkCreatingTimeout int = 1200
+)
 
 func CreateTestNetwork(client *edgecloud.ServiceClient, opts networks.CreateOpts) (string, error) {
 	res, err := networks.Create(client, opts).Extract()
@@ -251,6 +253,7 @@ func CreateTestNetwork(client *edgecloud.ServiceClient, opts networks.CreateOpts
 	if err != nil {
 		return "", err
 	}
+
 	return networkID.(string), nil
 }
 
@@ -265,12 +268,12 @@ func DeleteTestNetwork(client *edgecloud.ServiceClient, networkID string) error 
 		if err == nil {
 			return nil, fmt.Errorf("cannot delete network with ID: %s", networkID)
 		}
-		switch err.(type) {
-		case edgecloud.ErrDefault404:
+		var e edgecloud.Default404Error
+		if errors.As(err, &e) {
 			return nil, nil
-		default:
-			return nil, err
 		}
+		return nil, err
 	})
+
 	return err
 }

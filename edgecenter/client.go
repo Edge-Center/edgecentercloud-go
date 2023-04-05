@@ -115,7 +115,6 @@ func Authenticate(client *edgecloud.ProviderClient, options edgecloud.AuthOption
 }
 
 func auth(client *edgecloud.ProviderClient, endpoint string, options edgecloud.AuthOptions, eo edgecloud.EndpointOpts) error {
-
 	identityClient, err := NewIdentity(client, eo)
 	if err != nil {
 		return err
@@ -170,7 +169,6 @@ func auth(client *edgecloud.ProviderClient, endpoint string, options edgecloud.A
 }
 
 func refreshPlatform(client *edgecloud.ProviderClient, endpoint string, tokenOptions edgecloud.TokenOptions, authOptions edgecloud.AuthOptions, eo edgecloud.EndpointOpts) error {
-
 	identityClient, err := NewIdentity(client, eo)
 	if err != nil {
 		return err
@@ -216,7 +214,6 @@ func refreshPlatform(client *edgecloud.ProviderClient, endpoint string, tokenOpt
 }
 
 func refreshECCloud(client *edgecloud.ProviderClient, endpoint string, options edgecloud.TokenOptions, eo edgecloud.EndpointOpts) error {
-
 	identityClient, err := NewIdentity(client, eo)
 	if err != nil {
 		return err
@@ -261,7 +258,6 @@ func refreshECCloud(client *edgecloud.ProviderClient, endpoint string, options e
 }
 
 func setECCloudReauth(client *edgecloud.ProviderClient, endpoint string, options edgecloud.TokenOptions, eo edgecloud.EndpointOpts) {
-
 	if options.AllowReauth {
 		// here we're creating a throw-away client (tac). it's a copy of the user's provider client, but
 		// with the token and reauth func zeroed out. combined with setting `AllowReauth` to `false`,
@@ -320,6 +316,7 @@ func initClientOpts(client *edgecloud.ProviderClient, eo edgecloud.EndpointOpts,
 	sc.ResourceBase = url
 	sc.Type = clientType
 	sc.RegionID = eo.Region
+
 	return sc, nil
 }
 

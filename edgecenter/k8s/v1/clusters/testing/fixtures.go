@@ -6,15 +6,13 @@ import (
 	"net"
 	"time"
 
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/volume/v1/volumes"
-
-	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 	uuid "github.com/satori/go.uuid"
 
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/k8s/v1/pools"
-
+	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/k8s/v1/clusters"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/k8s/v1/pools"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/volume/v1/volumes"
 )
 
 const ListResponse = `
@@ -30,8 +28,8 @@ const ListResponse = `
       "uuid": "5e09faed-e742-404f-8a75-0ea5eb3c435f",
       "docker_volume_size": 10,
       "labels": {
-        "gcloud_project_id": "1",
-        "gcloud_region_id": "2",
+        "ec_cloud_project_id": "1",
+        "ec_cloud_region_id": "2",
         "fixed_network_cidr": "192.168.0.0/18",
         "calico_ipv4pool": "192.168.64.0/18",
         "service_cluster_ip_range": "192.168.128.0/18"
@@ -110,8 +108,8 @@ const GetResponse = `
 	  "docker_volume_type": "standard",
       "uuid": "908338b2-9217-4673-af0e-f0093139fbac",
       "labels": {
-        "gcloud_project_id": "1",
-        "gcloud_region_id": "2",
+        "ec_cloud_project_id": "1",
+        "ec_cloud_region_id": "2",
         "fixed_network_cidr": "192.168.0.0/18",
         "calico_ipv4pool": "192.168.64.0/18",
         "service_cluster_ip_range": "192.168.128.0/18"
@@ -137,8 +135,8 @@ const GetResponse = `
   "create_timeout": 7200,
   "uuid": "5e09faed-e742-404f-8a75-0ea5eb3c435f",
   "labels": {
-	"gcloud_project_id": "1",
-	"gcloud_region_id": "2",
+	"ec_cloud_project_id": "1",
+	"ec_cloud_region_id": "2",
 	"fixed_network_cidr": "192.168.0.0/18",
 	"calico_ipv4pool": "192.168.64.0/18",
 	"service_cluster_ip_range": "192.168.128.0/18"
@@ -224,6 +222,7 @@ const CreateResponse = `
   ]
 }
 `
+
 const DeleteResponse = `
 {
   "tasks": [
@@ -231,6 +230,7 @@ const DeleteResponse = `
   ]
 }
 `
+
 const ResizeResponse = `
 {
   "tasks": [
@@ -285,8 +285,8 @@ var (
 	masterAddresses = []net.IP{net.ParseIP("192.168.0.11")}
 	Config1         = clusters.Config{Config: ConfigStringResponse}
 	labels          = map[string]string{
-		"gcloud_project_id":        "1",
-		"gcloud_region_id":         "2",
+		"ec_cloud_project_id":      "1",
+		"ec_cloud_region_id":       "2",
 		"fixed_network_cidr":       "192.168.0.0/18",
 		"calico_ipv4pool":          "192.168.64.0/18",
 		"service_cluster_ip_range": "192.168.128.0/18",
@@ -354,14 +354,15 @@ var (
 			Faults:            nil,
 			ClusterList:       clusterList,
 		},
-		Pools: []pools.ClusterPool{{
-			ClusterID:       "5e09faed-e742-404f-8a75-0ea5eb3c435f",
-			ProjectID:       "46beed3938e6474390b530fefd6173d2",
-			Labels:          labels,
-			NodeAddresses:   nodeAddresses,
-			StatusReason:    "Stack CREATE completed successfully",
-			ClusterListPool: &listPool,
-		},
+		Pools: []pools.ClusterPool{
+			{
+				ClusterID:       "5e09faed-e742-404f-8a75-0ea5eb3c435f",
+				ProjectID:       "46beed3938e6474390b530fefd6173d2",
+				Labels:          labels,
+				NodeAddresses:   nodeAddresses,
+				StatusReason:    "Stack CREATE completed successfully",
+				ClusterListPool: &listPool,
+			},
 		},
 	}
 	ClusterCertificate = clusters.ClusterCACertificate{

@@ -5,12 +5,13 @@ import (
 	"net/http"
 	"testing"
 
+	log "github.com/sirupsen/logrus"
+	"github.com/stretchr/testify/require"
+
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/apitoken/v1/apitokens"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/apitoken/v1/types"
 	th "github.com/Edge-Center/edgecentercloud-go/testhelper"
 	fake "github.com/Edge-Center/edgecentercloud-go/testhelper/client"
-	log "github.com/sirupsen/logrus"
-	"github.com/stretchr/testify/require"
 )
 
 func prepareRootTestURL(clientID int) string {
@@ -44,11 +45,9 @@ func TestList(t *testing.T) {
 	ct := results[0]
 	require.Equal(t, apiToken1, ct)
 	require.Equal(t, ExpectedAPITokenSlice, results)
-
 }
 
 func TestGet(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -123,5 +122,4 @@ func TestCreate(t *testing.T) {
 	ct, err := apitokens.Create(client, clientID, options).Extract()
 	require.NoError(t, err)
 	require.Equal(t, Token1, *ct)
-
 }

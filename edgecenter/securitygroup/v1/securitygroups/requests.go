@@ -152,7 +152,7 @@ func Delete(c *edgecloud.ServiceClient, securityGroupID string) (r DeleteResult)
 	return
 }
 
-// ListAll returns all SGs
+// ListAll returns all SGs.
 func ListAll(c *edgecloud.ServiceClient, opts ListOptsBuilder) ([]SecurityGroup, error) {
 	page, err := List(c, opts).AllPages()
 	if err != nil {
@@ -172,7 +172,7 @@ func AddRule(c *edgecloud.ServiceClient, securityGroupID string, opts CreateRule
 	return
 }
 
-// ListInstances returns page of instances for SG
+// ListInstances returns page of instances for SG.
 func ListInstances(c *edgecloud.ServiceClient, securityGroupID string) pagination.Pager {
 	url := listInstancesURL(c, securityGroupID)
 	return pagination.NewPager(c, url, func(r pagination.PageResult) pagination.Page {
@@ -180,7 +180,7 @@ func ListInstances(c *edgecloud.ServiceClient, securityGroupID string) paginatio
 	})
 }
 
-// ListAllInstances returns all instances for SG
+// ListAllInstances returns all instances for SG.
 func ListAllInstances(c *edgecloud.ServiceClient, securityGroupID string) ([]instances.Instance, error) {
 	page, err := ListInstances(c, securityGroupID).AllPages()
 	if err != nil {
@@ -209,11 +209,11 @@ func IDFromName(client *edgecloud.ServiceClient, name string) (string, error) {
 
 	switch count {
 	case 0:
-		return "", edgecloud.ErrResourceNotFound{Name: name, ResourceType: "security group"}
+		return "", edgecloud.ResourceNotFoundError{Name: name, ResourceType: "security group"}
 	case 1:
 		return id, nil
 	default:
-		return "", edgecloud.ErrMultipleResourcesFound{Name: name, Count: count, ResourceType: "security group"}
+		return "", edgecloud.MultipleResourcesFoundError{Name: name, Count: count, ResourceType: "security group"}
 	}
 }
 
@@ -267,15 +267,15 @@ func MetadataListAll(client *edgecloud.ServiceClient, id string) ([]Metadata, er
 
 // MetadataCreateOrUpdate creates or update a metadata for an security group.
 func MetadataCreateOrUpdate(client *edgecloud.ServiceClient, id string, opts map[string]interface{}) (r MetadataActionResult) {
-	_, r.Err = client.Post(metadataURL(client, id), opts, nil, &edgecloud.RequestOpts{ // nolint
+	_, r.Err = client.Post(metadataURL(client, id), opts, nil, &edgecloud.RequestOpts{
 		OkCodes: []int{http.StatusNoContent, http.StatusOK},
 	})
 	return
 }
 
-// MetadataReplace replace a metadata for an security group.
+// MetadataReplace replace a metadata for a security group.
 func MetadataReplace(client *edgecloud.ServiceClient, id string, opts map[string]interface{}) (r MetadataActionResult) {
-	_, r.Err = client.Put(metadataURL(client, id), opts, nil, &edgecloud.RequestOpts{ // nolint
+	_, r.Err = client.Put(metadataURL(client, id), opts, nil, &edgecloud.RequestOpts{
 		OkCodes: []int{http.StatusNoContent, http.StatusOK},
 	})
 	return
@@ -283,7 +283,7 @@ func MetadataReplace(client *edgecloud.ServiceClient, id string, opts map[string
 
 // MetadataDelete deletes defined metadata key for a security group.
 func MetadataDelete(client *edgecloud.ServiceClient, id string, key string) (r MetadataActionResult) {
-	_, r.Err = client.Delete(metadataItemURL(client, id, key), &edgecloud.RequestOpts{ // nolint
+	_, r.Err = client.Delete(metadataItemURL(client, id, key), &edgecloud.RequestOpts{
 		OkCodes: []int{http.StatusNoContent, http.StatusOK},
 	})
 	return
@@ -293,6 +293,6 @@ func MetadataDelete(client *edgecloud.ServiceClient, id string, key string) (r M
 func MetadataGet(client *edgecloud.ServiceClient, id string, key string) (r MetadataResult) {
 	url := metadataItemURL(client, id, key)
 
-	_, r.Err = client.Get(url, &r.Body, nil) // nolint
+	_, r.Err = client.Get(url, &r.Body, nil)
 	return
 }

@@ -3,14 +3,12 @@ package testing
 import (
 	"testing"
 
-	edgecloud "github.com/Edge-Center/edgecentercloud-go"
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
-
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/k8s/v1/pools"
-
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/k8s/v1/clusters"
-
 	"github.com/stretchr/testify/require"
+
+	edgecloud "github.com/Edge-Center/edgecentercloud-go"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/k8s/v1/clusters"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/k8s/v1/pools"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
 )
 
 func TestResizeOpts(t *testing.T) {
@@ -38,7 +36,6 @@ func TestResizeOpts(t *testing.T) {
 
 	_, err = options.ToClusterResizeMap()
 	require.NoError(t, err)
-
 }
 
 func TestCreateOptions(t *testing.T) {
@@ -69,7 +66,6 @@ func TestCreateOptions(t *testing.T) {
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "Version")
 	require.Contains(t, err.Error(), "Pools")
-
 }
 
 func TestDecodeClusterTask(t *testing.T) {

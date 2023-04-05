@@ -44,7 +44,7 @@ func (r TokenResult) ExtractTokensPair() (string, string, error) {
 	return t.Access, t.Refresh, nil
 }
 
-// TokenResult is the response from a Create request. Use ExtractToken() to interpret it as a Token
+// TokenResult is the response from a Create request. Use ExtractToken() to interpret it as a Token.
 type TokenResult struct {
 	commonResult
 }

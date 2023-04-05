@@ -4,15 +4,12 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/volume/v1/volumes"
+	"github.com/stretchr/testify/require"
 
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
-
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/instance/v1/types"
-
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/instance/v1/instances"
-
-	"github.com/stretchr/testify/require"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/instance/v1/types"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/volume/v1/volumes"
 )
 
 func TestListQueryNullParams(t *testing.T) {
@@ -87,11 +84,9 @@ func TestValidateCreateVolumeBlankVolumeIDOpts(t *testing.T) {
 
 	err = opts.Validate()
 	require.NoError(t, err)
-
 }
 
 func TestValidateCreateVolumeBlankSnapshotIDOpts(t *testing.T) {
-
 	opts := instances.CreateVolumeOpts{
 		Source:     types.Snapshot,
 		BootIndex:  0,
@@ -120,11 +115,9 @@ func TestValidateCreateVolumeBlankSnapshotIDOpts(t *testing.T) {
 
 	err = edgecloud.TranslateValidationError(opts.Validate())
 	require.NoError(t, err)
-
 }
 
 func TestValidateCreateVolumeOpts(t *testing.T) {
-
 	opts := instances.CreateVolumeOpts{
 		Source:        types.NewVolume,
 		BootIndex:     0,
@@ -205,11 +198,9 @@ func TestValidateCreateVolumeOpts(t *testing.T) {
 	err = edgecloud.TranslateValidationError(opts.Validate())
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "Source")
-
 }
 
 func TestValidateCreateInstanceBlankSnapshotIDOpts(t *testing.T) {
-
 	volumeOpts := []instances.CreateVolumeOpts{{
 		Source:     types.Snapshot,
 		BootIndex:  0,
@@ -246,11 +237,9 @@ func TestValidateCreateInstanceBlankSnapshotIDOpts(t *testing.T) {
 	errTranslated := edgecloud.TranslateValidationError(err)
 	require.Error(t, errTranslated)
 	require.Contains(t, errTranslated.Error(), "Snapshot")
-
 }
 
 func TestValidateDeleteOpts(t *testing.T) {
-
 	opts := instances.DeleteOpts{
 		Volumes:         []string{"28bfe198-a003-4283-8dca-ab5da4a71b62"},
 		DeleteFloatings: true,
@@ -289,11 +278,9 @@ func TestValidateDeleteOpts(t *testing.T) {
 
 	err = opts.Validate()
 	require.NoError(t, err)
-
 }
 
 func TestDeleteOpts(t *testing.T) {
-
 	opts := instances.DeleteOpts{
 		Volumes:         nil,
 		DeleteFloatings: true,
@@ -311,7 +298,6 @@ func TestDeleteOpts(t *testing.T) {
 	query, err = opts.ToInstanceDeleteQuery()
 	require.NoError(t, err)
 	require.Equal(t, "?volumes=28bfe198-a003-4283-8dca-ab5da4a71b62%2C29bfe198-a003-4283-8dca-ab5da4a71b62", query)
-
 }
 
 func TestMetadataOpts(t *testing.T) {
@@ -388,14 +374,14 @@ func TestInterfaceOpts(t *testing.T) {
 	require.Contains(t, err.Error(), "NetworkID")
 
 	opts = instances.InterfaceOpts{
-		Type: types.ReservedFixedIpType,
+		Type: types.ReservedFixedIPType,
 	}
 	err = opts.Validate()
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "PortID")
 
 	opts = instances.InterfaceOpts{
-		Type:      types.ReservedFixedIpType,
+		Type:      types.ReservedFixedIPType,
 		SubnetID:  "9bc36cf6-407c-4a74-bc83-ce3aa3854c3d",
 		NetworkID: "9bc36cf6-407c-4a74-bc83-ce3aa3854c3d",
 		PortID:    "9bc36cf6-407c-4a74-bc83-ce3aa3854c3d",
@@ -409,7 +395,7 @@ func TestInterfaceOpts(t *testing.T) {
 		SubnetID:  "9bc36cf6-407c-4a74-bc83-ce3aa3854c3d",
 		NetworkID: "9bc36cf6-407c-4a74-bc83-ce3aa3854c3d",
 		PortID:    "9bc36cf6-407c-4a74-bc83-ce3aa3854c3d",
-		IpAddress: "192.168.100.2",
+		IPAddress: "192.168.100.2",
 	}
 	err = opts.Validate()
 	require.Error(t, err)
@@ -428,7 +414,7 @@ func TestInterfaceOpts(t *testing.T) {
 	require.NoError(t, err)
 
 	opts = instances.InterfaceOpts{
-		Type:   types.ReservedFixedIpType,
+		Type:   types.ReservedFixedIPType,
 		PortID: "9bc36cf6-407c-4a74-bc83-ce3aa3854c3d",
 		FloatingIP: &instances.CreateNewInterfaceFloatingIPOpts{
 			Source:             types.ExistingFloatingIP,

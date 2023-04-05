@@ -123,7 +123,7 @@ func Delete(c *edgecloud.ServiceClient, listenerID string) (r tasks.Result) {
 	return
 }
 
-// ListAll returns all LBs
+// ListAll returns all LBs.
 func ListAll(c *edgecloud.ServiceClient, opts ListOptsBuilder) ([]Listener, error) {
 	page, err := List(c, opts).AllPages()
 	if err != nil {

@@ -1,10 +1,10 @@
 package testing
 
 import (
+	"github.com/shopspring/decimal"
+
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/flavor/v1/flavors"
-
-	"github.com/shopspring/decimal"
 )
 
 const ListResponse = `

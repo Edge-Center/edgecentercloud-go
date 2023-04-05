@@ -6,9 +6,8 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/stretchr/testify/require"
-
 	log "github.com/sirupsen/logrus"
+	"github.com/stretchr/testify/require"
 
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/reservedfixedip/v1/reservedfixedips"
 	"github.com/Edge-Center/edgecentercloud-go/pagination"

@@ -6,17 +6,14 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/utils/metadata"
-
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/subnet/v1/subnets"
-	fake "github.com/Edge-Center/edgecentercloud-go/testhelper/client"
-
+	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/require"
 
-	log "github.com/sirupsen/logrus"
-
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/subnet/v1/subnets"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/utils/metadata"
 	"github.com/Edge-Center/edgecentercloud-go/pagination"
 	th "github.com/Edge-Center/edgecentercloud-go/testhelper"
+	fake "github.com/Edge-Center/edgecentercloud-go/testhelper/client"
 )
 
 func prepareListTestURLParams(projectID int, regionID int) string {
@@ -34,7 +31,8 @@ func prepareListTestURL() string {
 func prepareGetTestURL(id string) string {
 	return prepareGetTestURLParams(fake.ProjectID, fake.RegionID, id)
 }
-func prepareGetActionTestURLParams(version string, id string, action string) string { // nolint
+
+func prepareGetActionTestURLParams(version string, id string, action string) string {
 	return fmt.Sprintf("/%s/subnets/%d/%d/%s/%s", version, fake.ProjectID, fake.RegionID, id, action)
 }
 
@@ -113,7 +111,6 @@ func TestListAll(t *testing.T) {
 	ct := results[0]
 	require.Equal(t, Subnet1, ct)
 	require.Equal(t, ExpectedSubnetSlice, results)
-
 }
 
 func TestGet(t *testing.T) {
@@ -143,7 +140,6 @@ func TestGet(t *testing.T) {
 	require.Equal(t, Subnet1, *ct)
 	require.Equal(t, createdTime, ct.CreatedAt)
 	require.Equal(t, updatedTime, ct.UpdatedAt)
-
 }
 
 func TestCreateNoGW(t *testing.T) {
@@ -232,11 +228,9 @@ func TestDelete(t *testing.T) {
 	tasks, err := subnets.Delete(client, Subnet1.ID).Extract()
 	require.NoError(t, err)
 	require.Equal(t, Tasks1, *tasks)
-
 }
 
 func TestUpdateNoGW(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -270,11 +264,9 @@ func TestUpdateNoGW(t *testing.T) {
 	require.Equal(t, Subnet1.Name, ct.Name)
 	require.Equal(t, createdTime, ct.CreatedAt)
 	require.Equal(t, updatedTime, ct.UpdatedAt)
-
 }
 
 func TestUpdateGW(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -331,7 +323,7 @@ func TestMetadataListAll(t *testing.T) {
 
 	client := fake.ServiceTokenClient("subnets", "v1")
 
-	actual, err := metadata.MetadataListAll(client, Subnet1.ID)
+	actual, err := metadata.ResourceMetadataListAll(client, Subnet1.ID)
 	require.NoError(t, err)
 	ct := actual[0]
 	require.Equal(t, Metadata1, ct)
@@ -356,7 +348,7 @@ func TestMetadataGet(t *testing.T) {
 
 	client := fake.ServiceTokenClient("subnets", "v1")
 
-	actual, err := metadata.MetadataGet(client, Subnet1.ID, ResourceMetadataReadOnly.Key).Extract()
+	actual, err := metadata.ResourceMetadataGet(client, Subnet1.ID, ResourceMetadataReadOnly.Key).Extract()
 	require.NoError(t, err)
 	require.Equal(t, &ResourceMetadataReadOnly, actual)
 }
@@ -377,7 +369,7 @@ func TestMetadataCreate(t *testing.T) {
 	})
 
 	client := fake.ServiceTokenClient("subnets", "v1")
-	err := metadata.MetadataCreateOrUpdate(client, Subnet1.ID, map[string]string{
+	err := metadata.ResourceMetadataCreateOrUpdate(client, Subnet1.ID, map[string]string{
 		"test1": "test1",
 		"test2": "test2",
 	}).ExtractErr()
@@ -400,7 +392,7 @@ func TestMetadataUpdate(t *testing.T) {
 	})
 
 	client := fake.ServiceTokenClient("subnets", "v1")
-	err := metadata.MetadataReplace(client, Subnet1.ID, map[string]string{
+	err := metadata.ResourceMetadataReplace(client, Subnet1.ID, map[string]string{
 		"test1": "test1",
 		"test2": "test2",
 	}).ExtractErr()
@@ -420,6 +412,6 @@ func TestMetadataDelete(t *testing.T) {
 	})
 
 	client := fake.ServiceTokenClient("subnets", "v1")
-	err := metadata.MetadataDelete(client, Subnet1.ID, Metadata1.Key).ExtractErr()
+	err := metadata.ResourceMetadataDelete(client, Subnet1.ID, Metadata1.Key).ExtractErr()
 	require.NoError(t, err)
 }

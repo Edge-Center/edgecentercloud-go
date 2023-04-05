@@ -5,18 +5,14 @@ import (
 	"net/http"
 	"testing"
 
-	edgecloud "github.com/Edge-Center/edgecentercloud-go"
-
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/heat/v1/stack/stacks"
-
-	fake "github.com/Edge-Center/edgecentercloud-go/testhelper/client"
-
+	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/require"
 
-	log "github.com/sirupsen/logrus"
-
+	edgecloud "github.com/Edge-Center/edgecentercloud-go"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/heat/v1/stack/stacks"
 	"github.com/Edge-Center/edgecentercloud-go/pagination"
 	th "github.com/Edge-Center/edgecentercloud-go/testhelper"
+	fake "github.com/Edge-Center/edgecentercloud-go/testhelper/client"
 )
 
 func prepareListTestURLParams(projectID int, regionID int) string {
@@ -174,7 +170,6 @@ func TestListAll(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -201,11 +196,9 @@ func TestGet(t *testing.T) {
 	require.Equal(t, Stack1, *ct)
 	require.Equal(t, creationTime, ct.CreationTime)
 	require.Equal(t, updatedTime, *ct.UpdatedTime)
-
 }
 
 func TestUpdate(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -241,7 +234,6 @@ func TestUpdate(t *testing.T) {
 
 	err := stacks.Update(client, Stack1.ID, updateOpts).ExtractErr()
 	require.NoError(t, err)
-
 }
 
 func TestUpdateStackNoTemplate(t *testing.T) {
@@ -265,14 +257,13 @@ func TestUpdateStackNoTemplate(t *testing.T) {
 	updateOpts := &stacks.UpdateOpts{
 		Parameters: parameters,
 	}
-	expected := stacks.ErrTemplateRequired{}
+	expected := stacks.TemplateRequiredError{}
 
 	err := stacks.Update(fake.ServiceClient(), Stack1.ID, updateOpts).ExtractErr()
 	th.AssertEquals(t, expected, err)
 }
 
 func TestUpdatePatch(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -298,5 +289,4 @@ func TestUpdatePatch(t *testing.T) {
 
 	err := stacks.UpdatePatch(client, Stack1.ID, updateOpts).ExtractErr()
 	require.NoError(t, err)
-
 }

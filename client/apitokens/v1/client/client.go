@@ -1,13 +1,14 @@
 package client
 
 import (
+	"github.com/urfave/cli/v2"
+
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 	"github.com/Edge-Center/edgecentercloud-go/client/common"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter"
-	"github.com/urfave/cli/v2"
 )
 
-func NewAPITokenClient(c *cli.Context) (*edgecloud.ServiceClient, error) {
+func NewAPITokenClient(_ *cli.Context) (*edgecloud.ServiceClient, error) {
 	// todo refactor it, now apitokens could be generated only with platform client type
 	settings, err := edgecenter.NewECCloudPlatformAPISettingsFromEnv()
 	if err != nil {
@@ -20,5 +21,6 @@ func NewAPITokenClient(c *cli.Context) (*edgecloud.ServiceClient, error) {
 	}
 
 	ao.APIURL = settings.AuthURL
+
 	return common.BuildAPITokenClient(ao)
 }

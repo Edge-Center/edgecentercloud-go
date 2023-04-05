@@ -202,7 +202,7 @@ var (
 	createdTime          = edgecloud.JSONRFC3339Z{Time: createdTimeParsed}
 	updatedTimeParsed, _ = time.Parse(edgecloud.RFC3339Z, updatedTimeString)
 	updatedTime          = edgecloud.JSONRFC3339Z{Time: updatedTimeParsed}
-	redirectHttpCode     = 301
+	redirectHTTPCode     = 301
 	redirectURL          = "http://www.example.com"
 	pid                  = "9b4b9a23-ccac-4945-bcdd-b0e793c12cd9"
 	rid                  = "0ca7bebd-7a54-4977-bca7-e4ac1e612ec7"
@@ -233,7 +233,7 @@ var (
 		Region:             "Luxembourg",
 		OperatingStatus:    "ONLINE",
 		ProvisioningStatus: "ACTIVE",
-		RedirectHttpCode:   &redirectHttpCode,
+		RedirectHTTPCode:   &redirectHTTPCode,
 		RedirectURL:        &redirectURL,
 		Tags:               []string{"test_tag"},
 		CreatedAt:          createdTime,

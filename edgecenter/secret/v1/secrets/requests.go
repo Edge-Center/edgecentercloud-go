@@ -70,7 +70,7 @@ func Delete(c *edgecloud.ServiceClient, securityGroupID string) (r tasks.Result)
 	return
 }
 
-// ListAll returns all secrets
+// ListAll returns all secrets.
 func ListAll(c *edgecloud.ServiceClient) ([]Secret, error) {
 	page, err := List(c).AllPages()
 	if err != nil {

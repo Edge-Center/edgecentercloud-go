@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"errors"
 	"fmt"
 	"net"
 	"testing"
@@ -15,8 +16,10 @@ import (
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/utils/metadata"
 )
 
-const SubnetDeleting int = 1200
-const SubnetCreatingTimeout int = 1200
+const (
+	SubnetDeleting        int = 1200
+	SubnetCreatingTimeout int = 1200
+)
 
 func createTestSubnet(client *edgecloud.ServiceClient, opts subnets.CreateOpts, subCidr string) (string, error) {
 	var gccidr edgecloud.CIDR
@@ -61,13 +64,13 @@ func deleteTestSubnet(client *edgecloud.ServiceClient, subnetID string) error {
 		if err == nil {
 			return nil, fmt.Errorf("cannot delete subnet with ID: %s", subnetID)
 		}
-		switch err.(type) {
-		case edgecloud.ErrDefault404:
+		var e edgecloud.Default404Error
+		if errors.As(err, &e) {
 			return nil, nil
-		default:
-			return nil, err
 		}
+		return nil, err
 	})
+
 	return err
 }
 
@@ -83,6 +86,9 @@ func TestSubnetsMetadata(t *testing.T) {
 	}
 
 	resourceClient, err := client.NewSubnetClientV1(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	opts := networks.CreateOpts{
 		Name: "test-network1",
@@ -92,7 +98,12 @@ func TestSubnetsMetadata(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer etest.DeleteTestNetwork(netClient, networkID)
+	defer func(client *edgecloud.ServiceClient, networkID string) {
+		err := etest.DeleteTestNetwork(client, networkID)
+		if err != nil {
+			t.Errorf("error while network delete: %s", err.Error())
+		}
+	}(netClient, networkID)
 
 	optsSubnet := subnets.CreateOpts{
 		Name:      "test-subnet",
@@ -104,7 +115,12 @@ func TestSubnetsMetadata(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	defer deleteTestSubnet(resourceClient, resourceID)
+	defer func(client *edgecloud.ServiceClient, subnetID string) {
+		err := deleteTestSubnet(client, subnetID)
+		if err != nil {
+			t.Errorf("error while subnet delete: %s", err.Error())
+		}
+	}(resourceClient, resourceID)
 
 	err = etest.MetadataTest(func() ([]metadata.Metadata, error) {
 		res, err := subnets.Get(resourceClient, resourceID).Extract()

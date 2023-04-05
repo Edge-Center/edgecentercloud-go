@@ -5,22 +5,17 @@ import (
 	"net/http"
 	"testing"
 
-	edgecloud "github.com/Edge-Center/edgecentercloud-go"
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/flavor/v1/flavors"
-
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/instance/v1/types"
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/volume/v1/volumes"
-
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/instance/v1/instances"
-
-	fake "github.com/Edge-Center/edgecentercloud-go/testhelper/client"
-
+	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/require"
 
-	log "github.com/sirupsen/logrus"
-
+	edgecloud "github.com/Edge-Center/edgecentercloud-go"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/flavor/v1/flavors"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/instance/v1/instances"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/instance/v1/types"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/volume/v1/volumes"
 	"github.com/Edge-Center/edgecentercloud-go/pagination"
 	th "github.com/Edge-Center/edgecentercloud-go/testhelper"
+	fake "github.com/Edge-Center/edgecentercloud-go/testhelper/client"
 )
 
 func prepareListTestURLParams(version string, projectID int, regionID int) string {
@@ -35,11 +30,11 @@ func prepareListInstanceLocationTestURL() string {
 	return "/v1/instances/search"
 }
 
-func prepareGetActionTestURLParams(version string, id string, action string) string { // nolint
+func prepareGetActionTestURLParams(version string, id string, action string) string {
 	return fmt.Sprintf("/%s/instances/%d/%d/%s/%s", version, fake.ProjectID, fake.RegionID, id, action)
 }
 
-func prepareGetActionDetailsTestURLParams(version string, id string, action, actionID string) string { // nolint
+func prepareGetActionDetailsTestURLParams(version string, id string, action, actionID string) string {
 	return fmt.Sprintf("/%s/instances/%d/%d/%s/%s/%s", version, fake.ProjectID, fake.RegionID, id, action, actionID)
 }
 
@@ -216,7 +211,6 @@ func TestListAll(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -241,11 +235,9 @@ func TestGet(t *testing.T) {
 
 	require.NoError(t, err)
 	require.Equal(t, Instance1, *ct)
-
 }
 
 func TestRenameInstance(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -272,7 +264,6 @@ func TestRenameInstance(t *testing.T) {
 
 	require.NoError(t, err)
 	require.Equal(t, Instance1, *ct)
-
 }
 
 func TestListAllInterfaces(t *testing.T) {
@@ -445,7 +436,7 @@ func TestDetachInterface(t *testing.T) {
 
 	opts := instances.InterfaceOpts{
 		PortID:    "9bc36cf6-407c-4a74-bc83-ce3aa3854c3d",
-		IpAddress: "192.168.0.23",
+		IPAddress: "192.168.0.23",
 	}
 
 	tasks, err := instances.DetachInterface(client, instanceID, opts).Extract()
@@ -540,7 +531,6 @@ func TestDelete(t *testing.T) {
 	tasks, err := instances.Delete(client, instanceID, options).Extract()
 	require.NoError(t, err)
 	require.Equal(t, Tasks1, *tasks)
-
 }
 
 func TestStart(t *testing.T) {
@@ -770,14 +760,17 @@ func TestMetadataCreate(t *testing.T) {
 	})
 
 	opts := instances.MetadataSetOpts{
-		Metadata: []instances.MetadataOpts{{
-			Key:   "test1",
-			Value: "test1",
-		}, {
-			Key:   "test2",
-			Value: "test2",
+		Metadata: []instances.MetadataOpts{
+			{
+				Key:   "test1",
+				Value: "test1",
+			},
+			{
+				Key:   "test2",
+				Value: "test2",
+			},
 		},
-		}}
+	}
 
 	client := fake.ServiceTokenClient("instances", "v1")
 	err := instances.MetadataCreate(client, instanceID, opts).ExtractErr()
@@ -800,14 +793,17 @@ func TestMetadataUpdate(t *testing.T) {
 	})
 
 	opts := instances.MetadataSetOpts{
-		Metadata: []instances.MetadataOpts{{
-			Key:   "test1",
-			Value: "test1",
-		}, {
-			Key:   "test2",
-			Value: "test2",
+		Metadata: []instances.MetadataOpts{
+			{
+				Key:   "test1",
+				Value: "test1",
+			},
+			{
+				Key:   "test2",
+				Value: "test2",
+			},
 		},
-		}}
+	}
 
 	client := fake.ServiceTokenClient("instances", "v1")
 	err := instances.MetadataUpdate(client, instanceID, opts).ExtractErr()

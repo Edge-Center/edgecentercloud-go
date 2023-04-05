@@ -1,17 +1,15 @@
 package regionsaccess
 
 import (
-	"github.com/Edge-Center/edgecentercloud-go/client/regions/v1/client"
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/regionaccess/v1/regionsaccess"
+	"github.com/urfave/cli/v2"
 
 	"github.com/Edge-Center/edgecentercloud-go/client/flags"
+	"github.com/Edge-Center/edgecentercloud-go/client/regions/v1/client"
 	"github.com/Edge-Center/edgecentercloud-go/client/utils"
-	"github.com/urfave/cli/v2"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/regionaccess/v1/regionsaccess"
 )
 
-var (
-	resellerIDText = "reseller_id is mandatory argument"
-)
+var resellerIDText = "reseller_id is mandatory argument"
 
 var regionAccessListCommand = cli.Command{
 	Name:     "list",
@@ -33,7 +31,7 @@ var regionAccessListCommand = cli.Command{
 		client, err := client.NewRegionClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		opts := regionsaccess.ListOpts{
@@ -42,9 +40,10 @@ var regionAccessListCommand = cli.Command{
 		}
 		results, err := regionsaccess.ListAll(client, opts)
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
+
 		return nil
 	},
 }
@@ -63,12 +62,13 @@ var regionAccessDeleteCommand = cli.Command{
 		client, err := client.NewRegionClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		if err = regionsaccess.Delete(client, resellerID).ExtractErr(); err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
+
 		return nil
 	},
 }
@@ -101,7 +101,7 @@ var regionAccessCreateCommand = cli.Command{
 		client, err := client.NewRegionClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		clientID := c.Int("client-id")
@@ -116,9 +116,10 @@ var regionAccessCreateCommand = cli.Command{
 
 		result, err := regionsaccess.Create(client, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
+
 		return nil
 	},
 }

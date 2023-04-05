@@ -2,17 +2,17 @@ package edgecloud
 
 import "fmt"
 
-// AuthOptionsBuilder build auth options to map
+// AuthOptionsBuilder build auth options to map.
 type AuthOptionsBuilder interface {
 	ToMap() map[string]interface{}
 }
 
-// TokenOptionsBuilder build token options to map
+// TokenOptionsBuilder build token options to map.
 type TokenOptionsBuilder interface {
 	ToMap() map[string]interface{}
 }
 
-// AuthOptions edgecenter API
+// AuthOptions edgecenter API.
 type AuthOptions struct {
 	APIURL      string `json:"-"`
 	AuthURL     string `json:"-"`
@@ -22,7 +22,7 @@ type AuthOptions struct {
 	ClientID    string `json:"-"`
 }
 
-// ToMap implements AuthOptionsBuilder
+// ToMap implements AuthOptionsBuilder.
 func (ao AuthOptions) ToMap() map[string]interface{} {
 	return map[string]interface{}{
 		"username": ao.Username,
@@ -30,7 +30,7 @@ func (ao AuthOptions) ToMap() map[string]interface{} {
 	}
 }
 
-// TokenOptions edgecenter API
+// TokenOptions edgecenter API.
 type TokenOptions struct {
 	APIURL       string `json:"-"`
 	AccessToken  string `json:"access,omitempty"`
@@ -38,56 +38,56 @@ type TokenOptions struct {
 	AllowReauth  bool   `json:"-"`
 }
 
-// ExtractAccessToken implements AuthResult
+// ExtractAccessToken implements AuthResult.
 func (to TokenOptions) ExtractAccessToken() (string, error) {
 	return to.AccessToken, nil
 }
 
-// ExtractRefreshToken implements AuthResult
+// ExtractRefreshToken implements AuthResult.
 func (to TokenOptions) ExtractRefreshToken() (string, error) {
 	return to.RefreshToken, nil
 }
 
-// ExtractTokensPair implements AuthResult
+// ExtractTokensPair implements AuthResult.
 func (to TokenOptions) ExtractTokensPair() (string, string, error) {
 	return to.AccessToken, to.RefreshToken, nil
 }
 
-// ToMap implements TokenOptionsBuilder
+// ToMap implements TokenOptionsBuilder.
 func (to TokenOptions) ToMap() map[string]interface{} {
 	return map[string]interface{}{
 		"token": to.RefreshToken,
 	}
 }
 
-// APITokenOptions edgecenter API
+// APITokenOptions edgecenter API.
 type APITokenOptions struct {
 	APIURL   string `json:"-"`
 	APIToken string `json:"-"`
 }
 
-// TokenClientSettings interface
+// TokenClientSettings interface.
 type TokenClientSettings interface {
 	ToTokenOptions() TokenOptions
 	ToEndpointOptions() EndpointOpts
 	Validate() error
 }
 
-// APITokenClientSettings interface
+// APITokenClientSettings interface.
 type APITokenClientSettings interface {
 	ToAPITokenOptions() APITokenOptions
 	ToEndpointOptions() EndpointOpts
 	Validate() error
 }
 
-// AuthClientSettings interface
+// AuthClientSettings interface.
 type AuthClientSettings interface {
 	ToAuthOptions() AuthOptions
 	ToEndpointOptions() EndpointOpts
 	Validate() error
 }
 
-// TokenAPISettings - settings for token client building
+// TokenAPISettings - settings for token client building.
 type TokenAPISettings struct {
 	APIURL       string `json:"url,omitempty"`
 	AccessToken  string `json:"access,omitempty"`
@@ -101,7 +101,7 @@ type TokenAPISettings struct {
 	Debug        bool   `json:"debug,omitempty"`
 }
 
-// ToTokenOptions implements TokenClientSettings interface
+// ToTokenOptions implements TokenClientSettings interface.
 func (gs TokenAPISettings) ToTokenOptions() TokenOptions {
 	return TokenOptions{
 		APIURL:       gs.APIURL,
@@ -111,7 +111,7 @@ func (gs TokenAPISettings) ToTokenOptions() TokenOptions {
 	}
 }
 
-// ToEndpointOptions implements TokenClientSettings interface
+// ToEndpointOptions implements TokenClientSettings interface.
 func (gs TokenAPISettings) ToEndpointOptions() EndpointOpts {
 	return EndpointOpts{
 		Region:  gs.Region,
@@ -122,7 +122,7 @@ func (gs TokenAPISettings) ToEndpointOptions() EndpointOpts {
 	}
 }
 
-// Validate implements TokenClientSettings interface
+// Validate implements TokenClientSettings interface.
 func (gs TokenAPISettings) Validate() error {
 	if gs.APIURL == "" {
 		return fmt.Errorf("api-url endpoint required")
@@ -136,10 +136,11 @@ func (gs TokenAPISettings) Validate() error {
 	if gs.APIURL == "" {
 		return fmt.Errorf("api url required. APIURL")
 	}
+
 	return nil
 }
 
-// APITokenAPISettings - settings for api token client building
+// APITokenAPISettings - settings for api token client building.
 type APITokenAPISettings struct {
 	APIURL   string `json:"url,omitempty"`
 	APIToken string `json:"-"`
@@ -151,7 +152,7 @@ type APITokenAPISettings struct {
 	Debug    bool   `json:"debug,omitempty"`
 }
 
-// ToEndpointOptions implements APITokenClientSettings interface
+// ToEndpointOptions implements APITokenClientSettings interface.
 func (gs APITokenAPISettings) ToEndpointOptions() EndpointOpts {
 	return EndpointOpts{
 		Region:  gs.Region,
@@ -162,7 +163,7 @@ func (gs APITokenAPISettings) ToEndpointOptions() EndpointOpts {
 	}
 }
 
-// ToAPITokenOptions implements APITokenClientSettings interface
+// ToAPITokenOptions implements APITokenClientSettings interface.
 func (gs APITokenAPISettings) ToAPITokenOptions() APITokenOptions {
 	return APITokenOptions{
 		APIURL:   gs.APIURL,
@@ -170,7 +171,7 @@ func (gs APITokenAPISettings) ToAPITokenOptions() APITokenOptions {
 	}
 }
 
-// Validate implements TokenClientSettings interface
+// Validate implements TokenClientSettings interface.
 func (gs APITokenAPISettings) Validate() error {
 	if gs.APIURL == "" {
 		return fmt.Errorf("api-url endpoint required")
@@ -181,7 +182,7 @@ func (gs APITokenAPISettings) Validate() error {
 	return nil
 }
 
-// PasswordAPISettings - settings for password client building
+// PasswordAPISettings - settings for password client building.
 type PasswordAPISettings struct {
 	APIURL      string `json:"api-url,omitempty"`
 	AuthURL     string `json:"auth-url,omitempty"`
@@ -196,7 +197,7 @@ type PasswordAPISettings struct {
 	Debug       bool   `json:"debug,omitempty"`
 }
 
-// ToAuthOptions implements AuthClientSettings interface
+// ToAuthOptions implements AuthClientSettings interface.
 func (gs PasswordAPISettings) ToAuthOptions() AuthOptions {
 	return AuthOptions{
 		APIURL:      gs.APIURL,
@@ -207,7 +208,7 @@ func (gs PasswordAPISettings) ToAuthOptions() AuthOptions {
 	}
 }
 
-// ToEndpointOptions implements AuthClientSettings interface
+// ToEndpointOptions implements AuthClientSettings interface.
 func (gs PasswordAPISettings) ToEndpointOptions() EndpointOpts {
 	return EndpointOpts{
 		Region:  gs.Region,
@@ -218,7 +219,7 @@ func (gs PasswordAPISettings) ToEndpointOptions() EndpointOpts {
 	}
 }
 
-// Validate implements AuthClientSettings interface
+// Validate implements AuthClientSettings interface.
 func (gs PasswordAPISettings) Validate() error {
 	if gs.AuthURL == "" {
 		return fmt.Errorf("auth-url endpoint required")
@@ -232,5 +233,6 @@ func (gs PasswordAPISettings) Validate() error {
 	if gs.Password == "" {
 		return fmt.Errorf("password required")
 	}
+
 	return nil
 }

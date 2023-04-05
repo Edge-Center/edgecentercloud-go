@@ -59,12 +59,12 @@ type UpdateResult struct {
 	commonResult
 }
 
-// DeleteResult represents the result of a delete operation
+// DeleteResult represents the result of a delete operation.
 type DeleteResult struct {
 	edgecloud.ErrResult
 }
 
-// DeepCopyResult represents the result of a deep copy operation
+// DeepCopyResult represents the result of a deep copy operation.
 type DeepCopyResult struct {
 	edgecloud.ErrResult
 }
@@ -192,7 +192,7 @@ type MetadataPage struct {
 	pagination.LinkedPageBase
 }
 
-// MetadataResult represents the result of a get operation
+// MetadataResult represents the result of a get operation.
 type MetadataResult struct {
 	commonResult
 }
@@ -216,7 +216,7 @@ func ExtractMetadata(r pagination.Page) ([]Metadata, error) {
 	return s, err
 }
 
-// MetadataActionResult represents the result of a create, delete or update operation(no content)
+// MetadataActionResult represents the result of a create, delete or update operation(no content).
 type MetadataActionResult struct {
 	edgecloud.ErrResult
 }

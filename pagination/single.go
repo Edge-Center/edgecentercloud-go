@@ -15,12 +15,12 @@ func (current SinglePageBase) NextPageURL() (string, error) {
 	return "", nil
 }
 
-// IsEmpty satisifies the IsEmpty method of the Page interface
+// IsEmpty satisifies the IsEmpty method of the Page interface.
 func (current SinglePageBase) IsEmpty() (bool, error) {
 	if b, ok := current.Body.([]interface{}); ok {
 		return len(b) == 0, nil
 	}
-	err := edgecloud.ErrUnexpectedType{}
+	err := edgecloud.UnexpectedTypeError{}
 	err.Expected = "[]interface{}"
 	err.Actual = fmt.Sprintf("%v", reflect.TypeOf(current.Body))
 	return true, err

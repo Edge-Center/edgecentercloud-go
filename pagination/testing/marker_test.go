@@ -38,6 +38,7 @@ func (r MarkerPageResult) LastMarker() (string, error) {
 }
 
 func createMarkerPaged(t *testing.T) pagination.Pager {
+	t.Helper()
 	testhelper.SetupHTTP()
 
 	testhelper.Mux.HandleFunc("/page", func(w http.ResponseWriter, r *http.Request) {
@@ -117,6 +118,7 @@ func TestEnumerateMarker(t *testing.T) {
 		testhelper.CheckDeepEquals(t, expected, actual)
 
 		callCount++
+
 		return true, nil
 	})
 	testhelper.AssertNoErr(t, err)

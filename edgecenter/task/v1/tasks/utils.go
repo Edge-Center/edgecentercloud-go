@@ -35,9 +35,8 @@ func WaitForStatus(client *edgecloud.ServiceClient, id string, status TaskState,
 	})
 }
 
-// WaitTaskAndProcessResult periodically check status state and invoke taskProcessor when when task is finished
-func WaitTaskAndProcessResult(
-	client *edgecloud.ServiceClient, task TaskID, stopOnTaskError bool, waitSeconds int, taskProcessor CheckTaskResult) error {
+// WaitTaskAndProcessResult periodically check status state and invoke taskProcessor when task is finished.
+func WaitTaskAndProcessResult(client *edgecloud.ServiceClient, task TaskID, stopOnTaskError bool, waitSeconds int, taskProcessor CheckTaskResult) error {
 	err := WaitForStatus(client, string(task), TaskStateFinished, waitSeconds, stopOnTaskError)
 	if err != nil {
 		return err
@@ -49,11 +48,8 @@ func WaitTaskAndProcessResult(
 	return nil
 }
 
-// WaitTaskAndReturnResult periodically check status state and return changed object when task is finished
-func WaitTaskAndReturnResult(
-	client *edgecloud.ServiceClient, task TaskID, stopOnTaskError bool,
-	waitSeconds int, taskProcessor RetrieveTaskResult) (interface{}, error) {
-
+// WaitTaskAndReturnResult periodically check status state and return changed object when task is finished.
+func WaitTaskAndReturnResult(client *edgecloud.ServiceClient, task TaskID, stopOnTaskError bool, waitSeconds int, taskProcessor RetrieveTaskResult) (interface{}, error) {
 	err := WaitForStatus(client, string(task), TaskStateFinished, waitSeconds, stopOnTaskError)
 	if err != nil {
 		return nil, err
@@ -66,4 +62,5 @@ func WaitTaskAndReturnResult(
 }
 
 type RetrieveTaskResult func(task TaskID) (interface{}, error)
+
 type CheckTaskResult func(task TaskID) error

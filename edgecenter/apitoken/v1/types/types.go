@@ -7,6 +7,7 @@ import (
 )
 
 type RoleIDType int
+
 type RoleNameType string
 
 const (
@@ -51,14 +52,15 @@ func (r RoleIDType) List() []RoleIDType {
 }
 
 func (r RoleIDType) StringList() []string {
-	var s []string
-	for _, v := range r.List() {
-		s = append(s, v.String())
+	lst := r.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
-// UnmarshalJSON - implements Unmarshaler interface for RoleIDType
+// UnmarshalJSON - implements Unmarshaler interface for RoleIDType.
 func (r *RoleIDType) UnmarshalJSON(data []byte) error {
 	var s int
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -70,10 +72,11 @@ func (r *RoleIDType) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*r = v
+
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface for RoleIDType
+// MarshalJSON - implements Marshaler interface for RoleIDType.
 func (r *RoleIDType) MarshalJSON() ([]byte, error) {
 	return json.Marshal(int(*r))
 }
@@ -116,14 +119,15 @@ func (rs RoleNameType) List() []RoleNameType {
 }
 
 func (rs RoleNameType) StringList() []string {
-	var s []string
-	for _, v := range rs.List() {
-		s = append(s, v.String())
+	lst := rs.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
-// UnmarshalJSON - implements Unmarshaler interface for RoleNameType
+// UnmarshalJSON - implements Unmarshaler interface for RoleNameType.
 func (rs *RoleNameType) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -135,10 +139,11 @@ func (rs *RoleNameType) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*rs = v
+
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface for RoleNameType
+// MarshalJSON - implements Marshaler interface for RoleNameType.
 func (rs *RoleNameType) MarshalJSON() ([]byte, error) {
 	return json.Marshal(rs.String())
 }

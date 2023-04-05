@@ -1,6 +1,7 @@
 package networks
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/urfave/cli/v2"
@@ -25,17 +26,18 @@ var networkListCommand = cli.Command{
 		client, err := client.NewNetworkClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		pages, err := networks.List(client, nil).AllPages()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		results, err := networks.ExtractNetworks(pages)
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
+
 		return nil
 	},
 }
@@ -62,7 +64,7 @@ var availableNetworkListCommand = cli.Command{
 		client, err := client.NewAvailableNetworkClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		opts := availablenetworks.ListOpts{
@@ -72,9 +74,10 @@ var availableNetworkListCommand = cli.Command{
 
 		result, err := availablenetworks.ListAll(client, opts)
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
+
 		return nil
 	},
 }
@@ -93,16 +96,17 @@ var networkGetCommand = cli.Command{
 		client, err := client.NewNetworkClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		network, err := networks.Get(client, networkID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		if network == nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(network, c.String("format"))
+
 		return nil
 	},
 }
@@ -122,14 +126,14 @@ var networkDeleteCommand = cli.Command{
 		client, err := client.NewNetworkClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		results, err := networks.Delete(client, networkID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		if results == nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		return utils.WaitTaskAndShowResult(c, client, results, false, func(task tasks.TaskID) (interface{}, error) {
@@ -137,14 +141,12 @@ var networkDeleteCommand = cli.Command{
 			if err == nil {
 				return nil, fmt.Errorf("cannot delete network with ID: %s", networkID)
 			}
-			switch err.(type) {
-			case edgecenter.ErrDefault404:
+			var e edgecenter.Default404Error
+			if errors.As(err, &e) {
 				return nil, nil
-			default:
-				return nil, err
 			}
+			return nil, err
 		})
-
 	},
 }
 
@@ -170,7 +172,7 @@ var networkUpdateCommand = cli.Command{
 		client, err := client.NewNetworkClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		opts := networks.UpdateOpts{
@@ -179,14 +181,14 @@ var networkUpdateCommand = cli.Command{
 
 		network, err := networks.Update(client, networkID, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		if network == nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(network, c.String("format"))
-		return nil
 
+		return nil
 	},
 }
 
@@ -212,7 +214,7 @@ var networkCreateCommand = cli.Command{
 		client, err := client.NewNetworkClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		opts := networks.CreateOpts{
 			Name:         c.String("name"),
@@ -220,11 +222,12 @@ var networkCreateCommand = cli.Command{
 		}
 		results, err := networks.Create(client, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		if results == nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
+
 		return utils.WaitTaskAndShowResult(c, client, results, true, func(task tasks.TaskID) (interface{}, error) {
 			taskInfo, err := tasks.Get(client, string(task)).Extract()
 			if err != nil {
@@ -239,6 +242,7 @@ var networkCreateCommand = cli.Command{
 				return nil, fmt.Errorf("cannot get network with ID: %s. Error: %w", networkID, err)
 			}
 			utils.ShowResults(network, c.String("format"))
+
 			return nil, nil
 		})
 	},
@@ -258,13 +262,14 @@ var networkInstancePortCommand = cli.Command{
 		client, err := client.NewNetworkClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		results, err := networks.ListAllInstancePort(client, networkID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
+
 		return nil
 	},
 }

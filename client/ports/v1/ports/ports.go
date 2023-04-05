@@ -3,18 +3,16 @@ package ports
 import (
 	"errors"
 
-	"github.com/Edge-Center/edgecentercloud-go/client/ports/v1/client"
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/port/v1/ports"
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/reservedfixedip/v1/reservedfixedips"
+	"github.com/urfave/cli/v2"
 
 	"github.com/Edge-Center/edgecentercloud-go/client/flags"
+	"github.com/Edge-Center/edgecentercloud-go/client/ports/v1/client"
 	"github.com/Edge-Center/edgecentercloud-go/client/utils"
-	"github.com/urfave/cli/v2"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/port/v1/ports"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/reservedfixedip/v1/reservedfixedips"
 )
 
-var (
-	portIDText = "port_id is mandatory argument"
-)
+var portIDText = "port_id is mandatory argument"
 
 var portSecurityEnableSubCommand = cli.Command{
 	Name:      "enable",
@@ -30,14 +28,15 @@ var portSecurityEnableSubCommand = cli.Command{
 		client, err := client.NewPortClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		iface, err := ports.EnablePortSecurity(client, portID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(iface, c.String("format"))
+
 		return nil
 	},
 }
@@ -56,14 +55,15 @@ var portSecurityDisableSubCommand = cli.Command{
 		client, err := client.NewPortClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		iface, err := ports.DisablePortSecurity(client, portID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(iface, c.String("format"))
+
 		return nil
 	},
 }
@@ -92,13 +92,13 @@ var assignAllowedAddressPairsSubCommand = cli.Command{
 		client, err := client.NewPortClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		addressPairs, err := getAddressPairs(c.StringSlice("ip-address"), c.StringSlice("mac-address"))
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "assign")
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		opts := ports.AllowAddressPairsOpts{
@@ -107,9 +107,10 @@ var assignAllowedAddressPairsSubCommand = cli.Command{
 
 		result, err := ports.AllowAddressPairs(client, portID, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
+
 		return nil
 	},
 }
@@ -126,6 +127,7 @@ func getAddressPairs(ips, macs []string) ([]reservedfixedips.AllowedAddressPairs
 			MacAddress: macs[i],
 		}
 	}
+
 	return result, nil
 }
 

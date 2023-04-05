@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/urfave/cli/v2"
+
 	"github.com/Edge-Center/edgecentercloud-go/client/flags"
 	"github.com/Edge-Center/edgecentercloud-go/client/heat/v1/client"
 	"github.com/Edge-Center/edgecentercloud-go/client/utils"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/heat/v1/stack/stacks"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/heat/v1/stack/stacks/types"
-
-	"github.com/urfave/cli/v2"
 )
 
 var (
@@ -95,7 +95,7 @@ var stackListSubCommand = cli.Command{
 		client, err := client.NewHeatClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		opts := stacks.ListOpts{
@@ -115,9 +115,10 @@ var stackListSubCommand = cli.Command{
 
 		results, err := stacks.ListAll(client, opts)
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
+
 		return nil
 	},
 }
@@ -136,13 +137,14 @@ var stackGetSubCommand = cli.Command{
 		client, err := client.NewHeatClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		result, err := stacks.Get(client, stackID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
+
 		return nil
 	},
 }
@@ -183,7 +185,7 @@ var stackUpdateSubCommand = cli.Command{
 		client, err := client.NewHeatClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		opts := stacks.UpdateOpts{}
@@ -193,7 +195,7 @@ var stackUpdateSubCommand = cli.Command{
 		if templateFile != "" {
 			content, err := utils.CheckYamlFile(templateFile)
 			if err != nil {
-				return cli.NewExitError(err, 1)
+				return cli.Exit(err, 1)
 			}
 			template := &stacks.Template{}
 			template.TE = stacks.TE{
@@ -205,7 +207,7 @@ var stackUpdateSubCommand = cli.Command{
 		if environmentFile != "" {
 			content, err := utils.CheckYamlFile(environmentFile)
 			if err != nil {
-				return cli.NewExitError(err, 1)
+				return cli.Exit(err, 1)
 			}
 			env := &stacks.Environment{}
 			env.TE = stacks.TE{
@@ -216,7 +218,7 @@ var stackUpdateSubCommand = cli.Command{
 
 		params, err := utils.StringSliceToMapInterface(c.StringSlice("parameter"))
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		opts.Parameters = params
@@ -227,8 +229,9 @@ var stackUpdateSubCommand = cli.Command{
 			err = stacks.Update(client, stackID, opts).ExtractErr()
 		}
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
+
 		return nil
 	},
 }

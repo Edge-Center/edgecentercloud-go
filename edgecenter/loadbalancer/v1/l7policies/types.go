@@ -6,7 +6,9 @@ import (
 )
 
 type Action string
+
 type RuleType string
+
 type CompareType string
 
 const (
@@ -67,14 +69,15 @@ func (a Action) List() []Action {
 }
 
 func (a Action) StringList() []string {
-	var s []string
-	for _, v := range a.List() {
-		s = append(s, v.String())
+	lst := a.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
-// UnmarshalJSON - implements Unmarshaler interface
+// UnmarshalJSON - implements Unmarshaler interface.
 func (a *Action) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -86,10 +89,11 @@ func (a *Action) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*a = v
+
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface
+// MarshalJSON - implements Marshaler interface.
 func (a *Action) MarshalJSON() ([]byte, error) {
 	return json.Marshal(a.String())
 }
@@ -106,6 +110,7 @@ func (rt RuleType) IsValid() error {
 		TypeSSLDNField:
 		return nil
 	}
+
 	return fmt.Errorf("invalid rule type: %v", rt)
 }
 
@@ -138,14 +143,15 @@ func (rt RuleType) List() []RuleType {
 }
 
 func (rt RuleType) StringList() []string {
-	var s []string
-	for _, v := range rt.List() {
-		s = append(s, v.String())
+	lst := rt.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
-// UnmarshalJSON - implements Unmarshaler interface
+// UnmarshalJSON - implements Unmarshaler interface.
 func (rt *RuleType) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -157,10 +163,11 @@ func (rt *RuleType) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*rt = v
+
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface
+// MarshalJSON - implements Marshaler interface.
 func (rt *RuleType) MarshalJSON() ([]byte, error) {
 	return json.Marshal(rt.String())
 }
@@ -203,14 +210,15 @@ func (ct CompareType) List() []CompareType {
 }
 
 func (ct CompareType) StringList() []string {
-	var s []string
-	for _, v := range ct.List() {
-		s = append(s, v.String())
+	lst := ct.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
-// UnmarshalJSON - implements Unmarshaler interface
+// UnmarshalJSON - implements Unmarshaler interface.
 func (ct *CompareType) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -222,10 +230,11 @@ func (ct *CompareType) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*ct = v
+
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface
+// MarshalJSON - implements Marshaler interface.
 func (ct *CompareType) MarshalJSON() ([]byte, error) {
 	return json.Marshal(ct.String())
 }

@@ -5,21 +5,19 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter"
-
-	"github.com/Edge-Center/edgecentercloud-go/testhelper/client"
-
+	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/require"
 
-	log "github.com/sirupsen/logrus"
-
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/identity/tokens"
 	"github.com/Edge-Center/edgecentercloud-go/testhelper"
+	"github.com/Edge-Center/edgecentercloud-go/testhelper/client"
 )
 
 // authTokenPost verifies that providing certain AuthOptions results in an expected JSON structure.
 func authTokenPost(t *testing.T, options edgecloud.AuthOptions, requestJSON string) *tokens.Token {
+	t.Helper()
 	testhelper.SetupHTTP()
 	defer testhelper.TeardownHTTP()
 
@@ -44,10 +42,12 @@ func authTokenPost(t *testing.T, options edgecloud.AuthOptions, requestJSON stri
 	actual, err := tokens.Create(serviceClient, &options).ExtractTokens()
 	require.NoError(t, err)
 	require.Equal(t, expectedToken, *actual)
+
 	return actual
 }
 
 func authTokenPostErr(t *testing.T, options edgecloud.AuthOptions, includeToken bool, expectedErr error) {
+	t.Helper()
 	testhelper.SetupHTTP()
 	defer testhelper.TeardownHTTP()
 
@@ -61,7 +61,6 @@ func authTokenPostErr(t *testing.T, options edgecloud.AuthOptions, includeToken 
 	}
 
 	testhelper.Mux.HandleFunc("/auth/jwt/login", func(w http.ResponseWriter, r *http.Request) {
-
 		testhelper.TestMethod(t, r, "POST")
 		testhelper.TestHeader(t, r, "Content-Type", "application/json")
 		testhelper.TestHeader(t, r, "Accept", "application/json")
@@ -100,9 +99,8 @@ func TestCreateExtractsTokenFromResponse(t *testing.T) {
 	`)
 
 	require.Equal(t, token.Access, client.AccessToken)
-
 }
 
 func TestCreateFailureEmptyAuth(t *testing.T) {
-	authTokenPostErr(t, edgecloud.AuthOptions{}, false, edgecloud.ErrDefault400{})
+	authTokenPostErr(t, edgecloud.AuthOptions{}, false, edgecloud.Default400Error{})
 }

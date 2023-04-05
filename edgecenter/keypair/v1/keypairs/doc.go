@@ -1,5 +1,5 @@
 /*
-Package keypair contains functionality for working GCLoud keypairs API resources
+Package keypair contains functionality for working EdgeCloud keypairs API resources
 
 Example to List KeyPair
 

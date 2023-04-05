@@ -17,9 +17,9 @@ import (
 
 type TestFunc func(t *testing.T)
 
-type UrlFunc func(c *edgecloud.ServiceClient, id string, args ...string)
+type URLFunc func(c *edgecloud.ServiceClient, id string, args ...string)
 
-func prepareTestParams(resourceName string, urlFunc func(c *edgecloud.ServiceClient) string, extraParams ...string) (client *edgecloud.ServiceClient, relativeUrl string) {
+func prepareTestParams(resourceName string, urlFunc func(c *edgecloud.ServiceClient) string, extraParams ...string) (client *edgecloud.ServiceClient, relativeURL string) {
 	version := "v1"
 	if extraParams != nil {
 		version = extraParams[0]
@@ -27,32 +27,32 @@ func prepareTestParams(resourceName string, urlFunc func(c *edgecloud.ServiceCli
 
 	client = fake.ServiceTokenClient(resourceName, version)
 
-	resourceUrl := ""
+	resourceURL := ""
 	if urlFunc == nil {
-		resourceUrl = client.ResourceBaseURL()
-
+		resourceURL = client.ResourceBaseURL()
 	} else {
-		resourceUrl = urlFunc(client)
+		resourceURL = urlFunc(client)
 	}
 
-	parsedUrl, err := url.Parse(resourceUrl)
-
+	parsedURL, err := url.Parse(resourceURL)
 	if err != nil {
 		panic(err)
 	}
 
-	relativeUrl = parsedUrl.Path
+	relativeURL = parsedURL.Path
+
 	return
 }
 
 func BuildTestMetadataListAll(resourceName string, resourceID string, extraParams ...string) TestFunc {
 	return func(t *testing.T) {
+		t.Helper()
 		th.SetupHTTP()
 		defer th.TeardownHTTP()
 
-		client, relativeUrl := prepareTestParams(resourceName, nil, extraParams...)
+		client, relativeURL := prepareTestParams(resourceName, nil, extraParams...)
 
-		th.Mux.HandleFunc(relativeUrl, func(w http.ResponseWriter, r *http.Request) {
+		th.Mux.HandleFunc(relativeURL, func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, "GET")
 			th.TestHeader(t, r, "Authorization", fmt.Sprintf("Bearer %s", fake.AccessToken))
 
@@ -64,7 +64,7 @@ func BuildTestMetadataListAll(resourceName string, resourceID string, extraParam
 			}
 		})
 
-		actual, err := metadata.MetadataListAll(client, resourceID)
+		actual, err := metadata.ResourceMetadataListAll(client, resourceID)
 		require.NoError(t, err)
 		ct := actual[0]
 		require.Equal(t, Metadata1, ct)
@@ -74,14 +74,15 @@ func BuildTestMetadataListAll(resourceName string, resourceID string, extraParam
 
 func BuildTestMetadataGet(resourceName string, resourceID string, extraParams ...string) TestFunc {
 	return func(t *testing.T) {
+		t.Helper()
 		th.SetupHTTP()
 		defer th.TeardownHTTP()
 
-		client, relativeUrl := prepareTestParams(resourceName, func(c *edgecloud.ServiceClient) string {
-			return metadata.MetadataItemURL(c, resourceID, ResourceMetadataReadOnly.Key)
+		client, relativeURL := prepareTestParams(resourceName, func(c *edgecloud.ServiceClient) string {
+			return metadata.ResourceMetadataItemURL(c, resourceID, ResourceMetadataReadOnly.Key)
 		}, extraParams...)
 
-		th.Mux.HandleFunc(relativeUrl, func(w http.ResponseWriter, r *http.Request) {
+		th.Mux.HandleFunc(relativeURL, func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, "GET")
 			th.TestHeader(t, r, "Authorization", fmt.Sprintf("Bearer %s", fake.AccessToken))
 
@@ -93,7 +94,7 @@ func BuildTestMetadataGet(resourceName string, resourceID string, extraParams ..
 			}
 		})
 
-		actual, err := metadata.MetadataGet(client, resourceID, ResourceMetadataReadOnly.Key).Extract()
+		actual, err := metadata.ResourceMetadataGet(client, resourceID, ResourceMetadataReadOnly.Key).Extract()
 		require.NoError(t, err)
 		require.Equal(t, &ResourceMetadataReadOnly, actual)
 	}
@@ -101,14 +102,15 @@ func BuildTestMetadataGet(resourceName string, resourceID string, extraParams ..
 
 func BuildTestMetadataCreate(resourceName string, resourceID string, extraParams ...string) TestFunc {
 	return func(t *testing.T) {
+		t.Helper()
 		th.SetupHTTP()
 		defer th.TeardownHTTP()
 
-		client, relativeUrl := prepareTestParams(resourceName, func(c *edgecloud.ServiceClient) string {
-			return metadata.MetadataURL(c, resourceID)
+		client, relativeURL := prepareTestParams(resourceName, func(c *edgecloud.ServiceClient) string {
+			return metadata.ResourceMetadataURL(c, resourceID)
 		}, extraParams...)
 
-		th.Mux.HandleFunc(relativeUrl, func(w http.ResponseWriter, r *http.Request) {
+		th.Mux.HandleFunc(relativeURL, func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, "POST")
 			th.TestHeader(t, r, "Authorization", fmt.Sprintf("Bearer %s", fake.AccessToken))
 
@@ -119,7 +121,7 @@ func BuildTestMetadataCreate(resourceName string, resourceID string, extraParams
 			w.WriteHeader(http.StatusNoContent)
 		})
 
-		err := metadata.MetadataCreateOrUpdate(client, resourceID, map[string]string{
+		err := metadata.ResourceMetadataCreateOrUpdate(client, resourceID, map[string]string{
 			"test1": "test1",
 			"test2": "test2",
 		}).ExtractErr()
@@ -129,14 +131,15 @@ func BuildTestMetadataCreate(resourceName string, resourceID string, extraParams
 
 func BuildTestMetadataUpdate(resourceName string, resourceID string, extraParams ...string) TestFunc {
 	return func(t *testing.T) {
+		t.Helper()
 		th.SetupHTTP()
 		defer th.TeardownHTTP()
 
-		client, relativeUrl := prepareTestParams(resourceName, func(c *edgecloud.ServiceClient) string {
-			return metadata.MetadataURL(c, resourceID)
+		client, relativeURL := prepareTestParams(resourceName, func(c *edgecloud.ServiceClient) string {
+			return metadata.ResourceMetadataURL(c, resourceID)
 		}, extraParams...)
 
-		th.Mux.HandleFunc(relativeUrl, func(w http.ResponseWriter, r *http.Request) {
+		th.Mux.HandleFunc(relativeURL, func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, "PUT")
 			th.TestHeader(t, r, "Authorization", fmt.Sprintf("Bearer %s", fake.AccessToken))
 
@@ -147,7 +150,7 @@ func BuildTestMetadataUpdate(resourceName string, resourceID string, extraParams
 			w.WriteHeader(http.StatusNoContent)
 		})
 
-		err := metadata.MetadataReplace(client, resourceID, map[string]string{
+		err := metadata.ResourceMetadataReplace(client, resourceID, map[string]string{
 			"test1": "test1",
 			"test2": "test2",
 		}).ExtractErr()
@@ -157,14 +160,15 @@ func BuildTestMetadataUpdate(resourceName string, resourceID string, extraParams
 
 func BuildTestMetadataDelete(resourceName string, resourceID string, extraParams ...string) TestFunc {
 	return func(t *testing.T) {
+		t.Helper()
 		th.SetupHTTP()
 		defer th.TeardownHTTP()
 
-		client, relativeUrl := prepareTestParams(resourceName, func(c *edgecloud.ServiceClient) string {
-			return metadata.MetadataItemURL(c, resourceID, ResourceMetadataReadOnly.Key)
+		client, relativeURL := prepareTestParams(resourceName, func(c *edgecloud.ServiceClient) string {
+			return metadata.ResourceMetadataItemURL(c, resourceID, ResourceMetadataReadOnly.Key)
 		}, extraParams...)
 
-		th.Mux.HandleFunc(relativeUrl, func(w http.ResponseWriter, r *http.Request) {
+		th.Mux.HandleFunc(relativeURL, func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, "DELETE")
 			th.TestHeader(t, r, "Authorization", fmt.Sprintf("Bearer %s", fake.AccessToken))
 			th.TestHeader(t, r, "Accept", "application/json")
@@ -172,7 +176,7 @@ func BuildTestMetadataDelete(resourceName string, resourceID string, extraParams
 			w.WriteHeader(http.StatusNoContent)
 		})
 
-		err := metadata.MetadataDelete(client, resourceID, Metadata1.Key).ExtractErr()
+		err := metadata.ResourceMetadataDelete(client, resourceID, Metadata1.Key).ExtractErr()
 		require.NoError(t, err)
 	}
 }

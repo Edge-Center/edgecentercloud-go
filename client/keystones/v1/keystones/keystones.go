@@ -4,13 +4,14 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/urfave/cli/v2"
+
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 	"github.com/Edge-Center/edgecentercloud-go/client/flags"
 	"github.com/Edge-Center/edgecentercloud-go/client/keystones/v1/client"
 	"github.com/Edge-Center/edgecentercloud-go/client/utils"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/keystone/v1/keystones"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/keystone/v1/types"
-	"github.com/urfave/cli/v2"
 )
 
 var (
@@ -26,13 +27,14 @@ var keystoneListCommand = cli.Command{
 		client, err := client.NewKeystoneClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		results, err := keystones.ListAll(client)
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
+
 		return nil
 	},
 }
@@ -51,13 +53,14 @@ var keystoneGetCommand = cli.Command{
 		client, err := client.NewKeystoneClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		task, err := keystones.Get(client, keystoneID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(task, c.String("format"))
+
 		return nil
 	},
 }
@@ -103,7 +106,7 @@ var keystoneUpdateCommand = cli.Command{
 		url, err := edgecloud.ParseURLNonMandatory(c.String("spice-url"))
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "update")
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		opts := keystones.UpdateOpts{
@@ -116,20 +119,21 @@ var keystoneUpdateCommand = cli.Command{
 		err = edgecloud.TranslateValidationError(opts.Validate())
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "update")
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		client, err := client.NewKeystoneClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		result, err := keystones.Update(client, keystoneID, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
+
 		return nil
 	},
 }
@@ -165,11 +169,10 @@ var keystoneCreateCommand = cli.Command{
 		},
 	},
 	Action: func(c *cli.Context) error {
-
 		url, err := edgecloud.ParseURL(c.String("spice-url"))
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "create")
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		opts := keystones.CreateOpts{
@@ -182,20 +185,21 @@ var keystoneCreateCommand = cli.Command{
 		err = edgecloud.TranslateValidationError(opts.Validate())
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "create")
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		client, err := client.NewKeystoneClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		result, err := keystones.Create(client, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
+
 		return nil
 	},
 }

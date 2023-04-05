@@ -14,22 +14,22 @@ func processToken(c *edgecloud.ServiceClient, opts edgecloud.AuthOptionsBuilder,
 	return
 }
 
-// Create authenticates and either generates a new token
+// Create authenticates and either generates a new token.
 func Create(c *edgecloud.ServiceClient, opts edgecloud.AuthOptionsBuilder) (r TokenResult) {
 	return processToken(c, opts, tokenURL(c))
 }
 
-// RefreshPlatform token with EdgeCenter platform API
+// RefreshPlatform token with EdgeCenter platform API.
 func RefreshPlatform(c *edgecloud.ServiceClient, opts edgecloud.TokenOptionsBuilder) (r TokenResult) {
 	return processToken(c, opts, refreshURL(c))
 }
 
-// RefreshPlatform token with gcloud API
+// RefreshECCloud token with EdgeCloud API.
 func RefreshECCloud(c *edgecloud.ServiceClient, opts edgecloud.TokenOptionsBuilder) (r TokenResult) {
 	return processToken(c, opts, refreshECCloudURL(c))
 }
 
-// SelectAccount select an account which you want to get access to
+// SelectAccount select an account which you want to get access to.
 func SelectAccount(c *edgecloud.ServiceClient, clientID string) (r TokenResult) {
 	url := selectAccountURL(c, clientID)
 	_, r.Err = c.Get(url, &r.Body, nil)

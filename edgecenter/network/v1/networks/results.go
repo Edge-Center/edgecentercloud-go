@@ -3,10 +3,9 @@ package networks
 import (
 	"fmt"
 
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/utils/metadata"
-
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/utils/metadata"
 	"github.com/Edge-Center/edgecentercloud-go/pagination"
 )
 

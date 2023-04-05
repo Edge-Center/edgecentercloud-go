@@ -8,9 +8,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	"golang.org/x/text/cases"
-	"golang.org/x/text/language"
+	"unicode"
 )
 
 /*
@@ -42,7 +40,7 @@ var (
 	typeOfURL  = reflect.TypeOf(URL{})
 )
 
-func BuildSliceRequestBody(opts interface{}) ([]map[string]interface{}, error) { // nolint: gocyclo
+func BuildSliceRequestBody(opts interface{}) ([]map[string]interface{}, error) {
 	optsValue := reflect.ValueOf(opts)
 	if optsValue.Kind() == reflect.Ptr {
 		optsValue = optsValue.Elem()
@@ -82,10 +80,9 @@ func BuildSliceRequestBody(opts interface{}) ([]map[string]interface{}, error) {
 		}
 
 		return optsSlice, nil
-
 	}
-	return nil, fmt.Errorf("options type is not a slice")
 
+	return nil, fmt.Errorf("options type is not a slice")
 }
 
 func skipCustomStructs(v reflect.Value, typeof ...reflect.Type) bool {
@@ -100,8 +97,7 @@ func skipCustomStructs(v reflect.Value, typeof ...reflect.Type) bool {
 	return false
 }
 
-func BuildRequestBody(opts interface{}, parent string) (map[string]interface{}, error) { // nolint: gocyclo
-
+func BuildRequestBody(opts interface{}, parent string) (map[string]interface{}, error) {
 	optsValue := reflect.ValueOf(opts)
 	if optsValue.Kind() == reflect.Ptr {
 		optsValue = optsValue.Elem()
@@ -118,8 +114,7 @@ func BuildRequestBody(opts interface{}, parent string) (map[string]interface{}, 
 		for i := 0; i < optsValue.NumField(); i++ {
 			v := optsValue.Field(i)
 			f := optsType.Field(i)
-
-			if f.Name != cases.Title(language.English).String(f.Name) {
+			if r := []rune(f.Name); !unicode.IsUpper(r[0]) {
 				continue
 			}
 
@@ -135,7 +130,7 @@ func BuildRequestBody(opts interface{}, parent string) (map[string]interface{}, 
 				// if the field's value is zero, return a missing-argument error
 				if zero {
 					// if the field has a 'required' tag, it can't have a zero-value
-					err := ErrMissingInput{}
+					err := MissingInputError{}
 					err.Argument = f.Name
 					return nil, err
 				}
@@ -153,7 +148,7 @@ func BuildRequestBody(opts interface{}, parent string) (map[string]interface{}, 
 					xorFieldIsZero = isZero(xorField)
 				}
 				if !(zero != xorFieldIsZero) {
-					err := ErrMissingInput{}
+					err := MissingInputError{}
 					err.Argument = fmt.Sprintf("%s/%s", f.Name, xorTag)
 					err.Info = fmt.Sprintf("Exactly one of %s and %s must be provided", f.Name, xorTag)
 					return nil, err
@@ -173,7 +168,7 @@ func BuildRequestBody(opts interface{}, parent string) (map[string]interface{}, 
 						orFieldIsZero = isZero(orField)
 					}
 					if orFieldIsZero {
-						err := ErrMissingInput{}
+						err := MissingInputError{}
 						err.Argument = fmt.Sprintf("%s/%s", f.Name, orTag)
 						err.Info = fmt.Sprintf("At least one of %s and %s must be provided", f.Name, orTag)
 						return nil, err
@@ -216,6 +211,7 @@ func BuildRequestBody(opts interface{}, parent string) (map[string]interface{}, 
 							}
 						}
 					}
+
 					continue
 				}
 
@@ -239,6 +235,7 @@ func BuildRequestBody(opts interface{}, parent string) (map[string]interface{}, 
 		if parent != "" {
 			optsMap = map[string]interface{}{parent: optsMap}
 		}
+
 		return optsMap, nil
 	}
 	// Return an error if the underlying type of 'opts' isn't a struct.
@@ -259,14 +256,13 @@ var (
 	Disabled EnabledState = &iFalse
 )
 
-// IPVersion is a type for the possible IP address versions. Valid instances
-// are IPv4 and IPv6
+// IPVersion is a type for the possible IP address versions. Valid instances are IPv4 and IPv6.
 type IPVersion int
 
 const (
-	// IPv4 is used for IP version 4 addresses
+	// IPv4 is used for IP version 4 addresses.
 	IPv4 IPVersion = 4
-	// IPv6 is used for IP version 6 addresses
+	// IPv6 is used for IP version 6 addresses.
 	IPv6 IPVersion = 6
 )
 
@@ -347,6 +343,7 @@ func isZero(v reflect.Value) bool {
 	}
 	// Compare other types directly:
 	z := reflect.Zero(v.Type())
+
 	return v.Interface() == z.Interface()
 }
 
@@ -364,6 +361,7 @@ func buildQueryStringSliceStrategy(v reflect.Value, tag string) url.Values {
 			params.Add(tag, v.Index(i).String())
 		}
 	}
+
 	return params
 }
 
@@ -381,6 +379,7 @@ func buildQueryStringCommaSeparatedSliceStrategy(v reflect.Value, tag string) ur
 		}
 	}
 	params.Add(tag, strings.Join(s, ","))
+
 	return params
 }
 
@@ -400,7 +399,6 @@ func queryStringSliceStrategy(delimiter string) buildQueryStringStrategy {
 	default:
 		return buildQueryStringSliceStrategy
 	}
-
 }
 
 /*
@@ -499,11 +497,9 @@ func BuildQueryString(opts interface{}) (*url.URL, error) {
 							params.Add(tags[0], fmt.Sprintf("{%s}", strings.Join(s, ", ")))
 						}
 					}
-				} else { // nolint: gocritic
+				} else if requiredTag == trueTag {
 					// if the field has a 'required' tag, it can't have a zero-value
-					if requiredTag == trueTag {
-						return &url.URL{}, fmt.Errorf("required query parameter [%s] not set", f.Name)
-					}
+					return &url.URL{}, fmt.Errorf("required query parameter [%s] not set", f.Name)
 				}
 			}
 		}
@@ -576,16 +572,15 @@ func BuildHeaders(opts interface{}) (map[string]string, error) {
 					case reflect.Bool:
 						optsMap[tags[0]] = strconv.FormatBool(v.Bool())
 					}
-				} else { // nolint: gocritic
-
+				} else {
 					// if the field has a 'required' tag, it can't have a zero-value
 					if requiredTag := f.Tag.Get("required"); requiredTag == trueTag {
 						return optsMap, fmt.Errorf("required header [%s] not set", f.Name)
 					}
 				}
 			}
-
 		}
+
 		return optsMap, nil
 	}
 	// Return an error if the underlying type of 'opts' isn't a struct.
@@ -594,7 +589,7 @@ func BuildHeaders(opts interface{}) (map[string]string, error) {
 
 // IDSliceToQueryString takes a slice of elements and converts them into a query
 // string. For example, if name=foo and slice=[]int{20, 40, 60}, then the
-// result would be `?name=20&name=40&name=60'
+// result would be `?name=20&name=40&name=60'.
 func IDSliceToQueryString(name string, ids []int) string {
 	str := ""
 	for k, v := range ids {

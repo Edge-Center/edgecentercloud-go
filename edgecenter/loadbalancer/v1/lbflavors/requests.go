@@ -12,7 +12,7 @@ func List(c *edgecloud.ServiceClient) pagination.Pager {
 	})
 }
 
-// ListAll returns all LB flavors
+// ListAll returns all LB flavors.
 func ListAll(c *edgecloud.ServiceClient) ([]Flavor, error) {
 	page, err := List(c).AllPages()
 	if err != nil {

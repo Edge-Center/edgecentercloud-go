@@ -4,13 +4,14 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/urfave/cli/v2"
+
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 	"github.com/Edge-Center/edgecentercloud-go/client/flags"
 	"github.com/Edge-Center/edgecentercloud-go/client/secrets/v1/client"
 	"github.com/Edge-Center/edgecentercloud-go/client/utils"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/secret/v1/secrets"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
-	"github.com/urfave/cli/v2"
 )
 
 var secretsIDText = "secrets_id is mandatory argument"
@@ -33,13 +34,14 @@ var secretListCommand = cli.Command{
 		client, err := client.NewSecretClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		results, err := secrets.ListAll(client)
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
+
 		return nil
 	},
 }
@@ -57,13 +59,14 @@ var secretGetCommand = cli.Command{
 		client, err := client.NewSecretClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		secret, err := secrets.Get(client, secretID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(secret, c.String("format"))
+
 		return nil
 	},
 }
@@ -81,16 +84,17 @@ var secretDeleteCommand = cli.Command{
 		client, err := client.NewSecretClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		result, err := secrets.Delete(client, secretID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		if result != nil {
 			utils.ShowResults(result, c.String("format"))
 		}
+
 		return nil
 	},
 }
@@ -160,7 +164,7 @@ var secretCreateCommand = cli.Command{
 		client, err := client.NewSecretClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		opts := secrets.CreateOpts{
@@ -184,7 +188,7 @@ var secretCreateCommand = cli.Command{
 			expirationTime, err := time.Parse(edgecloud.RFC3339NoZ, rawExpTime)
 			if err != nil {
 				_ = cli.ShowSubcommandHelp(c)
-				return cli.NewExitError(err, 1)
+				return cli.Exit(err, 1)
 			}
 			opts.Expiration = &expirationTime
 		}
@@ -195,8 +199,9 @@ var secretCreateCommand = cli.Command{
 
 		results, err := secrets.Create(client, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
+
 		return utils.WaitTaskAndShowResult(c, client, results, true, func(task tasks.TaskID) (interface{}, error) {
 			taskInfo, err := tasks.Get(client, string(task)).Extract()
 			if err != nil {
@@ -211,6 +216,7 @@ var secretCreateCommand = cli.Command{
 				return nil, fmt.Errorf("cannot get secret with ID: %s. Error: %w", secretID, err)
 			}
 			utils.ShowResults(secret, c.String("format"))
+
 			return nil, nil
 		})
 	},

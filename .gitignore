@@ -1,4 +1,5 @@
 **/*.swp
 .idea
 .vscode
-./ec_client
+bin/
+.env

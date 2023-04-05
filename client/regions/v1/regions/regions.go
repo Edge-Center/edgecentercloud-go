@@ -4,14 +4,14 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/Edge-Center/edgecentercloud-go/client/regions/v1/client"
+	"github.com/urfave/cli/v2"
 
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 	"github.com/Edge-Center/edgecentercloud-go/client/flags"
+	"github.com/Edge-Center/edgecentercloud-go/client/regions/v1/client"
 	"github.com/Edge-Center/edgecentercloud-go/client/utils"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/region/v1/regions"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/region/v1/types"
-	"github.com/urfave/cli/v2"
 )
 
 var (
@@ -28,13 +28,14 @@ var regionListCommand = cli.Command{
 		client, err := client.NewRegionClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		results, err := regions.ListAll(client)
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
+
 		return nil
 	},
 }
@@ -53,13 +54,14 @@ var regionGetCommand = cli.Command{
 		client, err := client.NewRegionClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		task, err := regions.Get(client, regionID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(task, c.String("format"))
+
 		return nil
 	},
 }
@@ -115,7 +117,7 @@ var regionUpdateCommand = cli.Command{
 		url, err := edgecloud.ParseURLNonMandatory(c.String("spice-url"))
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "update")
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		opts := regions.UpdateOpts{
@@ -129,20 +131,21 @@ var regionUpdateCommand = cli.Command{
 		err = edgecloud.ValidateStruct(opts)
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "update")
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		client, err := client.NewRegionClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		result, err := regions.Update(client, regionID, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
+
 		return nil
 	},
 }
@@ -199,11 +202,10 @@ var regionCreateCommand = cli.Command{
 		},
 	},
 	Action: func(c *cli.Context) error {
-
 		url, err := edgecloud.ParseURLNonMandatory(c.String("spice-url"))
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "create")
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		opts := regions.CreateOpts{
@@ -219,20 +221,21 @@ var regionCreateCommand = cli.Command{
 		err = edgecloud.TranslateValidationError(opts.Validate())
 		if err != nil {
 			_ = cli.ShowCommandHelp(c, "create")
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		client, err := client.NewRegionClientV1(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		result, err := regions.Create(client, opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
+
 		return nil
 	},
 }

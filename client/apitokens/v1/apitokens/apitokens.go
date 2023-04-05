@@ -5,13 +5,14 @@ import (
 	"strings"
 	"time"
 
+	"github.com/urfave/cli/v2"
+
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 	"github.com/Edge-Center/edgecentercloud-go/client/apitokens/v1/client"
 	"github.com/Edge-Center/edgecentercloud-go/client/flags"
 	"github.com/Edge-Center/edgecentercloud-go/client/utils"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/apitoken/v1/apitokens"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/apitoken/v1/types"
-	"github.com/urfave/cli/v2"
 )
 
 var apiTokenIDText = "apitoken_id is mandatory argument"
@@ -59,7 +60,7 @@ var apiTokenListCommand = cli.Command{
 		client, err := client.NewAPITokenClient(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		opts := apitokens.ListOpts{}
@@ -77,9 +78,10 @@ var apiTokenListCommand = cli.Command{
 
 		results, err := apitokens.List(client, c.Int("client-id"), opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(results, c.String("format"))
+
 		return nil
 	},
 }
@@ -106,14 +108,15 @@ var apiTokenGetCommand = cli.Command{
 		client, err := client.NewAPITokenClient(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		result, err := apitokens.Get(client, c.Int("client-id"), apiTokenID).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
+
 		return nil
 	},
 }
@@ -140,13 +143,14 @@ var apiTokenDeleteCommand = cli.Command{
 		client, err := client.NewAPITokenClient(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		err = apitokens.Delete(client, c.Int("client-id"), apiTokenID).ExtractErr()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
+
 		return nil
 	},
 }
@@ -188,7 +192,7 @@ var apiTokenCreateCommand = cli.Command{
 		client, err := client.NewAPITokenClient(c)
 		if err != nil {
 			_ = cli.ShowAppHelp(c)
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 
 		opts := apitokens.CreateOpts{
@@ -207,16 +211,17 @@ var apiTokenCreateCommand = cli.Command{
 			expDate, err := time.Parse(edgecloud.RFC3339ZZ, expDateRaw)
 			if err != nil {
 				_ = cli.ShowAppHelp(c)
-				return cli.NewExitError(err, 1)
+				return cli.Exit(err, 1)
 			}
 			opts.ExpDate = &edgecloud.JSONRFC3339Z{Time: expDate}
 		}
 
 		result, err := apitokens.Create(client, c.Int("client-id"), opts).Extract()
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return cli.Exit(err, 1)
 		}
 		utils.ShowResults(result, c.String("format"))
+
 		return nil
 	},
 }

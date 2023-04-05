@@ -47,14 +47,15 @@ func (rs ProjectState) List() []ProjectState {
 }
 
 func (rs ProjectState) StringList() []string {
-	var s []string
-	for _, v := range rs.List() {
-		s = append(s, v.String())
+	lst := rs.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
 	}
-	return s
+	return strings
 }
 
-// UnmarshalJSON - implements Unmarshaler interface for ProjectState
+// UnmarshalJSON - implements Unmarshaler interface for ProjectState.
 func (rs *ProjectState) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -66,10 +67,11 @@ func (rs *ProjectState) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*rs = v
+
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface for ProjectState
+// MarshalJSON - implements Marshaler interface for ProjectState.
 func (rs *ProjectState) MarshalJSON() ([]byte, error) {
 	return json.Marshal(rs.String())
 }

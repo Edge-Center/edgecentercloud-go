@@ -6,15 +6,13 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/floatingip/v1/floatingips"
-	fake "github.com/Edge-Center/edgecentercloud-go/testhelper/client"
-
+	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/require"
 
-	log "github.com/sirupsen/logrus"
-
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/floatingip/v1/floatingips"
 	"github.com/Edge-Center/edgecentercloud-go/pagination"
 	th "github.com/Edge-Center/edgecentercloud-go/testhelper"
+	fake "github.com/Edge-Center/edgecentercloud-go/testhelper/client"
 )
 
 func prepareListTestURLParams(projectID int, regionID int) string {
@@ -64,7 +62,7 @@ func TestList(t *testing.T) {
 	client := fake.ServiceTokenClient("floatingips", "v1")
 	count := 0
 
-	err := floatingips.List(client).EachPage(func(page pagination.Page) (bool, error) {
+	err := floatingips.List(client, nil).EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		actual, err := floatingips.ExtractFloatingIPs(page)
 		require.NoError(t, err)
@@ -99,16 +97,14 @@ func TestListAll(t *testing.T) {
 
 	client := fake.ServiceTokenClient("floatingips", "v1")
 
-	groups, err := floatingips.ListAll(client)
+	groups, err := floatingips.ListAll(client, nil)
 	require.NoError(t, err)
 	ct := groups[0]
 	require.Equal(t, floatingIPDetails, ct)
 	require.Equal(t, ExpectedFloatingIPSlice, groups)
-
 }
 
 func TestGet(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -135,7 +131,6 @@ func TestGet(t *testing.T) {
 	require.Equal(t, floatingIP, *ct)
 	require.Equal(t, floatingIPCreatedAt, ct.CreatedAt)
 	require.Equal(t, floatingIPUpdatedAt, *ct.UpdatedAt)
-
 }
 
 func TestCreate(t *testing.T) {
@@ -187,11 +182,9 @@ func TestDelete(t *testing.T) {
 	tasks, err := floatingips.Delete(client, floatingIP.ID).Extract()
 	require.NoError(t, err)
 	require.Equal(t, Tasks1, *tasks)
-
 }
 
 func TestAssign(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -223,11 +216,9 @@ func TestAssign(t *testing.T) {
 	require.Equal(t, floatingIP, *ip)
 	require.Equal(t, floatingIPCreatedAt, ip.CreatedAt)
 	require.Equal(t, floatingIPUpdatedAt, *ip.UpdatedAt)
-
 }
 
 func TestUnAssign(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -252,5 +243,4 @@ func TestUnAssign(t *testing.T) {
 	require.Equal(t, floatingIP, *ip)
 	require.Equal(t, floatingIPCreatedAt, ip.CreatedAt)
 	require.Equal(t, floatingIPUpdatedAt, *ip.UpdatedAt)
-
 }

@@ -4,12 +4,13 @@ import (
 	"net"
 	"time"
 
+	"github.com/shopspring/decimal"
+
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/flavor/v1/flavors"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/instance/v1/instances"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/instance/v1/types"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
-	"github.com/shopspring/decimal"
 )
 
 const ListResponse = `
@@ -522,10 +523,11 @@ var (
 			DeleteOnTermination: false,
 		}},
 		Addresses: map[string][]instances.InstanceAddress{
-			"net1": {{
-				Type:    types.AddressTypeFixed,
-				Address: ip1,
-			},
+			"net1": {
+				{
+					Type:    types.AddressTypeFixed,
+					Address: ip1,
+				},
 				{
 					Type:    types.AddressTypeFloating,
 					Address: ip2,

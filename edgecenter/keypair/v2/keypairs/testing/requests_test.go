@@ -5,15 +5,13 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/Edge-Center/edgecentercloud-go/edgecenter/keypair/v2/keypairs"
-	fake "github.com/Edge-Center/edgecentercloud-go/testhelper/client"
-
+	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/require"
 
-	log "github.com/sirupsen/logrus"
-
+	"github.com/Edge-Center/edgecentercloud-go/edgecenter/keypair/v2/keypairs"
 	"github.com/Edge-Center/edgecentercloud-go/pagination"
 	th "github.com/Edge-Center/edgecentercloud-go/testhelper"
+	fake "github.com/Edge-Center/edgecentercloud-go/testhelper/client"
 )
 
 func prepareListTestURLParams() string {
@@ -69,7 +67,6 @@ func TestList(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -94,7 +91,6 @@ func TestGet(t *testing.T) {
 
 	require.NoError(t, err)
 	require.Equal(t, KeyPair1, *ct)
-
 }
 
 func TestCreate(t *testing.T) {
@@ -128,7 +124,6 @@ func TestCreate(t *testing.T) {
 	tasks, err := keypairs.Create(client, options).Extract()
 	require.NoError(t, err)
 	require.Equal(t, KeyPair1, *tasks)
-
 }
 
 func TestDelete(t *testing.T) {
