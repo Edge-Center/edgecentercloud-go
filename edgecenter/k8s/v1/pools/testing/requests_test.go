@@ -51,7 +51,7 @@ func TestList(t *testing.T) {
 
 	err := pools.List(client, Pool1.ClusterID, pools.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
 		count++
-		actual, err := pools.ExtractClusterPools(page)
+		actual, err := pools.ExtractClusterPools(page, &Pool1.ClusterID)
 		require.NoError(t, err)
 		ng1 := actual[0]
 		require.Equal(t, PoolList1, ng1)
@@ -137,11 +137,13 @@ func TestCreate(t *testing.T) {
 		}
 	})
 
+	nodeCount := 1
+	dockerVolumeSize := 5
 	options := pools.CreateOpts{
 		Name:             Pool1.Name,
 		FlavorID:         Pool1.FlavorID,
-		NodeCount:        1,
-		DockerVolumeSize: 5,
+		NodeCount:        &nodeCount,
+		DockerVolumeSize: &dockerVolumeSize,
 	}
 	client := fake.ServiceTokenClient("k8s/clusters", "v1")
 	tasks, err := pools.Create(client, Pool1.ClusterID, options).Extract()

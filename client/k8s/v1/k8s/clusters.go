@@ -42,12 +42,13 @@ func getPools(c *cli.Context) ([]pools.CreateOpts, error) {
 		pool := pools.CreateOpts{
 			Name:      name,
 			FlavorID:  poolFlavors[idx],
-			NodeCount: poolNodesCount[idx],
-			DockerVolumeSize: func(idx int) int {
+			NodeCount: &poolNodesCount[idx],
+			DockerVolumeSize: func(idx int) *int {
 				if idx < len(poolDockerVolumeSizes) {
-					return poolDockerVolumeSizes[idx]
+					return &poolDockerVolumeSizes[idx]
 				}
-				return 0
+				zero := 0
+				return &zero
 			}(idx),
 			DockerVolumeType: func(idx int) volumes.VolumeType {
 				if idx < len(poolDockerVolumeTypes) {
@@ -56,7 +57,7 @@ func getPools(c *cli.Context) ([]pools.CreateOpts, error) {
 				return ""
 			}(idx),
 			MinNodeCount: poolMinNodesCount[idx],
-			MaxNodeCount: poolMaxNodesCount[idx],
+			MaxNodeCount: &poolMaxNodesCount[idx],
 		}
 
 		result = append(result, pool)

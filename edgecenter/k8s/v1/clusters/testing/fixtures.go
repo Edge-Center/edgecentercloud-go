@@ -292,10 +292,13 @@ var (
 		"service_cluster_ip_range": "192.168.128.0/18",
 	}
 
-	listPool = pools.ClusterListPool{
+	maxNodeCount     = 5
+	dockerVolumeSize = 10
+	listPool         = pools.ClusterPoolList{
+		ClusterID:        "5e09faed-e742-404f-8a75-0ea5eb3c435f",
 		StackID:          "2f0d5d97-fb3c-4218-9201-34f804299510",
 		Name:             "test1",
-		MaxNodeCount:     5,
+		MaxNodeCount:     &maxNodeCount,
 		MinNodeCount:     1,
 		IsDefault:        true,
 		FlavorID:         "g1-standard-1-2",
@@ -303,7 +306,7 @@ var (
 		Status:           "CREATE_COMPLETE",
 		Role:             "worker",
 		ImageID:          "fedora-coreos",
-		DockerVolumeSize: 10,
+		DockerVolumeSize: &dockerVolumeSize,
 		DockerVolumeType: volumes.Standard,
 		NodeCount:        1,
 		CreatedAt:        createdTime,
@@ -331,7 +334,7 @@ var (
 	apiAddress, _   = edgecloud.ParseURL("https://172.24.4.3:6443")
 	discoveryURL, _ = edgecloud.ParseURL("https://discovery.etcd.io/6fba601fce5c2b84eebd7c472ab36650")
 	ClusterList1    = clusters.ClusterListWithPool{
-		Pools:       []pools.ClusterListPool{listPool},
+		Pools:       []pools.ClusterPoolList{listPool},
 		ClusterList: clusterList,
 	}
 	Cluster1 = clusters.ClusterWithPool{
@@ -356,12 +359,11 @@ var (
 		},
 		Pools: []pools.ClusterPool{
 			{
-				ClusterID:       "5e09faed-e742-404f-8a75-0ea5eb3c435f",
 				ProjectID:       "46beed3938e6474390b530fefd6173d2",
 				Labels:          labels,
 				NodeAddresses:   nodeAddresses,
 				StatusReason:    "Stack CREATE completed successfully",
-				ClusterListPool: &listPool,
+				ClusterPoolList: &listPool,
 			},
 		},
 	}

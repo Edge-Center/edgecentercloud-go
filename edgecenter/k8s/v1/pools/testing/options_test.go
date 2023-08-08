@@ -41,13 +41,17 @@ func TestUpdateOpts(t *testing.T) {
 }
 
 func TestCreateOpts(t *testing.T) {
+	nodeCount1 := 0
+	dockerVolumeSize1 := 0
+	maxNodeCount1 := 3
+
 	options := pools.CreateOpts{
 		Name:             "",
 		FlavorID:         "",
-		NodeCount:        0,
-		DockerVolumeSize: 0,
+		NodeCount:        &nodeCount1,
+		DockerVolumeSize: &dockerVolumeSize1,
 		MinNodeCount:     5,
-		MaxNodeCount:     3,
+		MaxNodeCount:     &maxNodeCount1,
 	}
 
 	_, err := options.ToClusterPoolCreateMap()
@@ -58,13 +62,17 @@ func TestCreateOpts(t *testing.T) {
 	require.Contains(t, err.Error(), "FlavorID")
 	require.Contains(t, err.Error(), "NodeCount")
 
+	nodeCount2 := 5
+	dockerVolumeSize2 := 10
+	maxNodeCount2 := 3
+
 	options = pools.CreateOpts{
 		Name:             "name",
 		FlavorID:         "flavor",
-		NodeCount:        5,
-		DockerVolumeSize: 10,
+		NodeCount:        &nodeCount2,
+		DockerVolumeSize: &dockerVolumeSize2,
 		MinNodeCount:     4,
-		MaxNodeCount:     3,
+		MaxNodeCount:     &maxNodeCount2,
 	}
 
 	_, err = options.ToClusterPoolCreateMap()
@@ -73,13 +81,17 @@ func TestCreateOpts(t *testing.T) {
 	require.Contains(t, err.Error(), "MaxNodeCount")
 	require.Contains(t, err.Error(), "MinNodeCount")
 
+	nodeCount3 := 5
+	dockerVolumeSize3 := 10
+	maxNodeCount3 := 8
+
 	options = pools.CreateOpts{
 		Name:             "name",
 		FlavorID:         "flavor",
-		NodeCount:        5,
-		DockerVolumeSize: 10,
+		NodeCount:        &nodeCount3,
+		DockerVolumeSize: &dockerVolumeSize3,
 		MinNodeCount:     6,
-		MaxNodeCount:     8,
+		MaxNodeCount:     &maxNodeCount3,
 	}
 
 	_, err = options.ToClusterPoolCreateMap()

@@ -33,32 +33,26 @@ type GetResult struct {
 	commonResult
 }
 
-// UpdateResult represents the result of an update operation. Call its Extract
-// method to interpret it as a Pool.
-type UpdateResult struct {
-	commonResult
-}
-
 // ClusterPool represents a cluster Pool.
 type ClusterPool struct {
-	ClusterID     string            `json:"cluster_id"`
 	ProjectID     string            `json:"project_id"`
 	Labels        map[string]string `json:"labels"`
 	NodeAddresses []net.IP          `json:"node_addresses"`
 	StatusReason  string            `json:"status_reason"`
-	*ClusterListPool
+	*ClusterPoolList
 }
 
-// ClusterListPool represents a cluster Pool in the list response.
-type ClusterListPool struct {
+// ClusterPoolList represents a cluster Pool in the list response.
+type ClusterPoolList struct {
 	UUID             string             `json:"uuid"`
 	Name             string             `json:"name"`
+	ClusterID        string             `json:"cluster_id"`
 	FlavorID         string             `json:"flavor_id"`
 	ImageID          string             `json:"image_id"`
 	NodeCount        int                `json:"node_count"`
 	MinNodeCount     int                `json:"min_node_count"`
-	MaxNodeCount     int                `json:"max_node_count"`
-	DockerVolumeSize int                `json:"docker_volume_size"`
+	MaxNodeCount     *int               `json:"max_node_count"`
+	DockerVolumeSize *int               `json:"docker_volume_size"`
 	DockerVolumeType volumes.VolumeType `json:"docker_volume_type"`
 	IsDefault        bool               `json:"is_default"`
 	StackID          string             `json:"stack_id"`
@@ -72,6 +66,7 @@ type ClusterListPool struct {
 // collection of networks.
 type ClusterPoolPage struct {
 	pagination.LinkedPageBase
+	ClusterID *string
 }
 
 // NextPageURL is invoked when a paginated collection of cluster Pools has reached
@@ -90,16 +85,28 @@ func (r ClusterPoolPage) NextPageURL() (string, error) {
 
 // IsEmpty checks whether a ClusterPool struct is empty.
 func (r ClusterPoolPage) IsEmpty() (bool, error) {
-	is, err := ExtractClusterPools(r)
+	is, err := ExtractClusterPools(r, nil)
 	return len(is) == 0, err
 }
 
 // ExtractClusterPools accepts a Page struct, specifically a ClusterPoolPage struct,
 // and extracts the elements into a slice of ClusterPool structs. In other words,
 // a generic collection is mapped into a relevant slice.
-func ExtractClusterPools(r pagination.Page) ([]ClusterListPool, error) {
-	var s []ClusterListPool
+func ExtractClusterPools(r pagination.Page, clusterID *string) ([]ClusterPoolList, error) {
+	var s []ClusterPoolList
 	err := ExtractClusterPoolsInto(r, &s)
+	if err != nil {
+		return nil, err
+	}
+
+	if clusterID == nil {
+		clusterID = r.(ClusterPoolPage).ClusterID
+	}
+
+	for i := range s {
+		s[i].ClusterID = *clusterID
+	}
+
 	return s, err
 }
 

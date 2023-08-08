@@ -134,7 +134,7 @@ type ClusterList struct {
 }
 
 type ClusterListWithPool struct {
-	Pools []pools.ClusterListPool `json:"pools"`
+	Pools []pools.ClusterPoolList `json:"pools"`
 	*ClusterList
 }
 
@@ -174,12 +174,24 @@ func (r VersionPage) IsEmpty() (bool, error) {
 	return len(is) == 0, err
 }
 
-// ExtractCluster accepts a Page struct, specifically a ClusterPage struct,
+// ExtractClusters accepts a Page struct, specifically a ClusterPage struct,
 // and extracts the elements into a slice of ClusterListWithPool structs. In other words,
 // a generic collection is mapped into a relevant slice.
 func ExtractClusters(r pagination.Page) ([]ClusterListWithPool, error) {
 	var s []ClusterListWithPool
 	err := ExtractClustersInto(r, &s)
+	if err != nil {
+		return nil, err
+	}
+
+	for i := range s {
+		clusterID := s[i].UUID
+		poolsList := s[i].Pools
+		for p := range poolsList {
+			poolsList[p].ClusterID = clusterID
+		}
+	}
+
 	return s, err
 }
 

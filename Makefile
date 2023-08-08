@@ -62,7 +62,7 @@ gofumpt:
 checks: vet fmt gofumpt
 
 linters:
-	@test -f $(BIN_DIR)/golangci-lint || curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v1.52.2
+	@test -f $(BIN_DIR)/golangci-lint || curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v1.53.3
 	@$(BIN_DIR)/golangci-lint run
 
 .PHONY: vet fmt gofumpt linters run_local_tests download_env_file install_vault install_jq tests envs_reader build
