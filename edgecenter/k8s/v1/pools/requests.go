@@ -1,6 +1,8 @@
 package pools
 
 import (
+	"net/http"
+
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/instance/v1/instances"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/task/v1/tasks"
@@ -8,39 +10,60 @@ import (
 	"github.com/Edge-Center/edgecentercloud-go/pagination"
 )
 
-// ListOptsBuilder allows extensions to add additional parameters to the
-// List request.
+// Get retrieves a specific cluster pool based on its unique ID.
+func Get(client *edgecloud.ServiceClient, clusterID, poolID string) (r GetResult) {
+	var response *http.Response
+	response, r.Err = client.Get(getURL(client, clusterID, poolID), &r.Body, &edgecloud.RequestOpts{
+		OkCodes: []int{http.StatusOK},
+	})
+	if r.Err == nil {
+		r.Header = response.Header
+	}
+	return
+}
+
+// ListOptsBuilder allows extensions to add additional parameters to the List request.
 type ListOptsBuilder interface {
 	ToClusterPoolsListQuery() (string, error)
 }
 
-// ListOpts allows the filtering and sorting of paginated collections through
-// the API. Filtering is achieved by passing in struct field values that map to
-// the cluster pools attributes you want to see returned. SortKey allows you to sort
-// by a particular cluster pools attribute. SortDir sets the direction, and is either
-// `asc' or `desc'. Marker and Limit are used for pagination.
+// ListOpts is used to filter and sort the pool of a cluster when using List.
 type ListOpts struct {
-	Limit   int    `q:"limit"`
-	Marker  string `q:"marker"`
+	// Pagination marker for large data sets. (UUID field from node group).
+	Marker int `q:"marker"`
+	// Maximum number of resources to return in a single page.
+	Limit int `q:"limit"`
+	// Column to sort results by. Default: id.
 	SortKey string `q:"sort_key"`
+	// Direction to sort. "asc" or "desc". Default: asc.
 	SortDir string `q:"sort_dir"`
-	Detail  bool   `q:"detail"`
+	// List all pools with the specified role.
+	Role string `q:"role"`
+	// Details
+	Detail bool `q:"detail"`
 }
 
 // ToClusterPoolsListQuery formats a ListOpts into a query string.
 func (opts ListOpts) ToClusterPoolsListQuery() (string, error) {
 	q, err := edgecloud.BuildQueryString(opts)
-	if err != nil {
-		return "", err
-	}
 	return q.String(), err
 }
 
-// List returns a Pager which allows you to iterate over a collection of
-// cluster pools. It accepts a ListOpts struct, which allows you to filter and sort
-// the returned collection for greater efficiency.
-func List(c *edgecloud.ServiceClient, clusterID string, opts ListOptsBuilder) pagination.Pager {
-	url := listURL(c, clusterID)
+// List makes a request to the Magnum API to retrieve pools
+// belonging to the given cluster. The request can be modified to
+// filter or sort the list using the options available in ListOpts.
+//
+// Use the AllPages method of the returned Pager to ensure that
+// all pools are returned (for example when using the Limit option
+// to limit the number of node groups returned per page).
+//
+// Not all node group fields are returned in a list request.
+// Only the fields UUID, Name, FlavorID, ImageID,
+// NodeCount, Role, IsDefault, Status and StackID
+// are returned, all other fields are omitted
+// and will have their zero value when extracted.
+func List(client *edgecloud.ServiceClient, clusterID string, opts ListOptsBuilder) pagination.Pager {
+	url := listURL(client, clusterID)
 	if opts != nil {
 		query, err := opts.ToClusterPoolsListQuery()
 		if err != nil {
@@ -48,31 +71,9 @@ func List(c *edgecloud.ServiceClient, clusterID string, opts ListOptsBuilder) pa
 		}
 		url += query
 	}
-	return pagination.NewPager(c, url, func(r pagination.PageResult) pagination.Page {
-		return ClusterPoolPage{pagination.LinkedPageBase{PageResult: r}}
+	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
+		return ClusterPoolPage{LinkedPageBase: pagination.LinkedPageBase{PageResult: r}, ClusterID: &clusterID}
 	})
-}
-
-// Instances returns a Pager which allows you to iterate over a collection of pool instances.
-func Instances(c *edgecloud.ServiceClient, clusterID string, id string) pagination.Pager {
-	url := instancesURL(c, clusterID, id)
-	return pagination.NewPager(c, url, func(r pagination.PageResult) pagination.Page {
-		return instances.InstancePage{LinkedPageBase: pagination.LinkedPageBase{PageResult: r}}
-	})
-}
-
-// Volumes returns a Pager which allows you to iterate over a collection of pool instances.
-func Volumes(c *edgecloud.ServiceClient, clusterID string, id string) pagination.Pager {
-	url := volumesURL(c, clusterID, id)
-	return pagination.NewPager(c, url, func(r pagination.PageResult) pagination.Page {
-		return volumes.VolumePage{LinkedPageBase: pagination.LinkedPageBase{PageResult: r}}
-	})
-}
-
-// Get retrieves a specific cluster pool based on its unique ID.
-func Get(c *edgecloud.ServiceClient, clusterID string, id string) (r GetResult) {
-	_, r.Err = c.Get(getURL(c, clusterID, id), &r.Body, nil)
-	return
 }
 
 // CreateOptsBuilder allows extensions to add additional parameters to the Create request.
@@ -80,15 +81,24 @@ type CreateOptsBuilder interface {
 	ToClusterPoolCreateMap() (map[string]interface{}, error)
 }
 
-// CreateOpts represents options used to create a cluster Pool.
+// CreateOpts is used to set available fields upon node group creation.
+//
+// If unset, some fields have defaults or will inherit from the cluster value.
 type CreateOpts struct {
 	Name             string             `json:"name" required:"true" validate:"required"`
 	FlavorID         string             `json:"flavor_id" required:"true" validate:"required"`
-	NodeCount        int                `json:"node_count" required:"true" validate:"required,gt=0"`
-	DockerVolumeSize int                `json:"docker_volume_size,omitempty" validate:"omitempty,gt=0"`
+	NodeCount        *int               `json:"node_count,omitempty" validate:"omitempty,gt=0"`
+	DockerVolumeSize *int               `json:"docker_volume_size,omitempty" validate:"omitempty,gt=0"`
 	DockerVolumeType volumes.VolumeType `json:"docker_volume_type,omitempty" validate:"omitempty,enum"`
 	MinNodeCount     int                `json:"min_node_count,omitempty" validate:"omitempty,gt=0,ltefield=NodeCount"`
-	MaxNodeCount     int                `json:"max_node_count,omitempty" validate:"omitempty,gt=0,gtefield=MinNodeCount,gtefield=NodeCount"`
+	MaxNodeCount     *int               `json:"max_node_count,omitempty" validate:"omitempty,gt=0,gtefield=MinNodeCount,gtefield=NodeCount"`
+	Labels           map[string]string  `json:"labels,omitempty"`
+	ImageID          string             `json:"image_id,omitempty"`
+}
+
+// Validate CreateOpts.
+func (opts CreateOpts) Validate() error {
+	return edgecloud.TranslateValidationError(edgecloud.Validate.Struct(opts))
 }
 
 // ToClusterPoolCreateMap builds a request body from CreateOpts.
@@ -99,19 +109,23 @@ func (opts CreateOpts) ToClusterPoolCreateMap() (map[string]interface{}, error) 
 	return edgecloud.BuildRequestBody(opts, "")
 }
 
-// Validate CreateOpts.
-func (opts CreateOpts) Validate() error {
-	return edgecloud.TranslateValidationError(edgecloud.Validate.Struct(opts))
-}
-
 // Create accepts a CreateOpts struct and creates a new cluster Pool using the values provided.
-func Create(c *edgecloud.ServiceClient, clusterID string, opts CreateOptsBuilder) (r tasks.Result) {
+func Create(client *edgecloud.ServiceClient, clusterID string, opts CreateOptsBuilder) (r tasks.Result) {
 	b, err := opts.ToClusterPoolCreateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	_, r.Err = c.Post(createURL(c, clusterID), b, &r.Body, nil)
+
+	var result *http.Response
+	result, r.Err = client.Post(createURL(client, clusterID), b, &r.Body, &edgecloud.RequestOpts{
+		OkCodes: []int{http.StatusCreated},
+	})
+
+	if r.Err == nil {
+		r.Header = result.Header
+	}
+
 	return
 }
 
@@ -141,46 +155,71 @@ func (opts UpdateOpts) ToClusterPoolUpdateMap() (map[string]interface{}, error) 
 }
 
 // Update accepts a UpdateOpts struct and updates an existing Pool using the values provided.
-func Update(c *edgecloud.ServiceClient, clusterID, poolID string, opts UpdateOptsBuilder) (r tasks.Result) {
+func Update(client *edgecloud.ServiceClient, clusterID, poolID string, opts UpdateOptsBuilder) (r tasks.Result) {
 	b, err := opts.ToClusterPoolUpdateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	_, r.Err = c.Patch(updateURL(c, clusterID, poolID), b, &r.Body, &edgecloud.RequestOpts{
-		OkCodes: []int{200, 201},
+
+	var result *http.Response
+	result, r.Err = client.Patch(updateURL(client, clusterID, poolID), b, &r.Body, &edgecloud.RequestOpts{
+		OkCodes: []int{http.StatusOK, http.StatusCreated},
 	})
+
+	if r.Err == nil {
+		r.Header = result.Header
+	}
+
 	return
 }
 
 // Delete accepts a unique ID and deletes the cluster Pool associated with it.
-func Delete(c *edgecloud.ServiceClient, clusterID, poolID string) (r tasks.Result) {
-	url := deleteURL(c, clusterID, poolID)
-	_, r.Err = c.DeleteWithResponse(url, &r.Body, nil)
+func Delete(client *edgecloud.ServiceClient, clusterID, nodeGroupID string) (r tasks.Result) {
+	var result *http.Response
+	result, r.Err = client.DeleteWithResponse(deleteURL(client, clusterID, nodeGroupID), &r.Body, nil)
+	r.Header = result.Header
 	return
 }
 
-// ListAll is a convenience function that returns a all cluster pools.
-func ListAll(client *edgecloud.ServiceClient, clusterID string, opts ListOptsBuilder) ([]ClusterListPool, error) {
+// ListAll is a convenience function that returns all cluster pools.
+func ListAll(client *edgecloud.ServiceClient, clusterID string, opts ListOptsBuilder) ([]ClusterPoolList, error) {
 	pages, err := List(client, clusterID, opts).AllPages()
 	if err != nil {
 		return nil, err
 	}
-	return ExtractClusterPools(pages)
+
+	return ExtractClusterPools(pages, &clusterID)
 }
 
-// List returns all pool instances.
-func InstancesAll(c *edgecloud.ServiceClient, clusterID, id string) ([]instances.Instance, error) {
-	page, err := Instances(c, clusterID, id).AllPages()
+// Instances returns a Pager which allows you to iterate over a collection of pool instances.
+func Instances(client *edgecloud.ServiceClient, clusterID string, id string) pagination.Pager {
+	url := instancesURL(client, clusterID, id)
+	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
+		return instances.InstancePage{LinkedPageBase: pagination.LinkedPageBase{PageResult: r}}
+	})
+}
+
+// InstancesAll returns all pool instances.
+func InstancesAll(client *edgecloud.ServiceClient, clusterID, id string) ([]instances.Instance, error) {
+	page, err := Instances(client, clusterID, id).AllPages()
 	if err != nil {
 		return nil, err
 	}
 	return instances.ExtractInstances(page)
 }
 
-// List returns all pool volumes.
-func VolumesAll(c *edgecloud.ServiceClient, clusterID, id string) ([]volumes.Volume, error) {
-	page, err := Volumes(c, clusterID, id).AllPages()
+// Volumes returns a Pager which allows you to iterate over a collection of pool instances.
+func Volumes(client *edgecloud.ServiceClient, clusterID string, id string) pagination.Pager {
+	url := volumesURL(client, clusterID, id)
+	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
+		return volumes.VolumePage{LinkedPageBase: pagination.LinkedPageBase{PageResult: r}}
+	})
+}
+
+// VolumesAll returns all pool volumes.
+func VolumesAll(client *edgecloud.ServiceClient, clusterID, id string) ([]volumes.Volume, error) {
+	page, err := Volumes(client, clusterID, id).AllPages()
 	if err != nil {
 		return nil, err
 	}

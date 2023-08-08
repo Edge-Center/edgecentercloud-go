@@ -192,6 +192,8 @@ func TestCreate(t *testing.T) {
 		}
 	})
 
+	dockerVolumeSize := 10
+	maxNodeCount := Cluster1.Pools[0].MinNodeCount + 1
 	options := clusters.CreateOpts{
 		Name:                      Cluster1.Name,
 		FixedNetwork:              fixedNetwork,
@@ -203,11 +205,11 @@ func TestCreate(t *testing.T) {
 		Pools: []pools.CreateOpts{{
 			Name:             Cluster1.Pools[0].Name,
 			FlavorID:         Cluster1.Pools[0].FlavorID,
-			NodeCount:        Cluster1.Pools[0].NodeCount,
-			DockerVolumeSize: 10,
+			NodeCount:        &Cluster1.Pools[0].NodeCount,
+			DockerVolumeSize: &dockerVolumeSize,
 			DockerVolumeType: volumes.Standard,
 			MinNodeCount:     Cluster1.Pools[0].MinNodeCount,
-			MaxNodeCount:     Cluster1.Pools[0].MinNodeCount + 1,
+			MaxNodeCount:     &maxNodeCount,
 		}},
 	}
 

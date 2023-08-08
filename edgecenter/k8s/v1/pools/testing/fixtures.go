@@ -106,15 +106,18 @@ var (
 		"ec_cloud_access_token":  "token",
 		"ec_cloud_refresh_token": "token",
 	}
-	PoolList1 = pools.ClusterListPool{
+	maxNodeCount1     = 5
+	dockerVolumeSize1 = 10
+	PoolList1         = pools.ClusterPoolList{
+		ClusterID:        "5e09faed-e742-404f-8a75-0ea5eb3c435f",
 		UUID:             "908338b2-9217-4673-af0e-f0093139fbac",
 		Name:             "test1",
 		FlavorID:         "g1-standard-1-2",
 		ImageID:          "fedora-coreos",
 		NodeCount:        1,
 		MinNodeCount:     1,
-		MaxNodeCount:     5,
-		DockerVolumeSize: 10,
+		MaxNodeCount:     &maxNodeCount1,
+		DockerVolumeSize: &dockerVolumeSize1,
 		DockerVolumeType: volumes.Standard,
 		IsDefault:        true,
 		StackID:          "2f0d5d97-fb3c-4218-9201-34f804299510",
@@ -122,13 +125,12 @@ var (
 		Role:             "worker",
 	}
 	Pool1 = pools.ClusterPool{
-		ClusterID:       "5e09faed-e742-404f-8a75-0ea5eb3c435f",
 		ProjectID:       "46beed3938e6474390b530fefd6173d2",
 		Labels:          labels,
 		NodeAddresses:   []net.IP{nodeAddress},
 		StatusReason:    "Stack CREATE completed successfully",
-		ClusterListPool: &PoolList1,
+		ClusterPoolList: &PoolList1,
 	}
 	UpdatedPool1                 = Pool1
-	ExpectedClusterListPoolSlice = []pools.ClusterListPool{PoolList1}
+	ExpectedClusterListPoolSlice = []pools.ClusterPoolList{PoolList1}
 )

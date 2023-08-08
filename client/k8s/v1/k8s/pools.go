@@ -248,13 +248,16 @@ var poolCreateSubCommand = cli.Command{
 
 		dockerVolumeType := volumes.VolumeType(c.String("docker-volume-type"))
 
+		nodeCount := c.Int("node-count")
+		dockerVolumeSize := c.Int("docker-volume-size")
+		maxNodeCount := c.Int("max-node-count")
 		opts := pools.CreateOpts{
 			Name:             c.String("name"),
 			FlavorID:         c.String("flavor-id"),
-			NodeCount:        c.Int("node-count"),
-			DockerVolumeSize: c.Int("docker-volume-size"),
+			NodeCount:        &nodeCount,
+			DockerVolumeSize: &dockerVolumeSize,
 			MinNodeCount:     c.Int("min-node-count"),
-			MaxNodeCount:     c.Int("max-node-count"),
+			MaxNodeCount:     &maxNodeCount,
 			DockerVolumeType: dockerVolumeType,
 		}
 
