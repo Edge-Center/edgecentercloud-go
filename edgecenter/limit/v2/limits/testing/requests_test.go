@@ -15,11 +15,11 @@ import (
 )
 
 func prepareListTestURL() string {
-	return "/v2/limits_request"
+	return "/v2/quotas_requests"
 }
 
 func prepareItemTestURL(limitID int) string {
-	return fmt.Sprintf("/v2/limits_request/%d", limitID)
+	return fmt.Sprintf("/v2/quotas_requests/%d", limitID)
 }
 
 const limitRequestID = 1
@@ -40,7 +40,7 @@ func TestList(t *testing.T) {
 		}
 	})
 
-	client := fake.ServiceTokenClient("limits_request", "v2")
+	client := fake.ServiceTokenClient("quotas_requests", "v2")
 	count := 0
 
 	err := limits.List(client).EachPage(func(page pagination.Page) (bool, error) {
@@ -76,7 +76,7 @@ func TestListAll(t *testing.T) {
 		}
 	})
 
-	client := fake.ServiceTokenClient("limits_request", "v2")
+	client := fake.ServiceTokenClient("quotas_requests", "v2")
 
 	actual, err := limits.ListAll(client)
 	require.NoError(t, err)
@@ -108,7 +108,7 @@ func TestCreate(t *testing.T) {
 	options.RequestedQuotas.RegionalLimits = []limits.RegionalLimits{
 		{RegionID: 1, FirewallCountLimit: 13, CPUCountLimit: 1},
 	}
-	client := fake.ServiceTokenClient("limits_request", "v2")
+	client := fake.ServiceTokenClient("quotas_requests", "v2")
 	limit, err := limits.Create(client, options).Extract()
 	require.NoError(t, err)
 	require.Equal(t, LimitRequest1, *limit)
@@ -133,7 +133,7 @@ func TestGet(t *testing.T) {
 		}
 	})
 
-	client := fake.ServiceTokenClient("limits_request", "v2")
+	client := fake.ServiceTokenClient("quotas_requests", "v2")
 
 	limit, err := limits.Get(client, limitRequestID).Extract()
 	require.NoError(t, err)
@@ -154,7 +154,7 @@ func TestDelete(t *testing.T) {
 		w.WriteHeader(http.StatusOK)
 	})
 
-	client := fake.ServiceTokenClient("limits_request", "v2")
+	client := fake.ServiceTokenClient("quotas_requests", "v2")
 	err := limits.Delete(client, limitRequestID).ExtractErr()
 	require.NoError(t, err)
 }

@@ -8,5 +8,5 @@ import (
 )
 
 func NewLifecyclePolicyClientV1(c *cli.Context) (*edgecloud.ServiceClient, error) {
-	return common.BuildClient(c, "lifecycle_policy", "v1")
+	return common.BuildClient(c, "lifecycle_policies", "v1")
 }

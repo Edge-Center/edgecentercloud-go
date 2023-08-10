@@ -14,15 +14,15 @@ import (
 )
 
 func prepareListCombinedTestURL() string {
-	return "/v2/client_quotas"
+	return "/v2/quotas_client"
 }
 
 func prepareListGlobalTestURL(clientID int) string {
-	return fmt.Sprintf("/v2/global_quotas/%d", clientID)
+	return fmt.Sprintf("/v2/quotas_global/%d", clientID)
 }
 
 func prepareListRegionalTestURL(clientID, regionID int) string {
-	return fmt.Sprintf("/v2/regional_quotas/%d/%d", clientID, regionID)
+	return fmt.Sprintf("/v2/quotas_regional/%d/%d", clientID, regionID)
 }
 
 func TestListCombined(t *testing.T) {

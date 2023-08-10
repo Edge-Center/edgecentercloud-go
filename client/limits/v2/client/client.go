@@ -8,5 +8,5 @@ import (
 )
 
 func NewLimitClientV2(c *cli.Context) (*edgecloud.ServiceClient, error) {
-	return common.BuildClient(c, "limits_request", "v2")
+	return common.BuildClient(c, "quotas_requests", "v2")
 }
