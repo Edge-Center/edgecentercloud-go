@@ -12,8 +12,9 @@ import (
 )
 
 func TestResizeOpts(t *testing.T) {
+	nodeCount1 := 0
 	options := clusters.ResizeOpts{
-		NodeCount:     0,
+		NodeCount:     &nodeCount1,
 		NodesToRemove: nil,
 	}
 
@@ -21,8 +22,9 @@ func TestResizeOpts(t *testing.T) {
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "NodeCount")
 
+	nodeCount2 := 1
 	options = clusters.ResizeOpts{
-		NodeCount:     1,
+		NodeCount:     &nodeCount2,
 		NodesToRemove: []string{"1"},
 	}
 
@@ -31,7 +33,7 @@ func TestResizeOpts(t *testing.T) {
 	require.Contains(t, err.Error(), "NodesToRemove")
 
 	options = clusters.ResizeOpts{
-		NodeCount: 1,
+		NodeCount: &nodeCount2,
 	}
 
 	_, err = options.ToClusterResizeMap()

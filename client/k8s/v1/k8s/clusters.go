@@ -449,9 +449,10 @@ var clusterResizeSubCommand = cli.Command{
 		}
 
 		poolID := c.String("pool")
+		nodeCount := c.Int("node-count")
 
 		opts := clusters.ResizeOpts{
-			NodeCount:     c.Int("node-count"),
+			NodeCount:     &nodeCount,
 			NodesToRemove: nodes,
 		}
 
