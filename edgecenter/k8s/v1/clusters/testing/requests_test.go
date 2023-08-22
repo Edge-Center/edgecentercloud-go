@@ -258,8 +258,9 @@ func TestResize(t *testing.T) {
 		}
 	})
 
+	nodeCount := 2
 	options := clusters.ResizeOpts{
-		NodeCount:     2,
+		NodeCount:     &nodeCount,
 		NodesToRemove: nil,
 	}
 

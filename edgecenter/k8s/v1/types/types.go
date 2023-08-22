@@ -14,6 +14,7 @@ type IngressController string
 const (
 	NodegroupMasterRole      PoolRole          = "master"
 	NodegroupWorkerRole      PoolRole          = "worker"
+	NodegroupAutoscalingRole PoolRole          = "autoscaling"
 	HealthStatusUnknown      HealthStatus      = "UNKNOWN"
 	HealthStatusHealthy      HealthStatus      = "HEALTHY"
 	HealthStatusUnHealthy    HealthStatus      = "UNHEALTHY"
@@ -24,8 +25,7 @@ const (
 
 func (ng PoolRole) IsValid() error {
 	switch ng {
-	case NodegroupMasterRole,
-		NodegroupWorkerRole:
+	case NodegroupMasterRole, NodegroupWorkerRole, NodegroupAutoscalingRole:
 		return nil
 	}
 	return fmt.Errorf("invalid PoolRole type: %v", ng)
@@ -47,10 +47,7 @@ func (ng PoolRole) String() string {
 }
 
 func (ng PoolRole) List() []PoolRole {
-	return []PoolRole{
-		NodegroupMasterRole,
-		NodegroupWorkerRole,
-	}
+	return []PoolRole{NodegroupMasterRole, NodegroupWorkerRole, NodegroupAutoscalingRole}
 }
 
 func (ng PoolRole) StringList() []string {

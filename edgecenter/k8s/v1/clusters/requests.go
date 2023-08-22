@@ -1,6 +1,8 @@
 package clusters
 
 import (
+	"net/http"
+
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/instance/v1/instances"
 	"github.com/Edge-Center/edgecentercloud-go/edgecenter/k8s/v1/pools"
@@ -123,7 +125,7 @@ type ResizeOptsBuilder interface {
 
 // ResizeOpts represents options used to update a cluster.
 type ResizeOpts struct {
-	NodeCount     int      `json:"node_count" required:"true" validate:"required,gt=0"`
+	NodeCount     *int     `json:"node_count" required:"true" validate:"required,gt=0"`
 	NodesToRemove []string `json:"nodes_to_remove,omitempty" validate:"omitempty,dive,uuid4"`
 }
 
@@ -142,9 +144,16 @@ func Resize(c *edgecloud.ServiceClient, clusterID, poolID string, opts ResizeOpt
 		r.Err = err
 		return
 	}
-	_, r.Err = c.Post(resizeURL(c, clusterID, poolID), b, &r.Body, &edgecloud.RequestOpts{
-		OkCodes: []int{200, 201},
+
+	var result *http.Response
+	result, r.Err = c.Post(resizeURL(c, clusterID, poolID), b, &r.Body, &edgecloud.RequestOpts{
+		OkCodes: []int{http.StatusOK, http.StatusCreated},
 	})
+
+	if r.Err == nil {
+		r.Header = result.Header
+	}
+
 	return
 }
 
