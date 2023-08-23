@@ -98,6 +98,7 @@ type Cluster struct {
 	FixedSubnet        string            `json:"fixed_subnet"`
 	FloatingIPEnabled  bool              `json:"floating_ip_enabled"`
 	ExternalDNSEnabled bool              `json:"external_dns_enabled"`
+	AutoHealingEnabled bool              `json:"auto_healing_enabled"`
 	Faults             map[string]string `json:"faults"`
 	*ClusterList
 }
