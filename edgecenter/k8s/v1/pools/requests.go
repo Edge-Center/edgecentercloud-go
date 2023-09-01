@@ -119,7 +119,7 @@ func Create(client *edgecloud.ServiceClient, clusterID string, opts CreateOptsBu
 
 	var result *http.Response
 	result, r.Err = client.Post(createURL(client, clusterID), b, &r.Body, &edgecloud.RequestOpts{
-		OkCodes: []int{http.StatusCreated},
+		OkCodes: []int{http.StatusOK, http.StatusCreated},
 	})
 
 	if r.Err == nil {
