@@ -7,11 +7,11 @@ import (
 )
 
 func resourceURL(c *edgecloud.ServiceClient, id int) string {
-	return c.BaseServiceURL("limits_request", strconv.Itoa(id))
+	return c.BaseServiceURL("quotas_requests", strconv.Itoa(id))
 }
 
 func rootURL(c *edgecloud.ServiceClient) string {
-	return c.BaseServiceURL("limits_request")
+	return c.BaseServiceURL("quotas_requests")
 }
 
 func createURL(c *edgecloud.ServiceClient) string {

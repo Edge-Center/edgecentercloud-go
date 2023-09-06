@@ -14,45 +14,45 @@ import (
 )
 
 func getURL(id int) string {
-	return fmt.Sprintf("/v1/lifecycle_policy/%d/%d/%v", fake.ProjectID, fake.RegionID, id)
+	return fmt.Sprintf("/v1/lifecycle_policies/%d/%d/%v", fake.ProjectID, fake.RegionID, id)
 }
 
 func listURL() string {
-	return fmt.Sprintf("/v1/lifecycle_policy/%d/%d", fake.ProjectID, fake.RegionID)
+	return fmt.Sprintf("/v1/lifecycle_policies/%d/%d", fake.ProjectID, fake.RegionID)
 }
 
 func deleteURL(id int) string {
-	return fmt.Sprintf("/v1/lifecycle_policy/%d/%d/%v", fake.ProjectID, fake.RegionID, id)
+	return fmt.Sprintf("/v1/lifecycle_policies/%d/%d/%v", fake.ProjectID, fake.RegionID, id)
 }
 
 func createURL() string {
-	return fmt.Sprintf("/v1/lifecycle_policy/%d/%d", fake.ProjectID, fake.RegionID)
+	return fmt.Sprintf("/v1/lifecycle_policies/%d/%d", fake.ProjectID, fake.RegionID)
 }
 
 func updateURL(id int) string {
-	return fmt.Sprintf("/v1/lifecycle_policy/%d/%d/%v", fake.ProjectID, fake.RegionID, id)
+	return fmt.Sprintf("/v1/lifecycle_policies/%d/%d/%v", fake.ProjectID, fake.RegionID, id)
 }
 
 func addVolumesURL(id int) string {
-	return fmt.Sprintf("/v1/lifecycle_policy/%d/%d/%v/add_volumes_to_policy", fake.ProjectID, fake.RegionID, id)
+	return fmt.Sprintf("/v1/lifecycle_policies/%d/%d/%v/add_volumes_to_policy", fake.ProjectID, fake.RegionID, id)
 }
 
 func removeVolumesURL(id int) string {
-	return fmt.Sprintf("/v1/lifecycle_policy/%d/%d/%v/remove_volumes_from_policy", fake.ProjectID, fake.RegionID, id)
+	return fmt.Sprintf("/v1/lifecycle_policies/%d/%d/%v/remove_volumes_from_policy", fake.ProjectID, fake.RegionID, id)
 }
 
 func addSchedulesURL(id int) string {
-	return fmt.Sprintf("/v1/lifecycle_policy/%d/%d/%v/add_schedules", fake.ProjectID, fake.RegionID, id)
+	return fmt.Sprintf("/v1/lifecycle_policies/%d/%d/%v/add_schedules", fake.ProjectID, fake.RegionID, id)
 }
 
 func removeSchedulesURL(id int) string {
-	return fmt.Sprintf("/v1/lifecycle_policy/%d/%d/%v/remove_schedules", fake.ProjectID, fake.RegionID, id)
+	return fmt.Sprintf("/v1/lifecycle_policies/%d/%d/%v/remove_schedules", fake.ProjectID, fake.RegionID, id)
 }
 
 func TestGet(t *testing.T) {
 	for i, policy := range policies {
 		th.SetupHTTP()
-		client := fake.ServiceTokenClient("lifecycle_policy", "v1")
+		client := fake.ServiceTokenClient("lifecycle_policies", "v1")
 
 		th.Mux.HandleFunc(getURL(policy.ID), func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, http.MethodGet)
@@ -90,7 +90,7 @@ func TestGet(t *testing.T) {
 func TestList(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-	client := fake.ServiceTokenClient("lifecycle_policy", "v1")
+	client := fake.ServiceTokenClient("lifecycle_policies", "v1")
 
 	th.Mux.HandleFunc(listURL(), func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, http.MethodGet)
@@ -113,7 +113,7 @@ func TestList(t *testing.T) {
 func TestDelete(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-	client := fake.ServiceTokenClient("lifecycle_policy", "v1")
+	client := fake.ServiceTokenClient("lifecycle_policies", "v1")
 
 	for _, policy := range policies {
 		th.Mux.HandleFunc(deleteURL(policy.ID), func(w http.ResponseWriter, r *http.Request) {
@@ -131,7 +131,7 @@ func TestDelete(t *testing.T) {
 func TestCreate(t *testing.T) {
 	for i, policy := range policies {
 		th.SetupHTTP()
-		client := fake.ServiceTokenClient("lifecycle_policy", "v1")
+		client := fake.ServiceTokenClient("lifecycle_policies", "v1")
 
 		th.Mux.HandleFunc(createURL(), func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, http.MethodPost)
@@ -161,7 +161,7 @@ func TestCreate(t *testing.T) {
 func TestUpdate(t *testing.T) {
 	for i, policy := range policies {
 		th.SetupHTTP()
-		client := fake.ServiceTokenClient("lifecycle_policy", "v1")
+		client := fake.ServiceTokenClient("lifecycle_policies", "v1")
 
 		th.Mux.HandleFunc(updateURL(policy.ID), func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, http.MethodPatch)
@@ -191,7 +191,7 @@ func TestUpdate(t *testing.T) {
 func TestAddVolumes(t *testing.T) {
 	for i, policy := range policies {
 		th.SetupHTTP()
-		client := fake.ServiceTokenClient("lifecycle_policy", "v1")
+		client := fake.ServiceTokenClient("lifecycle_policies", "v1")
 
 		th.Mux.HandleFunc(addVolumesURL(policy.ID), func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, http.MethodPut)
@@ -221,7 +221,7 @@ func TestAddVolumes(t *testing.T) {
 func TestRemoveVolumes(t *testing.T) {
 	for i, policy := range policies {
 		th.SetupHTTP()
-		client := fake.ServiceTokenClient("lifecycle_policy", "v1")
+		client := fake.ServiceTokenClient("lifecycle_policies", "v1")
 
 		th.Mux.HandleFunc(removeVolumesURL(policy.ID), func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, http.MethodPut)
@@ -251,7 +251,7 @@ func TestRemoveVolumes(t *testing.T) {
 func TestAddSchedules(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-	client := fake.ServiceTokenClient("lifecycle_policy", "v1")
+	client := fake.ServiceTokenClient("lifecycle_policies", "v1")
 
 	policy, response := policies[0], responsesWithoutVolumes[0]
 
@@ -280,7 +280,7 @@ func TestAddSchedules(t *testing.T) {
 func TestRemoveSchedules(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-	client := fake.ServiceTokenClient("lifecycle_policy", "v1")
+	client := fake.ServiceTokenClient("lifecycle_policies", "v1")
 
 	policy, response := policies[1], responsesWithoutVolumes[1]
 
