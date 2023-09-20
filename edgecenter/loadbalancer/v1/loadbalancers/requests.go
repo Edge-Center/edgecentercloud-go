@@ -100,6 +100,9 @@ type CreatePoolOpts struct {
 	HealthMonitor         *CreateHealthMonitorOpts      `json:"healthmonitor,omitempty"`
 	LoadBalancerAlgorithm types.LoadBalancerAlgorithm   `json:"lb_algorithm,omitempty"`
 	SessionPersistence    *CreateSessionPersistenceOpts `json:"session_persistence,omitempty"`
+	TimeoutClientData     int                           `json:"timeout_client_data,omitempty"`
+	TimeoutMemberData     int                           `json:"timeout_member_data,omitempty"`
+	TimeoutMemberConnect  int                           `json:"timeout_member_connect,omitempty"`
 }
 
 // CreateListenerOpts represents options used to create a loadbalancer listener.
