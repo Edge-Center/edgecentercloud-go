@@ -3,6 +3,7 @@ package utils
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -155,28 +156,38 @@ func renderJSON(input interface{}) error {
 	if input == nil || (reflect.TypeOf(input).Kind() == reflect.Slice && reflect.ValueOf(input).Len() == 0) {
 		return nil
 	}
-	_, err := json.MarshalIndent(input, "", "  ")
+	bytes, err := json.MarshalIndent(input, "", "  ")
 	if err != nil {
 		return err
 	}
+	fmt.Println(string(bytes))
 	return nil
 }
 
-func renderYAML(input interface{}) {
+func renderYAML(input interface{}) error {
 	if input == nil || (reflect.TypeOf(input).Kind() == reflect.Slice && reflect.ValueOf(input).Len() == 0) {
-		return
+		return nil
 	}
-	yaml.Marshal(input)
+	marshal, err := yaml.Marshal(input)
+	if err != nil {
+		return err
+	}
+	fmt.Println(string(marshal))
+	return nil
 }
 
 func ShowResults(input interface{}, format string) {
+	var err error
 	switch format {
 	case "json":
-		renderJSON(input)
+		err = renderJSON(input)
 	case "table":
 		renderTable(input)
 	case "yaml":
-		renderYAML(input)
+		err = renderYAML(input)
+	}
+	if err != nil {
+		log.Fatal(err)
 	}
 }
 
