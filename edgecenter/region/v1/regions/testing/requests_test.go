@@ -133,13 +133,15 @@ func TestCreate(t *testing.T) {
 	})
 
 	options := regions.CreateOpts{
-		DisplayName:       Region1.DisplayName,
-		KeystoneName:      Region1.DisplayName,
-		State:             types.RegionStateActive,
-		EndpointType:      Region1.EndpointType,
-		ExternalNetworkID: Region1.ExternalNetworkID,
-		SpiceProxyURL:     nil,
-		KeystoneID:        Region1.KeystoneID,
+		DisplayName:          Region1.DisplayName,
+		KeystoneName:         Region1.DisplayName,
+		State:                types.RegionStateActive,
+		EndpointType:         Region1.EndpointType,
+		ExternalNetworkID:    Region1.ExternalNetworkID,
+		SpiceProxyURL:        nil,
+		KeystoneID:           Region1.KeystoneID,
+		AvailableVolumeTypes: Region1.AvailableVolumeTypes,
+		Zone:                 Region1.Zone,
 	}
 
 	err := edgecloud.TranslateValidationError(options.Validate())

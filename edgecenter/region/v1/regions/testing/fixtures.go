@@ -32,7 +32,9 @@ const ListResponse = `
       "external_network_id": "0521f854-8e34-4e67-8827-2aeb27fb3872",
       "spice_proxy_url": "https://ed-10.cloud.core.pw:6062",
       "endpoint_type": "public",
-      "keystone_name": "ED-10"
+      "keystone_name": "ED-10",
+      "available_volume_types": ["standard", "ssd_hiiops", "cold"],
+      "zone": "RUSSIA_AND_CIS"
     }
   ]
 }
@@ -57,7 +59,9 @@ const GetResponse = `
   "external_network_id": "0521f854-8e34-4e67-8827-2aeb27fb3872",
   "spice_proxy_url": "https://ed-10.cloud.core.pw:6062",
   "endpoint_type": "public",
-  "keystone_name": "ED-10"
+  "keystone_name": "ED-10",
+  "available_volume_types": ["standard", "ssd_hiiops", "cold"],
+  "zone": "RUSSIA_AND_CIS"
 }
 `
 
@@ -68,7 +72,9 @@ const CreateRequest = `
 	"external_network_id": "0521f854-8e34-4e67-8827-2aeb27fb3872",
 	"keystone_id": 1,
 	"keystone_name": "ED-10",
-	"state": "ACTIVE"
+	"state": "ACTIVE",
+    "available_volume_types": ["standard", "ssd_hiiops", "cold"],
+    "zone": "RUSSIA_AND_CIS"
 }
 `
 
@@ -110,6 +116,8 @@ var (
 			CreatedOn:                 createdTime,
 			AdminPassword:             "******",
 		},
+		AvailableVolumeTypes: []string{"standard", "ssd_hiiops", "cold"},
+		Zone:                 "RUSSIA_AND_CIS",
 	}
 
 	ExpectedRegionSlice = []regions.Region{Region1}

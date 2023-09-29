@@ -25,13 +25,15 @@ type CreateOptsBuilder interface {
 
 // CreateOpts represents options used to create a region.
 type CreateOpts struct {
-	DisplayName       string             `json:"display_name" required:"true" validate:"required"`
-	KeystoneName      string             `json:"keystone_name" required:"true" validate:"required"`
-	State             types.RegionState  `json:"state" required:"true" validate:"required,enum"`
-	EndpointType      types.EndpointType `json:"endpoint_type,omitempty" validate:"omitempty,enum"`
-	ExternalNetworkID string             `json:"external_network_id" required:"true" validate:"required,uuid4"`
-	SpiceProxyURL     *edgecloud.URL     `json:"spice_proxy_url,omitempty"`
-	KeystoneID        int                `json:"keystone_id" required:"true" validate:"required"`
+	DisplayName          string             `json:"display_name" required:"true" validate:"required"`
+	KeystoneName         string             `json:"keystone_name" required:"true" validate:"required"`
+	State                types.RegionState  `json:"state" required:"true" validate:"required,enum"`
+	EndpointType         types.EndpointType `json:"endpoint_type,omitempty" validate:"omitempty,enum"`
+	ExternalNetworkID    string             `json:"external_network_id" required:"true" validate:"required,uuid4"`
+	SpiceProxyURL        *edgecloud.URL     `json:"spice_proxy_url,omitempty"`
+	KeystoneID           int                `json:"keystone_id" required:"true" validate:"required"`
+	AvailableVolumeTypes []string           `json:"available_volume_types"`
+	Zone                 string             `json:"zone"`
 }
 
 // ToRegionCreateMap builds a request body from CreateOpts.
