@@ -273,11 +273,6 @@ var clusterCreateSubCommand = cli.Command{
 			Required: false,
 		},
 		&cli.BoolFlag{
-			Name:     "external-dns-enabled",
-			Usage:    "enable external dns",
-			Required: false,
-		},
-		&cli.BoolFlag{
 			Name:     "master-lb-floating-ip-enabled",
 			Usage:    "use load balancer for K8s API",
 			Required: false,
@@ -372,7 +367,6 @@ var clusterCreateSubCommand = cli.Command{
 			ServicesIPPool:            servicesIPPool,
 			AutoHealingEnabled:        c.Bool("auto-healing-enabled"),
 			MasterLBFloatingIPEnabled: masterLbFloatingIPEnabled,
-			ExternalDNSEnabled:        c.Bool("external-dns-enabled"),
 			Version:                   c.String("version"),
 			Pools:                     clusterPools,
 		}
