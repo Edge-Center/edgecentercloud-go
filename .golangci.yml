@@ -54,6 +54,7 @@ linters:
     - errchkjson       # Reports unsupported types and optionally reports occasions, where the check for the returned error can be omitted.
     - tagalign         # Checks that struct tags are well aligned
     - depguard         # Checks if package imports are in a list of acceptable packages
+    - musttag
     # complexity: need to refactor
     - cyclop           # Checks function and package cyclomatic complexity.
     - funlen           # Tool for detection of long functions.
