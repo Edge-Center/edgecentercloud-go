@@ -1,2 +1,0 @@
-// edgecloud
-package testing
