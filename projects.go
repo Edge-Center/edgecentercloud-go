@@ -11,6 +11,7 @@ const (
 )
 
 // ProjectsService is an interface for creating and managing Projects with the EdgecenterCloud API.
+// See: https://apidocs.edgecenter.ru/cloud#tag/projects
 type ProjectsService interface {
 	Get(context.Context, string) (*Project, *Response, error)
 }
