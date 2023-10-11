@@ -29,6 +29,6 @@ func TestProjects_Get(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(resp, project) {
-		t.Errorf("Projects.Get returned %+v, expected %+v", resp, project)
+		t.Errorf("Projects.Get\n returned %+v,\n expected %+v", resp, project)
 	}
 }

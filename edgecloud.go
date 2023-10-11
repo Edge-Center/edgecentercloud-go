@@ -8,6 +8,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"path"
 )
 
 const (
@@ -28,7 +29,11 @@ type Client struct {
 	// User agent for client
 	UserAgent string
 
-	Projects ProjectsService
+	// APIToken for client
+	APIToken string
+
+	Instances InstancesService
+	Projects  ProjectsService
 
 	// Optional function called after every successful request made to the DO APIs
 	onRequestCompleted RequestCompletionCallback
@@ -39,6 +44,24 @@ type Client struct {
 
 // RequestCompletionCallback defines the type of the request callback function.
 type RequestCompletionCallback func(*http.Request, *http.Response)
+
+// ServicePath specifies additional paths for service endpoints.
+type ServicePath struct {
+	// Region is EdgeCenter region
+	Region string
+
+	// Project is EdgeCenter project
+	Project string
+}
+
+func addServicePath(s string, p *ServicePath) string {
+	return path.Join(s, p.Project, p.Region)
+}
+
+// TaskResponse is an EdgecenterCloud response with list of created tasks.
+type TaskResponse struct {
+	Tasks []string `json:"tasks"`
+}
 
 // Response is a EdgecenterCloud response. This wraps the standard http.Response returned from EdgecenterCloud.
 type Response struct {
@@ -54,6 +77,15 @@ type ResponseError struct {
 	Message string `json:"message"`
 }
 
+func NewClientWithAPIToken(httpClient *http.Client, apiToken string) *Client {
+	c := NewClient(httpClient)
+
+	c.APIToken = apiToken
+	c.headers["Authorization"] = fmt.Sprintf("APIKey %s", apiToken)
+
+	return c
+}
+
 // NewClient returns a new EdgecenterCloud API, using the given
 // http.Client to perform all requests.
 func NewClient(httpClient *http.Client) *Client {
@@ -65,6 +97,7 @@ func NewClient(httpClient *http.Client) *Client {
 
 	c := &Client{HTTPClient: httpClient, BaseURL: baseURL, UserAgent: userAgent}
 
+	c.Instances = &InstancesServiceOp{client: c}
 	c.Projects = &ProjectsServiceOp{client: c}
 
 	c.headers = make(map[string]string)

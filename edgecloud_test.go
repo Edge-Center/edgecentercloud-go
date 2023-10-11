@@ -64,6 +64,11 @@ func testClientDefaults(t *testing.T, c *Client) {
 	testClientDefaultUserAgent(t, c)
 }
 
+func TestNewFromToken(t *testing.T) {
+	c := NewClientWithAPIToken(nil, "myToken")
+	testClientDefaults(t, c)
+}
+
 func TestNewClient(t *testing.T) {
 	c := NewClient(nil)
 	testClientDefaults(t, c)
