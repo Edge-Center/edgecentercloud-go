@@ -112,16 +112,6 @@ type InstanceSecurityGroupsCreate struct {
 	ID string `json:"id"`
 }
 
-type VolumeSource string
-
-const (
-	NewVolume      VolumeSource = "new-volume"
-	Image          VolumeSource = "image"
-	Snapshot       VolumeSource = "snapshot"
-	ExistingVolume VolumeSource = "existing-volume"
-	AppTemplate    VolumeSource = "apptemplate"
-)
-
 // InstanceVolumeCreate represent a instance volume create struct.
 type InstanceVolumeCreate struct {
 	Source        VolumeSource           `json:"source" required:"true" validate:"required,enum"`
