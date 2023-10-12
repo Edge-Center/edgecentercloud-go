@@ -5,3 +5,7 @@ BIN_DIR = $(PROJECT_DIR)/bin
 lint:
 	test -f $(BIN_DIR)/golangci-lint || curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v1.54.2
 	$(BIN_DIR)/golangci-lint run
+
+.PHONY: tests
+test:
+	go test -timeout=2m
