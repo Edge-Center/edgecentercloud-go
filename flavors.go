@@ -7,4 +7,6 @@ type Flavor struct {
 	VCPUS               int               `json:"vcpus"`
 	RAM                 int               `json:"ram"`
 	HardwareDescription map[string]string `json:"hardware_description"`
+	Disabled            bool              `json:"disabled"`
+	ResourceClass       string            `json:"resource_class"`
 }

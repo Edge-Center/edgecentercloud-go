@@ -20,7 +20,7 @@ func TestProjects_Get(t *testing.T) {
 	mux.HandleFunc("/v1/projects/1", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
 		resp, _ := json.Marshal(project)
-		fmt.Fprintf(w, `{"project":%s}`, string(resp))
+		_, _ = fmt.Fprintf(w, `{"project":%s}`, string(resp))
 	})
 
 	resp, _, err := client.Projects.Get(ctx, "1")

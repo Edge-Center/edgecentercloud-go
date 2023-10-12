@@ -32,9 +32,10 @@ type Client struct {
 	// APIToken for client
 	APIToken string
 
-	Instances InstancesService
-	Projects  ProjectsService
-	Volumes   VolumesService
+	Instances     InstancesService
+	Loadbalancers LoadbalancersService
+	Projects      ProjectsService
+	Volumes       VolumesService
 
 	// Optional function called after every successful request made to the DO APIs
 	onRequestCompleted RequestCompletionCallback
@@ -99,6 +100,7 @@ func NewClient(httpClient *http.Client) *Client {
 	c := &Client{HTTPClient: httpClient, BaseURL: baseURL, UserAgent: userAgent}
 
 	c.Instances = &InstancesServiceOp{client: c}
+	c.Loadbalancers = &LoadbalancersServiceOp{client: c}
 	c.Projects = &ProjectsServiceOp{client: c}
 	c.Volumes = &VolumesServiceOp{client: c}
 

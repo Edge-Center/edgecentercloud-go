@@ -87,18 +87,6 @@ const (
 	SubnetInterfaceType    InterfaceType = "subnet"
 )
 
-type FloatingIPSource string
-
-const (
-	NewFloatingIP      FloatingIPSource = "new"
-	ExistingFloatingIP FloatingIPSource = "existing"
-)
-
-type InterfaceFloatingIP struct {
-	Source             FloatingIPSource `json:"source" validate:"required,enum"`
-	ExistingFloatingID string           `json:"existing_floating_id" validate:"rfe=Source:existing,sfe=Source:new,omitempty,uuid"`
-}
-
 type InstanceInterface struct {
 	Type       InterfaceType        `json:"type,omitempty" validate:"omitempty,enum"`
 	NetworkID  string               `json:"network_id,omitempty" validate:"rfe=Type:subnet;any_subnet,omitempty,uuid4"`
