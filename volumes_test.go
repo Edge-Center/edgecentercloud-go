@@ -70,7 +70,7 @@ func TestVolumes_Create(t *testing.T) {
 		}
 		assert.Equal(t, volumeCreateRequest, reqBody)
 		resp, _ := json.Marshal(taskResponse)
-		fmt.Fprintf(w, `{"tasks":%s}`, string(resp))
+		_, _ = fmt.Fprintf(w, `{"tasks":%s}`, string(resp))
 	})
 
 	opts := ServicePath{Project: projectID, Region: regionID}
@@ -98,7 +98,7 @@ func TestVolumes_Delete(t *testing.T) {
 	mux.HandleFunc(deleteVolumeURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodDelete)
 		resp, _ := json.Marshal(taskResponse)
-		fmt.Fprintf(w, `{"tasks":%s}`, string(resp))
+		_, _ = fmt.Fprintf(w, `{"tasks":%s}`, string(resp))
 	})
 
 	opts := ServicePath{Project: projectID, Region: regionID}
