@@ -34,6 +34,7 @@ type Client struct {
 
 	Instances InstancesService
 	Projects  ProjectsService
+	Volumes   VolumesService
 
 	// Optional function called after every successful request made to the DO APIs
 	onRequestCompleted RequestCompletionCallback
@@ -99,6 +100,7 @@ func NewClient(httpClient *http.Client) *Client {
 
 	c.Instances = &InstancesServiceOp{client: c}
 	c.Projects = &ProjectsServiceOp{client: c}
+	c.Volumes = &VolumesServiceOp{client: c}
 
 	c.headers = make(map[string]string)
 

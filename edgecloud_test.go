@@ -25,8 +25,8 @@ func setup() {
 	server = httptest.NewServer(mux)
 
 	client = NewClient(nil)
-	url, _ := url.Parse(server.URL)
-	client.BaseURL = url
+	baseURL, _ := url.Parse(server.URL)
+	client.BaseURL = baseURL
 }
 
 func teardown() {
@@ -86,7 +86,7 @@ func TestDo(t *testing.T) {
 		if m := http.MethodGet; m != r.Method {
 			t.Errorf("Request method = %v, expected %v", r.Method, m)
 		}
-		fmt.Fprint(w, `{"A":"a"}`)
+		_, _ = fmt.Fprint(w, `{"A":"a"}`)
 	})
 
 	req, _ := client.NewRequest(ctx, http.MethodGet, "/", nil)

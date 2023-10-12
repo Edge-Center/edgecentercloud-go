@@ -11,27 +11,27 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-const (
-	testID        = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	testProjectID = "27520"
-	testRegionID  = "8"
-)
-
 func TestInstances_Get(t *testing.T) {
 	setup()
 	defer teardown()
 
-	instance := &Instance{ID: testID}
-	getInstanceURL := fmt.Sprintf("/v1/instances/%s/%s/%s", testProjectID, testRegionID, testID)
+	const (
+		instanceID = "f0d19cec-5c3f-4853-886e-304915960ff6"
+		projectID  = "27520"
+		regionID   = "8"
+	)
+
+	instance := &Instance{ID: instanceID}
+	getInstanceURL := fmt.Sprintf("/v1/instances/%s/%s/%s", projectID, regionID, instanceID)
 
 	mux.HandleFunc(getInstanceURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
 		resp, _ := json.Marshal(instance)
-		fmt.Fprintf(w, `{"instance":%s}`, string(resp))
+		_, _ = fmt.Fprintf(w, `{"instance":%s}`, string(resp))
 	})
 
-	opts := ServicePath{Project: testProjectID, Region: testRegionID}
-	resp, _, err := client.Instances.Get(ctx, testID, &opts)
+	opts := ServicePath{Project: projectID, Region: regionID}
+	resp, _, err := client.Instances.Get(ctx, instanceID, &opts)
 	if err != nil {
 		t.Errorf("Instances.Get returned error: %v", err)
 	}
@@ -45,38 +45,44 @@ func TestInstances_Create(t *testing.T) {
 	setup()
 	defer teardown()
 
+	const (
+		taskID    = "f0d19cec-5c3f-4853-886e-304915960ff6"
+		projectID = "27520"
+		regionID  = "8"
+	)
+
 	instanceCreateRequest := &InstanceCreateRequest{
 		Names:          []string{"test-instance"},
 		Flavor:         "g1-standard-1-2",
 		Interfaces:     []InstanceInterface{{Type: ExternalInterfaceType}},
-		SecurityGroups: []InstanceSecurityGroupsCreate{{ID: testID}},
+		SecurityGroups: []InstanceSecurityGroupsCreate{{ID: "f0d19cec-5c3f-4853-886e-304915960ff6"}},
 		Volumes: []InstanceVolumeCreate{
 			{
 				TypeName:  SsdHiIops,
 				Size:      5,
 				BootIndex: 0,
 				Source:    Image,
-				ImageID:   testID,
+				ImageID:   "f0d19cec-5c3f-4853-886e-304915960ff6",
 			},
 		},
 	}
 
-	taskResponse := &TaskResponse{Tasks: []string{testID}}
+	taskResponse := &TaskResponse{Tasks: []string{taskID}}
 
-	createInstanceURL := fmt.Sprintf("/v2/instances/%s/%s", testProjectID, testRegionID)
+	createInstanceURL := fmt.Sprintf("/v2/instances/%s/%s", projectID, regionID)
 
 	mux.HandleFunc(createInstanceURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
 		reqBody := new(InstanceCreateRequest)
 		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
-			t.Errorf("Failed to decode request body: %v", err)
+			t.Errorf("failed to decode request body: %v", err)
 		}
 		assert.Equal(t, instanceCreateRequest, reqBody)
 		resp, _ := json.Marshal(taskResponse)
 		fmt.Fprintf(w, `{"tasks":%s}`, string(resp))
 	})
 
-	opts := ServicePath{Project: testProjectID, Region: testRegionID}
+	opts := ServicePath{Project: projectID, Region: regionID}
 	resp, _, err := client.Instances.Create(ctx, instanceCreateRequest, &opts)
 	require.NoError(t, err)
 
@@ -87,9 +93,16 @@ func TestInstances_Delete(t *testing.T) {
 	setup()
 	defer teardown()
 
-	taskResponse := &TaskResponse{Tasks: []string{testID}}
+	const (
+		taskID     = "f0d19cec-5c3f-4853-886e-304915960ff6"
+		instanceID = "f0d19cec-5c3f-4853-886e-304915960ff6"
+		projectID  = "27520"
+		regionID   = "8"
+	)
 
-	deleteInstanceURL := fmt.Sprintf("/v1/instances/%s/%s/%s", testProjectID, testRegionID, testID)
+	taskResponse := &TaskResponse{Tasks: []string{taskID}}
+
+	deleteInstanceURL := fmt.Sprintf("/v1/instances/%s/%s/%s", projectID, regionID, instanceID)
 
 	mux.HandleFunc(deleteInstanceURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodDelete)
@@ -97,8 +110,8 @@ func TestInstances_Delete(t *testing.T) {
 		fmt.Fprintf(w, `{"tasks":%s}`, string(resp))
 	})
 
-	opts := ServicePath{Project: testProjectID, Region: testRegionID}
-	resp, _, err := client.Instances.Delete(ctx, testID, &opts)
+	opts := ServicePath{Project: projectID, Region: regionID}
+	resp, _, err := client.Instances.Delete(ctx, instanceID, &opts)
 	require.NoError(t, err)
 
 	assert.Equal(t, taskResponse, resp)
