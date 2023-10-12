@@ -197,14 +197,11 @@ func (c *Client) Do(ctx context.Context, req *http.Request, v interface{}) (*Res
 	if resp.StatusCode != http.StatusNoContent && v != nil {
 		if w, ok := v.(io.Writer); ok {
 			_, err = io.Copy(w, resp.Body)
-			if err != nil {
-				return nil, err
-			}
 		} else {
 			err = json.NewDecoder(resp.Body).Decode(v)
-			if err != nil {
-				return nil, err
-			}
+		}
+		if err != nil {
+			return nil, err
 		}
 	}
 
