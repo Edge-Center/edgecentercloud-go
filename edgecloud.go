@@ -32,6 +32,7 @@ type Client struct {
 	// APIToken for client
 	APIToken string
 
+	Floatingips   FloatingipsService
 	Instances     InstancesService
 	Loadbalancers LoadbalancersService
 	Networks      NetworksService
@@ -101,6 +102,7 @@ func NewClient(httpClient *http.Client) *Client {
 
 	c := &Client{HTTPClient: httpClient, BaseURL: baseURL, UserAgent: userAgent}
 
+	c.Floatingips = &FloatingipsServiceOp{client: c}
 	c.Instances = &InstancesServiceOp{client: c}
 	c.Loadbalancers = &LoadbalancersServiceOp{client: c}
 	c.Networks = &NetworksServiceOp{client: c}
