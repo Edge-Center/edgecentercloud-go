@@ -34,6 +34,7 @@ type Client struct {
 
 	Instances     InstancesService
 	Loadbalancers LoadbalancersService
+	Networks      NetworksService
 	Projects      ProjectsService
 	Volumes       VolumesService
 
@@ -101,6 +102,7 @@ func NewClient(httpClient *http.Client) *Client {
 
 	c.Instances = &InstancesServiceOp{client: c}
 	c.Loadbalancers = &LoadbalancersServiceOp{client: c}
+	c.Networks = &NetworksServiceOp{client: c}
 	c.Projects = &ProjectsServiceOp{client: c}
 	c.Volumes = &VolumesServiceOp{client: c}
 
