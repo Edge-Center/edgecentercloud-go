@@ -92,9 +92,9 @@ func TestSubnetworks_Delete(t *testing.T) {
 
 	taskResponse := &TaskResponse{Tasks: []string{taskID}}
 
-	deleteNetworkURL := fmt.Sprintf("/v1/subnets/%s/%s/%s", projectID, regionID, subnetworkID)
+	deleteSubnetworkURL := fmt.Sprintf("/v1/subnets/%s/%s/%s", projectID, regionID, subnetworkID)
 
-	mux.HandleFunc(deleteNetworkURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(deleteSubnetworkURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodDelete)
 		resp, _ := json.Marshal(taskResponse)
 		_, _ = fmt.Fprintf(w, `{"tasks":%s}`, string(resp))
