@@ -36,6 +36,7 @@ type Client struct {
 	Loadbalancers LoadbalancersService
 	Networks      NetworksService
 	Projects      ProjectsService
+	Subnetworks   SubnetworksService
 	Volumes       VolumesService
 
 	// Optional function called after every successful request made to the DO APIs
@@ -104,6 +105,7 @@ func NewClient(httpClient *http.Client) *Client {
 	c.Loadbalancers = &LoadbalancersServiceOp{client: c}
 	c.Networks = &NetworksServiceOp{client: c}
 	c.Projects = &ProjectsServiceOp{client: c}
+	c.Subnetworks = &SubnetworksServiceOp{client: c}
 	c.Volumes = &VolumesServiceOp{client: c}
 
 	c.headers = make(map[string]string)
