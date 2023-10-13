@@ -32,9 +32,7 @@ func TestInstances_Get(t *testing.T) {
 
 	opts := ServicePath{Project: projectID, Region: regionID}
 	resp, _, err := client.Instances.Get(ctx, instanceID, &opts)
-	if err != nil {
-		t.Errorf("Instances.Get returned error: %v", err)
-	}
+	require.NoError(t, err)
 
 	if !reflect.DeepEqual(resp, instance) {
 		t.Errorf("Instances.Get\n returned %+v,\n expected %+v", resp, instance)

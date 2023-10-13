@@ -36,6 +36,7 @@ linters:
     - tagalign         # Checks that struct tags are well aligned
     - depguard         # Checks if package imports are in a list of acceptable packages
     - musttag          # Enforce field tags in (un)marshaled structs.
+    - dupl          # Tool for code clone detection.
     # complexity
     - cyclop           # Checks function and package cyclomatic complexity.
     # tests

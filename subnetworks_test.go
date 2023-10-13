@@ -32,9 +32,7 @@ func TestSubnetworks_Get(t *testing.T) {
 
 	opts := ServicePath{Project: projectID, Region: regionID}
 	resp, _, err := client.Subnetworks.Get(ctx, subnetworkID, &opts)
-	if err != nil {
-		t.Errorf("Subnetworks.Get returned error: %v", err)
-	}
+	require.NoError(t, err)
 
 	if !reflect.DeepEqual(resp, subnetwork) {
 		t.Errorf("Subnetworks.Get\n returned %+v,\n expected %+v", resp, subnetwork)
