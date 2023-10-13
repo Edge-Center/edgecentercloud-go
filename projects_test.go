@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"reflect"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestProjects_Get(t *testing.T) {
@@ -24,9 +26,7 @@ func TestProjects_Get(t *testing.T) {
 	})
 
 	resp, _, err := client.Projects.Get(ctx, "1")
-	if err != nil {
-		t.Errorf("Projects.Get returned error: %v", err)
-	}
+	require.NoError(t, err)
 
 	if !reflect.DeepEqual(resp, project) {
 		t.Errorf("Projects.Get\n returned %+v,\n expected %+v", resp, project)

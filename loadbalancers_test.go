@@ -32,9 +32,7 @@ func TestLoadbalancers_Get(t *testing.T) {
 
 	opts := ServicePath{Project: projectID, Region: regionID}
 	resp, _, err := client.Loadbalancers.Get(ctx, loadbalancerID, &opts)
-	if err != nil {
-		t.Errorf("Loadbalancers.Get returned error: %v", err)
-	}
+	require.NoError(t, err)
 
 	if !reflect.DeepEqual(resp, loadbalancer) {
 		t.Errorf("Loadbalancers.Get\n returned %+v,\n expected %+v", resp, loadbalancer)
@@ -127,9 +125,7 @@ func TestLoadbalancers_ListenerGet(t *testing.T) {
 
 	opts := ServicePath{Project: projectID, Region: regionID}
 	resp, _, err := client.Loadbalancers.ListenerGet(ctx, listenerID, &opts)
-	if err != nil {
-		t.Errorf("Loadbalancers.ListenerGet returned error: %v", err)
-	}
+	require.NoError(t, err)
 
 	if !reflect.DeepEqual(resp, listener) {
 		t.Errorf("Loadbalancers.ListenerGet\n returned %+v,\n expected %+v", resp, listener)
@@ -225,9 +221,7 @@ func TestLoadbalancers_PoolGet(t *testing.T) {
 
 	opts := ServicePath{Project: projectID, Region: regionID}
 	resp, _, err := client.Loadbalancers.PoolGet(ctx, poolID, &opts)
-	if err != nil {
-		t.Errorf("Loadbalancers.PoolGet returned error: %v", err)
-	}
+	require.NoError(t, err)
 
 	if !reflect.DeepEqual(resp, pool) {
 		t.Errorf("Loadbalancers.PoolGet\n returned %+v,\n expected %+v", resp, pool)

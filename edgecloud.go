@@ -34,6 +34,7 @@ type Client struct {
 
 	Floatingips   FloatingipsService
 	Instances     InstancesService
+	KeyPairs      KeyPairsService
 	Loadbalancers LoadbalancersService
 	Networks      NetworksService
 	Projects      ProjectsService
@@ -105,6 +106,7 @@ func NewClient(httpClient *http.Client) *Client {
 
 	c.Floatingips = &FloatingipsServiceOp{client: c}
 	c.Instances = &InstancesServiceOp{client: c}
+	c.KeyPairs = &KeyPairsServiceOp{client: c}
 	c.Loadbalancers = &LoadbalancersServiceOp{client: c}
 	c.Networks = &NetworksServiceOp{client: c}
 	c.Projects = &ProjectsServiceOp{client: c}

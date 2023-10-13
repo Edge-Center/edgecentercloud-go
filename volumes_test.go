@@ -32,9 +32,7 @@ func TestVolumes_Get(t *testing.T) {
 
 	opts := ServicePath{Project: projectID, Region: regionID}
 	resp, _, err := client.Volumes.Get(ctx, volumeID, &opts)
-	if err != nil {
-		t.Errorf("Volumes.Get returned error: %v", err)
-	}
+	require.NoError(t, err)
 
 	if !reflect.DeepEqual(resp, volume) {
 		t.Errorf("Volumes.Get\n returned %+v,\n expected %+v", resp, volume)

@@ -32,9 +32,7 @@ func TestServerGroups_Get(t *testing.T) {
 
 	opts := ServicePath{Project: projectID, Region: regionID}
 	resp, _, err := client.ServerGroups.Get(ctx, sgID, &opts)
-	if err != nil {
-		t.Errorf("ServerGroups.Get returned error: %v", err)
-	}
+	require.NoError(t, err)
 
 	if !reflect.DeepEqual(resp, servergroup) {
 		t.Errorf("ServerGroups.Get\n returned %+v,\n expected %+v", resp, servergroup)
