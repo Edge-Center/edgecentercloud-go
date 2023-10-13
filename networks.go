@@ -63,7 +63,7 @@ const (
 	VXLAN NetworkType = "vxlan"
 )
 
-// networkRoot represents an Network root.
+// networkRoot represents a Network root.
 type networkRoot struct {
 	Network *Network      `json:"network"`
 	Tasks   *TaskResponse `json:"tasks"`

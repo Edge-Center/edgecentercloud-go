@@ -33,7 +33,7 @@ func TestNetworks_Get(t *testing.T) {
 	opts := ServicePath{Project: projectID, Region: regionID}
 	resp, _, err := client.Networks.Get(ctx, networkID, &opts)
 	if err != nil {
-		t.Errorf("Instances.Get returned error: %v", err)
+		t.Errorf("Networks.Get returned error: %v", err)
 	}
 
 	if !reflect.DeepEqual(resp, network) {
