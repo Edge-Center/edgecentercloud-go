@@ -5,6 +5,10 @@ run:
 issues:
   max-per-linter: 0
   max-same-issues: 0
+  exclude-rules:
+    - path: (.+)_test.go
+      linters:
+        - funlen
 
 linters:
   enable-all: true
@@ -37,6 +41,7 @@ linters:
     - depguard         # Checks if package imports are in a list of acceptable packages
     - musttag          # Enforce field tags in (un)marshaled structs.
     - dupl             # Tool for code clone detection.
+    - nolintlint
     # complexity
     - cyclop           # Checks function and package cyclomatic complexity.
     # tests
@@ -44,6 +49,8 @@ linters:
     - paralleltest     # Detects missing usage of t.Parallel() method in your Go test.
 
 linters-settings:
+  nlreturn:
+    block-size: 5
   gci:
     sections:
       - standard # Standard section: captures all standard packages.

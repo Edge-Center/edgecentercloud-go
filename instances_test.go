@@ -109,8 +109,96 @@ func TestInstances_Delete(t *testing.T) {
 	})
 
 	opts := ServicePath{Project: projectID, Region: regionID}
-	resp, _, err := client.Instances.Delete(ctx, instanceID, &opts)
+	resp, _, err := client.Instances.Delete(ctx, instanceID, &opts, nil)
 	require.NoError(t, err)
 
 	assert.Equal(t, taskResponse, resp)
+}
+
+func TestInstances_DeleteWithOptions(t *testing.T) {
+	setup()
+	defer teardown()
+
+	const (
+		taskID     = "f0d19cec-5c3f-4853-886e-304915960ff6"
+		instanceID = "f0d19cec-5c3f-4853-886e-304915960ff6"
+		projectID  = "27520"
+		regionID   = "8"
+	)
+
+	taskResponse := &TaskResponse{Tasks: []string{taskID}}
+	instanceDeleteOptions := InstanceDeleteOptions{
+		DeleteFloatings: true,
+		Volumes:         []string{"f0d19cec-5c3f-4853-886e-304915960ff6"},
+	}
+
+	deleteInstanceURL := fmt.Sprintf("/v1/instances/%s/%s/%s", projectID, regionID, instanceID)
+	mux.HandleFunc(deleteInstanceURL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodDelete)
+		resp, _ := json.Marshal(taskResponse)
+		_, _ = fmt.Fprintf(w, `{"tasks":%s}`, string(resp))
+	})
+
+	opts := ServicePath{Project: projectID, Region: regionID}
+	resp, _, err := client.Instances.Delete(ctx, instanceID, &opts, &instanceDeleteOptions)
+	require.NoError(t, err)
+
+	assert.Equal(t, taskResponse, resp)
+}
+
+func TestInstances_MetadataGet(t *testing.T) {
+	setup()
+	defer teardown()
+
+	const (
+		instanceID = "f0d19cec-5c3f-4853-886e-304915960ff6"
+		projectID  = "27520"
+		regionID   = "8"
+	)
+
+	metadata := &MetadataDetailed{
+		Key:      "image_id",
+		Value:    "b3c52ece-147e-4af5-8d7c-84691309b879",
+		ReadOnly: true,
+	}
+	getInstanceMetadataURL := fmt.Sprintf("/v1/instances/%s/%s/%s/%s", projectID, regionID, instanceID, metadataPath)
+
+	mux.HandleFunc(getInstanceMetadataURL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodGet)
+		resp, _ := json.Marshal(metadata)
+		_, _ = fmt.Fprintf(w, `{"metadata":%s}`, string(resp))
+	})
+
+	opts := ServicePath{Project: projectID, Region: regionID}
+	resp, _, err := client.Instances.MetadataGet(ctx, instanceID, &opts)
+	require.NoError(t, err)
+
+	if !reflect.DeepEqual(resp, metadata) {
+		t.Errorf("Instances.MetadataGet\n returned %+v,\n expected %+v", resp, metadata)
+	}
+}
+
+func TestInstances_MetadataCreate(t *testing.T) {
+	setup()
+	defer teardown()
+
+	const (
+		instanceID = "f0d19cec-5c3f-4853-886e-304915960ff6"
+		projectID  = "27520"
+		regionID   = "8"
+	)
+
+	metadataCreateRequest := &MetadataCreateRequest{
+		map[string]interface{}{"key": "value"},
+	}
+
+	createInstanceMetadataURL := fmt.Sprintf("/v1/instances/%s/%s/%s/%s", projectID, regionID, instanceID, metadataPath)
+
+	mux.HandleFunc(createInstanceMetadataURL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodPut)
+	})
+
+	opts := ServicePath{Project: projectID, Region: regionID}
+	_, err := client.Instances.MetadataCreate(ctx, instanceID, metadataCreateRequest, &opts)
+	require.NoError(t, err)
 }

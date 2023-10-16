@@ -13,9 +13,9 @@ const (
 	floatingipsBasePathV1 = "/v1/floatingips"
 )
 
-// FloatingipsService is an interface for creating and managing FloatingIPs with the EdgecenterCloud API.
+// FloatingIPsService is an interface for creating and managing FloatingIPs with the EdgecenterCloud API.
 // See: https://apidocs.edgecenter.ru/cloud#tag/floatingips
-type FloatingipsService interface {
+type FloatingIPsService interface {
 	Get(context.Context, string, *ServicePath) (*FloatingIP, *Response, error)
 	Create(context.Context, *FloatingIPCreateRequest, *ServicePath) (*TaskResponse, *Response, error)
 	Delete(context.Context, string, *ServicePath) (*TaskResponse, *Response, error)
@@ -26,28 +26,28 @@ type FloatingipsServiceOp struct {
 	client *Client
 }
 
-var _ FloatingipsService = &FloatingipsServiceOp{}
+var _ FloatingIPsService = &FloatingipsServiceOp{}
 
 // FloatingIP represents an EdgecenterCloud FloatingIP.
 type FloatingIP struct {
-	ID                string                 `json:"id"`
-	CreatedAt         string                 `json:"created_at"`
-	UpdatedAt         string                 `json:"updated_at"`
-	Status            string                 `json:"status"`
-	FixedIPAddress    net.IP                 `json:"fixed_ip_address,omitempty"`
-	FloatingIPAddress string                 `json:"floating_ip_address,omitempty"`
-	DNSDomain         string                 `json:"dns_domain"`
-	DNSName           string                 `json:"dns_name"`
-	RouterID          string                 `json:"router_id"`
-	SubnetID          string                 `json:"subnet_id"`
-	CreatorTaskID     string                 `json:"creator_task_id"`
-	Metadata          map[string]interface{} `json:"metadata,omitempty"`
-	TaskID            string                 `json:"task_id"`
-	PortID            string                 `json:"port_id,omitempty"`
-	ProjectID         int                    `json:"project_id"`
-	RegionID          int                    `json:"region_id"`
-	Region            string                 `json:"region"`
-	Instance          Instance               `json:"instance,omitempty"`
+	ID                string   `json:"id"`
+	CreatedAt         string   `json:"created_at"`
+	UpdatedAt         string   `json:"updated_at"`
+	Status            string   `json:"status"`
+	FixedIPAddress    net.IP   `json:"fixed_ip_address,omitempty"`
+	FloatingIPAddress string   `json:"floating_ip_address,omitempty"`
+	DNSDomain         string   `json:"dns_domain"`
+	DNSName           string   `json:"dns_name"`
+	RouterID          string   `json:"router_id"`
+	SubnetID          string   `json:"subnet_id"`
+	CreatorTaskID     string   `json:"creator_task_id"`
+	Metadata          Metadata `json:"metadata,omitempty"`
+	TaskID            string   `json:"task_id"`
+	PortID            string   `json:"port_id,omitempty"`
+	ProjectID         int      `json:"project_id"`
+	RegionID          int      `json:"region_id"`
+	Region            string   `json:"region"`
+	Instance          Instance `json:"instance,omitempty"`
 }
 
 type FloatingIPSource string
@@ -64,9 +64,9 @@ type InterfaceFloatingIP struct {
 
 // FloatingIPCreateRequest represents a request to create a FloatingIP.
 type FloatingIPCreateRequest struct {
-	PortID         string                 `json:"port_id,omitempty"`
-	FixedIPAddress net.IP                 `json:"fixed_ip_address,omitempty"`
-	Metadata       map[string]interface{} `json:"metadata,omitempty"`
+	PortID         string   `json:"port_id,omitempty"`
+	FixedIPAddress net.IP   `json:"fixed_ip_address,omitempty"`
+	Metadata       Metadata `json:"metadata,omitempty"`
 }
 
 // floatingIPRoot represents a FloatingIP root.
@@ -131,7 +131,7 @@ func (s *FloatingipsServiceOp) Create(ctx context.Context, createRequest *Floati
 // Delete the FloatingIP.
 func (s *FloatingipsServiceOp) Delete(ctx context.Context, fipID string, p *ServicePath) (*TaskResponse, *Response, error) {
 	if _, err := uuid.Parse(fipID); err != nil {
-		return nil, nil, NewArgError("floatingIPID", "should be the correct UUID")
+		return nil, nil, NewArgError("fipID", "should be the correct UUID")
 	}
 
 	if p == nil {

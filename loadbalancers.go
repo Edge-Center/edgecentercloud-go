@@ -46,26 +46,26 @@ var _ LoadbalancersService = &LoadbalancersServiceOp{}
 
 // Loadbalancer represents an EdgecenterCloud Loadbalancer.
 type Loadbalancer struct {
-	ID                 string                 `json:"id"`
-	Name               string                 `json:"name"`
-	Flavor             Flavor                 `json:"flavor"`
-	VipAddress         net.IP                 `json:"vip_address"`
-	VipPortID          string                 `json:"vip_port_id"`
-	VipNetworkID       string                 `json:"vip_network_id"`
-	ProvisioningStatus ProvisioningStatus     `json:"provisioning_status"`
-	OperationStatus    OperatingStatus        `json:"operating_status"`
-	CreatedAt          string                 `json:"created_at"`
-	UpdatedAt          string                 `json:"updated_at"`
-	CreatorTaskID      string                 `json:"creator_task_id"`
-	TaskID             string                 `json:"task_id"`
-	Metadata           map[string]interface{} `json:"metadata,omitempty"`
-	Stats              LoadbalancerStats      `json:"stats"`
-	Listeners          []Listener             `json:"listeners"`
-	FloatingIPs        []FloatingIP           `json:"floating_ips"`
-	VrrpIPs            []VrrpIP               `json:"vrrp_ips"`
-	ProjectID          int                    `json:"project_id"`
-	RegionID           int                    `json:"region_id"`
-	Region             string                 `json:"region"`
+	ID                 string             `json:"id"`
+	Name               string             `json:"name"`
+	Flavor             Flavor             `json:"flavor"`
+	VipAddress         net.IP             `json:"vip_address"`
+	VipPortID          string             `json:"vip_port_id"`
+	VipNetworkID       string             `json:"vip_network_id"`
+	ProvisioningStatus ProvisioningStatus `json:"provisioning_status"`
+	OperationStatus    OperatingStatus    `json:"operating_status"`
+	CreatedAt          string             `json:"created_at"`
+	UpdatedAt          string             `json:"updated_at"`
+	CreatorTaskID      string             `json:"creator_task_id"`
+	TaskID             string             `json:"task_id"`
+	Metadata           Metadata           `json:"metadata,omitempty"`
+	Stats              LoadbalancerStats  `json:"stats"`
+	Listeners          []Listener         `json:"listeners"`
+	FloatingIPs        []FloatingIP       `json:"floating_ips"`
+	VrrpIPs            []VrrpIP           `json:"vrrp_ips"`
+	ProjectID          int                `json:"project_id"`
+	RegionID           int                `json:"region_id"`
+	Region             string             `json:"region"`
 }
 
 // Listener represents an EdgecenterCloud Loadbalancer Listener.
@@ -165,7 +165,7 @@ type LoadbalancerCreateRequest struct {
 	VipPortID    string                              `json:"vip_port_id,omitempty"`
 	VipNetworkID string                              `json:"vip_network_id,omitempty"`
 	VipSubnetID  string                              `json:"vip_subnet_id,omitempty"`
-	Metadata     map[string]interface{}              `json:"metadata,omitempty" validate:"omitempty,dive"`
+	Metadata     Metadata                            `json:"metadata,omitempty" validate:"omitempty,dive"`
 	Tags         []string                            `json:"tag,omitempty"`
 	FloatingIP   InterfaceFloatingIP                 `json:"floating_ip,omitempty"`
 }
