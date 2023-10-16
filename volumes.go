@@ -29,28 +29,28 @@ var _ VolumesService = &VolumesServiceOp{}
 
 // Volume represents an EdgecenterCloud Volume.
 type Volume struct {
-	ID                  string                 `json:"id"`
-	Name                string                 `json:"name"`
-	Status              string                 `json:"status"` // todo: need to implement volume status type
-	Size                int                    `json:"size"`
-	CreatedAt           string                 `json:"created_at"`
-	UpdatedAt           string                 `json:"updated_at"`
-	VolumeType          VolumeType             `json:"volume_type"`
-	Device              string                 `json:"device"`
-	InstanceID          string                 `json:"instance_id"`
-	Bootable            bool                   `json:"bootable"`
-	CreatorTaskID       string                 `json:"creator_task_id"`
-	TaskID              string                 `json:"task_id"`
-	Metadata            map[string]interface{} `json:"metadata"`
-	MetadataDetailed    []MetadataDetailed     `json:"metadata_detailed,omitempty"`
-	SnapshotIDs         []string               `json:"snapshot_ids"`
-	Region              string                 `json:"region"`
-	RegionID            int                    `json:"region_id"`
-	ProjectID           int                    `json:"project_id"`
-	Attachments         []Attachment           `json:"attachments"`
-	VolumeImageMetadata map[string]string      `json:"volume_image_metadata"`
-	LimiterStats        []LimiterStats         `json:"limiter_stats"`
-	AvailabilityZone    string                 `json:"availability_zone"`
+	ID                  string             `json:"id"`
+	Name                string             `json:"name"`
+	Status              string             `json:"status"` // todo: need to implement volume status type
+	Size                int                `json:"size"`
+	CreatedAt           string             `json:"created_at"`
+	UpdatedAt           string             `json:"updated_at"`
+	VolumeType          VolumeType         `json:"volume_type"`
+	Device              string             `json:"device"`
+	InstanceID          string             `json:"instance_id"`
+	Bootable            bool               `json:"bootable"`
+	CreatorTaskID       string             `json:"creator_task_id"`
+	TaskID              string             `json:"task_id"`
+	Metadata            Metadata           `json:"metadata"`
+	MetadataDetailed    []MetadataDetailed `json:"metadata_detailed,omitempty"`
+	SnapshotIDs         []string           `json:"snapshot_ids"`
+	Region              string             `json:"region"`
+	RegionID            int                `json:"region_id"`
+	ProjectID           int                `json:"project_id"`
+	Attachments         []Attachment       `json:"attachments"`
+	VolumeImageMetadata Metadata           `json:"volume_image_metadata"`
+	LimiterStats        []LimiterStats     `json:"limiter_stats"`
+	AvailabilityZone    string             `json:"availability_zone"`
 }
 
 // LimiterStats represents a limiter_stats structure.
@@ -93,16 +93,16 @@ const (
 
 // VolumeCreateRequest represents a request to create a Volume.
 type VolumeCreateRequest struct {
-	AttachmentTag        string                 `json:"attachment_tag,omitempty" validate:"omitempty,required_with=InstanceIDToAttachTo"`
-	ImageID              string                 `json:"image_id,omitempty" validate:"rfe=Source:image,allowed_without=SnapshotID,omitempty,uuid4"`
-	InstanceIDToAttachTo string                 `json:"instance_id_to_attach_to,omitempty" validate:"omitempty,uuid4"`
-	LifeCyclePolicyIDs   []int                  `json:"lifecycle_policy_ids,omitempty"`
-	Metadata             map[string]interface{} `json:"metadata,omitempty" validate:"omitempty,dive"`
-	Name                 string                 `json:"name" required:"true" validate:"required"`
-	Size                 int                    `json:"size,omitempty"`
-	SnapshotID           string                 `json:"snapshot_id,omitempty" validate:"rfe=Source:snapshot,allowed_without=ImageID,omitempty,uuid4"`
-	Source               VolumeSource           `json:"source" required:"true" validate:"required,enum"`
-	TypeName             VolumeType             `json:"type_name" required:"true" validate:"required,enum"`
+	AttachmentTag        string       `json:"attachment_tag,omitempty" validate:"omitempty,required_with=InstanceIDToAttachTo"`
+	ImageID              string       `json:"image_id,omitempty" validate:"rfe=Source:image,allowed_without=SnapshotID,omitempty,uuid4"`
+	InstanceIDToAttachTo string       `json:"instance_id_to_attach_to,omitempty" validate:"omitempty,uuid4"`
+	LifeCyclePolicyIDs   []int        `json:"lifecycle_policy_ids,omitempty"`
+	Metadata             Metadata     `json:"metadata,omitempty" validate:"omitempty,dive"`
+	Name                 string       `json:"name" required:"true" validate:"required"`
+	Size                 int          `json:"size,omitempty"`
+	SnapshotID           string       `json:"snapshot_id,omitempty" validate:"rfe=Source:snapshot,allowed_without=ImageID,omitempty,uuid4"`
+	Source               VolumeSource `json:"source" required:"true" validate:"required,enum"`
+	TypeName             VolumeType   `json:"type_name" required:"true" validate:"required,enum"`
 }
 
 // volumeRoot represents a Volume root.

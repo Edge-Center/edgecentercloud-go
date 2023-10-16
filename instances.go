@@ -12,6 +12,7 @@ import (
 const (
 	instancesBasePathV1 = "/v1/instances"
 	instancesBasePathV2 = "/v2/instances"
+	metadataPath        = "metadata"
 )
 
 // InstancesService is an interface for creating and managing Instances with the EdgecenterCloud API.
@@ -19,7 +20,13 @@ const (
 type InstancesService interface {
 	Get(context.Context, string, *ServicePath) (*Instance, *Response, error)
 	Create(context.Context, *InstanceCreateRequest, *ServicePath) (*TaskResponse, *Response, error)
-	Delete(context.Context, string, *ServicePath) (*TaskResponse, *Response, error)
+	Delete(context.Context, string, *ServicePath, *InstanceDeleteOptions) (*TaskResponse, *Response, error)
+	InstanceMetadata
+}
+
+type InstanceMetadata interface {
+	MetadataGet(context.Context, string, *ServicePath) (*MetadataDetailed, *Response, error)
+	MetadataCreate(context.Context, string, *MetadataCreateRequest, *ServicePath) (*Response, error)
 }
 
 // InstancesServiceOp handles communication with Instances methods of the EdgecenterCloud API.
@@ -39,7 +46,7 @@ type Instance struct {
 	Description      string                       `json:"instance_description,omitempty"`
 	Flavor           *Flavor                      `json:"flavor"`
 	KeypairName      string                       `json:"keypair_name,omitempty"`
-	Metadata         map[string]interface{}       `json:"metadata"`
+	Metadata         Metadata                     `json:"metadata"`
 	MetadataDetailed []MetadataDetailed           `json:"metadata_detailed,omitempty"`
 	ProjectID        int                          `json:"project_id"`
 	Region           string                       `json:"region"`
@@ -88,11 +95,12 @@ const (
 )
 
 type InstanceInterface struct {
-	Type       InterfaceType        `json:"type,omitempty" validate:"omitempty,enum"`
-	NetworkID  string               `json:"network_id,omitempty" validate:"rfe=Type:subnet;any_subnet,omitempty,uuid4"`
-	FloatingIP *InterfaceFloatingIP `json:"floating_ip,omitempty" validate:"omitempty,dive"`
-	PortID     string               `json:"port_id,omitempty" validate:"rfe=Type:reserved_fixed_ip,allowed_without_all=NetworkID SubnetID,omitempty,uuid4"`
-	SubnetID   string               `json:"subnet_id,omitempty" validate:"rfe=Type:subnet,omitempty,uuid4"`
+	Type           InterfaceType                  `json:"type,omitempty" validate:"omitempty,enum"`
+	NetworkID      string                         `json:"network_id,omitempty" validate:"rfe=Type:subnet;any_subnet,omitempty,uuid4"`
+	FloatingIP     *InterfaceFloatingIP           `json:"floating_ip,omitempty" validate:"omitempty,dive"`
+	PortID         string                         `json:"port_id,omitempty" validate:"rfe=Type:reserved_fixed_ip,allowed_without_all=NetworkID SubnetID,omitempty,uuid4"`
+	SubnetID       string                         `json:"subnet_id,omitempty" validate:"rfe=Type:subnet,omitempty,uuid4"`
+	SecurityGroups []InstanceSecurityGroupsCreate `json:"security_groups"`
 }
 
 // InstanceSecurityGroupsCreate represent an instance firewall create struct.
@@ -102,17 +110,17 @@ type InstanceSecurityGroupsCreate struct {
 
 // InstanceVolumeCreate represent a instance volume create struct.
 type InstanceVolumeCreate struct {
-	Source        VolumeSource           `json:"source" required:"true" validate:"required,enum"`
-	BootIndex     int                    `json:"boot_index"`
-	TypeName      VolumeType             `json:"type_name,omitempty" validate:"omitempty"`
-	Size          int                    `json:"size,omitempty" validate:"rfe=Source:image;new-volume,sfe=Source:snapshot;existing-volume"`
-	Name          string                 `json:"name,omitempty" validate:"omitempty"`
-	AttachmentTag string                 `json:"attachment_tag,omitempty" validate:"omitempty"`
-	ImageID       string                 `json:"image_id,omitempty" validate:"rfe=Source:image,sfe=Source:snapshot;apptemplate;existing-volume;new-volume,allowed_without_all=SnapshotID VolumeID,omitempty,uuid4"`
-	VolumeID      string                 `json:"volume_id,omitempty" validate:"rfe=Source:existing-volume,sfe=Source:image;shapshot;apptemplate;new-volume,allowed_without_all=ImageID SnapshotID,omitempty,uuid4"`
-	SnapshotID    string                 `json:"snapshot_id,omitempty" validate:"rfe=Source:snapshot,sfe=Source:image;existing-volume;new-volume;apptemplate,allowed_without_all=ImageID VolumeID,omitempty,uuid4"`
-	AppTemplateID string                 `json:"apptemplate_id,omitempty" validate:"rfe=Source:apptemplate,sfe=Source:image;existing-volume;new-volume;snapshot,allowed_without_all=ImageID VolumeID,omitempty,uuid4"`
-	Metadata      map[string]interface{} `json:"metadata,omitempty" validate:"omitempty,dive"`
+	Source        VolumeSource `json:"source" required:"true" validate:"required,enum"`
+	BootIndex     int          `json:"boot_index"`
+	TypeName      VolumeType   `json:"type_name,omitempty" validate:"omitempty"`
+	Size          int          `json:"size,omitempty" validate:"rfe=Source:image;new-volume,sfe=Source:snapshot;existing-volume"`
+	Name          string       `json:"name,omitempty" validate:"omitempty"`
+	AttachmentTag string       `json:"attachment_tag,omitempty" validate:"omitempty"`
+	ImageID       string       `json:"image_id,omitempty" validate:"rfe=Source:image,sfe=Source:snapshot;apptemplate;existing-volume;new-volume,allowed_without_all=SnapshotID VolumeID,omitempty,uuid4"`
+	VolumeID      string       `json:"volume_id,omitempty" validate:"rfe=Source:existing-volume,sfe=Source:image;shapshot;apptemplate;new-volume,allowed_without_all=ImageID SnapshotID,omitempty,uuid4"`
+	SnapshotID    string       `json:"snapshot_id,omitempty" validate:"rfe=Source:snapshot,sfe=Source:image;existing-volume;new-volume;apptemplate,allowed_without_all=ImageID VolumeID,omitempty,uuid4"`
+	AppTemplateID string       `json:"apptemplate_id,omitempty" validate:"rfe=Source:apptemplate,sfe=Source:image;existing-volume;new-volume;snapshot,allowed_without_all=ImageID VolumeID,omitempty,uuid4"`
+	Metadata      Metadata     `json:"metadata,omitempty" validate:"omitempty,dive"`
 }
 
 // InstanceCreateRequest represents a request to create an Instance.
@@ -126,17 +134,26 @@ type InstanceCreateRequest struct {
 	Password       string                         `json:"password,omitempty" validate:"omitempty,required_with=Username"`
 	Interfaces     []InstanceInterface            `json:"interfaces" required:"true" validate:"required,dive"`
 	SecurityGroups []InstanceSecurityGroupsCreate `json:"security_groups,omitempty" validate:"omitempty,dive,uuid4"`
-	Metadata       map[string]interface{}         `json:"metadata,omitempty" validate:"omitempty,dive"`
+	Metadata       Metadata                       `json:"metadata,omitempty" validate:"omitempty,dive"`
 	Configuration  map[string]interface{}         `json:"configuration,omitempty" validate:"omitempty,dive"`
 	ServerGroupID  string                         `json:"servergroup_id,omitempty" validate:"omitempty,uuid4"`
 	AllowAppPorts  bool                           `json:"allow_app_ports,omitempty"`
 	Volumes        []InstanceVolumeCreate         `json:"volumes" required:"true" validate:"required,dive"`
 }
 
+// InstanceDeleteOptions specifies the optional query parameters to Delete method.
+type InstanceDeleteOptions struct {
+	Volumes          []string `url:"volumes,omitempty" validate:"omitempty,dive,uuid4" delimiter:"comma"`
+	DeleteFloatings  bool     `url:"delete_floatings,omitempty"  validate:"omitempty,allowed_without=FloatingIPs"`
+	FloatingIPs      []string `url:"floatings,omitempty" validate:"omitempty,allowed_without=DeleteFloatings,dive,uuid4" delimiter:"comma"`
+	ReservedFixedIPs []string `url:"reserved_fixed_ips,omitempty" validate:"omitempty,dive,uuid4" delimiter:"comma"`
+}
+
 // instanceRoot represents an Instance root.
 type instanceRoot struct {
-	Instance *Instance     `json:"instance"`
-	Tasks    *TaskResponse `json:"tasks"`
+	Instance *Instance         `json:"instance"`
+	Tasks    *TaskResponse     `json:"tasks"`
+	Metadata *MetadataDetailed `json:"metadata"`
 }
 
 // Get individual Instance.
@@ -193,7 +210,7 @@ func (s *InstancesServiceOp) Create(ctx context.Context, createRequest *Instance
 }
 
 // Delete the Instance.
-func (s *InstancesServiceOp) Delete(ctx context.Context, instanceID string, p *ServicePath) (*TaskResponse, *Response, error) {
+func (s *InstancesServiceOp) Delete(ctx context.Context, instanceID string, p *ServicePath, opts *InstanceDeleteOptions) (*TaskResponse, *Response, error) {
 	if _, err := uuid.Parse(instanceID); err != nil {
 		return nil, nil, NewArgError("instanceID", "should be the correct UUID")
 	}
@@ -204,6 +221,10 @@ func (s *InstancesServiceOp) Delete(ctx context.Context, instanceID string, p *S
 
 	path := addServicePath(instancesBasePathV1, p)
 	path = fmt.Sprintf("%s/%s", path, instanceID)
+	path, err := addOptions(path, opts)
+	if err != nil {
+		return nil, nil, err
+	}
 
 	req, err := s.client.NewRequest(ctx, http.MethodDelete, path, nil)
 	if err != nil {
@@ -217,4 +238,57 @@ func (s *InstancesServiceOp) Delete(ctx context.Context, instanceID string, p *S
 	}
 
 	return root.Tasks, resp, err
+}
+
+// MetadataGet instance detailed metadata (tags).
+func (s *InstancesServiceOp) MetadataGet(ctx context.Context, instanceID string, p *ServicePath) (*MetadataDetailed, *Response, error) {
+	if _, err := uuid.Parse(instanceID); err != nil {
+		return nil, nil, NewArgError("instanceID", "should be the correct UUID")
+	}
+
+	if p == nil {
+		return nil, nil, NewArgError("ServicePath", "cannot be nil")
+	}
+
+	path := addServicePath(instancesBasePathV1, p)
+	path = fmt.Sprintf("%s/%s/%s", path, instanceID, metadataPath)
+
+	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	root := new(instanceRoot)
+	resp, err := s.client.Do(ctx, req, root)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return root.Metadata, resp, err
+}
+
+// MetadataCreate instance metadata (tags).
+func (s *InstancesServiceOp) MetadataCreate(ctx context.Context, instanceID string, metadata *MetadataCreateRequest, p *ServicePath) (*Response, error) {
+	if _, err := uuid.Parse(instanceID); err != nil {
+		return nil, NewArgError("instanceID", "should be the correct UUID")
+	}
+
+	if p == nil {
+		return nil, NewArgError("ServicePath", "cannot be nil")
+	}
+
+	path := addServicePath(instancesBasePathV1, p)
+	path = fmt.Sprintf("%s/%s/%s", path, instanceID, metadataPath)
+
+	req, err := s.client.NewRequest(ctx, http.MethodPut, path, metadata)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := s.client.Do(ctx, req, nil)
+	if err != nil {
+		return resp, err
+	}
+
+	return resp, nil
 }

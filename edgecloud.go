@@ -9,6 +9,9 @@ import (
 	"net/http"
 	"net/url"
 	"path"
+	"reflect"
+
+	"github.com/google/go-querystring/query"
 )
 
 const (
@@ -32,7 +35,7 @@ type Client struct {
 	// APIToken for client
 	APIToken string
 
-	Floatingips    FloatingipsService
+	Floatingips    FloatingIPsService
 	Instances      InstancesService
 	KeyPairs       KeyPairsService
 	Loadbalancers  LoadbalancersService
@@ -41,6 +44,7 @@ type Client struct {
 	SecurityGroups SecurityGroupsService
 	ServerGroups   ServerGroupsService
 	Subnetworks    SubnetworksService
+	Tasks          TasksService
 	Volumes        VolumesService
 
 	// Optional function called after every successful request made to the DO APIs
@@ -66,11 +70,6 @@ func addServicePath(s string, p *ServicePath) string {
 	return path.Join(s, p.Project, p.Region)
 }
 
-// TaskResponse is an EdgecenterCloud response with list of created tasks.
-type TaskResponse struct {
-	Tasks []string `json:"tasks"`
-}
-
 // Response is a EdgecenterCloud response. This wraps the standard http.Response returned from EdgecenterCloud.
 type Response struct {
 	*http.Response
@@ -83,6 +82,34 @@ type ResponseError struct {
 
 	// Error message
 	Message string `json:"message"`
+}
+
+func addOptions(s string, opt interface{}) (string, error) {
+	v := reflect.ValueOf(opt)
+
+	if v.Kind() == reflect.Ptr && v.IsNil() {
+		return s, nil
+	}
+
+	origURL, err := url.Parse(s)
+	if err != nil {
+		return s, err
+	}
+
+	origValues := origURL.Query()
+
+	newValues, err := query.Values(opt)
+	if err != nil {
+		return s, err
+	}
+
+	for k, v := range newValues {
+		origValues[k] = v
+	}
+
+	origURL.RawQuery = origValues.Encode()
+
+	return origURL.String(), nil
 }
 
 func NewClientWithAPIToken(httpClient *http.Client, apiToken string) *Client {
@@ -114,6 +141,7 @@ func NewClient(httpClient *http.Client) *Client {
 	c.SecurityGroups = &SecurityGroupsServiceOp{client: c}
 	c.ServerGroups = &ServerGroupsServiceOp{client: c}
 	c.Subnetworks = &SubnetworksServiceOp{client: c}
+	c.Tasks = &TasksServiceOp{client: c}
 	c.Volumes = &VolumesServiceOp{client: c}
 
 	c.headers = make(map[string]string)

@@ -29,31 +29,31 @@ var _ NetworksService = &NetworksServiceOp{}
 
 // Network represents an EdgecenterCloud Network.
 type Network struct {
-	ID             string                 `json:"id"`
-	Name           string                 `json:"name"`
-	CreatedAt      string                 `json:"created_at"`
-	CreatorTaskID  string                 `json:"creator_task_id"`
-	Default        bool                   `json:"default"`
-	External       bool                   `json:"external"`
-	MTU            int                    `json:"mtu"`
-	Metadata       map[string]interface{} `json:"metadata"`
-	ProjectID      int                    `json:"project_id"`
-	Region         string                 `json:"region"`
-	RegionID       int                    `json:"region_id"`
-	SegmentationID int                    `json:"segmentation_id"`
-	Shared         bool                   `json:"shared"`
-	Subnets        []string               `json:"subnets"`
-	TaskID         string                 `json:"task_id"`
-	Type           string                 `json:"type"`
-	UpdatedAt      string                 `json:"updated_at"`
+	ID             string   `json:"id"`
+	Name           string   `json:"name"`
+	CreatedAt      string   `json:"created_at"`
+	CreatorTaskID  string   `json:"creator_task_id"`
+	Default        bool     `json:"default"`
+	External       bool     `json:"external"`
+	MTU            int      `json:"mtu"`
+	Metadata       Metadata `json:"metadata"`
+	ProjectID      int      `json:"project_id"`
+	Region         string   `json:"region"`
+	RegionID       int      `json:"region_id"`
+	SegmentationID int      `json:"segmentation_id"`
+	Shared         bool     `json:"shared"`
+	Subnets        []string `json:"subnets"`
+	TaskID         string   `json:"task_id"`
+	Type           string   `json:"type"`
+	UpdatedAt      string   `json:"updated_at"`
 }
 
 // NetworkCreateRequest represents a request to create a Network.
 type NetworkCreateRequest struct {
-	Name         string                 `json:"name" required:"true" validate:"required"`
-	CreateRouter bool                   `json:"create_router"`
-	Type         NetworkType            `json:"type,omitempty" validate:"omitempty"`
-	Metadata     map[string]interface{} `json:"metadata,omitempty" validate:"omitempty,dive"`
+	Name         string      `json:"name" required:"true" validate:"required"`
+	CreateRouter bool        `json:"create_router"`
+	Type         NetworkType `json:"type,omitempty" validate:"omitempty"`
+	Metadata     Metadata    `json:"metadata,omitempty" validate:"omitempty,dive"`
 }
 
 type NetworkType string
