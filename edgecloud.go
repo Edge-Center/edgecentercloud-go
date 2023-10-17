@@ -35,6 +35,12 @@ type Client struct {
 	// APIToken for client
 	APIToken string
 
+	// RegionID for client
+	Region string
+
+	// ProjectID for client
+	Project string
+
 	Floatingips    FloatingIPsService
 	Instances      InstancesService
 	KeyPairs       KeyPairsService
