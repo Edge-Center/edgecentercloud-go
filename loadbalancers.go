@@ -35,6 +35,8 @@ type LoadbalancerPools interface {
 	PoolGet(context.Context, string, *ServicePath) (*Pool, *Response, error)
 	PoolCreate(context.Context, *PoolCreateRequest, *ServicePath) (*TaskResponse, *Response, error)
 	PoolDelete(context.Context, string, *ServicePath) (*TaskResponse, *Response, error)
+	PoolUpdate(context.Context, string, *PoolUpdateRequest, *ServicePath) (*TaskResponse, *Response, error)
+	PoolList(context.Context, *ServicePath, *PoolListOptions) ([]Pool, *Response, error)
 }
 
 // LoadbalancersServiceOp handles communication with Loadbalancers methods of the EdgecenterCloud API.
@@ -250,8 +252,7 @@ type HealthMonitorCreateRequest struct {
 	MaxRetriesDown int               `json:"max_retries_down,omitempty"`
 	URLPath        string            `json:"url_path,omitempty"`
 	ExpectedCodes  *string           `json:"expected_codes,omitempty"`
-
-	HTTPMethod *HTTPMethod `json:"http_method,omitempty"`
+	HTTPMethod     *HTTPMethod       `json:"http_method,omitempty"`
 }
 
 // LoadbalancerListenerCreateRequest represents a request to create a Loadbalancer Listener.
@@ -303,6 +304,11 @@ type loadbalancerRoot struct {
 	Tasks        *TaskResponse `json:"tasks"`
 }
 
+// loadbalancerRoot represents a Loadbalancer Pools root.
+type loadbalancerPoolsRoot struct {
+	Pools []Pool `json:"pools"`
+}
+
 // ListenerCreateRequest represents a request to create a Loadbalancer Listener.
 // Used as a separate request to create Listener.
 type ListenerCreateRequest struct {
@@ -319,6 +325,25 @@ type ListenerCreateRequest struct {
 // Used as a separate request to create Pool.
 type PoolCreateRequest struct {
 	LoadbalancerPoolCreateRequest
+}
+
+// PoolUpdateRequest represents a request to update a Loadbalancer Listener Pool.
+type PoolUpdateRequest struct {
+	ID                    string                          `json:"id,omitempty"`
+	Name                  string                          `json:"name,omitempty"`
+	LoadBalancerAlgorithm LoadBalancerAlgorithm           `json:"lb_algorithm,omitempty"`
+	SessionPersistence    *LoadbalancerSessionPersistence `json:"session_persistence,omitempty"`
+	Members               []Member                        `json:"members,omitempty"`
+	HealthMonitor         HealthMonitorCreateRequest      `json:"healthmonitor,omitempty"`
+	TimeoutClientData     int                             `json:"timeout_client_data,omitempty"`
+	TimeoutMemberData     int                             `json:"timeout_member_data,omitempty"`
+	TimeoutMemberConnect  int                             `json:"timeout_member_connect,omitempty"`
+}
+
+type PoolListOptions struct {
+	LoadBalancerID string `url:"loadbalancer_id,omitempty"`
+	ListenerID     string `url:"listener_id,omitempty"`
+	Details        bool   `url:"details,omitempty"` // if true Details show the member and healthmonitor details
 }
 
 // Get individual Loadbalancer.
@@ -559,4 +584,57 @@ func (s *LoadbalancersServiceOp) PoolDelete(ctx context.Context, poolID string, 
 	}
 
 	return root.Tasks, resp, err
+}
+
+// PoolUpdate a Loadbalancer Pool.
+func (s *LoadbalancersServiceOp) PoolUpdate(ctx context.Context, poolID string, updateRequest *PoolUpdateRequest, p *ServicePath) (*TaskResponse, *Response, error) {
+	if _, err := uuid.Parse(poolID); err != nil {
+		return nil, nil, NewArgError("poolID", "should be the correct UUID")
+	}
+
+	if p == nil {
+		return nil, nil, NewArgError("ServicePath", "cannot be nil")
+	}
+
+	path := addServicePath(lbpoolsBasePathV1, p)
+	path = fmt.Sprintf("%s/%s", path, poolID)
+
+	req, err := s.client.NewRequest(ctx, http.MethodPatch, path, updateRequest)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	root := new(loadbalancerRoot)
+	resp, err := s.client.Do(ctx, req, root)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return root.Tasks, resp, err
+}
+
+// PoolList get Loadbalancer Pools.
+func (s *LoadbalancersServiceOp) PoolList(ctx context.Context, p *ServicePath, opts *PoolListOptions) ([]Pool, *Response, error) {
+	if p == nil {
+		return nil, nil, NewArgError("ServicePath", "cannot be nil")
+	}
+
+	path := addServicePath(lbpoolsBasePathV1, p)
+	path, err := addOptions(path, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	root := new(loadbalancerPoolsRoot)
+	resp, err := s.client.Do(ctx, req, root)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return root.Pools, resp, err
 }

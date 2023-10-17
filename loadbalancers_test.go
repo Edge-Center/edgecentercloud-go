@@ -295,3 +295,74 @@ func TestLoadbalancers_PoolDelete(t *testing.T) {
 
 	assert.Equal(t, taskResponse, resp)
 }
+
+func TestLoadbalancers_PoolUpdate(t *testing.T) {
+	setup()
+	defer teardown()
+
+	const (
+		taskID    = "f0d19cec-5c3f-4853-886e-304915960ff6"
+		poolID    = "f0d19cec-5c3f-4853-886e-304915960ff6"
+		projectID = "27520"
+		regionID  = "8"
+	)
+
+	poolUpdateRequest := &PoolUpdateRequest{
+		ID:   poolID,
+		Name: "test-lbpool",
+	}
+
+	taskResponse := &TaskResponse{Tasks: []string{taskID}}
+
+	createLBPoolsURL := fmt.Sprintf("/v1/lbpools/%s/%s/%s", projectID, regionID, poolID)
+
+	mux.HandleFunc(createLBPoolsURL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodPatch)
+		reqBody := new(PoolUpdateRequest)
+		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
+			t.Errorf("failed to decode request body: %v", err)
+		}
+		assert.Equal(t, poolUpdateRequest, reqBody)
+		resp, _ := json.Marshal(taskResponse)
+		_, _ = fmt.Fprintf(w, `{"tasks":%s}`, string(resp))
+	})
+
+	opts := ServicePath{Project: projectID, Region: regionID}
+	resp, _, err := client.Loadbalancers.PoolUpdate(ctx, poolID, poolUpdateRequest, &opts)
+	require.NoError(t, err)
+
+	assert.Equal(t, taskResponse, resp)
+}
+
+func TestLoadbalancers_PoolList(t *testing.T) {
+	setup()
+	defer teardown()
+
+	const (
+		poolID         = "f0d19cec-5c3f-4853-886e-304915960ff6"
+		loadbalancerID = "f0d19cec-5c3f-4853-886e-304915960ff6"
+		projectID      = "27520"
+		regionID       = "8"
+	)
+
+	poolListOptions := PoolListOptions{
+		LoadBalancerID: loadbalancerID,
+	}
+
+	pools := []Pool{{ID: poolID}}
+
+	poolsListURL := fmt.Sprintf("/v1/lbpools/%s/%s", projectID, regionID)
+	mux.HandleFunc(poolsListURL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodGet)
+		resp, _ := json.Marshal(pools)
+		_, _ = fmt.Fprintf(w, `{"pools":%s}`, string(resp))
+	})
+
+	opts := ServicePath{Project: projectID, Region: regionID}
+	resp, _, err := client.Loadbalancers.PoolList(ctx, &opts, &poolListOptions)
+	require.NoError(t, err)
+
+	if !reflect.DeepEqual(resp, pools) {
+		t.Errorf("Loadbalancers.PoolList\n returned %+v,\n expected %+v", resp, pools)
+	}
+}
