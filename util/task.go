@@ -22,22 +22,18 @@ var (
 	errTaskStateUnknown   = errors.New("unknown task state")
 )
 
-// WaitForTaskComplete waits for the task to complete.
-func WaitForTaskComplete(ctx context.Context, client *edgecloud.Client, taskID string, timeout time.Duration) error {
-	ctx, cancel := context.WithTimeout(ctx, timeout)
-	defer cancel() // О
-
-	completed := false
+// waitTask waits for the task to complete.
+func waitTask(ctx context.Context, client *edgecloud.Client, taskID string) (*edgecloud.Task, error) {
 	failCount := 0
-	for !completed {
+	for {
 		taskInfo, _, err := client.Tasks.Get(ctx, taskID)
 		if err != nil {
 			select {
 			case <-ctx.Done():
 				if errors.Is(ctx.Err(), context.DeadlineExceeded) {
-					return errTaskWaitTimeout
+					return nil, errTaskWaitTimeout
 				}
-				return ctx.Err()
+				return nil, ctx.Err()
 			default:
 			}
 			if failCount <= taskFailure {
@@ -45,7 +41,7 @@ func WaitForTaskComplete(ctx context.Context, client *edgecloud.Client, taskID s
 				continue
 			}
 
-			return err
+			return nil, err
 		}
 
 		switch taskInfo.State {
@@ -54,18 +50,31 @@ func WaitForTaskComplete(ctx context.Context, client *edgecloud.Client, taskID s
 			case <-time.After(taskGetInfoRetrySecond * time.Second):
 			case <-ctx.Done():
 				if errors.Is(ctx.Err(), context.DeadlineExceeded) {
-					return errTaskWaitTimeout
+					return nil, errTaskWaitTimeout
 				}
-				return ctx.Err()
+				return nil, ctx.Err()
 			}
 		case edgecloud.TaskStateError:
-			return errTaskWithErrorState
+			return nil, errTaskWithErrorState
 		case edgecloud.TaskStateFinished:
-			completed = true
+			return taskInfo, nil
 		default:
-			return fmt.Errorf("%w: [%s]", errTaskStateUnknown, taskInfo.State)
+			return nil, fmt.Errorf("%w: [%s]", errTaskStateUnknown, taskInfo.State)
 		}
 	}
+}
 
-	return nil
+func WaitForTaskComplete(ctx context.Context, client *edgecloud.Client, taskID string, timeout time.Duration) error {
+	ctx, cancel := context.WithTimeout(ctx, timeout)
+	defer cancel()
+
+	_, err := waitTask(ctx, client, taskID)
+	return err
+}
+
+func WaitAndGetTaskInfo(ctx context.Context, client *edgecloud.Client, taskID string, timeout time.Duration) (*edgecloud.Task, error) {
+	ctx, cancel := context.WithTimeout(ctx, timeout)
+	defer cancel()
+
+	return waitTask(ctx, client, taskID)
 }
