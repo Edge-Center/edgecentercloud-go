@@ -285,10 +285,5 @@ func (s *InstancesServiceOp) MetadataCreate(ctx context.Context, instanceID stri
 		return nil, err
 	}
 
-	resp, err := s.client.Do(ctx, req, nil)
-	if err != nil {
-		return resp, err
-	}
-
-	return resp, nil
+	return s.client.Do(ctx, req, nil)
 }
