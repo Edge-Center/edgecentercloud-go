@@ -17,12 +17,10 @@ func TestInstances_Get(t *testing.T) {
 
 	const (
 		instanceID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-		projectID  = "27520"
-		regionID   = "8"
 	)
 
 	instance := &Instance{ID: instanceID}
-	getInstanceURL := fmt.Sprintf("/v1/instances/%s/%s/%s", projectID, regionID, instanceID)
+	getInstanceURL := fmt.Sprintf("/v1/instances/%d/%d/%s", projectID, regionID, instanceID)
 
 	mux.HandleFunc(getInstanceURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
@@ -30,8 +28,7 @@ func TestInstances_Get(t *testing.T) {
 		_, _ = fmt.Fprintf(w, `{"instance":%s}`, string(resp))
 	})
 
-	opts := ServicePath{Project: projectID, Region: regionID}
-	resp, _, err := client.Instances.Get(ctx, instanceID, &opts)
+	resp, _, err := client.Instances.Get(ctx, instanceID)
 	require.NoError(t, err)
 
 	if !reflect.DeepEqual(resp, instance) {
@@ -44,9 +41,7 @@ func TestInstances_Create(t *testing.T) {
 	defer teardown()
 
 	const (
-		taskID    = "f0d19cec-5c3f-4853-886e-304915960ff6"
-		projectID = "27520"
-		regionID  = "8"
+		taskID = "f0d19cec-5c3f-4853-886e-304915960ff6"
 	)
 
 	instanceCreateRequest := &InstanceCreateRequest{
@@ -67,7 +62,7 @@ func TestInstances_Create(t *testing.T) {
 
 	taskResponse := &TaskResponse{Tasks: []string{taskID}}
 
-	createInstanceURL := fmt.Sprintf("/v2/instances/%s/%s", projectID, regionID)
+	createInstanceURL := fmt.Sprintf("/v2/instances/%d/%d", projectID, regionID)
 
 	mux.HandleFunc(createInstanceURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
@@ -80,8 +75,7 @@ func TestInstances_Create(t *testing.T) {
 		_, _ = fmt.Fprintf(w, `{"tasks":%s}`, string(resp))
 	})
 
-	opts := ServicePath{Project: projectID, Region: regionID}
-	resp, _, err := client.Instances.Create(ctx, instanceCreateRequest, &opts)
+	resp, _, err := client.Instances.Create(ctx, instanceCreateRequest)
 	require.NoError(t, err)
 
 	assert.Equal(t, taskResponse, resp)
@@ -94,13 +88,11 @@ func TestInstances_Delete(t *testing.T) {
 	const (
 		taskID     = "f0d19cec-5c3f-4853-886e-304915960ff6"
 		instanceID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-		projectID  = "27520"
-		regionID   = "8"
 	)
 
 	taskResponse := &TaskResponse{Tasks: []string{taskID}}
 
-	deleteInstanceURL := fmt.Sprintf("/v1/instances/%s/%s/%s", projectID, regionID, instanceID)
+	deleteInstanceURL := fmt.Sprintf("/v1/instances/%d/%d/%s", projectID, regionID, instanceID)
 
 	mux.HandleFunc(deleteInstanceURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodDelete)
@@ -108,8 +100,7 @@ func TestInstances_Delete(t *testing.T) {
 		_, _ = fmt.Fprintf(w, `{"tasks":%s}`, string(resp))
 	})
 
-	opts := ServicePath{Project: projectID, Region: regionID}
-	resp, _, err := client.Instances.Delete(ctx, instanceID, &opts, nil)
+	resp, _, err := client.Instances.Delete(ctx, instanceID, nil)
 	require.NoError(t, err)
 
 	assert.Equal(t, taskResponse, resp)
@@ -122,8 +113,6 @@ func TestInstances_DeleteWithOptions(t *testing.T) {
 	const (
 		taskID     = "f0d19cec-5c3f-4853-886e-304915960ff6"
 		instanceID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-		projectID  = "27520"
-		regionID   = "8"
 	)
 
 	taskResponse := &TaskResponse{Tasks: []string{taskID}}
@@ -132,15 +121,14 @@ func TestInstances_DeleteWithOptions(t *testing.T) {
 		Volumes:         []string{"f0d19cec-5c3f-4853-886e-304915960ff6"},
 	}
 
-	deleteInstanceURL := fmt.Sprintf("/v1/instances/%s/%s/%s", projectID, regionID, instanceID)
+	deleteInstanceURL := fmt.Sprintf("/v1/instances/%d/%d/%s", projectID, regionID, instanceID)
 	mux.HandleFunc(deleteInstanceURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodDelete)
 		resp, _ := json.Marshal(taskResponse)
 		_, _ = fmt.Fprintf(w, `{"tasks":%s}`, string(resp))
 	})
 
-	opts := ServicePath{Project: projectID, Region: regionID}
-	resp, _, err := client.Instances.Delete(ctx, instanceID, &opts, &instanceDeleteOptions)
+	resp, _, err := client.Instances.Delete(ctx, instanceID, &instanceDeleteOptions)
 	require.NoError(t, err)
 
 	assert.Equal(t, taskResponse, resp)
@@ -152,8 +140,6 @@ func TestInstances_MetadataGet(t *testing.T) {
 
 	const (
 		instanceID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-		projectID  = "27520"
-		regionID   = "8"
 	)
 
 	metadata := &MetadataDetailed{
@@ -161,7 +147,7 @@ func TestInstances_MetadataGet(t *testing.T) {
 		Value:    "b3c52ece-147e-4af5-8d7c-84691309b879",
 		ReadOnly: true,
 	}
-	getInstanceMetadataURL := fmt.Sprintf("/v1/instances/%s/%s/%s/%s", projectID, regionID, instanceID, metadataPath)
+	getInstanceMetadataURL := fmt.Sprintf("/v1/instances/%d/%d/%s/%s", projectID, regionID, instanceID, metadataPath)
 
 	mux.HandleFunc(getInstanceMetadataURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
@@ -169,8 +155,7 @@ func TestInstances_MetadataGet(t *testing.T) {
 		_, _ = fmt.Fprintf(w, `{"metadata":%s}`, string(resp))
 	})
 
-	opts := ServicePath{Project: projectID, Region: regionID}
-	resp, _, err := client.Instances.MetadataGet(ctx, instanceID, &opts)
+	resp, _, err := client.Instances.MetadataGet(ctx, instanceID)
 	require.NoError(t, err)
 
 	if !reflect.DeepEqual(resp, metadata) {
@@ -184,21 +169,18 @@ func TestInstances_MetadataCreate(t *testing.T) {
 
 	const (
 		instanceID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-		projectID  = "27520"
-		regionID   = "8"
 	)
 
 	metadataCreateRequest := &MetadataCreateRequest{
 		map[string]interface{}{"key": "value"},
 	}
 
-	createInstanceMetadataURL := fmt.Sprintf("/v1/instances/%s/%s/%s/%s", projectID, regionID, instanceID, metadataPath)
+	createInstanceMetadataURL := fmt.Sprintf("/v1/instances/%d/%d/%s/%s", projectID, regionID, instanceID, metadataPath)
 
 	mux.HandleFunc(createInstanceMetadataURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPut)
 	})
 
-	opts := ServicePath{Project: projectID, Region: regionID}
-	_, err := client.Instances.MetadataCreate(ctx, instanceID, metadataCreateRequest, &opts)
+	_, err := client.Instances.MetadataCreate(ctx, instanceID, metadataCreateRequest)
 	require.NoError(t, err)
 }

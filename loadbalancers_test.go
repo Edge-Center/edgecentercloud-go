@@ -17,12 +17,10 @@ func TestLoadbalancers_Get(t *testing.T) {
 
 	const (
 		loadbalancerID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-		projectID      = "27520"
-		regionID       = "8"
 	)
 
 	loadbalancer := &Loadbalancer{ID: loadbalancerID}
-	getLoadbalancerURL := fmt.Sprintf("/v1/loadbalancers/%s/%s/%s", projectID, regionID, loadbalancerID)
+	getLoadbalancerURL := fmt.Sprintf("/v1/loadbalancers/%d/%d/%s", projectID, regionID, loadbalancerID)
 
 	mux.HandleFunc(getLoadbalancerURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
@@ -30,8 +28,7 @@ func TestLoadbalancers_Get(t *testing.T) {
 		_, _ = fmt.Fprintf(w, `{"loadbalancer":%s}`, string(resp))
 	})
 
-	opts := ServicePath{Project: projectID, Region: regionID}
-	resp, _, err := client.Loadbalancers.Get(ctx, loadbalancerID, &opts)
+	resp, _, err := client.Loadbalancers.Get(ctx, loadbalancerID)
 	require.NoError(t, err)
 
 	if !reflect.DeepEqual(resp, loadbalancer) {
@@ -44,9 +41,7 @@ func TestLoadbalancers_Create(t *testing.T) {
 	defer teardown()
 
 	const (
-		taskID    = "f0d19cec-5c3f-4853-886e-304915960ff6"
-		projectID = "27520"
-		regionID  = "8"
+		taskID = "f0d19cec-5c3f-4853-886e-304915960ff6"
 	)
 
 	loadbalancerCreateRequest := &LoadbalancerCreateRequest{
@@ -56,7 +51,7 @@ func TestLoadbalancers_Create(t *testing.T) {
 
 	taskResponse := &TaskResponse{Tasks: []string{taskID}}
 
-	createLoadbalancerURL := fmt.Sprintf("/v1/loadbalancers/%s/%s", projectID, regionID)
+	createLoadbalancerURL := fmt.Sprintf("/v1/loadbalancers/%d/%d", projectID, regionID)
 
 	mux.HandleFunc(createLoadbalancerURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
@@ -69,8 +64,7 @@ func TestLoadbalancers_Create(t *testing.T) {
 		_, _ = fmt.Fprintf(w, `{"tasks":%s}`, string(resp))
 	})
 
-	opts := ServicePath{Project: projectID, Region: regionID}
-	resp, _, err := client.Loadbalancers.Create(ctx, loadbalancerCreateRequest, &opts)
+	resp, _, err := client.Loadbalancers.Create(ctx, loadbalancerCreateRequest)
 	require.NoError(t, err)
 
 	assert.Equal(t, taskResponse, resp)
@@ -83,13 +77,11 @@ func TestLoadbalancers_Delete(t *testing.T) {
 	const (
 		taskID         = "f0d19cec-5c3f-4853-886e-304915960ff6"
 		loadbalancerID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-		projectID      = "27520"
-		regionID       = "8"
 	)
 
 	taskResponse := &TaskResponse{Tasks: []string{taskID}}
 
-	deleteLoadbalancerURL := fmt.Sprintf("/v1/loadbalancers/%s/%s/%s", projectID, regionID, loadbalancerID)
+	deleteLoadbalancerURL := fmt.Sprintf("/v1/loadbalancers/%d/%d/%s", projectID, regionID, loadbalancerID)
 
 	mux.HandleFunc(deleteLoadbalancerURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodDelete)
@@ -97,8 +89,7 @@ func TestLoadbalancers_Delete(t *testing.T) {
 		_, _ = fmt.Fprintf(w, `{"tasks":%s}`, string(resp))
 	})
 
-	opts := ServicePath{Project: projectID, Region: regionID}
-	resp, _, err := client.Loadbalancers.Delete(ctx, loadbalancerID, &opts)
+	resp, _, err := client.Loadbalancers.Delete(ctx, loadbalancerID)
 	require.NoError(t, err)
 
 	assert.Equal(t, taskResponse, resp)
@@ -110,12 +101,10 @@ func TestLoadbalancers_ListenerGet(t *testing.T) {
 
 	const (
 		listenerID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-		projectID  = "27520"
-		regionID   = "8"
 	)
 
 	listener := &Listener{ID: listenerID}
-	getLBListenersURL := fmt.Sprintf("/v1/lblisteners/%s/%s/%s", projectID, regionID, listenerID)
+	getLBListenersURL := fmt.Sprintf("/v1/lblisteners/%d/%d/%s", projectID, regionID, listenerID)
 
 	mux.HandleFunc(getLBListenersURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
@@ -123,8 +112,7 @@ func TestLoadbalancers_ListenerGet(t *testing.T) {
 		_, _ = fmt.Fprintf(w, `{"listener":%s}`, string(resp))
 	})
 
-	opts := ServicePath{Project: projectID, Region: regionID}
-	resp, _, err := client.Loadbalancers.ListenerGet(ctx, listenerID, &opts)
+	resp, _, err := client.Loadbalancers.ListenerGet(ctx, listenerID)
 	require.NoError(t, err)
 
 	if !reflect.DeepEqual(resp, listener) {
@@ -139,8 +127,6 @@ func TestLoadbalancers_ListenerCreate(t *testing.T) {
 	const (
 		taskID         = "f0d19cec-5c3f-4853-886e-304915960ff6"
 		loadbalancerID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-		projectID      = "27520"
-		regionID       = "8"
 	)
 
 	listenerCreateRequest := &ListenerCreateRequest{
@@ -152,7 +138,7 @@ func TestLoadbalancers_ListenerCreate(t *testing.T) {
 
 	taskResponse := &TaskResponse{Tasks: []string{taskID}}
 
-	createLBListenersURL := fmt.Sprintf("/v1/lblisteners/%s/%s", projectID, regionID)
+	createLBListenersURL := fmt.Sprintf("/v1/lblisteners/%d/%d", projectID, regionID)
 
 	mux.HandleFunc(createLBListenersURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
@@ -165,8 +151,7 @@ func TestLoadbalancers_ListenerCreate(t *testing.T) {
 		_, _ = fmt.Fprintf(w, `{"tasks":%s}`, string(resp))
 	})
 
-	opts := ServicePath{Project: projectID, Region: regionID}
-	resp, _, err := client.Loadbalancers.ListenerCreate(ctx, listenerCreateRequest, &opts)
+	resp, _, err := client.Loadbalancers.ListenerCreate(ctx, listenerCreateRequest)
 	require.NoError(t, err)
 
 	assert.Equal(t, taskResponse, resp)
@@ -179,13 +164,11 @@ func TestLoadbalancers_ListenerDelete(t *testing.T) {
 	const (
 		taskID     = "f0d19cec-5c3f-4853-886e-304915960ff6"
 		listenerID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-		projectID  = "27520"
-		regionID   = "8"
 	)
 
 	taskResponse := &TaskResponse{Tasks: []string{taskID}}
 
-	deleteLBListenersURL := fmt.Sprintf("/v1/lblisteners/%s/%s/%s", projectID, regionID, listenerID)
+	deleteLBListenersURL := fmt.Sprintf("/v1/lblisteners/%d/%d/%s", projectID, regionID, listenerID)
 
 	mux.HandleFunc(deleteLBListenersURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodDelete)
@@ -193,8 +176,7 @@ func TestLoadbalancers_ListenerDelete(t *testing.T) {
 		_, _ = fmt.Fprintf(w, `{"tasks":%s}`, string(resp))
 	})
 
-	opts := ServicePath{Project: projectID, Region: regionID}
-	resp, _, err := client.Loadbalancers.ListenerDelete(ctx, listenerID, &opts)
+	resp, _, err := client.Loadbalancers.ListenerDelete(ctx, listenerID)
 	require.NoError(t, err)
 
 	assert.Equal(t, taskResponse, resp)
@@ -205,13 +187,11 @@ func TestLoadbalancers_PoolGet(t *testing.T) {
 	defer teardown()
 
 	const (
-		poolID    = "f0d19cec-5c3f-4853-886e-304915960ff6"
-		projectID = "27520"
-		regionID  = "8"
+		poolID = "f0d19cec-5c3f-4853-886e-304915960ff6"
 	)
 
 	pool := &Pool{ID: poolID}
-	getLBPoolsURL := fmt.Sprintf("/v1/lbpools/%s/%s/%s", projectID, regionID, poolID)
+	getLBPoolsURL := fmt.Sprintf("/v1/lbpools/%d/%d/%s", projectID, regionID, poolID)
 
 	mux.HandleFunc(getLBPoolsURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
@@ -219,8 +199,7 @@ func TestLoadbalancers_PoolGet(t *testing.T) {
 		_, _ = fmt.Fprintf(w, `{"pool":%s}`, string(resp))
 	})
 
-	opts := ServicePath{Project: projectID, Region: regionID}
-	resp, _, err := client.Loadbalancers.PoolGet(ctx, poolID, &opts)
+	resp, _, err := client.Loadbalancers.PoolGet(ctx, poolID)
 	require.NoError(t, err)
 
 	if !reflect.DeepEqual(resp, pool) {
@@ -235,8 +214,6 @@ func TestLoadbalancers_PoolCreate(t *testing.T) {
 	const (
 		taskID     = "f0d19cec-5c3f-4853-886e-304915960ff6"
 		listenerID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-		projectID  = "27520"
-		regionID   = "8"
 	)
 
 	poolCreateRequest := &PoolCreateRequest{
@@ -248,7 +225,7 @@ func TestLoadbalancers_PoolCreate(t *testing.T) {
 
 	taskResponse := &TaskResponse{Tasks: []string{taskID}}
 
-	createLBPoolsURL := fmt.Sprintf("/v1/lbpools/%s/%s", projectID, regionID)
+	createLBPoolsURL := fmt.Sprintf("/v1/lbpools/%d/%d", projectID, regionID)
 
 	mux.HandleFunc(createLBPoolsURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
@@ -261,8 +238,7 @@ func TestLoadbalancers_PoolCreate(t *testing.T) {
 		_, _ = fmt.Fprintf(w, `{"tasks":%s}`, string(resp))
 	})
 
-	opts := ServicePath{Project: projectID, Region: regionID}
-	resp, _, err := client.Loadbalancers.PoolCreate(ctx, poolCreateRequest, &opts)
+	resp, _, err := client.Loadbalancers.PoolCreate(ctx, poolCreateRequest)
 	require.NoError(t, err)
 
 	assert.Equal(t, taskResponse, resp)
@@ -273,15 +249,13 @@ func TestLoadbalancers_PoolDelete(t *testing.T) {
 	defer teardown()
 
 	const (
-		taskID    = "f0d19cec-5c3f-4853-886e-304915960ff6"
-		poolID    = "f0d19cec-5c3f-4853-886e-304915960ff6"
-		projectID = "27520"
-		regionID  = "8"
+		taskID = "f0d19cec-5c3f-4853-886e-304915960ff6"
+		poolID = "f0d19cec-5c3f-4853-886e-304915960ff6"
 	)
 
 	taskResponse := &TaskResponse{Tasks: []string{taskID}}
 
-	deleteLBPoolsURL := fmt.Sprintf("/v1/lbpools/%s/%s/%s", projectID, regionID, poolID)
+	deleteLBPoolsURL := fmt.Sprintf("/v1/lbpools/%d/%d/%s", projectID, regionID, poolID)
 
 	mux.HandleFunc(deleteLBPoolsURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodDelete)
@@ -289,8 +263,7 @@ func TestLoadbalancers_PoolDelete(t *testing.T) {
 		_, _ = fmt.Fprintf(w, `{"tasks":%s}`, string(resp))
 	})
 
-	opts := ServicePath{Project: projectID, Region: regionID}
-	resp, _, err := client.Loadbalancers.PoolDelete(ctx, poolID, &opts)
+	resp, _, err := client.Loadbalancers.PoolDelete(ctx, poolID)
 	require.NoError(t, err)
 
 	assert.Equal(t, taskResponse, resp)
@@ -301,10 +274,8 @@ func TestLoadbalancers_PoolUpdate(t *testing.T) {
 	defer teardown()
 
 	const (
-		taskID    = "f0d19cec-5c3f-4853-886e-304915960ff6"
-		poolID    = "f0d19cec-5c3f-4853-886e-304915960ff6"
-		projectID = "27520"
-		regionID  = "8"
+		taskID = "f0d19cec-5c3f-4853-886e-304915960ff6"
+		poolID = "f0d19cec-5c3f-4853-886e-304915960ff6"
 	)
 
 	poolUpdateRequest := &PoolUpdateRequest{
@@ -314,7 +285,7 @@ func TestLoadbalancers_PoolUpdate(t *testing.T) {
 
 	taskResponse := &TaskResponse{Tasks: []string{taskID}}
 
-	createLBPoolsURL := fmt.Sprintf("/v1/lbpools/%s/%s/%s", projectID, regionID, poolID)
+	createLBPoolsURL := fmt.Sprintf("/v1/lbpools/%d/%d/%s", projectID, regionID, poolID)
 
 	mux.HandleFunc(createLBPoolsURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPatch)
@@ -327,8 +298,7 @@ func TestLoadbalancers_PoolUpdate(t *testing.T) {
 		_, _ = fmt.Fprintf(w, `{"tasks":%s}`, string(resp))
 	})
 
-	opts := ServicePath{Project: projectID, Region: regionID}
-	resp, _, err := client.Loadbalancers.PoolUpdate(ctx, poolID, poolUpdateRequest, &opts)
+	resp, _, err := client.Loadbalancers.PoolUpdate(ctx, poolID, poolUpdateRequest)
 	require.NoError(t, err)
 
 	assert.Equal(t, taskResponse, resp)
@@ -341,8 +311,6 @@ func TestLoadbalancers_PoolList(t *testing.T) {
 	const (
 		poolID         = "f0d19cec-5c3f-4853-886e-304915960ff6"
 		loadbalancerID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-		projectID      = "27520"
-		regionID       = "8"
 	)
 
 	poolListOptions := PoolListOptions{
@@ -351,15 +319,14 @@ func TestLoadbalancers_PoolList(t *testing.T) {
 
 	pools := []Pool{{ID: poolID}}
 
-	poolsListURL := fmt.Sprintf("/v1/lbpools/%s/%s", projectID, regionID)
+	poolsListURL := fmt.Sprintf("/v1/lbpools/%d/%d", projectID, regionID)
 	mux.HandleFunc(poolsListURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
 		resp, _ := json.Marshal(pools)
 		_, _ = fmt.Fprintf(w, `{"pools":%s}`, string(resp))
 	})
 
-	opts := ServicePath{Project: projectID, Region: regionID}
-	resp, _, err := client.Loadbalancers.PoolList(ctx, &opts, &poolListOptions)
+	resp, _, err := client.Loadbalancers.PoolList(ctx, &poolListOptions)
 	require.NoError(t, err)
 
 	if !reflect.DeepEqual(resp, pools) {

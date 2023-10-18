@@ -10,6 +10,8 @@ import (
 	"net/url"
 	"path"
 	"reflect"
+	"strconv"
+	"strings"
 
 	"github.com/google/go-querystring/query"
 )
@@ -32,14 +34,14 @@ type Client struct {
 	// User agent for client
 	UserAgent string
 
-	// APIToken for client
-	APIToken string
+	// APIKey token for client
+	APIKey string
 
 	// RegionID for client
-	Region string
+	Region int
 
 	// ProjectID for client
-	Project string
+	Project int
 
 	Floatingips    FloatingIPsService
 	Instances      InstancesService
@@ -63,17 +65,22 @@ type Client struct {
 // RequestCompletionCallback defines the type of the request callback function.
 type RequestCompletionCallback func(*http.Request, *http.Response)
 
-// ServicePath specifies additional paths for service endpoints.
-type ServicePath struct {
-	// Region is EdgeCenter region
-	Region string
+func (c *Client) addServicePath(s string) string {
+	projectStr := strconv.Itoa(c.Project)
+	regionStr := strconv.Itoa(c.Region)
 
-	// Project is EdgeCenter project
-	Project string
+	return path.Join(s, projectStr, regionStr)
 }
 
-func addServicePath(s string, p *ServicePath) string {
-	return path.Join(s, p.Project, p.Region)
+func (c *Client) Validate() error {
+	if c.Project == 0 {
+		return NewArgError("Client.Project", "is not set")
+	}
+	if c.Region == 0 {
+		return NewArgError("Client.Region", "is not set")
+	}
+
+	return nil
 }
 
 // Response is a EdgecenterCloud response. This wraps the standard http.Response returned from EdgecenterCloud.
@@ -118,15 +125,6 @@ func addOptions(s string, opt interface{}) (string, error) {
 	return origURL.String(), nil
 }
 
-func NewClientWithAPIToken(httpClient *http.Client, apiToken string) *Client {
-	c := NewClient(httpClient)
-
-	c.APIToken = apiToken
-	c.headers["Authorization"] = fmt.Sprintf("APIKey %s", apiToken)
-
-	return c
-}
-
 // NewClient returns a new EdgecenterCloud API, using the given
 // http.Client to perform all requests.
 func NewClient(httpClient *http.Client) *Client {
@@ -153,6 +151,69 @@ func NewClient(httpClient *http.Client) *Client {
 	c.headers = make(map[string]string)
 
 	return c
+}
+
+// ClientOpt are options for New.
+type ClientOpt func(*Client) error
+
+// New returns a new EdgecenterCloud API client instance.
+func New(httpClient *http.Client, opts ...ClientOpt) (*Client, error) {
+	c := NewClient(httpClient)
+	for _, opt := range opts {
+		if err := opt(c); err != nil {
+			return nil, err
+		}
+	}
+
+	return c, nil
+}
+
+// SetBaseURL is a client option for setting the base URL.
+func SetBaseURL(bu string) ClientOpt {
+	return func(c *Client) error {
+		u, err := url.Parse(bu)
+		if err != nil {
+			return err
+		}
+
+		c.BaseURL = u
+
+		return nil
+	}
+}
+
+// SetAPIKey is a client option for setting the APIKey token.
+func SetAPIKey(apiKey string) ClientOpt {
+	return func(c *Client) error {
+		tokenPartsCount := 2
+		parts := strings.SplitN(apiKey, " ", tokenPartsCount)
+		if len(parts) == 2 && strings.ToLower(parts[0]) == "apikey" {
+			apiKey = parts[1]
+		}
+		c.APIKey = apiKey
+		c.headers["Authorization"] = fmt.Sprintf("APIKey %s", c.APIKey)
+
+		return nil
+	}
+}
+
+// SetUserAgent is a client option for setting the user agent.
+func SetUserAgent(ua string) ClientOpt {
+	return func(c *Client) error {
+		c.UserAgent = fmt.Sprintf("%s %s", ua, c.UserAgent)
+		return nil
+	}
+}
+
+// SetRequestHeaders sets optional HTTP headers on the client that are
+// sent on each HTTP request.
+func SetRequestHeaders(headers map[string]string) ClientOpt {
+	return func(c *Client) error {
+		for k, v := range headers {
+			c.headers[k] = v
+		}
+		return nil
+	}
 }
 
 // NewRequest creates an API request. A relative URL can be provided in urlStr, which will be resolved to the

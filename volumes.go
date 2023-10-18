@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-
-	"github.com/google/uuid"
 )
 
 const (
@@ -15,9 +13,9 @@ const (
 // VolumesService is an interface for creating and managing Volumes with the EdgecenterCloud API.
 // See: https://apidocs.edgecenter.ru/cloud#tag/volumes
 type VolumesService interface {
-	Create(context.Context, *VolumeCreateRequest, *ServicePath) (*TaskResponse, *Response, error)
-	Get(context.Context, string, *ServicePath) (*Volume, *Response, error)
-	Delete(context.Context, string, *ServicePath) (*TaskResponse, *Response, error)
+	Create(context.Context, *VolumeCreateRequest) (*TaskResponse, *Response, error)
+	Get(context.Context, string) (*Volume, *Response, error)
+	Delete(context.Context, string) (*TaskResponse, *Response, error)
 }
 
 // VolumesServiceOp handles communication with Volumes methods of the EdgecenterCloud API.
@@ -112,17 +110,16 @@ type volumeRoot struct {
 }
 
 // Get individual Volume.
-func (s *VolumesServiceOp) Get(ctx context.Context, volumeID string, p *ServicePath) (*Volume, *Response, error) {
-	if _, err := uuid.Parse(volumeID); err != nil {
-		return nil, nil, NewArgError("volumeID", "should be the correct UUID")
+func (s *VolumesServiceOp) Get(ctx context.Context, volumeID string) (*Volume, *Response, error) {
+	if err := isValidUUID(volumeID, "volumeID"); err != nil {
+		return nil, nil, err
 	}
 
-	if p == nil {
-		return nil, nil, NewArgError("ServicePath", "cannot be nil")
+	if err := s.client.Validate(); err != nil {
+		return nil, nil, err
 	}
 
-	path := addServicePath(volumesBasePathV1, p)
-	path = fmt.Sprintf("%s/%s", path, volumeID)
+	path := fmt.Sprintf("%s/%s", s.client.addServicePath(volumesBasePathV1), volumeID)
 
 	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
 	if err != nil {
@@ -139,16 +136,16 @@ func (s *VolumesServiceOp) Get(ctx context.Context, volumeID string, p *ServiceP
 }
 
 // Create a Volume.
-func (s *VolumesServiceOp) Create(ctx context.Context, createRequest *VolumeCreateRequest, p *ServicePath) (*TaskResponse, *Response, error) {
+func (s *VolumesServiceOp) Create(ctx context.Context, createRequest *VolumeCreateRequest) (*TaskResponse, *Response, error) {
 	if createRequest == nil {
 		return nil, nil, NewArgError("createRequest", "cannot be nil")
 	}
 
-	if p == nil {
-		return nil, nil, NewArgError("ServicePath", "cannot be nil")
+	if err := s.client.Validate(); err != nil {
+		return nil, nil, err
 	}
 
-	path := addServicePath(volumesBasePathV1, p)
+	path := s.client.addServicePath(volumesBasePathV1)
 
 	req, err := s.client.NewRequest(ctx, http.MethodPost, path, createRequest)
 	if err != nil {
@@ -165,17 +162,16 @@ func (s *VolumesServiceOp) Create(ctx context.Context, createRequest *VolumeCrea
 }
 
 // Delete the Volume.
-func (s *VolumesServiceOp) Delete(ctx context.Context, volumeID string, p *ServicePath) (*TaskResponse, *Response, error) {
-	if _, err := uuid.Parse(volumeID); err != nil {
-		return nil, nil, NewArgError("volumeID", "should be the correct UUID")
+func (s *VolumesServiceOp) Delete(ctx context.Context, volumeID string) (*TaskResponse, *Response, error) {
+	if err := isValidUUID(volumeID, "volumeID"); err != nil {
+		return nil, nil, err
 	}
 
-	if p == nil {
-		return nil, nil, NewArgError("ServicePath", "cannot be nil")
+	if err := s.client.Validate(); err != nil {
+		return nil, nil, err
 	}
 
-	path := addServicePath(volumesBasePathV1, p)
-	path = fmt.Sprintf("%s/%s", path, volumeID)
+	path := fmt.Sprintf("%s/%s", s.client.addServicePath(volumesBasePathV1), volumeID)
 
 	req, err := s.client.NewRequest(ctx, http.MethodDelete, path, nil)
 	if err != nil {

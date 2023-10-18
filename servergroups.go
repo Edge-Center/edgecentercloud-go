@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-
-	"github.com/google/uuid"
 )
 
 const (
@@ -15,9 +13,9 @@ const (
 // ServerGroupsService is an interface for creating and managing Server Groups with the EdgecenterCloud API.
 // See: https://apidocs.edgecenter.ru/cloud#tag/servergroups
 type ServerGroupsService interface {
-	Get(context.Context, string, *ServicePath) (*ServerGroup, *Response, error)
-	Create(context.Context, *ServerGroupCreateRequest, *ServicePath) (*ServerGroup, *Response, error)
-	Delete(context.Context, string, *ServicePath) (*Response, error)
+	Get(context.Context, string) (*ServerGroup, *Response, error)
+	Create(context.Context, *ServerGroupCreateRequest) (*ServerGroup, *Response, error)
+	Delete(context.Context, string) (*Response, error)
 }
 
 // ServerGroupsServiceOp handles communication with Server Groups methods of the EdgecenterCloud API.
@@ -63,17 +61,16 @@ type serverGroupRoot struct {
 }
 
 // Get individual Server Group.
-func (s *ServerGroupsServiceOp) Get(ctx context.Context, sgID string, p *ServicePath) (*ServerGroup, *Response, error) {
-	if _, err := uuid.Parse(sgID); err != nil {
-		return nil, nil, NewArgError("sgID", "should be the correct UUID")
+func (s *ServerGroupsServiceOp) Get(ctx context.Context, serverGroupID string) (*ServerGroup, *Response, error) {
+	if err := isValidUUID(serverGroupID, "serverGroupID"); err != nil {
+		return nil, nil, err
 	}
 
-	if p == nil {
-		return nil, nil, NewArgError("ServicePath", "cannot be nil")
+	if err := s.client.Validate(); err != nil {
+		return nil, nil, err
 	}
 
-	path := addServicePath(servergroupsBasePathV1, p)
-	path = fmt.Sprintf("%s/%s", path, sgID)
+	path := fmt.Sprintf("%s/%s", s.client.addServicePath(servergroupsBasePathV1), serverGroupID)
 
 	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
 	if err != nil {
@@ -90,16 +87,16 @@ func (s *ServerGroupsServiceOp) Get(ctx context.Context, sgID string, p *Service
 }
 
 // Create a Server Group.
-func (s *ServerGroupsServiceOp) Create(ctx context.Context, createRequest *ServerGroupCreateRequest, p *ServicePath) (*ServerGroup, *Response, error) {
+func (s *ServerGroupsServiceOp) Create(ctx context.Context, createRequest *ServerGroupCreateRequest) (*ServerGroup, *Response, error) {
 	if createRequest == nil {
 		return nil, nil, NewArgError("createRequest", "cannot be nil")
 	}
 
-	if p == nil {
-		return nil, nil, NewArgError("ServicePath", "cannot be nil")
+	if err := s.client.Validate(); err != nil {
+		return nil, nil, err
 	}
 
-	path := addServicePath(servergroupsBasePathV1, p)
+	path := s.client.addServicePath(servergroupsBasePathV1)
 
 	req, err := s.client.NewRequest(ctx, http.MethodPost, path, createRequest)
 	if err != nil {
@@ -116,17 +113,16 @@ func (s *ServerGroupsServiceOp) Create(ctx context.Context, createRequest *Serve
 }
 
 // Delete the Server Group.
-func (s *ServerGroupsServiceOp) Delete(ctx context.Context, sgID string, p *ServicePath) (*Response, error) {
-	if _, err := uuid.Parse(sgID); err != nil {
-		return nil, NewArgError("sgID", "should be the correct UUID")
+func (s *ServerGroupsServiceOp) Delete(ctx context.Context, serverGroupID string) (*Response, error) {
+	if err := isValidUUID(serverGroupID, "serverGroupID"); err != nil {
+		return nil, err
 	}
 
-	if p == nil {
-		return nil, NewArgError("ServicePath", "cannot be nil")
+	if err := s.client.Validate(); err != nil {
+		return nil, err
 	}
 
-	path := addServicePath(servergroupsBasePathV1, p)
-	path = fmt.Sprintf("%s/%s", path, sgID)
+	path := fmt.Sprintf("%s/%s", s.client.addServicePath(servergroupsBasePathV1), serverGroupID)
 
 	req, err := s.client.NewRequest(ctx, http.MethodDelete, path, nil)
 	if err != nil {

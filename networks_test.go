@@ -17,12 +17,10 @@ func TestNetworks_Get(t *testing.T) {
 
 	const (
 		networkID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-		projectID = "27520"
-		regionID  = "8"
 	)
 
 	network := &Network{ID: networkID}
-	getNetworkURL := fmt.Sprintf("/v1/networks/%s/%s/%s", projectID, regionID, networkID)
+	getNetworkURL := fmt.Sprintf("/v1/networks/%d/%d/%s", projectID, regionID, networkID)
 
 	mux.HandleFunc(getNetworkURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
@@ -30,8 +28,7 @@ func TestNetworks_Get(t *testing.T) {
 		_, _ = fmt.Fprintf(w, `{"network":%s}`, string(resp))
 	})
 
-	opts := ServicePath{Project: projectID, Region: regionID}
-	resp, _, err := client.Networks.Get(ctx, networkID, &opts)
+	resp, _, err := client.Networks.Get(ctx, networkID)
 	require.NoError(t, err)
 
 	if !reflect.DeepEqual(resp, network) {
@@ -44,9 +41,7 @@ func TestNetworks_Create(t *testing.T) {
 	defer teardown()
 
 	const (
-		taskID    = "f0d19cec-5c3f-4853-886e-304915960ff6"
-		projectID = "27520"
-		regionID  = "8"
+		taskID = "f0d19cec-5c3f-4853-886e-304915960ff6"
 	)
 
 	networkCreateRequest := &NetworkCreateRequest{
@@ -56,7 +51,7 @@ func TestNetworks_Create(t *testing.T) {
 
 	taskResponse := &TaskResponse{Tasks: []string{taskID}}
 
-	createNetworkURL := fmt.Sprintf("/v1/networks/%s/%s", projectID, regionID)
+	createNetworkURL := fmt.Sprintf("/v1/networks/%d/%d", projectID, regionID)
 
 	mux.HandleFunc(createNetworkURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
@@ -69,8 +64,7 @@ func TestNetworks_Create(t *testing.T) {
 		_, _ = fmt.Fprintf(w, `{"tasks":%s}`, string(resp))
 	})
 
-	opts := ServicePath{Project: projectID, Region: regionID}
-	resp, _, err := client.Networks.Create(ctx, networkCreateRequest, &opts)
+	resp, _, err := client.Networks.Create(ctx, networkCreateRequest)
 	require.NoError(t, err)
 
 	assert.Equal(t, taskResponse, resp)
@@ -83,13 +77,11 @@ func TestNetworks_Delete(t *testing.T) {
 	const (
 		taskID    = "f0d19cec-5c3f-4853-886e-304915960ff6"
 		networkID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-		projectID = "27520"
-		regionID  = "8"
 	)
 
 	taskResponse := &TaskResponse{Tasks: []string{taskID}}
 
-	deleteNetworkURL := fmt.Sprintf("/v1/networks/%s/%s/%s", projectID, regionID, networkID)
+	deleteNetworkURL := fmt.Sprintf("/v1/networks/%d/%d/%s", projectID, regionID, networkID)
 
 	mux.HandleFunc(deleteNetworkURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodDelete)
@@ -97,8 +89,7 @@ func TestNetworks_Delete(t *testing.T) {
 		_, _ = fmt.Fprintf(w, `{"tasks":%s}`, string(resp))
 	})
 
-	opts := ServicePath{Project: projectID, Region: regionID}
-	resp, _, err := client.Networks.Delete(ctx, networkID, &opts)
+	resp, _, err := client.Networks.Delete(ctx, networkID)
 	require.NoError(t, err)
 
 	assert.Equal(t, taskResponse, resp)

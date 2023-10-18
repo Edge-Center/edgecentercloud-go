@@ -16,13 +16,11 @@ func TestFloatingips_Get(t *testing.T) {
 	defer teardown()
 
 	const (
-		fipID     = "f0d19cec-5c3f-4853-886e-304915960ff6"
-		projectID = "27520"
-		regionID  = "8"
+		fipID = "f0d19cec-5c3f-4853-886e-304915960ff6"
 	)
 
 	floatingIP := &FloatingIP{ID: fipID}
-	getFloatingipsURL := fmt.Sprintf("/v1/floatingips/%s/%s/%s", projectID, regionID, fipID)
+	getFloatingipsURL := fmt.Sprintf("/v1/floatingips/%d/%d/%s", projectID, regionID, fipID)
 
 	mux.HandleFunc(getFloatingipsURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
@@ -30,8 +28,7 @@ func TestFloatingips_Get(t *testing.T) {
 		_, _ = fmt.Fprintf(w, `{"floating_ip":%s}`, string(resp))
 	})
 
-	opts := ServicePath{Project: projectID, Region: regionID}
-	resp, _, err := client.Floatingips.Get(ctx, fipID, &opts)
+	resp, _, err := client.Floatingips.Get(ctx, fipID)
 	require.NoError(t, err)
 
 	if !reflect.DeepEqual(resp, floatingIP) {
@@ -44,16 +41,14 @@ func TestFloatingips_Create(t *testing.T) {
 	defer teardown()
 
 	const (
-		taskID    = "f0d19cec-5c3f-4853-886e-304915960ff6"
-		projectID = "27520"
-		regionID  = "8"
+		taskID = "f0d19cec-5c3f-4853-886e-304915960ff6"
 	)
 
 	floatingIPCreateRequest := &FloatingIPCreateRequest{}
 
 	taskResponse := &TaskResponse{Tasks: []string{taskID}}
 
-	createFloatingipsURL := fmt.Sprintf("/v1/floatingips/%s/%s", projectID, regionID)
+	createFloatingipsURL := fmt.Sprintf("/v1/floatingips/%d/%d", projectID, regionID)
 
 	mux.HandleFunc(createFloatingipsURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
@@ -66,8 +61,7 @@ func TestFloatingips_Create(t *testing.T) {
 		_, _ = fmt.Fprintf(w, `{"tasks":%s}`, string(resp))
 	})
 
-	opts := ServicePath{Project: projectID, Region: regionID}
-	resp, _, err := client.Floatingips.Create(ctx, floatingIPCreateRequest, &opts)
+	resp, _, err := client.Floatingips.Create(ctx, floatingIPCreateRequest)
 	require.NoError(t, err)
 
 	assert.Equal(t, taskResponse, resp)
@@ -78,15 +72,13 @@ func TestFloatingips_Delete(t *testing.T) {
 	defer teardown()
 
 	const (
-		taskID    = "f0d19cec-5c3f-4853-886e-304915960ff6"
-		fipID     = "f0d19cec-5c3f-4853-886e-304915960ff6"
-		projectID = "27520"
-		regionID  = "8"
+		taskID = "f0d19cec-5c3f-4853-886e-304915960ff6"
+		fipID  = "f0d19cec-5c3f-4853-886e-304915960ff6"
 	)
 
 	taskResponse := &TaskResponse{Tasks: []string{taskID}}
 
-	deleteFloatingipsURL := fmt.Sprintf("/v1/floatingips/%s/%s/%s", projectID, regionID, fipID)
+	deleteFloatingipsURL := fmt.Sprintf("/v1/floatingips/%d/%d/%s", projectID, regionID, fipID)
 
 	mux.HandleFunc(deleteFloatingipsURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodDelete)
@@ -94,8 +86,7 @@ func TestFloatingips_Delete(t *testing.T) {
 		_, _ = fmt.Fprintf(w, `{"tasks":%s}`, string(resp))
 	})
 
-	opts := ServicePath{Project: projectID, Region: regionID}
-	resp, _, err := client.Floatingips.Delete(ctx, fipID, &opts)
+	resp, _, err := client.Floatingips.Delete(ctx, fipID)
 	require.NoError(t, err)
 
 	assert.Equal(t, taskResponse, resp)

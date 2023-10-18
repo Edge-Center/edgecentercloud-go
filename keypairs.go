@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-
-	"github.com/google/uuid"
 )
 
 const (
@@ -15,9 +13,9 @@ const (
 // KeyPairsService is an interface for creating and managing SSH keys with the EdgecenterCloud API.
 // See: https://apidocs.edgecenter.ru/cloud#tag/keypairs
 type KeyPairsService interface {
-	Get(context.Context, string, *ServicePath) (*KeyPair, *Response, error)
-	Create(context.Context, *KeyPairCreateRequest, *ServicePath) (*TaskResponse, *Response, error)
-	Delete(context.Context, string, *ServicePath) (*TaskResponse, *Response, error)
+	Get(context.Context, string) (*KeyPair, *Response, error)
+	Create(context.Context, *KeyPairCreateRequest) (*TaskResponse, *Response, error)
+	Delete(context.Context, string) (*TaskResponse, *Response, error)
 }
 
 // KeyPairsServiceOp handles communication with Key Pairs (SSH keys) methods of the EdgecenterCloud API.
@@ -54,17 +52,16 @@ type keyPairRoot struct {
 }
 
 // Get individual Key Pair.
-func (s *KeyPairsServiceOp) Get(ctx context.Context, keypairID string, p *ServicePath) (*KeyPair, *Response, error) {
-	if _, err := uuid.Parse(keypairID); err != nil {
-		return nil, nil, NewArgError("keypairID", "should be the correct UUID")
+func (s *KeyPairsServiceOp) Get(ctx context.Context, keypairID string) (*KeyPair, *Response, error) {
+	if err := isValidUUID(keypairID, "keypairID"); err != nil {
+		return nil, nil, err
 	}
 
-	if p == nil {
-		return nil, nil, NewArgError("ServicePath", "cannot be nil")
+	if err := s.client.Validate(); err != nil {
+		return nil, nil, err
 	}
 
-	path := addServicePath(keypairsBasePathV1, p)
-	path = fmt.Sprintf("%s/%s", path, keypairID)
+	path := fmt.Sprintf("%s/%s", s.client.addServicePath(keypairsBasePathV1), keypairID)
 
 	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
 	if err != nil {
@@ -81,16 +78,16 @@ func (s *KeyPairsServiceOp) Get(ctx context.Context, keypairID string, p *Servic
 }
 
 // Create a Key Pair.
-func (s *KeyPairsServiceOp) Create(ctx context.Context, createRequest *KeyPairCreateRequest, p *ServicePath) (*TaskResponse, *Response, error) {
+func (s *KeyPairsServiceOp) Create(ctx context.Context, createRequest *KeyPairCreateRequest) (*TaskResponse, *Response, error) {
 	if createRequest == nil {
 		return nil, nil, NewArgError("createRequest", "cannot be nil")
 	}
 
-	if p == nil {
-		return nil, nil, NewArgError("ServicePath", "cannot be nil")
+	if err := s.client.Validate(); err != nil {
+		return nil, nil, err
 	}
 
-	path := addServicePath(keypairsBasePathV1, p)
+	path := s.client.addServicePath(keypairsBasePathV1)
 
 	req, err := s.client.NewRequest(ctx, http.MethodPost, path, createRequest)
 	if err != nil {
@@ -107,17 +104,16 @@ func (s *KeyPairsServiceOp) Create(ctx context.Context, createRequest *KeyPairCr
 }
 
 // Delete the Key Pair.
-func (s *KeyPairsServiceOp) Delete(ctx context.Context, keypairID string, p *ServicePath) (*TaskResponse, *Response, error) {
-	if _, err := uuid.Parse(keypairID); err != nil {
-		return nil, nil, NewArgError("keypairID", "should be the correct UUID")
+func (s *KeyPairsServiceOp) Delete(ctx context.Context, keypairID string) (*TaskResponse, *Response, error) {
+	if err := isValidUUID(keypairID, "keypairID"); err != nil {
+		return nil, nil, err
 	}
 
-	if p == nil {
-		return nil, nil, NewArgError("ServicePath", "cannot be nil")
+	if err := s.client.Validate(); err != nil {
+		return nil, nil, err
 	}
 
-	path := addServicePath(keypairsBasePathV1, p)
-	path = fmt.Sprintf("%s/%s", path, keypairID)
+	path := fmt.Sprintf("%s/%s", s.client.addServicePath(keypairsBasePathV1), keypairID)
 
 	req, err := s.client.NewRequest(ctx, http.MethodDelete, path, nil)
 	if err != nil {

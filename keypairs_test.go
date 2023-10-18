@@ -17,12 +17,10 @@ func TestKeyPairs_Get(t *testing.T) {
 
 	const (
 		keypairID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-		projectID = "27520"
-		regionID  = "8"
 	)
 
 	keypair := &KeyPair{SSHKeyID: keypairID}
-	getKeyPairsURL := fmt.Sprintf("/v1/keypairs/%s/%s/%s", projectID, regionID, keypairID)
+	getKeyPairsURL := fmt.Sprintf("/v1/keypairs/%d/%d/%s", projectID, regionID, keypairID)
 
 	mux.HandleFunc(getKeyPairsURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
@@ -30,8 +28,7 @@ func TestKeyPairs_Get(t *testing.T) {
 		_, _ = fmt.Fprintf(w, `{"keypair":%s}`, string(resp))
 	})
 
-	opts := ServicePath{Project: projectID, Region: regionID}
-	resp, _, err := client.KeyPairs.Get(ctx, keypairID, &opts)
+	resp, _, err := client.KeyPairs.Get(ctx, keypairID)
 	require.NoError(t, err)
 
 	if !reflect.DeepEqual(resp, keypair) {
@@ -44,9 +41,7 @@ func TestKeyPairs_Create(t *testing.T) {
 	defer teardown()
 
 	const (
-		taskID    = "f0d19cec-5c3f-4853-886e-304915960ff6"
-		projectID = "27520"
-		regionID  = "8"
+		taskID = "f0d19cec-5c3f-4853-886e-304915960ff6"
 	)
 
 	keyPairCreateRequest := &KeyPairCreateRequest{
@@ -55,7 +50,7 @@ func TestKeyPairs_Create(t *testing.T) {
 
 	taskResponse := &TaskResponse{Tasks: []string{taskID}}
 
-	createKeyPairsURL := fmt.Sprintf("/v1/keypairs/%s/%s", projectID, regionID)
+	createKeyPairsURL := fmt.Sprintf("/v1/keypairs/%d/%d", projectID, regionID)
 
 	mux.HandleFunc(createKeyPairsURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
@@ -68,8 +63,7 @@ func TestKeyPairs_Create(t *testing.T) {
 		_, _ = fmt.Fprintf(w, `{"tasks":%s}`, string(resp))
 	})
 
-	opts := ServicePath{Project: projectID, Region: regionID}
-	resp, _, err := client.KeyPairs.Create(ctx, keyPairCreateRequest, &opts)
+	resp, _, err := client.KeyPairs.Create(ctx, keyPairCreateRequest)
 	require.NoError(t, err)
 
 	assert.Equal(t, taskResponse, resp)
@@ -82,13 +76,11 @@ func TestKeyPairs_Delete(t *testing.T) {
 	const (
 		taskID    = "f0d19cec-5c3f-4853-886e-304915960ff6"
 		keypairID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-		projectID = "27520"
-		regionID  = "8"
 	)
 
 	taskResponse := &TaskResponse{Tasks: []string{taskID}}
 
-	deleteKeyPairsURL := fmt.Sprintf("/v1/keypairs/%s/%s/%s", projectID, regionID, keypairID)
+	deleteKeyPairsURL := fmt.Sprintf("/v1/keypairs/%d/%d/%s", projectID, regionID, keypairID)
 
 	mux.HandleFunc(deleteKeyPairsURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodDelete)
@@ -96,8 +88,7 @@ func TestKeyPairs_Delete(t *testing.T) {
 		_, _ = fmt.Fprintf(w, `{"tasks":%s}`, string(resp))
 	})
 
-	opts := ServicePath{Project: projectID, Region: regionID}
-	resp, _, err := client.KeyPairs.Delete(ctx, keypairID, &opts)
+	resp, _, err := client.KeyPairs.Delete(ctx, keypairID)
 	require.NoError(t, err)
 
 	assert.Equal(t, taskResponse, resp)
