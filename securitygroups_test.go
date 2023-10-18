@@ -16,13 +16,11 @@ func TestSecurityGroups_Get(t *testing.T) {
 	defer teardown()
 
 	const (
-		sgID      = "f0d19cec-5c3f-4853-886e-304915960ff6"
-		projectID = "27520"
-		regionID  = "8"
+		sgID = "f0d19cec-5c3f-4853-886e-304915960ff6"
 	)
 
 	securityGroup := &SecurityGroup{ID: sgID}
-	getSecurityGroupsURL := fmt.Sprintf("/v1/securitygroups/%s/%s/%s", projectID, regionID, sgID)
+	getSecurityGroupsURL := fmt.Sprintf("/v1/securitygroups/%d/%d/%s", projectID, regionID, sgID)
 
 	mux.HandleFunc(getSecurityGroupsURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
@@ -30,8 +28,7 @@ func TestSecurityGroups_Get(t *testing.T) {
 		_, _ = fmt.Fprintf(w, `{"security_group":%s}`, string(resp))
 	})
 
-	opts := ServicePath{Project: projectID, Region: regionID}
-	resp, _, err := client.SecurityGroups.Get(ctx, sgID, &opts)
+	resp, _, err := client.SecurityGroups.Get(ctx, sgID)
 	require.NoError(t, err)
 
 	if !reflect.DeepEqual(resp, securityGroup) {
@@ -44,16 +41,14 @@ func TestSecurityGroups_Create(t *testing.T) {
 	defer teardown()
 
 	const (
-		taskID    = "f0d19cec-5c3f-4853-886e-304915960ff6"
-		projectID = "27520"
-		regionID  = "8"
+		taskID = "f0d19cec-5c3f-4853-886e-304915960ff6"
 	)
 
 	securityGroupCreateRequest := &SecurityGroupCreateRequest{}
 
 	taskResponse := &TaskResponse{Tasks: []string{taskID}}
 
-	createSecurityGroupsURL := fmt.Sprintf("/v1/securitygroups/%s/%s", projectID, regionID)
+	createSecurityGroupsURL := fmt.Sprintf("/v1/securitygroups/%d/%d", projectID, regionID)
 
 	mux.HandleFunc(createSecurityGroupsURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
@@ -66,8 +61,7 @@ func TestSecurityGroups_Create(t *testing.T) {
 		_, _ = fmt.Fprintf(w, `{"tasks":%s}`, string(resp))
 	})
 
-	opts := ServicePath{Project: projectID, Region: regionID}
-	resp, _, err := client.SecurityGroups.Create(ctx, securityGroupCreateRequest, &opts)
+	resp, _, err := client.SecurityGroups.Create(ctx, securityGroupCreateRequest)
 	require.NoError(t, err)
 
 	assert.Equal(t, taskResponse, resp)
@@ -78,15 +72,13 @@ func TestSecurityGroups_Delete(t *testing.T) {
 	defer teardown()
 
 	const (
-		taskID    = "f0d19cec-5c3f-4853-886e-304915960ff6"
-		sgID      = "f0d19cec-5c3f-4853-886e-304915960ff6"
-		projectID = "27520"
-		regionID  = "8"
+		taskID = "f0d19cec-5c3f-4853-886e-304915960ff6"
+		sgID   = "f0d19cec-5c3f-4853-886e-304915960ff6"
 	)
 
 	taskResponse := &TaskResponse{Tasks: []string{taskID}}
 
-	deleteSecurityGroupsURL := fmt.Sprintf("/v1/securitygroups/%s/%s/%s", projectID, regionID, sgID)
+	deleteSecurityGroupsURL := fmt.Sprintf("/v1/securitygroups/%d/%d/%s", projectID, regionID, sgID)
 
 	mux.HandleFunc(deleteSecurityGroupsURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodDelete)
@@ -94,8 +86,7 @@ func TestSecurityGroups_Delete(t *testing.T) {
 		_, _ = fmt.Fprintf(w, `{"tasks":%s}`, string(resp))
 	})
 
-	opts := ServicePath{Project: projectID, Region: regionID}
-	resp, _, err := client.SecurityGroups.Delete(ctx, sgID, &opts)
+	resp, _, err := client.SecurityGroups.Delete(ctx, sgID)
 	require.NoError(t, err)
 
 	assert.Equal(t, taskResponse, resp)

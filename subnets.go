@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"net"
 	"net/http"
-
-	"github.com/google/uuid"
 )
 
 const (
@@ -16,9 +14,9 @@ const (
 // SubnetworksService is an interface for creating and managing Subnetworks with the EdgecenterCloud API.
 // See: https://apidocs.edgecenter.ru/cloud#tag/subnets
 type SubnetworksService interface {
-	Get(context.Context, string, *ServicePath) (*Subnetwork, *Response, error)
-	Create(context.Context, *SubnetworkCreateRequest, *ServicePath) (*TaskResponse, *Response, error)
-	Delete(context.Context, string, *ServicePath) (*TaskResponse, *Response, error)
+	Get(context.Context, string) (*Subnetwork, *Response, error)
+	Create(context.Context, *SubnetworkCreateRequest) (*TaskResponse, *Response, error)
+	Delete(context.Context, string) (*TaskResponse, *Response, error)
 }
 
 // SubnetworksServiceOp handles communication with Subnetworks methods of the EdgecenterCloud API.
@@ -80,17 +78,16 @@ type subnetworkRoot struct {
 }
 
 // Get individual Network.
-func (s *SubnetworksServiceOp) Get(ctx context.Context, subnetworkID string, p *ServicePath) (*Subnetwork, *Response, error) {
-	if _, err := uuid.Parse(subnetworkID); err != nil {
-		return nil, nil, NewArgError("subnetworkID", "should be the correct UUID")
+func (s *SubnetworksServiceOp) Get(ctx context.Context, subnetworkID string) (*Subnetwork, *Response, error) {
+	if err := isValidUUID(subnetworkID, "subnetworkID"); err != nil {
+		return nil, nil, err
 	}
 
-	if p == nil {
-		return nil, nil, NewArgError("ServicePath", "cannot be nil")
+	if err := s.client.Validate(); err != nil {
+		return nil, nil, err
 	}
 
-	path := addServicePath(subnetsBasePathV1, p)
-	path = fmt.Sprintf("%s/%s", path, subnetworkID)
+	path := fmt.Sprintf("%s/%s", s.client.addServicePath(subnetsBasePathV1), subnetworkID)
 
 	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
 	if err != nil {
@@ -107,16 +104,16 @@ func (s *SubnetworksServiceOp) Get(ctx context.Context, subnetworkID string, p *
 }
 
 // Create a Network.
-func (s *SubnetworksServiceOp) Create(ctx context.Context, createRequest *SubnetworkCreateRequest, p *ServicePath) (*TaskResponse, *Response, error) {
+func (s *SubnetworksServiceOp) Create(ctx context.Context, createRequest *SubnetworkCreateRequest) (*TaskResponse, *Response, error) {
 	if createRequest == nil {
 		return nil, nil, NewArgError("createRequest", "cannot be nil")
 	}
 
-	if p == nil {
-		return nil, nil, NewArgError("ServicePath", "cannot be nil")
+	if err := s.client.Validate(); err != nil {
+		return nil, nil, err
 	}
 
-	path := addServicePath(subnetsBasePathV1, p)
+	path := s.client.addServicePath(subnetsBasePathV1)
 
 	req, err := s.client.NewRequest(ctx, http.MethodPost, path, createRequest)
 	if err != nil {
@@ -133,17 +130,16 @@ func (s *SubnetworksServiceOp) Create(ctx context.Context, createRequest *Subnet
 }
 
 // Delete the Network.
-func (s *SubnetworksServiceOp) Delete(ctx context.Context, subnetworkID string, p *ServicePath) (*TaskResponse, *Response, error) {
-	if _, err := uuid.Parse(subnetworkID); err != nil {
-		return nil, nil, NewArgError("subnetworkID", "should be the correct UUID")
+func (s *SubnetworksServiceOp) Delete(ctx context.Context, subnetworkID string) (*TaskResponse, *Response, error) {
+	if err := isValidUUID(subnetworkID, "subnetworkID"); err != nil {
+		return nil, nil, err
 	}
 
-	if p == nil {
-		return nil, nil, NewArgError("ServicePath", "cannot be nil")
+	if err := s.client.Validate(); err != nil {
+		return nil, nil, err
 	}
 
-	path := addServicePath(subnetsBasePathV1, p)
-	path = fmt.Sprintf("%s/%s", path, subnetworkID)
+	path := fmt.Sprintf("%s/%s", s.client.addServicePath(subnetsBasePathV1), subnetworkID)
 
 	req, err := s.client.NewRequest(ctx, http.MethodDelete, path, nil)
 	if err != nil {

@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-
-	"github.com/google/uuid"
 )
 
 const (
@@ -70,8 +68,8 @@ type taskRoot struct {
 
 // Get individual Task.
 func (s *TasksServiceOp) Get(ctx context.Context, taskID string) (*Task, *Response, error) {
-	if _, err := uuid.Parse(taskID); err != nil {
-		return nil, nil, NewArgError("taskID", "should be the correct UUID")
+	if err := isValidUUID(taskID, "taskID"); err != nil {
+		return nil, nil, err
 	}
 
 	path := fmt.Sprintf("%s/%s", tasksBasePathV1, taskID)

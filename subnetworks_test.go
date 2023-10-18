@@ -17,12 +17,10 @@ func TestSubnetworks_Get(t *testing.T) {
 
 	const (
 		subnetworkID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-		projectID    = "27520"
-		regionID     = "8"
 	)
 
 	subnetwork := &Subnetwork{ID: subnetworkID}
-	getSubnetworkURL := fmt.Sprintf("/v1/subnets/%s/%s/%s", projectID, regionID, subnetworkID)
+	getSubnetworkURL := fmt.Sprintf("/v1/subnets/%d/%d/%s", projectID, regionID, subnetworkID)
 
 	mux.HandleFunc(getSubnetworkURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
@@ -30,8 +28,7 @@ func TestSubnetworks_Get(t *testing.T) {
 		_, _ = fmt.Fprintf(w, `{"subnetwork":%s}`, string(resp))
 	})
 
-	opts := ServicePath{Project: projectID, Region: regionID}
-	resp, _, err := client.Subnetworks.Get(ctx, subnetworkID, &opts)
+	resp, _, err := client.Subnetworks.Get(ctx, subnetworkID)
 	require.NoError(t, err)
 
 	if !reflect.DeepEqual(resp, subnetwork) {
@@ -46,8 +43,6 @@ func TestSubnetworks_Create(t *testing.T) {
 	const (
 		taskID    = "f0d19cec-5c3f-4853-886e-304915960ff6"
 		networkID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-		projectID = "27520"
-		regionID  = "8"
 	)
 
 	subnetworkCreateRequest := &SubnetworkCreateRequest{
@@ -57,7 +52,7 @@ func TestSubnetworks_Create(t *testing.T) {
 
 	taskResponse := &TaskResponse{Tasks: []string{taskID}}
 
-	createSubnetworkURL := fmt.Sprintf("/v1/subnets/%s/%s", projectID, regionID)
+	createSubnetworkURL := fmt.Sprintf("/v1/subnets/%d/%d", projectID, regionID)
 
 	mux.HandleFunc(createSubnetworkURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
@@ -70,8 +65,7 @@ func TestSubnetworks_Create(t *testing.T) {
 		_, _ = fmt.Fprintf(w, `{"tasks":%s}`, string(resp))
 	})
 
-	opts := ServicePath{Project: projectID, Region: regionID}
-	resp, _, err := client.Subnetworks.Create(ctx, subnetworkCreateRequest, &opts)
+	resp, _, err := client.Subnetworks.Create(ctx, subnetworkCreateRequest)
 	require.NoError(t, err)
 
 	assert.Equal(t, taskResponse, resp)
@@ -84,13 +78,11 @@ func TestSubnetworks_Delete(t *testing.T) {
 	const (
 		taskID       = "f0d19cec-5c3f-4853-886e-304915960ff6"
 		subnetworkID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-		projectID    = "27520"
-		regionID     = "8"
 	)
 
 	taskResponse := &TaskResponse{Tasks: []string{taskID}}
 
-	deleteSubnetworkURL := fmt.Sprintf("/v1/subnets/%s/%s/%s", projectID, regionID, subnetworkID)
+	deleteSubnetworkURL := fmt.Sprintf("/v1/subnets/%d/%d/%s", projectID, regionID, subnetworkID)
 
 	mux.HandleFunc(deleteSubnetworkURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodDelete)
@@ -98,8 +90,7 @@ func TestSubnetworks_Delete(t *testing.T) {
 		_, _ = fmt.Fprintf(w, `{"tasks":%s}`, string(resp))
 	})
 
-	opts := ServicePath{Project: projectID, Region: regionID}
-	resp, _, err := client.Subnetworks.Delete(ctx, subnetworkID, &opts)
+	resp, _, err := client.Subnetworks.Delete(ctx, subnetworkID)
 	require.NoError(t, err)
 
 	assert.Equal(t, taskResponse, resp)

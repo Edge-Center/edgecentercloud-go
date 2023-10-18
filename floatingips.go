@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"net"
 	"net/http"
-
-	"github.com/google/uuid"
 )
 
 const (
@@ -16,9 +14,9 @@ const (
 // FloatingIPsService is an interface for creating and managing FloatingIPs with the EdgecenterCloud API.
 // See: https://apidocs.edgecenter.ru/cloud#tag/floatingips
 type FloatingIPsService interface {
-	Get(context.Context, string, *ServicePath) (*FloatingIP, *Response, error)
-	Create(context.Context, *FloatingIPCreateRequest, *ServicePath) (*TaskResponse, *Response, error)
-	Delete(context.Context, string, *ServicePath) (*TaskResponse, *Response, error)
+	Get(context.Context, string) (*FloatingIP, *Response, error)
+	Create(context.Context, *FloatingIPCreateRequest) (*TaskResponse, *Response, error)
+	Delete(context.Context, string) (*TaskResponse, *Response, error)
 }
 
 // FloatingipsServiceOp handles communication with FloatingIPs methods of the EdgecenterCloud API.
@@ -76,17 +74,16 @@ type floatingIPRoot struct {
 }
 
 // Get individual FloatingIP.
-func (s *FloatingipsServiceOp) Get(ctx context.Context, fipID string, p *ServicePath) (*FloatingIP, *Response, error) {
-	if _, err := uuid.Parse(fipID); err != nil {
-		return nil, nil, NewArgError("fipID", "should be the correct UUID")
+func (s *FloatingipsServiceOp) Get(ctx context.Context, fipID string) (*FloatingIP, *Response, error) {
+	if err := isValidUUID(fipID, "fipID"); err != nil {
+		return nil, nil, err
 	}
 
-	if p == nil {
-		return nil, nil, NewArgError("ServicePath", "cannot be nil")
+	if err := s.client.Validate(); err != nil {
+		return nil, nil, err
 	}
 
-	path := addServicePath(floatingipsBasePathV1, p)
-	path = fmt.Sprintf("%s/%s", path, fipID)
+	path := fmt.Sprintf("%s/%s", s.client.addServicePath(floatingipsBasePathV1), fipID)
 
 	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
 	if err != nil {
@@ -103,16 +100,16 @@ func (s *FloatingipsServiceOp) Get(ctx context.Context, fipID string, p *Service
 }
 
 // Create a FloatingIP.
-func (s *FloatingipsServiceOp) Create(ctx context.Context, createRequest *FloatingIPCreateRequest, p *ServicePath) (*TaskResponse, *Response, error) {
+func (s *FloatingipsServiceOp) Create(ctx context.Context, createRequest *FloatingIPCreateRequest) (*TaskResponse, *Response, error) {
 	if createRequest == nil {
 		return nil, nil, NewArgError("createRequest", "cannot be nil")
 	}
 
-	if p == nil {
-		return nil, nil, NewArgError("ServicePath", "cannot be nil")
+	if err := s.client.Validate(); err != nil {
+		return nil, nil, err
 	}
 
-	path := addServicePath(floatingipsBasePathV1, p)
+	path := s.client.addServicePath(floatingipsBasePathV1)
 
 	req, err := s.client.NewRequest(ctx, http.MethodPost, path, createRequest)
 	if err != nil {
@@ -129,17 +126,16 @@ func (s *FloatingipsServiceOp) Create(ctx context.Context, createRequest *Floati
 }
 
 // Delete the FloatingIP.
-func (s *FloatingipsServiceOp) Delete(ctx context.Context, fipID string, p *ServicePath) (*TaskResponse, *Response, error) {
-	if _, err := uuid.Parse(fipID); err != nil {
-		return nil, nil, NewArgError("fipID", "should be the correct UUID")
+func (s *FloatingipsServiceOp) Delete(ctx context.Context, fipID string) (*TaskResponse, *Response, error) {
+	if err := isValidUUID(fipID, "fipID"); err != nil {
+		return nil, nil, err
 	}
 
-	if p == nil {
-		return nil, nil, NewArgError("ServicePath", "cannot be nil")
+	if err := s.client.Validate(); err != nil {
+		return nil, nil, err
 	}
 
-	path := addServicePath(floatingipsBasePathV1, p)
-	path = fmt.Sprintf("%s/%s", path, fipID)
+	path := fmt.Sprintf("%s/%s", s.client.addServicePath(floatingipsBasePathV1), fipID)
 
 	req, err := s.client.NewRequest(ctx, http.MethodDelete, path, nil)
 	if err != nil {

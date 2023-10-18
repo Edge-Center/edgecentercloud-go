@@ -16,13 +16,11 @@ func TestVolumes_Get(t *testing.T) {
 	defer teardown()
 
 	const (
-		volumeID  = "f0d19cec-5c3f-4853-886e-304915960ff6"
-		projectID = "27520"
-		regionID  = "8"
+		volumeID = "f0d19cec-5c3f-4853-886e-304915960ff6"
 	)
 
 	volume := &Volume{ID: volumeID}
-	getVolumesURL := fmt.Sprintf("/v1/volumes/%s/%s/%s", projectID, regionID, volumeID)
+	getVolumesURL := fmt.Sprintf("/v1/volumes/%d/%d/%s", projectID, regionID, volumeID)
 
 	mux.HandleFunc(getVolumesURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
@@ -30,8 +28,7 @@ func TestVolumes_Get(t *testing.T) {
 		_, _ = fmt.Fprintf(w, `{"volume":%s}`, string(resp))
 	})
 
-	opts := ServicePath{Project: projectID, Region: regionID}
-	resp, _, err := client.Volumes.Get(ctx, volumeID, &opts)
+	resp, _, err := client.Volumes.Get(ctx, volumeID)
 	require.NoError(t, err)
 
 	if !reflect.DeepEqual(resp, volume) {
@@ -44,9 +41,7 @@ func TestVolumes_Create(t *testing.T) {
 	defer teardown()
 
 	const (
-		taskID    = "f0d19cec-5c3f-4853-886e-304915960ff6"
-		projectID = "27520"
-		regionID  = "8"
+		taskID = "f0d19cec-5c3f-4853-886e-304915960ff6"
 	)
 
 	volumeCreateRequest := &VolumeCreateRequest{
@@ -58,7 +53,7 @@ func TestVolumes_Create(t *testing.T) {
 
 	taskResponse := &TaskResponse{Tasks: []string{taskID}}
 
-	createVolumeURL := fmt.Sprintf("/v1/volumes/%s/%s", projectID, regionID)
+	createVolumeURL := fmt.Sprintf("/v1/volumes/%d/%d", projectID, regionID)
 
 	mux.HandleFunc(createVolumeURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
@@ -71,8 +66,7 @@ func TestVolumes_Create(t *testing.T) {
 		_, _ = fmt.Fprintf(w, `{"tasks":%s}`, string(resp))
 	})
 
-	opts := ServicePath{Project: projectID, Region: regionID}
-	resp, _, err := client.Volumes.Create(ctx, volumeCreateRequest, &opts)
+	resp, _, err := client.Volumes.Create(ctx, volumeCreateRequest)
 	require.NoError(t, err)
 
 	assert.Equal(t, taskResponse, resp)
@@ -83,15 +77,13 @@ func TestVolumes_Delete(t *testing.T) {
 	defer teardown()
 
 	const (
-		taskID    = "f0d19cec-5c3f-4853-886e-304915960ff6"
-		volumeID  = "f0d19cec-5c3f-4853-886e-304915960ff6"
-		projectID = "27520"
-		regionID  = "8"
+		taskID   = "f0d19cec-5c3f-4853-886e-304915960ff6"
+		volumeID = "f0d19cec-5c3f-4853-886e-304915960ff6"
 	)
 
 	taskResponse := &TaskResponse{Tasks: []string{taskID}}
 
-	deleteVolumeURL := fmt.Sprintf("/v1/volumes/%s/%s/%s", projectID, regionID, volumeID)
+	deleteVolumeURL := fmt.Sprintf("/v1/volumes/%d/%d/%s", projectID, regionID, volumeID)
 
 	mux.HandleFunc(deleteVolumeURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodDelete)
@@ -99,8 +91,7 @@ func TestVolumes_Delete(t *testing.T) {
 		_, _ = fmt.Fprintf(w, `{"tasks":%s}`, string(resp))
 	})
 
-	opts := ServicePath{Project: projectID, Region: regionID}
-	resp, _, err := client.Volumes.Delete(ctx, volumeID, &opts)
+	resp, _, err := client.Volumes.Delete(ctx, volumeID)
 	require.NoError(t, err)
 
 	assert.Equal(t, taskResponse, resp)

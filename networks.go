@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-
-	"github.com/google/uuid"
 )
 
 const (
@@ -15,9 +13,9 @@ const (
 // NetworksService is an interface for creating and managing Networks with the EdgecenterCloud API.
 // See: https://apidocs.edgecenter.ru/cloud#tag/networks
 type NetworksService interface {
-	Get(context.Context, string, *ServicePath) (*Network, *Response, error)
-	Create(context.Context, *NetworkCreateRequest, *ServicePath) (*TaskResponse, *Response, error)
-	Delete(context.Context, string, *ServicePath) (*TaskResponse, *Response, error)
+	Get(context.Context, string) (*Network, *Response, error)
+	Create(context.Context, *NetworkCreateRequest) (*TaskResponse, *Response, error)
+	Delete(context.Context, string) (*TaskResponse, *Response, error)
 }
 
 // NetworksServiceOp handles communication with Networks methods of the EdgecenterCloud API.
@@ -70,17 +68,16 @@ type networkRoot struct {
 }
 
 // Get individual Network.
-func (s *NetworksServiceOp) Get(ctx context.Context, networkID string, p *ServicePath) (*Network, *Response, error) {
-	if _, err := uuid.Parse(networkID); err != nil {
-		return nil, nil, NewArgError("networkID", "should be the correct UUID")
+func (s *NetworksServiceOp) Get(ctx context.Context, networkID string) (*Network, *Response, error) {
+	if err := isValidUUID(networkID, "networkID"); err != nil {
+		return nil, nil, err
 	}
 
-	if p == nil {
-		return nil, nil, NewArgError("ServicePath", "cannot be nil")
+	if err := s.client.Validate(); err != nil {
+		return nil, nil, err
 	}
 
-	path := addServicePath(networksBasePathV1, p)
-	path = fmt.Sprintf("%s/%s", path, networkID)
+	path := fmt.Sprintf("%s/%s", s.client.addServicePath(networksBasePathV1), networkID)
 
 	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
 	if err != nil {
@@ -97,16 +94,16 @@ func (s *NetworksServiceOp) Get(ctx context.Context, networkID string, p *Servic
 }
 
 // Create a Network.
-func (s *NetworksServiceOp) Create(ctx context.Context, createRequest *NetworkCreateRequest, p *ServicePath) (*TaskResponse, *Response, error) {
+func (s *NetworksServiceOp) Create(ctx context.Context, createRequest *NetworkCreateRequest) (*TaskResponse, *Response, error) {
 	if createRequest == nil {
 		return nil, nil, NewArgError("createRequest", "cannot be nil")
 	}
 
-	if p == nil {
-		return nil, nil, NewArgError("ServicePath", "cannot be nil")
+	if err := s.client.Validate(); err != nil {
+		return nil, nil, err
 	}
 
-	path := addServicePath(networksBasePathV1, p)
+	path := s.client.addServicePath(networksBasePathV1)
 
 	req, err := s.client.NewRequest(ctx, http.MethodPost, path, createRequest)
 	if err != nil {
@@ -123,17 +120,16 @@ func (s *NetworksServiceOp) Create(ctx context.Context, createRequest *NetworkCr
 }
 
 // Delete the Network.
-func (s *NetworksServiceOp) Delete(ctx context.Context, networkID string, p *ServicePath) (*TaskResponse, *Response, error) {
-	if _, err := uuid.Parse(networkID); err != nil {
-		return nil, nil, NewArgError("networkID", "should be the correct UUID")
+func (s *NetworksServiceOp) Delete(ctx context.Context, networkID string) (*TaskResponse, *Response, error) {
+	if err := isValidUUID(networkID, "networkID"); err != nil {
+		return nil, nil, err
 	}
 
-	if p == nil {
-		return nil, nil, NewArgError("ServicePath", "cannot be nil")
+	if err := s.client.Validate(); err != nil {
+		return nil, nil, err
 	}
 
-	path := addServicePath(networksBasePathV1, p)
-	path = fmt.Sprintf("%s/%s", path, networkID)
+	path := fmt.Sprintf("%s/%s", s.client.addServicePath(networksBasePathV1), networkID)
 
 	req, err := s.client.NewRequest(ctx, http.MethodDelete, path, nil)
 	if err != nil {

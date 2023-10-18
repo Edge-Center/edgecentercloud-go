@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-
-	"github.com/google/uuid"
 )
 
 const (
@@ -15,9 +13,9 @@ const (
 // SecurityGroupsService is an interface for creating and managing Security Groups (Firewalls) with the EdgecenterCloud API.
 // See: https://apidocs.edgecenter.ru/cloud#tag/securitygroups
 type SecurityGroupsService interface {
-	Get(context.Context, string, *ServicePath) (*SecurityGroup, *Response, error)
-	Create(context.Context, *SecurityGroupCreateRequest, *ServicePath) (*TaskResponse, *Response, error)
-	Delete(context.Context, string, *ServicePath) (*TaskResponse, *Response, error)
+	Get(context.Context, string) (*SecurityGroup, *Response, error)
+	Create(context.Context, *SecurityGroupCreateRequest) (*TaskResponse, *Response, error)
+	Delete(context.Context, string) (*TaskResponse, *Response, error)
 }
 
 // SecurityGroupsServiceOp handles communication with Security Groups (Firewalls) methods of the EdgecenterCloud API.
@@ -122,17 +120,16 @@ type securityGroupRoot struct {
 }
 
 // Get individual Security Group.
-func (s *SecurityGroupsServiceOp) Get(ctx context.Context, sgID string, p *ServicePath) (*SecurityGroup, *Response, error) {
-	if _, err := uuid.Parse(sgID); err != nil {
-		return nil, nil, NewArgError("sgID", "should be the correct UUID")
+func (s *SecurityGroupsServiceOp) Get(ctx context.Context, securityGroupID string) (*SecurityGroup, *Response, error) {
+	if err := isValidUUID(securityGroupID, "securityGroupID"); err != nil {
+		return nil, nil, err
 	}
 
-	if p == nil {
-		return nil, nil, NewArgError("ServicePath", "cannot be nil")
+	if err := s.client.Validate(); err != nil {
+		return nil, nil, err
 	}
 
-	path := addServicePath(securitygroupsBasePathV1, p)
-	path = fmt.Sprintf("%s/%s", path, sgID)
+	path := fmt.Sprintf("%s/%s", s.client.addServicePath(securitygroupsBasePathV1), securityGroupID)
 
 	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
 	if err != nil {
@@ -149,16 +146,16 @@ func (s *SecurityGroupsServiceOp) Get(ctx context.Context, sgID string, p *Servi
 }
 
 // Create a Security Group.
-func (s *SecurityGroupsServiceOp) Create(ctx context.Context, createRequest *SecurityGroupCreateRequest, p *ServicePath) (*TaskResponse, *Response, error) {
+func (s *SecurityGroupsServiceOp) Create(ctx context.Context, createRequest *SecurityGroupCreateRequest) (*TaskResponse, *Response, error) {
 	if createRequest == nil {
 		return nil, nil, NewArgError("createRequest", "cannot be nil")
 	}
 
-	if p == nil {
-		return nil, nil, NewArgError("ServicePath", "cannot be nil")
+	if err := s.client.Validate(); err != nil {
+		return nil, nil, err
 	}
 
-	path := addServicePath(securitygroupsBasePathV1, p)
+	path := s.client.addServicePath(securitygroupsBasePathV1)
 
 	req, err := s.client.NewRequest(ctx, http.MethodPost, path, createRequest)
 	if err != nil {
@@ -175,17 +172,16 @@ func (s *SecurityGroupsServiceOp) Create(ctx context.Context, createRequest *Sec
 }
 
 // Delete the Security Group.
-func (s *SecurityGroupsServiceOp) Delete(ctx context.Context, sgID string, p *ServicePath) (*TaskResponse, *Response, error) {
-	if _, err := uuid.Parse(sgID); err != nil {
-		return nil, nil, NewArgError("sgID", "should be the correct UUID")
+func (s *SecurityGroupsServiceOp) Delete(ctx context.Context, securityGroupID string) (*TaskResponse, *Response, error) {
+	if err := isValidUUID(securityGroupID, "securityGroupID"); err != nil {
+		return nil, nil, err
 	}
 
-	if p == nil {
-		return nil, nil, NewArgError("ServicePath", "cannot be nil")
+	if err := s.client.Validate(); err != nil {
+		return nil, nil, err
 	}
 
-	path := addServicePath(securitygroupsBasePathV1, p)
-	path = fmt.Sprintf("%s/%s", path, sgID)
+	path := fmt.Sprintf("%s/%s", s.client.addServicePath(securitygroupsBasePathV1), securityGroupID)
 
 	req, err := s.client.NewRequest(ctx, http.MethodDelete, path, nil)
 	if err != nil {

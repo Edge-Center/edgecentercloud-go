@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"net"
 	"net/http"
-
-	"github.com/google/uuid"
 )
 
 const (
@@ -18,15 +16,15 @@ const (
 // InstancesService is an interface for creating and managing Instances with the EdgecenterCloud API.
 // See: https://apidocs.edgecenter.ru/cloud#tag/instances
 type InstancesService interface {
-	Get(context.Context, string, *ServicePath) (*Instance, *Response, error)
-	Create(context.Context, *InstanceCreateRequest, *ServicePath) (*TaskResponse, *Response, error)
-	Delete(context.Context, string, *ServicePath, *InstanceDeleteOptions) (*TaskResponse, *Response, error)
+	Get(context.Context, string) (*Instance, *Response, error)
+	Create(context.Context, *InstanceCreateRequest) (*TaskResponse, *Response, error)
+	Delete(context.Context, string, *InstanceDeleteOptions) (*TaskResponse, *Response, error)
 	InstanceMetadata
 }
 
 type InstanceMetadata interface {
-	MetadataGet(context.Context, string, *ServicePath) (*MetadataDetailed, *Response, error)
-	MetadataCreate(context.Context, string, *MetadataCreateRequest, *ServicePath) (*Response, error)
+	MetadataGet(context.Context, string) (*MetadataDetailed, *Response, error)
+	MetadataCreate(context.Context, string, *MetadataCreateRequest) (*Response, error)
 }
 
 // InstancesServiceOp handles communication with Instances methods of the EdgecenterCloud API.
@@ -157,17 +155,16 @@ type instanceRoot struct {
 }
 
 // Get individual Instance.
-func (s *InstancesServiceOp) Get(ctx context.Context, instanceID string, p *ServicePath) (*Instance, *Response, error) {
-	if _, err := uuid.Parse(instanceID); err != nil {
-		return nil, nil, NewArgError("instanceID", "should be the correct UUID")
+func (s *InstancesServiceOp) Get(ctx context.Context, instanceID string) (*Instance, *Response, error) {
+	if err := isValidUUID(instanceID, "instanceID"); err != nil {
+		return nil, nil, err
 	}
 
-	if p == nil {
-		return nil, nil, NewArgError("ServicePath", "cannot be nil")
+	if err := s.client.Validate(); err != nil {
+		return nil, nil, err
 	}
 
-	path := addServicePath(instancesBasePathV1, p)
-	path = fmt.Sprintf("%s/%s", path, instanceID)
+	path := fmt.Sprintf("%s/%s", s.client.addServicePath(instancesBasePathV1), instanceID)
 
 	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
 	if err != nil {
@@ -184,16 +181,16 @@ func (s *InstancesServiceOp) Get(ctx context.Context, instanceID string, p *Serv
 }
 
 // Create an Instance.
-func (s *InstancesServiceOp) Create(ctx context.Context, createRequest *InstanceCreateRequest, p *ServicePath) (*TaskResponse, *Response, error) {
+func (s *InstancesServiceOp) Create(ctx context.Context, createRequest *InstanceCreateRequest) (*TaskResponse, *Response, error) {
 	if createRequest == nil {
 		return nil, nil, NewArgError("createRequest", "cannot be nil")
 	}
 
-	if p == nil {
-		return nil, nil, NewArgError("ServicePath", "cannot be nil")
+	if err := s.client.Validate(); err != nil {
+		return nil, nil, err
 	}
 
-	path := addServicePath(instancesBasePathV2, p)
+	path := s.client.addServicePath(instancesBasePathV2)
 
 	req, err := s.client.NewRequest(ctx, http.MethodPost, path, createRequest)
 	if err != nil {
@@ -210,17 +207,16 @@ func (s *InstancesServiceOp) Create(ctx context.Context, createRequest *Instance
 }
 
 // Delete the Instance.
-func (s *InstancesServiceOp) Delete(ctx context.Context, instanceID string, p *ServicePath, opts *InstanceDeleteOptions) (*TaskResponse, *Response, error) {
-	if _, err := uuid.Parse(instanceID); err != nil {
-		return nil, nil, NewArgError("instanceID", "should be the correct UUID")
+func (s *InstancesServiceOp) Delete(ctx context.Context, instanceID string, opts *InstanceDeleteOptions) (*TaskResponse, *Response, error) {
+	if err := isValidUUID(instanceID, "instanceID"); err != nil {
+		return nil, nil, err
 	}
 
-	if p == nil {
-		return nil, nil, NewArgError("ServicePath", "cannot be nil")
+	if err := s.client.Validate(); err != nil {
+		return nil, nil, err
 	}
 
-	path := addServicePath(instancesBasePathV1, p)
-	path = fmt.Sprintf("%s/%s", path, instanceID)
+	path := fmt.Sprintf("%s/%s", s.client.addServicePath(instancesBasePathV1), instanceID)
 	path, err := addOptions(path, opts)
 	if err != nil {
 		return nil, nil, err
@@ -241,16 +237,16 @@ func (s *InstancesServiceOp) Delete(ctx context.Context, instanceID string, p *S
 }
 
 // MetadataGet instance detailed metadata (tags).
-func (s *InstancesServiceOp) MetadataGet(ctx context.Context, instanceID string, p *ServicePath) (*MetadataDetailed, *Response, error) {
-	if _, err := uuid.Parse(instanceID); err != nil {
-		return nil, nil, NewArgError("instanceID", "should be the correct UUID")
+func (s *InstancesServiceOp) MetadataGet(ctx context.Context, instanceID string) (*MetadataDetailed, *Response, error) {
+	if err := isValidUUID(instanceID, "instanceID"); err != nil {
+		return nil, nil, err
 	}
 
-	if p == nil {
-		return nil, nil, NewArgError("ServicePath", "cannot be nil")
+	if err := s.client.Validate(); err != nil {
+		return nil, nil, err
 	}
 
-	path := addServicePath(instancesBasePathV1, p)
+	path := s.client.addServicePath(instancesBasePathV1)
 	path = fmt.Sprintf("%s/%s/%s", path, instanceID, metadataPath)
 
 	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
@@ -268,16 +264,16 @@ func (s *InstancesServiceOp) MetadataGet(ctx context.Context, instanceID string,
 }
 
 // MetadataCreate instance metadata (tags).
-func (s *InstancesServiceOp) MetadataCreate(ctx context.Context, instanceID string, metadata *MetadataCreateRequest, p *ServicePath) (*Response, error) {
-	if _, err := uuid.Parse(instanceID); err != nil {
-		return nil, NewArgError("instanceID", "should be the correct UUID")
+func (s *InstancesServiceOp) MetadataCreate(ctx context.Context, instanceID string, metadata *MetadataCreateRequest) (*Response, error) {
+	if err := isValidUUID(instanceID, "instanceID"); err != nil {
+		return nil, err
 	}
 
-	if p == nil {
-		return nil, NewArgError("ServicePath", "cannot be nil")
+	if err := s.client.Validate(); err != nil {
+		return nil, err
 	}
 
-	path := addServicePath(instancesBasePathV1, p)
+	path := s.client.addServicePath(instancesBasePathV1)
 	path = fmt.Sprintf("%s/%s/%s", path, instanceID, metadataPath)
 
 	req, err := s.client.NewRequest(ctx, http.MethodPut, path, metadata)
