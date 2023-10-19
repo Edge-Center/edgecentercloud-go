@@ -103,12 +103,6 @@ type VolumeCreateRequest struct {
 	TypeName             VolumeType   `json:"type_name" required:"true" validate:"required,enum"`
 }
 
-// volumeRoot represents a Volume root.
-type volumeRoot struct {
-	Volume *Volume       `json:"volume"`
-	Tasks  *TaskResponse `json:"tasks"`
-}
-
 // Get individual Volume.
 func (s *VolumesServiceOp) Get(ctx context.Context, volumeID string) (*Volume, *Response, error) {
 	if err := isValidUUID(volumeID, "volumeID"); err != nil {
@@ -126,13 +120,13 @@ func (s *VolumesServiceOp) Get(ctx context.Context, volumeID string) (*Volume, *
 		return nil, nil, err
 	}
 
-	root := new(volumeRoot)
-	resp, err := s.client.Do(ctx, req, root)
+	volume := new(Volume)
+	resp, err := s.client.Do(ctx, req, volume)
 	if err != nil {
 		return nil, resp, err
 	}
 
-	return root.Volume, resp, err
+	return volume, resp, err
 }
 
 // Create a Volume.
@@ -152,13 +146,13 @@ func (s *VolumesServiceOp) Create(ctx context.Context, createRequest *VolumeCrea
 		return nil, nil, err
 	}
 
-	root := new(volumeRoot)
-	resp, err := s.client.Do(ctx, req, root)
+	tasks := new(TaskResponse)
+	resp, err := s.client.Do(ctx, req, tasks)
 	if err != nil {
 		return nil, resp, err
 	}
 
-	return root.Tasks, resp, err
+	return tasks, resp, err
 }
 
 // Delete the Volume.
@@ -178,11 +172,11 @@ func (s *VolumesServiceOp) Delete(ctx context.Context, volumeID string) (*TaskRe
 		return nil, nil, err
 	}
 
-	root := new(volumeRoot)
-	resp, err := s.client.Do(ctx, req, root)
+	tasks := new(TaskResponse)
+	resp, err := s.client.Do(ctx, req, tasks)
 	if err != nil {
 		return nil, resp, err
 	}
 
-	return root.Tasks, resp, err
+	return tasks, resp, err
 }

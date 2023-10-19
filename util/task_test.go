@@ -33,7 +33,7 @@ func TestWaitTask(t *testing.T) {
 				if err != nil {
 					t.Fatalf("failed to marshal JSON: %v", err)
 				}
-				_, _ = fmt.Fprintf(w, `{"task":%s}`, string(resp))
+				_, _ = fmt.Fprint(w, string(resp))
 			},
 			expectedError: nil,
 		},
@@ -44,7 +44,7 @@ func TestWaitTask(t *testing.T) {
 				if err != nil {
 					t.Fatalf("failed to marshal JSON: %v", err)
 				}
-				_, _ = fmt.Fprintf(w, `{"task":%s}`, string(resp))
+				_, _ = fmt.Fprint(w, string(resp))
 			},
 			expectedError: fmt.Errorf("%w: [%s]", errTaskStateUnknown, "UnknownState"),
 		},
@@ -55,7 +55,7 @@ func TestWaitTask(t *testing.T) {
 				if err != nil {
 					t.Fatalf("failed to marshal JSON: %v", err)
 				}
-				_, _ = fmt.Fprintf(w, `{"task":%s}`, string(resp))
+				_, _ = fmt.Fprint(w, string(resp))
 			},
 			expectedError: errTaskWithErrorState,
 		},
@@ -89,7 +89,7 @@ func TestWaitForTaskComplete_TaskTimeoutExceeded(t *testing.T) {
 		if err != nil {
 			t.Fatalf("failed to marshal JSON: %v", err)
 		}
-		_, _ = fmt.Fprintf(w, `{"task":%s}`, string(resp))
+		_, _ = fmt.Fprint(w, string(resp))
 	})
 
 	client := edgecloud.NewClient(nil)
@@ -110,7 +110,7 @@ func TestWaitAndGetTaskInfo_Success(t *testing.T) {
 		if err != nil {
 			t.Fatalf("failed to marshal JSON: %v", err)
 		}
-		_, _ = fmt.Fprintf(w, `{"task":%s}`, string(resp))
+		_, _ = fmt.Fprint(w, string(resp))
 	})
 
 	client := edgecloud.NewClient(nil)

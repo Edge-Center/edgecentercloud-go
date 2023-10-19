@@ -25,7 +25,7 @@ func TestSubnetworks_Get(t *testing.T) {
 	mux.HandleFunc(getSubnetworkURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
 		resp, _ := json.Marshal(subnetwork)
-		_, _ = fmt.Fprintf(w, `{"subnetwork":%s}`, string(resp))
+		_, _ = fmt.Fprint(w, string(resp))
 	})
 
 	resp, _, err := client.Subnetworks.Get(ctx, subnetworkID)
@@ -62,7 +62,7 @@ func TestSubnetworks_Create(t *testing.T) {
 		}
 		assert.Equal(t, subnetworkCreateRequest, reqBody)
 		resp, _ := json.Marshal(taskResponse)
-		_, _ = fmt.Fprintf(w, `{"tasks":%s}`, string(resp))
+		_, _ = fmt.Fprint(w, string(resp))
 	})
 
 	resp, _, err := client.Subnetworks.Create(ctx, subnetworkCreateRequest)
@@ -87,7 +87,7 @@ func TestSubnetworks_Delete(t *testing.T) {
 	mux.HandleFunc(deleteSubnetworkURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodDelete)
 		resp, _ := json.Marshal(taskResponse)
-		_, _ = fmt.Fprintf(w, `{"tasks":%s}`, string(resp))
+		_, _ = fmt.Fprint(w, string(resp))
 	})
 
 	resp, _, err := client.Subnetworks.Delete(ctx, subnetworkID)

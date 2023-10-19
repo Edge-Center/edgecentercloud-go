@@ -25,7 +25,7 @@ func TestLoadbalancers_Get(t *testing.T) {
 	mux.HandleFunc(getLoadbalancerURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
 		resp, _ := json.Marshal(loadbalancer)
-		_, _ = fmt.Fprintf(w, `{"loadbalancer":%s}`, string(resp))
+		_, _ = fmt.Fprint(w, string(resp))
 	})
 
 	resp, _, err := client.Loadbalancers.Get(ctx, loadbalancerID)
@@ -61,7 +61,7 @@ func TestLoadbalancers_Create(t *testing.T) {
 		}
 		assert.Equal(t, loadbalancerCreateRequest, reqBody)
 		resp, _ := json.Marshal(taskResponse)
-		_, _ = fmt.Fprintf(w, `{"tasks":%s}`, string(resp))
+		_, _ = fmt.Fprint(w, string(resp))
 	})
 
 	resp, _, err := client.Loadbalancers.Create(ctx, loadbalancerCreateRequest)
@@ -86,7 +86,7 @@ func TestLoadbalancers_Delete(t *testing.T) {
 	mux.HandleFunc(deleteLoadbalancerURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodDelete)
 		resp, _ := json.Marshal(taskResponse)
-		_, _ = fmt.Fprintf(w, `{"tasks":%s}`, string(resp))
+		_, _ = fmt.Fprint(w, string(resp))
 	})
 
 	resp, _, err := client.Loadbalancers.Delete(ctx, loadbalancerID)
@@ -109,7 +109,7 @@ func TestLoadbalancers_ListenerGet(t *testing.T) {
 	mux.HandleFunc(getLBListenersURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
 		resp, _ := json.Marshal(listener)
-		_, _ = fmt.Fprintf(w, `{"listener":%s}`, string(resp))
+		_, _ = fmt.Fprint(w, string(resp))
 	})
 
 	resp, _, err := client.Loadbalancers.ListenerGet(ctx, listenerID)
@@ -148,7 +148,7 @@ func TestLoadbalancers_ListenerCreate(t *testing.T) {
 		}
 		assert.Equal(t, listenerCreateRequest, reqBody)
 		resp, _ := json.Marshal(taskResponse)
-		_, _ = fmt.Fprintf(w, `{"tasks":%s}`, string(resp))
+		_, _ = fmt.Fprint(w, string(resp))
 	})
 
 	resp, _, err := client.Loadbalancers.ListenerCreate(ctx, listenerCreateRequest)
@@ -173,7 +173,7 @@ func TestLoadbalancers_ListenerDelete(t *testing.T) {
 	mux.HandleFunc(deleteLBListenersURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodDelete)
 		resp, _ := json.Marshal(taskResponse)
-		_, _ = fmt.Fprintf(w, `{"tasks":%s}`, string(resp))
+		_, _ = fmt.Fprint(w, string(resp))
 	})
 
 	resp, _, err := client.Loadbalancers.ListenerDelete(ctx, listenerID)
@@ -196,7 +196,7 @@ func TestLoadbalancers_PoolGet(t *testing.T) {
 	mux.HandleFunc(getLBPoolsURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
 		resp, _ := json.Marshal(pool)
-		_, _ = fmt.Fprintf(w, `{"pool":%s}`, string(resp))
+		_, _ = fmt.Fprint(w, string(resp))
 	})
 
 	resp, _, err := client.Loadbalancers.PoolGet(ctx, poolID)
@@ -235,7 +235,7 @@ func TestLoadbalancers_PoolCreate(t *testing.T) {
 		}
 		assert.Equal(t, poolCreateRequest, reqBody)
 		resp, _ := json.Marshal(taskResponse)
-		_, _ = fmt.Fprintf(w, `{"tasks":%s}`, string(resp))
+		_, _ = fmt.Fprint(w, string(resp))
 	})
 
 	resp, _, err := client.Loadbalancers.PoolCreate(ctx, poolCreateRequest)
@@ -260,7 +260,7 @@ func TestLoadbalancers_PoolDelete(t *testing.T) {
 	mux.HandleFunc(deleteLBPoolsURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodDelete)
 		resp, _ := json.Marshal(taskResponse)
-		_, _ = fmt.Fprintf(w, `{"tasks":%s}`, string(resp))
+		_, _ = fmt.Fprint(w, string(resp))
 	})
 
 	resp, _, err := client.Loadbalancers.PoolDelete(ctx, poolID)
@@ -295,7 +295,7 @@ func TestLoadbalancers_PoolUpdate(t *testing.T) {
 		}
 		assert.Equal(t, poolUpdateRequest, reqBody)
 		resp, _ := json.Marshal(taskResponse)
-		_, _ = fmt.Fprintf(w, `{"tasks":%s}`, string(resp))
+		_, _ = fmt.Fprint(w, string(resp))
 	})
 
 	resp, _, err := client.Loadbalancers.PoolUpdate(ctx, poolID, poolUpdateRequest)
@@ -323,7 +323,7 @@ func TestLoadbalancers_PoolList(t *testing.T) {
 	mux.HandleFunc(poolsListURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
 		resp, _ := json.Marshal(pools)
-		_, _ = fmt.Fprintf(w, `{"pools":%s}`, string(resp))
+		_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))
 	})
 
 	resp, _, err := client.Loadbalancers.PoolList(ctx, &poolListOptions)

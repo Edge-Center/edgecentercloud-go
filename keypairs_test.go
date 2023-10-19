@@ -25,7 +25,7 @@ func TestKeyPairs_Get(t *testing.T) {
 	mux.HandleFunc(getKeyPairsURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
 		resp, _ := json.Marshal(keypair)
-		_, _ = fmt.Fprintf(w, `{"keypair":%s}`, string(resp))
+		_, _ = fmt.Fprint(w, string(resp))
 	})
 
 	resp, _, err := client.KeyPairs.Get(ctx, keypairID)
@@ -60,7 +60,7 @@ func TestKeyPairs_Create(t *testing.T) {
 		}
 		assert.Equal(t, keyPairCreateRequest, reqBody)
 		resp, _ := json.Marshal(taskResponse)
-		_, _ = fmt.Fprintf(w, `{"tasks":%s}`, string(resp))
+		_, _ = fmt.Fprint(w, string(resp))
 	})
 
 	resp, _, err := client.KeyPairs.Create(ctx, keyPairCreateRequest)
@@ -85,7 +85,7 @@ func TestKeyPairs_Delete(t *testing.T) {
 	mux.HandleFunc(deleteKeyPairsURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodDelete)
 		resp, _ := json.Marshal(taskResponse)
-		_, _ = fmt.Fprintf(w, `{"tasks":%s}`, string(resp))
+		_, _ = fmt.Fprint(w, string(resp))
 	})
 
 	resp, _, err := client.KeyPairs.Delete(ctx, keypairID)

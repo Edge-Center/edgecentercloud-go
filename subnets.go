@@ -71,12 +71,6 @@ type HostRoute struct {
 	NextHop     net.IP    `json:"nexthop"`
 }
 
-// subnetworkRoot represents a Subnetwork root.
-type subnetworkRoot struct {
-	Subnetwork *Subnetwork   `json:"subnetwork"`
-	Tasks      *TaskResponse `json:"tasks"`
-}
-
 // Get individual Network.
 func (s *SubnetworksServiceOp) Get(ctx context.Context, subnetworkID string) (*Subnetwork, *Response, error) {
 	if err := isValidUUID(subnetworkID, "subnetworkID"); err != nil {
@@ -94,13 +88,13 @@ func (s *SubnetworksServiceOp) Get(ctx context.Context, subnetworkID string) (*S
 		return nil, nil, err
 	}
 
-	root := new(subnetworkRoot)
-	resp, err := s.client.Do(ctx, req, root)
+	subnetwork := new(Subnetwork)
+	resp, err := s.client.Do(ctx, req, subnetwork)
 	if err != nil {
 		return nil, resp, err
 	}
 
-	return root.Subnetwork, resp, err
+	return subnetwork, resp, err
 }
 
 // Create a Network.
@@ -120,13 +114,13 @@ func (s *SubnetworksServiceOp) Create(ctx context.Context, createRequest *Subnet
 		return nil, nil, err
 	}
 
-	root := new(subnetworkRoot)
-	resp, err := s.client.Do(ctx, req, root)
+	tasks := new(TaskResponse)
+	resp, err := s.client.Do(ctx, req, tasks)
 	if err != nil {
 		return nil, resp, err
 	}
 
-	return root.Tasks, resp, err
+	return tasks, resp, err
 }
 
 // Delete the Network.
@@ -146,11 +140,11 @@ func (s *SubnetworksServiceOp) Delete(ctx context.Context, subnetworkID string) 
 		return nil, nil, err
 	}
 
-	root := new(subnetworkRoot)
-	resp, err := s.client.Do(ctx, req, root)
+	tasks := new(TaskResponse)
+	resp, err := s.client.Do(ctx, req, tasks)
 	if err != nil {
 		return nil, resp, err
 	}
 
-	return root.Tasks, resp, err
+	return tasks, resp, err
 }

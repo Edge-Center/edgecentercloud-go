@@ -25,7 +25,7 @@ func TestNetworks_Get(t *testing.T) {
 	mux.HandleFunc(getNetworkURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
 		resp, _ := json.Marshal(network)
-		_, _ = fmt.Fprintf(w, `{"network":%s}`, string(resp))
+		_, _ = fmt.Fprint(w, string(resp))
 	})
 
 	resp, _, err := client.Networks.Get(ctx, networkID)
@@ -61,7 +61,7 @@ func TestNetworks_Create(t *testing.T) {
 		}
 		assert.Equal(t, networkCreateRequest, reqBody)
 		resp, _ := json.Marshal(taskResponse)
-		_, _ = fmt.Fprintf(w, `{"tasks":%s}`, string(resp))
+		_, _ = fmt.Fprint(w, string(resp))
 	})
 
 	resp, _, err := client.Networks.Create(ctx, networkCreateRequest)
@@ -86,7 +86,7 @@ func TestNetworks_Delete(t *testing.T) {
 	mux.HandleFunc(deleteNetworkURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodDelete)
 		resp, _ := json.Marshal(taskResponse)
-		_, _ = fmt.Fprintf(w, `{"tasks":%s}`, string(resp))
+		_, _ = fmt.Fprint(w, string(resp))
 	})
 
 	resp, _, err := client.Networks.Delete(ctx, networkID)

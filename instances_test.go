@@ -25,7 +25,7 @@ func TestInstances_Get(t *testing.T) {
 	mux.HandleFunc(getInstanceURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
 		resp, _ := json.Marshal(instance)
-		_, _ = fmt.Fprintf(w, `{"instance":%s}`, string(resp))
+		_, _ = fmt.Fprint(w, string(resp))
 	})
 
 	resp, _, err := client.Instances.Get(ctx, instanceID)
@@ -72,7 +72,7 @@ func TestInstances_Create(t *testing.T) {
 		}
 		assert.Equal(t, instanceCreateRequest, reqBody)
 		resp, _ := json.Marshal(taskResponse)
-		_, _ = fmt.Fprintf(w, `{"tasks":%s}`, string(resp))
+		_, _ = fmt.Fprint(w, string(resp))
 	})
 
 	resp, _, err := client.Instances.Create(ctx, instanceCreateRequest)
@@ -97,7 +97,7 @@ func TestInstances_Delete(t *testing.T) {
 	mux.HandleFunc(deleteInstanceURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodDelete)
 		resp, _ := json.Marshal(taskResponse)
-		_, _ = fmt.Fprintf(w, `{"tasks":%s}`, string(resp))
+		_, _ = fmt.Fprint(w, string(resp))
 	})
 
 	resp, _, err := client.Instances.Delete(ctx, instanceID, nil)
@@ -125,7 +125,7 @@ func TestInstances_DeleteWithOptions(t *testing.T) {
 	mux.HandleFunc(deleteInstanceURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodDelete)
 		resp, _ := json.Marshal(taskResponse)
-		_, _ = fmt.Fprintf(w, `{"tasks":%s}`, string(resp))
+		_, _ = fmt.Fprint(w, string(resp))
 	})
 
 	resp, _, err := client.Instances.Delete(ctx, instanceID, &instanceDeleteOptions)
@@ -152,7 +152,7 @@ func TestInstances_MetadataGet(t *testing.T) {
 	mux.HandleFunc(getInstanceMetadataURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
 		resp, _ := json.Marshal(metadata)
-		_, _ = fmt.Fprintf(w, `{"metadata":%s}`, string(resp))
+		_, _ = fmt.Fprint(w, string(resp))
 	})
 
 	resp, _, err := client.Instances.MetadataGet(ctx, instanceID)

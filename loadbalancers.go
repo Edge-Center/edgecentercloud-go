@@ -294,17 +294,10 @@ type LoadbalancerSessionPersistence struct {
 	PersistenceGranularity string             `json:"persistence_granularity,omitempty"`
 }
 
-// loadbalancerRoot represents a Loadbalancer root.
-type loadbalancerRoot struct {
-	Loadbalancer *Loadbalancer `json:"loadbalancer"`
-	Listener     *Listener     `json:"listener"`
-	Pool         *Pool         `json:"pool"`
-	Tasks        *TaskResponse `json:"tasks"`
-}
-
 // loadbalancerRoot represents a Loadbalancer Pools root.
 type loadbalancerPoolsRoot struct {
-	Pools []Pool `json:"pools"`
+	Count int
+	Pools []Pool `json:"results"`
 }
 
 // ListenerCreateRequest represents a request to create a Loadbalancer Listener.
@@ -361,13 +354,13 @@ func (s *LoadbalancersServiceOp) Get(ctx context.Context, loadbalancerID string)
 		return nil, nil, err
 	}
 
-	root := new(loadbalancerRoot)
-	resp, err := s.client.Do(ctx, req, root)
+	loadBalancer := new(Loadbalancer)
+	resp, err := s.client.Do(ctx, req, loadBalancer)
 	if err != nil {
 		return nil, resp, err
 	}
 
-	return root.Loadbalancer, resp, err
+	return loadBalancer, resp, err
 }
 
 // Create a Loadbalancer.
@@ -387,13 +380,13 @@ func (s *LoadbalancersServiceOp) Create(ctx context.Context, createRequest *Load
 		return nil, nil, err
 	}
 
-	root := new(loadbalancerRoot)
-	resp, err := s.client.Do(ctx, req, root)
+	tasks := new(TaskResponse)
+	resp, err := s.client.Do(ctx, req, tasks)
 	if err != nil {
 		return nil, resp, err
 	}
 
-	return root.Tasks, resp, err
+	return tasks, resp, err
 }
 
 // Delete the Loadbalancer.
@@ -413,13 +406,13 @@ func (s *LoadbalancersServiceOp) Delete(ctx context.Context, loadbalancerID stri
 		return nil, nil, err
 	}
 
-	root := new(loadbalancerRoot)
-	resp, err := s.client.Do(ctx, req, root)
+	tasks := new(TaskResponse)
+	resp, err := s.client.Do(ctx, req, tasks)
 	if err != nil {
 		return nil, resp, err
 	}
 
-	return root.Tasks, resp, err
+	return tasks, resp, err
 }
 
 // ListenerGet a Loadbalancer Listener.
@@ -439,13 +432,13 @@ func (s *LoadbalancersServiceOp) ListenerGet(ctx context.Context, listenerID str
 		return nil, nil, err
 	}
 
-	root := new(loadbalancerRoot)
-	resp, err := s.client.Do(ctx, req, root)
+	listener := new(Listener)
+	resp, err := s.client.Do(ctx, req, listener)
 	if err != nil {
 		return nil, resp, err
 	}
 
-	return root.Listener, resp, err
+	return listener, resp, err
 }
 
 // ListenerCreate a Loadbalancer Listener.
@@ -465,13 +458,13 @@ func (s *LoadbalancersServiceOp) ListenerCreate(ctx context.Context, createReque
 		return nil, nil, err
 	}
 
-	root := new(loadbalancerRoot)
-	resp, err := s.client.Do(ctx, req, root)
+	tasks := new(TaskResponse)
+	resp, err := s.client.Do(ctx, req, tasks)
 	if err != nil {
 		return nil, resp, err
 	}
 
-	return root.Tasks, resp, err
+	return tasks, resp, err
 }
 
 // ListenerDelete the Loadbalancer Listener.
@@ -491,13 +484,13 @@ func (s *LoadbalancersServiceOp) ListenerDelete(ctx context.Context, listenerID 
 		return nil, nil, err
 	}
 
-	root := new(loadbalancerRoot)
-	resp, err := s.client.Do(ctx, req, root)
+	tasks := new(TaskResponse)
+	resp, err := s.client.Do(ctx, req, tasks)
 	if err != nil {
 		return nil, resp, err
 	}
 
-	return root.Tasks, resp, err
+	return tasks, resp, err
 }
 
 // PoolGet a Loadbalancer Pool.
@@ -517,13 +510,13 @@ func (s *LoadbalancersServiceOp) PoolGet(ctx context.Context, poolID string) (*P
 		return nil, nil, err
 	}
 
-	root := new(loadbalancerRoot)
-	resp, err := s.client.Do(ctx, req, root)
+	pool := new(Pool)
+	resp, err := s.client.Do(ctx, req, pool)
 	if err != nil {
 		return nil, resp, err
 	}
 
-	return root.Pool, resp, err
+	return pool, resp, err
 }
 
 // PoolCreate a Loadbalancer Pool.
@@ -543,13 +536,13 @@ func (s *LoadbalancersServiceOp) PoolCreate(ctx context.Context, createRequest *
 		return nil, nil, err
 	}
 
-	root := new(loadbalancerRoot)
-	resp, err := s.client.Do(ctx, req, root)
+	tasks := new(TaskResponse)
+	resp, err := s.client.Do(ctx, req, tasks)
 	if err != nil {
 		return nil, resp, err
 	}
 
-	return root.Tasks, resp, err
+	return tasks, resp, err
 }
 
 // PoolDelete the Loadbalancer Pool.
@@ -569,13 +562,13 @@ func (s *LoadbalancersServiceOp) PoolDelete(ctx context.Context, poolID string) 
 		return nil, nil, err
 	}
 
-	root := new(loadbalancerRoot)
-	resp, err := s.client.Do(ctx, req, root)
+	tasks := new(TaskResponse)
+	resp, err := s.client.Do(ctx, req, tasks)
 	if err != nil {
 		return nil, resp, err
 	}
 
-	return root.Tasks, resp, err
+	return tasks, resp, err
 }
 
 // PoolUpdate a Loadbalancer Pool.
@@ -595,13 +588,13 @@ func (s *LoadbalancersServiceOp) PoolUpdate(ctx context.Context, poolID string, 
 		return nil, nil, err
 	}
 
-	root := new(loadbalancerRoot)
-	resp, err := s.client.Do(ctx, req, root)
+	tasks := new(TaskResponse)
+	resp, err := s.client.Do(ctx, req, tasks)
 	if err != nil {
 		return nil, resp, err
 	}
 
-	return root.Tasks, resp, err
+	return tasks, resp, err
 }
 
 // PoolList get Loadbalancer Pools.

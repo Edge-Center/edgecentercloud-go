@@ -61,11 +61,6 @@ type TaskResponse struct {
 	Tasks []string `json:"tasks"`
 }
 
-// taskRoot represents a Task root.
-type taskRoot struct {
-	Task *Task `json:"task"`
-}
-
 // Get individual Task.
 func (s *TasksServiceOp) Get(ctx context.Context, taskID string) (*Task, *Response, error) {
 	if err := isValidUUID(taskID, "taskID"); err != nil {
@@ -79,11 +74,11 @@ func (s *TasksServiceOp) Get(ctx context.Context, taskID string) (*Task, *Respon
 		return nil, nil, err
 	}
 
-	root := new(taskRoot)
-	resp, err := s.client.Do(ctx, req, root)
+	task := new(Task)
+	resp, err := s.client.Do(ctx, req, task)
 	if err != nil {
 		return nil, resp, err
 	}
 
-	return root.Task, resp, err
+	return task, resp, err
 }

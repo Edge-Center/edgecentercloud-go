@@ -113,12 +113,6 @@ const (
 	SGRuleDirectionIngress SecurityGroupRuleDirection = "ingress"
 )
 
-// securityGroupRoot represents a Security Group root.
-type securityGroupRoot struct {
-	SecurityGroup *SecurityGroup `json:"security_group"`
-	Tasks         *TaskResponse  `json:"tasks"`
-}
-
 // Get individual Security Group.
 func (s *SecurityGroupsServiceOp) Get(ctx context.Context, securityGroupID string) (*SecurityGroup, *Response, error) {
 	if err := isValidUUID(securityGroupID, "securityGroupID"); err != nil {
@@ -136,13 +130,13 @@ func (s *SecurityGroupsServiceOp) Get(ctx context.Context, securityGroupID strin
 		return nil, nil, err
 	}
 
-	root := new(securityGroupRoot)
-	resp, err := s.client.Do(ctx, req, root)
+	securityGroup := new(SecurityGroup)
+	resp, err := s.client.Do(ctx, req, securityGroup)
 	if err != nil {
 		return nil, resp, err
 	}
 
-	return root.SecurityGroup, resp, err
+	return securityGroup, resp, err
 }
 
 // Create a Security Group.
@@ -162,13 +156,13 @@ func (s *SecurityGroupsServiceOp) Create(ctx context.Context, createRequest *Sec
 		return nil, nil, err
 	}
 
-	root := new(securityGroupRoot)
-	resp, err := s.client.Do(ctx, req, root)
+	tasks := new(TaskResponse)
+	resp, err := s.client.Do(ctx, req, tasks)
 	if err != nil {
 		return nil, resp, err
 	}
 
-	return root.Tasks, resp, err
+	return tasks, resp, err
 }
 
 // Delete the Security Group.
@@ -188,11 +182,11 @@ func (s *SecurityGroupsServiceOp) Delete(ctx context.Context, securityGroupID st
 		return nil, nil, err
 	}
 
-	root := new(securityGroupRoot)
-	resp, err := s.client.Do(ctx, req, root)
+	tasks := new(TaskResponse)
+	resp, err := s.client.Do(ctx, req, tasks)
 	if err != nil {
 		return nil, resp, err
 	}
 
-	return root.Tasks, resp, err
+	return tasks, resp, err
 }

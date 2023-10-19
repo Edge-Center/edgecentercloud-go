@@ -55,11 +55,6 @@ type ServerGroupCreateRequest struct {
 	Policy ServerGroupPolicy `json:"policy" required:"true" validate:"enum"`
 }
 
-// serverGroupRoot represents a Server Group root.
-type serverGroupRoot struct {
-	ServerGroup *ServerGroup `json:"server_group"`
-}
-
 // Get individual Server Group.
 func (s *ServerGroupsServiceOp) Get(ctx context.Context, serverGroupID string) (*ServerGroup, *Response, error) {
 	if err := isValidUUID(serverGroupID, "serverGroupID"); err != nil {
@@ -77,13 +72,13 @@ func (s *ServerGroupsServiceOp) Get(ctx context.Context, serverGroupID string) (
 		return nil, nil, err
 	}
 
-	root := new(serverGroupRoot)
-	resp, err := s.client.Do(ctx, req, root)
+	serverGroup := new(ServerGroup)
+	resp, err := s.client.Do(ctx, req, serverGroup)
 	if err != nil {
 		return nil, resp, err
 	}
 
-	return root.ServerGroup, resp, err
+	return serverGroup, resp, err
 }
 
 // Create a Server Group.
