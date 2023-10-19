@@ -103,13 +103,13 @@ func (s *ServerGroupsServiceOp) Create(ctx context.Context, createRequest *Serve
 		return nil, nil, err
 	}
 
-	root := new(serverGroupRoot)
-	resp, err := s.client.Do(ctx, req, root)
+	serverGroup := new(ServerGroup)
+	resp, err := s.client.Do(ctx, req, serverGroup)
 	if err != nil {
 		return nil, resp, err
 	}
 
-	return root.ServerGroup, resp, err
+	return serverGroup, resp, err
 }
 
 // Delete the Server Group.
