@@ -47,7 +47,7 @@ type Volume struct {
 	ProjectID           int                `json:"project_id"`
 	Attachments         []Attachment       `json:"attachments"`
 	VolumeImageMetadata Metadata           `json:"volume_image_metadata"`
-	LimiterStats        []LimiterStats     `json:"limiter_stats"`
+	LimiterStats        LimiterStats       `json:"limiter_stats"`
 	AvailabilityZone    string             `json:"availability_zone"`
 }
 
