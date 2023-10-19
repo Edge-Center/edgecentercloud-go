@@ -24,7 +24,7 @@ func TestTasks_Get(t *testing.T) {
 	mux.HandleFunc(getVolumesURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
 		resp, _ := json.Marshal(task)
-		_, _ = fmt.Fprintf(w, `{"task":%s}`, string(resp))
+		_, _ = fmt.Fprint(w, string(resp))
 	})
 
 	resp, _, err := client.Tasks.Get(ctx, taskID)

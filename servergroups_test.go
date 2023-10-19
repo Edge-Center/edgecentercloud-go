@@ -25,7 +25,7 @@ func TestServerGroups_Get(t *testing.T) {
 	mux.HandleFunc(getServerGroupURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
 		resp, _ := json.Marshal(servergroup)
-		_, _ = fmt.Fprintf(w, `{"server_group":%s}`, string(resp))
+		_, _ = fmt.Fprint(w, string(resp))
 	})
 
 	resp, _, err := client.ServerGroups.Get(ctx, sgID)
@@ -60,7 +60,7 @@ func TestServerGroups_Create(t *testing.T) {
 		}
 		assert.Equal(t, servergroupCreateRequest, reqBody)
 		resp, _ := json.Marshal(serverGroupResponse)
-		_, _ = fmt.Fprintf(w, `{"server_group":%s}`, string(resp))
+		_, _ = fmt.Fprint(w, string(resp))
 	})
 
 	resp, _, err := client.ServerGroups.Create(ctx, servergroupCreateRequest)

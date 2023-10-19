@@ -25,7 +25,7 @@ func TestSecurityGroups_Get(t *testing.T) {
 	mux.HandleFunc(getSecurityGroupsURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
 		resp, _ := json.Marshal(securityGroup)
-		_, _ = fmt.Fprintf(w, `{"security_group":%s}`, string(resp))
+		_, _ = fmt.Fprint(w, string(resp))
 	})
 
 	resp, _, err := client.SecurityGroups.Get(ctx, sgID)
@@ -58,7 +58,7 @@ func TestSecurityGroups_Create(t *testing.T) {
 		}
 		assert.Equal(t, securityGroupCreateRequest, reqBody)
 		resp, _ := json.Marshal(taskResponse)
-		_, _ = fmt.Fprintf(w, `{"tasks":%s}`, string(resp))
+		_, _ = fmt.Fprint(w, string(resp))
 	})
 
 	resp, _, err := client.SecurityGroups.Create(ctx, securityGroupCreateRequest)
@@ -83,7 +83,7 @@ func TestSecurityGroups_Delete(t *testing.T) {
 	mux.HandleFunc(deleteSecurityGroupsURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodDelete)
 		resp, _ := json.Marshal(taskResponse)
-		_, _ = fmt.Fprintf(w, `{"tasks":%s}`, string(resp))
+		_, _ = fmt.Fprint(w, string(resp))
 	})
 
 	resp, _, err := client.SecurityGroups.Delete(ctx, sgID)

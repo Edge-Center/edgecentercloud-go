@@ -61,12 +61,6 @@ const (
 	VXLAN NetworkType = "vxlan"
 )
 
-// networkRoot represents a Network root.
-type networkRoot struct {
-	Network *Network      `json:"network"`
-	Tasks   *TaskResponse `json:"tasks"`
-}
-
 // Get individual Network.
 func (s *NetworksServiceOp) Get(ctx context.Context, networkID string) (*Network, *Response, error) {
 	if err := isValidUUID(networkID, "networkID"); err != nil {
@@ -84,13 +78,13 @@ func (s *NetworksServiceOp) Get(ctx context.Context, networkID string) (*Network
 		return nil, nil, err
 	}
 
-	root := new(networkRoot)
-	resp, err := s.client.Do(ctx, req, root)
+	network := new(Network)
+	resp, err := s.client.Do(ctx, req, network)
 	if err != nil {
 		return nil, resp, err
 	}
 
-	return root.Network, resp, err
+	return network, resp, err
 }
 
 // Create a Network.
@@ -110,13 +104,13 @@ func (s *NetworksServiceOp) Create(ctx context.Context, createRequest *NetworkCr
 		return nil, nil, err
 	}
 
-	root := new(networkRoot)
-	resp, err := s.client.Do(ctx, req, root)
+	tasks := new(TaskResponse)
+	resp, err := s.client.Do(ctx, req, tasks)
 	if err != nil {
 		return nil, resp, err
 	}
 
-	return root.Tasks, resp, err
+	return tasks, resp, err
 }
 
 // Delete the Network.
@@ -136,11 +130,11 @@ func (s *NetworksServiceOp) Delete(ctx context.Context, networkID string) (*Task
 		return nil, nil, err
 	}
 
-	root := new(networkRoot)
-	resp, err := s.client.Do(ctx, req, root)
+	tasks := new(TaskResponse)
+	resp, err := s.client.Do(ctx, req, tasks)
 	if err != nil {
 		return nil, resp, err
 	}
 
-	return root.Tasks, resp, err
+	return tasks, resp, err
 }

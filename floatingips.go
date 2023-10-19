@@ -67,12 +67,6 @@ type FloatingIPCreateRequest struct {
 	Metadata       Metadata `json:"metadata,omitempty"`
 }
 
-// floatingIPRoot represents a FloatingIP root.
-type floatingIPRoot struct {
-	FloatingIP *FloatingIP   `json:"floating_ip"`
-	Tasks      *TaskResponse `json:"tasks"`
-}
-
 // Get individual FloatingIP.
 func (s *FloatingipsServiceOp) Get(ctx context.Context, fipID string) (*FloatingIP, *Response, error) {
 	if err := isValidUUID(fipID, "fipID"); err != nil {
@@ -90,13 +84,13 @@ func (s *FloatingipsServiceOp) Get(ctx context.Context, fipID string) (*Floating
 		return nil, nil, err
 	}
 
-	root := new(floatingIPRoot)
-	resp, err := s.client.Do(ctx, req, root)
+	fip := new(FloatingIP)
+	resp, err := s.client.Do(ctx, req, fip)
 	if err != nil {
 		return nil, resp, err
 	}
 
-	return root.FloatingIP, resp, err
+	return fip, resp, err
 }
 
 // Create a FloatingIP.
@@ -116,13 +110,13 @@ func (s *FloatingipsServiceOp) Create(ctx context.Context, createRequest *Floati
 		return nil, nil, err
 	}
 
-	root := new(floatingIPRoot)
-	resp, err := s.client.Do(ctx, req, root)
+	tasks := new(TaskResponse)
+	resp, err := s.client.Do(ctx, req, tasks)
 	if err != nil {
 		return nil, resp, err
 	}
 
-	return root.Tasks, resp, err
+	return tasks, resp, err
 }
 
 // Delete the FloatingIP.
@@ -142,11 +136,11 @@ func (s *FloatingipsServiceOp) Delete(ctx context.Context, fipID string) (*TaskR
 		return nil, nil, err
 	}
 
-	root := new(floatingIPRoot)
-	resp, err := s.client.Do(ctx, req, root)
+	tasks := new(TaskResponse)
+	resp, err := s.client.Do(ctx, req, tasks)
 	if err != nil {
 		return nil, resp, err
 	}
 
-	return root.Tasks, resp, err
+	return tasks, resp, err
 }

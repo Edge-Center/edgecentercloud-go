@@ -43,10 +43,6 @@ type Project struct {
 	TaskID      *string      `json:"task_id"`
 }
 
-type projectRoot struct {
-	Project *Project `json:"project"`
-}
-
 var _ ProjectsService = &ProjectsServiceOp{}
 
 // Get retrieves a single project by its ID.
@@ -62,11 +58,11 @@ func (p *ProjectsServiceOp) getHelper(ctx context.Context, projectID string) (*P
 		return nil, nil, err
 	}
 
-	root := new(projectRoot)
-	resp, err := p.client.Do(ctx, req, root)
+	project := new(Project)
+	resp, err := p.client.Do(ctx, req, project)
 	if err != nil {
 		return nil, resp, err
 	}
 
-	return root.Project, resp, err
+	return project, resp, err
 }

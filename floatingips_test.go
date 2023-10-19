@@ -25,7 +25,7 @@ func TestFloatingips_Get(t *testing.T) {
 	mux.HandleFunc(getFloatingipsURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
 		resp, _ := json.Marshal(floatingIP)
-		_, _ = fmt.Fprintf(w, `{"floating_ip":%s}`, string(resp))
+		_, _ = fmt.Fprint(w, string(resp))
 	})
 
 	resp, _, err := client.Floatingips.Get(ctx, fipID)
@@ -58,7 +58,7 @@ func TestFloatingips_Create(t *testing.T) {
 		}
 		assert.Equal(t, floatingIPCreateRequest, reqBody)
 		resp, _ := json.Marshal(taskResponse)
-		_, _ = fmt.Fprintf(w, `{"tasks":%s}`, string(resp))
+		_, _ = fmt.Fprint(w, string(resp))
 	})
 
 	resp, _, err := client.Floatingips.Create(ctx, floatingIPCreateRequest)
@@ -83,7 +83,7 @@ func TestFloatingips_Delete(t *testing.T) {
 	mux.HandleFunc(deleteFloatingipsURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodDelete)
 		resp, _ := json.Marshal(taskResponse)
-		_, _ = fmt.Fprintf(w, `{"tasks":%s}`, string(resp))
+		_, _ = fmt.Fprint(w, string(resp))
 	})
 
 	resp, _, err := client.Floatingips.Delete(ctx, fipID)

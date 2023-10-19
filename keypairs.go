@@ -45,12 +45,6 @@ type KeyPairCreateRequest struct {
 	SharedInProject bool   `json:"shared_in_project"`
 }
 
-// keyPairRoot represents a Key Pair root.
-type keyPairRoot struct {
-	KeyPair *KeyPair      `json:"keypair"`
-	Tasks   *TaskResponse `json:"tasks"`
-}
-
 // Get individual Key Pair.
 func (s *KeyPairsServiceOp) Get(ctx context.Context, keypairID string) (*KeyPair, *Response, error) {
 	if err := isValidUUID(keypairID, "keypairID"); err != nil {
@@ -68,13 +62,13 @@ func (s *KeyPairsServiceOp) Get(ctx context.Context, keypairID string) (*KeyPair
 		return nil, nil, err
 	}
 
-	root := new(keyPairRoot)
-	resp, err := s.client.Do(ctx, req, root)
+	keyPair := new(KeyPair)
+	resp, err := s.client.Do(ctx, req, keyPair)
 	if err != nil {
 		return nil, resp, err
 	}
 
-	return root.KeyPair, resp, err
+	return keyPair, resp, err
 }
 
 // Create a Key Pair.
@@ -94,13 +88,13 @@ func (s *KeyPairsServiceOp) Create(ctx context.Context, createRequest *KeyPairCr
 		return nil, nil, err
 	}
 
-	root := new(keyPairRoot)
-	resp, err := s.client.Do(ctx, req, root)
+	tasks := new(TaskResponse)
+	resp, err := s.client.Do(ctx, req, tasks)
 	if err != nil {
 		return nil, resp, err
 	}
 
-	return root.Tasks, resp, err
+	return tasks, resp, err
 }
 
 // Delete the Key Pair.
@@ -120,11 +114,11 @@ func (s *KeyPairsServiceOp) Delete(ctx context.Context, keypairID string) (*Task
 		return nil, nil, err
 	}
 
-	root := new(keyPairRoot)
-	resp, err := s.client.Do(ctx, req, root)
+	tasks := new(TaskResponse)
+	resp, err := s.client.Do(ctx, req, tasks)
 	if err != nil {
 		return nil, resp, err
 	}
 
-	return root.Tasks, resp, err
+	return tasks, resp, err
 }

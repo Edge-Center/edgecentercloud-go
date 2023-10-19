@@ -147,13 +147,6 @@ type InstanceDeleteOptions struct {
 	ReservedFixedIPs []string `url:"reserved_fixed_ips,omitempty" validate:"omitempty,dive,uuid4" delimiter:"comma"`
 }
 
-// instanceRoot represents an Instance root.
-type instanceRoot struct {
-	Instance *Instance         `json:"instance"`
-	Tasks    *TaskResponse     `json:"tasks"`
-	Metadata *MetadataDetailed `json:"metadata"`
-}
-
 // Get individual Instance.
 func (s *InstancesServiceOp) Get(ctx context.Context, instanceID string) (*Instance, *Response, error) {
 	if err := isValidUUID(instanceID, "instanceID"); err != nil {
@@ -171,13 +164,13 @@ func (s *InstancesServiceOp) Get(ctx context.Context, instanceID string) (*Insta
 		return nil, nil, err
 	}
 
-	root := new(instanceRoot)
-	resp, err := s.client.Do(ctx, req, root)
+	instance := new(Instance)
+	resp, err := s.client.Do(ctx, req, instance)
 	if err != nil {
 		return nil, resp, err
 	}
 
-	return root.Instance, resp, err
+	return instance, resp, err
 }
 
 // Create an Instance.
@@ -197,13 +190,13 @@ func (s *InstancesServiceOp) Create(ctx context.Context, createRequest *Instance
 		return nil, nil, err
 	}
 
-	root := new(instanceRoot)
-	resp, err := s.client.Do(ctx, req, root)
+	tasks := new(TaskResponse)
+	resp, err := s.client.Do(ctx, req, tasks)
 	if err != nil {
 		return nil, resp, err
 	}
 
-	return root.Tasks, resp, err
+	return tasks, resp, err
 }
 
 // Delete the Instance.
@@ -227,13 +220,13 @@ func (s *InstancesServiceOp) Delete(ctx context.Context, instanceID string, opts
 		return nil, nil, err
 	}
 
-	root := new(instanceRoot)
-	resp, err := s.client.Do(ctx, req, root)
+	tasks := new(TaskResponse)
+	resp, err := s.client.Do(ctx, req, tasks)
 	if err != nil {
 		return nil, resp, err
 	}
 
-	return root.Tasks, resp, err
+	return tasks, resp, err
 }
 
 // MetadataGet instance detailed metadata (tags).
@@ -254,13 +247,13 @@ func (s *InstancesServiceOp) MetadataGet(ctx context.Context, instanceID string)
 		return nil, nil, err
 	}
 
-	root := new(instanceRoot)
-	resp, err := s.client.Do(ctx, req, root)
+	metadata := new(MetadataDetailed)
+	resp, err := s.client.Do(ctx, req, metadata)
 	if err != nil {
 		return nil, resp, err
 	}
 
-	return root.Metadata, resp, err
+	return metadata, resp, err
 }
 
 // MetadataCreate instance metadata (tags).
