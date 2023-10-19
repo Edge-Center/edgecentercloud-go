@@ -16,6 +16,7 @@ const (
 	// the check for task result is a total failure.
 	taskFailure            = 3
 	taskGetInfoRetrySecond = 5
+	defaultTimeout         = time.Minute
 )
 
 var (
@@ -43,6 +44,22 @@ type TaskResult struct {
 	Volumes        []string `json:"volumes"`
 }
 
+type TaskAPIFunc[T any] func(ctx context.Context, opt T) (*edgecloud.TaskResponse, *edgecloud.Response, error)
+
+func ExecuteAndExtractTaskResult[T any](ctx context.Context, apiFunc TaskAPIFunc[T], opt T, client *edgecloud.Client, timeouts ...time.Duration) (*TaskResult, error) {
+	task, _, err := apiFunc(ctx, opt)
+	if err != nil {
+		return nil, err
+	}
+
+	taskInfo, err := WaitAndGetTaskInfo(ctx, client, task.Tasks[0], timeouts...)
+	if err != nil {
+		return nil, err
+	}
+
+	return ExtractTaskResultFromTask(taskInfo)
+}
+
 func ExtractTaskResultFromTask(task *edgecloud.Task) (*TaskResult, error) {
 	var result TaskResult
 	if err := mapstructure.Decode(task.CreatedResources, &result); err != nil {
@@ -61,7 +78,7 @@ func waitTask(ctx context.Context, client *edgecloud.Client, taskID string) (*ed
 			select {
 			case <-ctx.Done():
 				if errors.Is(ctx.Err(), context.DeadlineExceeded) {
-					return nil, errTaskWaitTimeout
+					return nil, edgecloud.NewArgError("taskID", errTaskWaitTimeout.Error())
 				}
 				return nil, ctx.Err()
 			default:
@@ -80,12 +97,12 @@ func waitTask(ctx context.Context, client *edgecloud.Client, taskID string) (*ed
 			case <-time.After(taskGetInfoRetrySecond * time.Second):
 			case <-ctx.Done():
 				if errors.Is(ctx.Err(), context.DeadlineExceeded) {
-					return nil, errTaskWaitTimeout
+					return nil, edgecloud.NewArgError("taskID", errTaskWaitTimeout.Error())
 				}
 				return nil, ctx.Err()
 			}
 		case edgecloud.TaskStateError:
-			return nil, errTaskWithErrorState
+			return nil, edgecloud.NewArgError("taskID", errTaskWithErrorState.Error())
 		case edgecloud.TaskStateFinished:
 			return taskInfo, nil
 		default:
@@ -94,15 +111,28 @@ func waitTask(ctx context.Context, client *edgecloud.Client, taskID string) (*ed
 	}
 }
 
-func WaitForTaskComplete(ctx context.Context, client *edgecloud.Client, taskID string, timeout time.Duration) error {
+func WaitForTaskComplete(ctx context.Context, client *edgecloud.Client, taskID string, timeouts ...time.Duration) error {
+	timeout := defaultTimeout
+
+	if len(timeouts) > 0 {
+		timeout = timeouts[0]
+	}
+
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 
 	_, err := waitTask(ctx, client, taskID)
+
 	return err
 }
 
-func WaitAndGetTaskInfo(ctx context.Context, client *edgecloud.Client, taskID string, timeout time.Duration) (*edgecloud.Task, error) {
+func WaitAndGetTaskInfo(ctx context.Context, client *edgecloud.Client, taskID string, timeouts ...time.Duration) (*edgecloud.Task, error) {
+	timeout := defaultTimeout
+
+	if len(timeouts) > 0 {
+		timeout = timeouts[0]
+	}
+
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 

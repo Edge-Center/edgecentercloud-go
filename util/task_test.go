@@ -57,7 +57,7 @@ func TestWaitTask(t *testing.T) {
 				}
 				_, _ = fmt.Fprint(w, string(resp))
 			},
-			expectedError: errTaskWithErrorState,
+			expectedError: edgecloud.NewArgError("taskID", errTaskWithErrorState.Error()),
 		},
 	}
 
@@ -97,7 +97,7 @@ func TestWaitForTaskComplete_TaskTimeoutExceeded(t *testing.T) {
 	client.BaseURL = baseURL
 
 	err := WaitForTaskComplete(context.Background(), client, taskID, timeout)
-	assert.Equal(t, errTaskWaitTimeout, err)
+	assert.Equal(t, edgecloud.NewArgError("taskID", errTaskWaitTimeout.Error()), err)
 }
 
 func TestWaitAndGetTaskInfo_Success(t *testing.T) {
@@ -121,4 +121,34 @@ func TestWaitAndGetTaskInfo_Success(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, taskID, taskInfo.ID)
 	assert.Equal(t, edgecloud.TaskStateFinished, taskInfo.State)
+}
+
+func TestExecuteAndExtractTaskResult_Success(t *testing.T) {
+	mux := http.NewServeMux()
+	server := httptest.NewServer(mux)
+	defer server.Close()
+
+	mux.HandleFunc(fmt.Sprintf("/v1/tasks/%s", taskID), func(w http.ResponseWriter, r *http.Request) {
+		resp, err := json.Marshal(&edgecloud.Task{ID: taskID, State: edgecloud.TaskStateFinished})
+		if err != nil {
+			t.Fatalf("failed to marshal JSON: %v", err)
+		}
+		_, _ = fmt.Fprint(w, string(resp))
+	})
+
+	client := edgecloud.NewClient(nil)
+	baseURL, _ := url.Parse(server.URL)
+	client.BaseURL = baseURL
+
+	result, err := ExecuteAndExtractTaskResult(
+		context.Background(),
+		func(ctx context.Context, opt interface{}) (*edgecloud.TaskResponse, *edgecloud.Response, error) {
+			return &edgecloud.TaskResponse{Tasks: []string{taskID}}, &edgecloud.Response{}, nil
+		},
+		"testOpt",
+		client,
+	)
+
+	assert.NoError(t, err)
+	assert.NotNil(t, result)
 }
