@@ -253,6 +253,19 @@ type HealthMonitorCreateRequest struct {
 	HTTPMethod     *HTTPMethod       `json:"http_method,omitempty"`
 }
 
+// HealthMonitorUpdateRequest represents a request to update a Loadbalancer Pool Health Monitor.
+type HealthMonitorUpdateRequest struct {
+	ID             string            `json:"id,omitempty"`
+	Type           HealthMonitorType `json:"type,omitempty"`
+	Delay          int               `json:"delay" required:"true"`
+	MaxRetries     int               `json:"max_retries" required:"true"`
+	Timeout        int               `json:"timeout" required:"true"`
+	MaxRetriesDown int               `json:"max_retries_down,omitempty"`
+	HTTPMethod     *HTTPMethod       `json:"http_method,omitempty"`
+	URLPath        *string           `json:"url_path,omitempty"`
+	ExpectedCodes  *string           `json:"expected_codes,omitempty"`
+}
+
 // LoadbalancerListenerCreateRequest represents a request to create a Loadbalancer Listener.
 // Used as part of a request to create a Loadbalancer.
 type LoadbalancerListenerCreateRequest struct {
@@ -325,7 +338,7 @@ type PoolUpdateRequest struct {
 	LoadBalancerAlgorithm LoadBalancerAlgorithm           `json:"lb_algorithm,omitempty"`
 	SessionPersistence    *LoadbalancerSessionPersistence `json:"session_persistence,omitempty"`
 	Members               []PoolMember                    `json:"members,omitempty"`
-	HealthMonitor         HealthMonitorCreateRequest      `json:"healthmonitor,omitempty"`
+	HealthMonitor         *HealthMonitorUpdateRequest     `json:"healthmonitor,omitempty"`
 	TimeoutClientData     int                             `json:"timeout_client_data,omitempty"`
 	TimeoutMemberData     int                             `json:"timeout_member_data,omitempty"`
 	TimeoutMemberConnect  int                             `json:"timeout_member_connect,omitempty"`
