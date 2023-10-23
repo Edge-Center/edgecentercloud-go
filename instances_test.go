@@ -147,7 +147,7 @@ func TestInstances_MetadataGet(t *testing.T) {
 		Value:    "b3c52ece-147e-4af5-8d7c-84691309b879",
 		ReadOnly: true,
 	}
-	getInstanceMetadataURL := fmt.Sprintf("/v1/instances/%d/%d/%s/%s", projectID, regionID, instanceID, metadataPath)
+	getInstanceMetadataURL := fmt.Sprintf("/v1/instances/%d/%d/%s/%s", projectID, regionID, instanceID, instanceMetadataPath)
 
 	mux.HandleFunc(getInstanceMetadataURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
@@ -175,12 +175,34 @@ func TestInstances_MetadataCreate(t *testing.T) {
 		map[string]interface{}{"key": "value"},
 	}
 
-	createInstanceMetadataURL := fmt.Sprintf("/v1/instances/%d/%d/%s/%s", projectID, regionID, instanceID, metadataPath)
+	createInstanceMetadataURL := fmt.Sprintf("/v1/instances/%d/%d/%s/%s", projectID, regionID, instanceID, instanceMetadataPath)
 
 	mux.HandleFunc(createInstanceMetadataURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPut)
 	})
 
 	_, err := client.Instances.MetadataCreate(ctx, instanceID, metadataCreateRequest)
+	require.NoError(t, err)
+}
+
+func TestInstances_CheckLimits(t *testing.T) {
+	setup()
+	defer teardown()
+
+	checkLimitsRequest := &InstanceCheckLimitsRequest{
+		Names:      []string{""},
+		Interfaces: []InstanceInterface{},
+		Volumes:    []InstanceCheckLimitsVolume{},
+	}
+
+	checkLimitsInstanceURL := fmt.Sprintf("/v2/instances/%d/%d/%s", projectID, regionID, instancesCheckLimitsPath)
+
+	mux.HandleFunc(checkLimitsInstanceURL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodPost)
+		resp, _ := json.Marshal(map[string]int{})
+		_, _ = fmt.Fprint(w, string(resp))
+	})
+
+	_, _, err := client.Instances.CheckLimits(ctx, checkLimitsRequest)
 	require.NoError(t, err)
 }

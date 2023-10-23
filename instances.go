@@ -8,9 +8,10 @@ import (
 )
 
 const (
-	instancesBasePathV1 = "/v1/instances"
-	instancesBasePathV2 = "/v2/instances"
-	metadataPath        = "metadata"
+	instancesBasePathV1      = "/v1/instances"
+	instancesBasePathV2      = "/v2/instances"
+	instanceMetadataPath     = "metadata"
+	instancesCheckLimitsPath = "check_limits"
 )
 
 // InstancesService is an interface for creating and managing Instances with the EdgecenterCloud API.
@@ -19,6 +20,9 @@ type InstancesService interface {
 	Get(context.Context, string) (*Instance, *Response, error)
 	Create(context.Context, *InstanceCreateRequest) (*TaskResponse, *Response, error)
 	Delete(context.Context, string, *InstanceDeleteOptions) (*TaskResponse, *Response, error)
+
+	CheckLimits(context.Context, *InstanceCheckLimitsRequest) (*map[string]int, *Response, error)
+
 	InstanceMetadata
 }
 
@@ -147,6 +151,23 @@ type InstanceDeleteOptions struct {
 	ReservedFixedIPs []string `url:"reserved_fixed_ips,omitempty" validate:"omitempty,dive,uuid4" delimiter:"comma"`
 }
 
+type InstanceCheckLimitsVolume struct {
+	Source     VolumeSource `json:"source" required:"true" validate:"required,enum"`
+	TypeName   VolumeType   `json:"type_name,omitempty" validate:"omitempty"`
+	Size       int          `json:"size,omitempty" validate:"omitempty"`
+	SnapshotID string       `json:"snapshot_id,omitempty" validate:"omitempty"`
+	ImageID    string       `json:"image_id,omitempty" validate:"omitempty"`
+}
+
+// InstanceCheckLimitsRequest represents a request to check the limits of an instance.
+type InstanceCheckLimitsRequest struct {
+	Names         []string                    `json:"names,omitempty" validate:"required_without=NameTemplates"`
+	NameTemplates []string                    `json:"name_templates,omitempty" validate:"required_without=Names"`
+	Flavor        string                      `json:"flavor,omitempty"`
+	Interfaces    []InstanceInterface         `json:"interfaces,omitempty" required:"true" validate:"required,dive"`
+	Volumes       []InstanceCheckLimitsVolume `json:"volumes,omitempty" required:"true" validate:"required,dive"`
+}
+
 // Get individual Instance.
 func (s *InstancesServiceOp) Get(ctx context.Context, instanceID string) (*Instance, *Response, error) {
 	if err := isValidUUID(instanceID, "instanceID"); err != nil {
@@ -240,7 +261,7 @@ func (s *InstancesServiceOp) MetadataGet(ctx context.Context, instanceID string)
 	}
 
 	path := s.client.addServicePath(instancesBasePathV1)
-	path = fmt.Sprintf("%s/%s/%s", path, instanceID, metadataPath)
+	path = fmt.Sprintf("%s/%s/%s", path, instanceID, instanceMetadataPath)
 
 	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
 	if err != nil {
@@ -267,7 +288,7 @@ func (s *InstancesServiceOp) MetadataCreate(ctx context.Context, instanceID stri
 	}
 
 	path := s.client.addServicePath(instancesBasePathV1)
-	path = fmt.Sprintf("%s/%s/%s", path, instanceID, metadataPath)
+	path = fmt.Sprintf("%s/%s/%s", path, instanceID, instanceMetadataPath)
 
 	req, err := s.client.NewRequest(ctx, http.MethodPut, path, metadata)
 	if err != nil {
@@ -275,4 +296,27 @@ func (s *InstancesServiceOp) MetadataCreate(ctx context.Context, instanceID stri
 	}
 
 	return s.client.Do(ctx, req, nil)
+}
+
+// CheckLimits check a quota for instance creation.
+func (s *InstancesServiceOp) CheckLimits(ctx context.Context, checkLimitsRequest *InstanceCheckLimitsRequest) (*map[string]int, *Response, error) {
+	if err := s.client.Validate(); err != nil {
+		return nil, nil, err
+	}
+
+	path := s.client.addServicePath(instancesBasePathV2)
+	path = fmt.Sprintf("%s/%s", path, instancesCheckLimitsPath)
+
+	req, err := s.client.NewRequest(ctx, http.MethodPost, path, checkLimitsRequest)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	limits := new(map[string]int)
+	resp, err := s.client.Do(ctx, req, limits)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return limits, resp, nil
 }
