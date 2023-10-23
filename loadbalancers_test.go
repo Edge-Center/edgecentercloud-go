@@ -333,3 +333,21 @@ func TestLoadbalancers_PoolList(t *testing.T) {
 		t.Errorf("Loadbalancers.PoolList\n returned %+v,\n expected %+v", resp, pools)
 	}
 }
+
+func TestLoadbalancers_CheckLimits(t *testing.T) {
+	setup()
+	defer teardown()
+
+	checkLimitsRequest := &LoadbalancerCheckLimitsRequest{}
+
+	checkLimitsInstanceURL := fmt.Sprintf("/v1/loadbalancers/%d/%d/%s", projectID, regionID, loadbalancersCheckLimitsPath)
+
+	mux.HandleFunc(checkLimitsInstanceURL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodPost)
+		resp, _ := json.Marshal(map[string]int{})
+		_, _ = fmt.Fprint(w, string(resp))
+	})
+
+	_, _, err := client.Loadbalancers.CheckLimits(ctx, checkLimitsRequest)
+	require.NoError(t, err)
+}

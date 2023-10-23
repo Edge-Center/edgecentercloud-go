@@ -8,9 +8,10 @@ import (
 )
 
 const (
-	loadbalancersBasePathV1 = "/v1/loadbalancers"
-	lblistenersBasePathV1   = "/v1/lblisteners"
-	lbpoolsBasePathV1       = "/v1/lbpools"
+	loadbalancersBasePathV1      = "/v1/loadbalancers"
+	lblistenersBasePathV1        = "/v1/lblisteners"
+	lbpoolsBasePathV1            = "/v1/lbpools"
+	loadbalancersCheckLimitsPath = "check_limits"
 )
 
 // LoadbalancersService is an interface for creating and managing Loadbalancer with the EdgecenterCloud API.
@@ -19,6 +20,9 @@ type LoadbalancersService interface {
 	Get(context.Context, string) (*Loadbalancer, *Response, error)
 	Create(context.Context, *LoadbalancerCreateRequest) (*TaskResponse, *Response, error)
 	Delete(context.Context, string) (*TaskResponse, *Response, error)
+
+	CheckLimits(context.Context, *LoadbalancerCheckLimitsRequest) (*map[string]int, *Response, error)
+
 	LoadbalancerListeners
 	LoadbalancerPools
 }
@@ -350,6 +354,11 @@ type PoolListOptions struct {
 	Details        bool   `url:"details,omitempty"` // if true Details show the member and healthmonitor details
 }
 
+// LoadbalancerCheckLimitsRequest represents a request to check the limits of a loadbalancer.
+type LoadbalancerCheckLimitsRequest struct {
+	FloatingIP InterfaceFloatingIP `json:"floating_ip,omitempty"`
+}
+
 // Get individual Loadbalancer.
 func (s *LoadbalancersServiceOp) Get(ctx context.Context, loadbalancerID string) (*Loadbalancer, *Response, error) {
 	if err := isValidUUID(loadbalancerID, "loadbalancerID"); err != nil {
@@ -634,4 +643,27 @@ func (s *LoadbalancersServiceOp) PoolList(ctx context.Context, opts *PoolListOpt
 	}
 
 	return root.Pools, resp, err
+}
+
+// CheckLimits check a quota for load balancer creation.
+func (s *LoadbalancersServiceOp) CheckLimits(ctx context.Context, checkLimitsRequest *LoadbalancerCheckLimitsRequest) (*map[string]int, *Response, error) {
+	if err := s.client.Validate(); err != nil {
+		return nil, nil, err
+	}
+
+	path := s.client.addServicePath(loadbalancersBasePathV1)
+	path = fmt.Sprintf("%s/%s", path, loadbalancersCheckLimitsPath)
+
+	req, err := s.client.NewRequest(ctx, http.MethodPost, path, checkLimitsRequest)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	limits := new(map[string]int)
+	resp, err := s.client.Do(ctx, req, limits)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return limits, resp, nil
 }
