@@ -86,6 +86,11 @@ func testURLParseError(t *testing.T, urlErr error) {
 	}
 }
 
+func TestNewWithRetries(t *testing.T) {
+	c := NewWithRetries(nil)
+	testClientDefaults(t, c)
+}
+
 func TestNew(t *testing.T) {
 	c, err := New(nil)
 	if err != nil {
@@ -255,4 +260,94 @@ func TestCustomBaseURL_badURL(t *testing.T) {
 	_, err := New(nil, SetBaseURL(baseURL))
 
 	testURLParseError(t, err)
+}
+
+func TestWithRetryAndBackoffs(t *testing.T) {
+	setup()
+	defer teardown()
+
+	baseURL, _ := url.Parse(server.URL)
+	mux.HandleFunc("/foo", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusInternalServerError)
+		_, _ = w.Write([]byte(`{"message": "broken"}`))
+	})
+
+	waitMax := PtrTo(5.0)
+	waitMin := PtrTo(2.0)
+
+	retryConfig := RetryConfig{
+		RetryMax:     2,
+		RetryWaitMin: waitMin,
+		RetryWaitMax: waitMax,
+	}
+
+	client, err := New(nil, WithRetryAndBackoffs(retryConfig))
+	client.BaseURL = baseURL
+	if err != nil {
+		t.Fatalf("err: %v", err)
+	}
+
+	req, err := client.NewRequest(ctx, http.MethodGet, "/foo", nil)
+	if err != nil {
+		t.Fatalf("err: %v", err)
+	}
+
+	expectingErr := fmt.Sprintf("GET %s/foo: 500 broken; giving up after 3 attempt(s)", baseURL)
+	_, err = client.Do(context.Background(), req, nil)
+	if err == nil || (err.Error() != expectingErr) {
+		t.Fatalf("expected giving up error, got: %#v", err)
+	}
+}
+
+func TestWithRetryAndBackoffsForResourceMethods(t *testing.T) {
+	// Mock server which always responds 500.
+	setup()
+	defer teardown()
+
+	const (
+		networkID = "f0d19cec-5c3f-4853-886e-304915960ff6"
+	)
+
+	url, _ := url.Parse(server.URL)
+	getNetworkURL := fmt.Sprintf("/v1/networks/%d/%d/%s", projectID, regionID, networkID)
+	mux.HandleFunc(getNetworkURL, func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusBadGateway)
+		_, _ = w.Write([]byte(`{"message": "broken"}`))
+	})
+
+	waitMax := PtrTo(5.0)
+	waitMin := PtrTo(2.0)
+
+	retryConfig := RetryConfig{
+		RetryMax:     2,
+		RetryWaitMin: waitMin,
+		RetryWaitMax: waitMax,
+	}
+
+	client, err := New(nil, WithRetryAndBackoffs(retryConfig))
+	client.BaseURL = url
+	client.Project = projectID
+	client.Region = regionID
+	if err != nil {
+		t.Fatalf("err: %v", err)
+	}
+
+	expectingErr := fmt.Sprintf("GET %s%s: 502 broken; giving up after 3 attempt(s)", url, getNetworkURL)
+	_, resp, err := client.Networks.Get(context.Background(), networkID)
+	if err == nil || (err.Error() != expectingErr) {
+		t.Fatalf("expected giving up error, got: %s", err.Error())
+	}
+
+	var responseError *ResponseError
+	if !errors.As(err, &responseError) {
+		t.Fatalf("expected error to be *edgecloud.ResponseError, got: %#v", err)
+	}
+
+	// Ensure that the *Response is properly populated
+	if resp == nil {
+		t.Fatal("expected non-nil *edgecloud.Response")
+	}
+	if resp.StatusCode != http.StatusBadGateway {
+		t.Errorf("expected %d, got: %d", http.StatusBadGateway, resp.StatusCode)
+	}
 }

@@ -12,8 +12,10 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/google/go-querystring/query"
+	"github.com/hashicorp/go-retryablehttp"
 )
 
 const (
@@ -21,6 +23,12 @@ const (
 	defaultBaseURL = "https://api.edgecenter.ru/cloud/"
 	userAgent      = "edgecloud/" + libraryVersion
 	mediaType      = "application/json"
+
+	internalHeaderRetryAttempts = "X-Edgecloud-Retry-Attempts"
+
+	defaultRetryMax     = 3
+	defaultRetryWaitMax = 30
+	defaultRetryWaitMin = 1
 )
 
 // Client manages communication with EdgecenterCloud API.
@@ -60,6 +68,23 @@ type Client struct {
 
 	// Optional extra HTTP headers to set on every request to the API.
 	headers map[string]string
+
+	// Optional retry values. Setting the RetryConfig.RetryMax value enables automatically retrying requests
+	// that fail with 429 or 500-level response codes
+	RetryConfig RetryConfig
+}
+
+// RetryConfig sets the values used for enabling retries and backoffs for
+// requests that fail with 429 or 500-level response codes using the go-retryablehttp client.
+// RetryConfig.RetryMax must be configured to enable this behavior. RetryConfig.RetryWaitMin and
+// RetryConfig.RetryWaitMax are optional, with the default values being 1.0 and 30.0, respectively.
+//
+// Note: Opting to use the go-retryablehttp client will overwrite any custom HTTP client passed into New().
+type RetryConfig struct {
+	RetryMax     int
+	RetryWaitMin *float64    // Minimum time to wait
+	RetryWaitMax *float64    // Maximum time to wait
+	Logger       interface{} // Customer logger instance. Must implement either go-retryablehttp.Logger or go-retryablehttp.LeveledLogger
 }
 
 // RequestCompletionCallback defines the type of the request callback function.
@@ -95,6 +120,9 @@ type ResponseError struct {
 
 	// Error message
 	Message string `json:"message"`
+
+	// Attempts is the number of times the request was attempted when retries are enabled.
+	Attempts int
 }
 
 func addOptions(s string, opt interface{}) (string, error) {
@@ -123,6 +151,22 @@ func addOptions(s string, opt interface{}) (string, error) {
 	origURL.RawQuery = origValues.Encode()
 
 	return origURL.String(), nil
+}
+
+// NewWithRetries returns a new EdgecenterCloud API client with default retries config.
+func NewWithRetries(httpClient *http.Client) *Client {
+	client, err := New(httpClient, WithRetryAndBackoffs(
+		RetryConfig{
+			RetryMax:     defaultRetryMax,
+			RetryWaitMin: PtrTo(float64(defaultRetryWaitMin)),
+			RetryWaitMax: PtrTo(float64(defaultRetryWaitMax)),
+		},
+	))
+	if err != nil {
+		panic(err)
+	}
+
+	return client
 }
 
 // NewClient returns a new EdgecenterCloud API, using the given
@@ -163,6 +207,40 @@ func New(httpClient *http.Client, opts ...ClientOpt) (*Client, error) {
 		if err := opt(c); err != nil {
 			return nil, err
 		}
+	}
+
+	// if retryMax is set it will use the retryablehttp client.
+	if c.RetryConfig.RetryMax > 0 {
+		retryableClient := retryablehttp.NewClient()
+		retryableClient.RetryMax = c.RetryConfig.RetryMax
+
+		if c.RetryConfig.RetryWaitMin != nil {
+			retryableClient.RetryWaitMin = time.Duration(*c.RetryConfig.RetryWaitMin * float64(time.Second))
+		}
+		if c.RetryConfig.RetryWaitMax != nil {
+			retryableClient.RetryWaitMax = time.Duration(*c.RetryConfig.RetryWaitMax * float64(time.Second))
+		}
+
+		// By default, this is nil and does not log.
+		retryableClient.Logger = c.RetryConfig.Logger
+
+		// if timeout is set, it is maintained before overwriting client with StandardClient()
+		retryableClient.HTTPClient.Timeout = c.HTTPClient.Timeout
+
+		// This custom ErrorHandler is required to provide errors that are consistent
+		// with a *edgecloud.ErrorResponse and a non-nil *edgecloud.Response while providing
+		// insight into retries using an internal header.
+		retryableClient.ErrorHandler = func(resp *http.Response, err error, numTries int) (*http.Response, error) {
+			if resp != nil {
+				resp.Header.Add(internalHeaderRetryAttempts, strconv.Itoa(numTries))
+
+				return resp, err
+			}
+
+			return resp, err
+		}
+
+		c.HTTPClient = retryableClient.StandardClient()
 	}
 
 	return c, nil
@@ -212,6 +290,18 @@ func SetRequestHeaders(headers map[string]string) ClientOpt {
 		for k, v := range headers {
 			c.headers[k] = v
 		}
+		return nil
+	}
+}
+
+// WithRetryAndBackoffs sets retry values. Setting the RetryConfig.RetryMax value enables automatically retrying requests
+// that fail with 429 or 500-level response codes using the go-retryablehttp client.
+func WithRetryAndBackoffs(retryConfig RetryConfig) ClientOpt {
+	return func(c *Client) error {
+		c.RetryConfig.RetryMax = retryConfig.RetryMax
+		c.RetryConfig.RetryWaitMax = retryConfig.RetryWaitMax
+		c.RetryConfig.RetryWaitMin = retryConfig.RetryWaitMin
+		c.RetryConfig.Logger = retryConfig.Logger
 		return nil
 	}
 }
@@ -323,8 +413,13 @@ func DoRequestWithClient(ctx context.Context, client *http.Client, req *http.Req
 }
 
 func (r *ResponseError) Error() string {
-	return fmt.Sprintf("%v %v: %d %v",
-		r.Response.Request.Method, r.Response.Request.URL, r.Response.StatusCode, r.Message)
+	var attempted string
+	if r.Attempts > 0 {
+		attempted = fmt.Sprintf("; giving up after %d attempt(s)", r.Attempts)
+	}
+
+	return fmt.Sprintf("%v %v: %d %v%s",
+		r.Response.Request.Method, r.Response.Request.URL, r.Response.StatusCode, r.Message, attempted)
 }
 
 // CheckResponse checks the API response for errors, and returns them if present. A response is considered an
@@ -345,5 +440,15 @@ func CheckResponse(r *http.Response) error {
 		}
 	}
 
+	attempts, strconvErr := strconv.Atoi(r.Header.Get(internalHeaderRetryAttempts))
+	if strconvErr == nil {
+		errorResponse.Attempts = attempts
+	}
+
 	return errorResponse
+}
+
+// PtrTo returns a pointer to the provided input.
+func PtrTo[T any](v T) *T {
+	return &v
 }
