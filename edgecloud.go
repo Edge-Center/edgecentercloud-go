@@ -51,6 +51,7 @@ type Client struct {
 	// ProjectID for client
 	Project int
 
+	Flavors        FlavorsService
 	Floatingips    FloatingIPsService
 	Instances      InstancesService
 	KeyPairs       KeyPairsService
@@ -178,6 +179,7 @@ func NewClient(httpClient *http.Client) *Client {
 
 	c := &Client{HTTPClient: httpClient, BaseURL: baseURL, UserAgent: userAgent}
 
+	c.Flavors = &FlavorsServiceOp{client: c}
 	c.Floatingips = &FloatingipsServiceOp{client: c}
 	c.Instances = &InstancesServiceOp{client: c}
 	c.KeyPairs = &KeyPairsServiceOp{client: c}
