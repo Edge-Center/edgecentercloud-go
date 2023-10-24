@@ -9,14 +9,19 @@ import (
 
 const (
 	floatingipsBasePathV1 = "/v1/floatingips"
+	floatingipsAssign     = "assign"
+	floatingipsUnAssign   = "unassign"
 )
 
 // FloatingIPsService is an interface for creating and managing FloatingIPs with the EdgecenterCloud API.
 // See: https://apidocs.edgecenter.ru/cloud#tag/floatingips
 type FloatingIPsService interface {
+	List(context.Context) ([]FloatingIP, *Response, error)
 	Get(context.Context, string) (*FloatingIP, *Response, error)
 	Create(context.Context, *FloatingIPCreateRequest) (*TaskResponse, *Response, error)
 	Delete(context.Context, string) (*TaskResponse, *Response, error)
+	Assign(context.Context, string, *AssignRequest) (*FloatingIP, *Response, error)
+	UnAssign(context.Context, string) (*FloatingIP, *Response, error)
 }
 
 // FloatingipsServiceOp handles communication with FloatingIPs methods of the EdgecenterCloud API.
@@ -60,14 +65,49 @@ type InterfaceFloatingIP struct {
 	ExistingFloatingID string           `json:"existing_floating_id" validate:"rfe=Source:existing,sfe=Source:new,omitempty,uuid"`
 }
 
-// FloatingIPCreateRequest represents a request to create a FloatingIP.
+// FloatingIPCreateRequest represents a request to create a Floating IP.
 type FloatingIPCreateRequest struct {
 	PortID         string   `json:"port_id,omitempty"`
 	FixedIPAddress net.IP   `json:"fixed_ip_address,omitempty"`
 	Metadata       Metadata `json:"metadata,omitempty"`
 }
 
-// Get individual FloatingIP.
+// AssignRequest represents a request to assign a Floating IP to an instance or a load balancer.
+type AssignRequest struct {
+	PortID         string   `json:"port_id" validate:"required"`
+	FixedIPAddress net.IP   `json:"fixed_ip_address,omitempty"`
+	Metadata       Metadata `json:"metadata,omitempty"`
+}
+
+// floatingipsRoot represents a FloatingIPs root.
+type floatingipsRoot struct {
+	Count       int
+	FloatingIPs []FloatingIP `json:"results"`
+}
+
+// List get floating IPs.
+func (s *FloatingipsServiceOp) List(ctx context.Context) ([]FloatingIP, *Response, error) {
+	if err := s.client.Validate(); err != nil {
+		return nil, nil, err
+	}
+
+	path := s.client.addServicePath(floatingipsBasePathV1)
+
+	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	root := new(floatingipsRoot)
+	resp, err := s.client.Do(ctx, req, root)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return root.FloatingIPs, resp, err
+}
+
+// Get a Floating IP.
 func (s *FloatingipsServiceOp) Get(ctx context.Context, fipID string) (*FloatingIP, *Response, error) {
 	if err := isValidUUID(fipID, "fipID"); err != nil {
 		return nil, nil, err
@@ -93,7 +133,7 @@ func (s *FloatingipsServiceOp) Get(ctx context.Context, fipID string) (*Floating
 	return fip, resp, err
 }
 
-// Create a FloatingIP.
+// Create a Floating IP.
 func (s *FloatingipsServiceOp) Create(ctx context.Context, createRequest *FloatingIPCreateRequest) (*TaskResponse, *Response, error) {
 	if createRequest == nil {
 		return nil, nil, NewArgError("createRequest", "cannot be nil")
@@ -119,7 +159,7 @@ func (s *FloatingipsServiceOp) Create(ctx context.Context, createRequest *Floati
 	return tasks, resp, err
 }
 
-// Delete the FloatingIP.
+// Delete the Floating IP.
 func (s *FloatingipsServiceOp) Delete(ctx context.Context, fipID string) (*TaskResponse, *Response, error) {
 	if err := isValidUUID(fipID, "fipID"); err != nil {
 		return nil, nil, err
@@ -143,4 +183,60 @@ func (s *FloatingipsServiceOp) Delete(ctx context.Context, fipID string) (*TaskR
 	}
 
 	return tasks, resp, err
+}
+
+// Assign a floating IP to an instance or a load balancer.
+func (s *FloatingipsServiceOp) Assign(ctx context.Context, fipID string, assignRequest *AssignRequest) (*FloatingIP, *Response, error) {
+	if err := isValidUUID(fipID, "fipID"); err != nil {
+		return nil, nil, err
+	}
+
+	if assignRequest == nil {
+		return nil, nil, NewArgError("assignRequest", "cannot be nil")
+	}
+
+	if err := s.client.Validate(); err != nil {
+		return nil, nil, err
+	}
+
+	path := fmt.Sprintf("%s/%s/%s", s.client.addServicePath(floatingipsBasePathV1), fipID, floatingipsAssign)
+
+	req, err := s.client.NewRequest(ctx, http.MethodPost, path, assignRequest)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	fip := new(FloatingIP)
+	resp, err := s.client.Do(ctx, req, fip)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return fip, resp, err
+}
+
+// UnAssign a floating IP from an instance or a load balancer.
+func (s *FloatingipsServiceOp) UnAssign(ctx context.Context, fipID string) (*FloatingIP, *Response, error) {
+	if err := isValidUUID(fipID, "fipID"); err != nil {
+		return nil, nil, err
+	}
+
+	if err := s.client.Validate(); err != nil {
+		return nil, nil, err
+	}
+
+	path := fmt.Sprintf("%s/%s/%s", s.client.addServicePath(floatingipsBasePathV1), fipID, floatingipsUnAssign)
+
+	req, err := s.client.NewRequest(ctx, http.MethodPost, path, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	fip := new(FloatingIP)
+	resp, err := s.client.Do(ctx, req, fip)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return fip, resp, err
 }
