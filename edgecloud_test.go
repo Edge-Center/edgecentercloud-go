@@ -87,7 +87,10 @@ func testURLParseError(t *testing.T, urlErr error) {
 }
 
 func TestNewWithRetries(t *testing.T) {
-	c := NewWithRetries(nil)
+	c, err := NewWithRetries(nil)
+	if err != nil {
+		t.Fatalf("NewWithRetries(): %v", err)
+	}
 	testClientDefaults(t, c)
 }
 
@@ -308,7 +311,7 @@ func TestWithRetryAndBackoffsForResourceMethods(t *testing.T) {
 		networkID = "f0d19cec-5c3f-4853-886e-304915960ff6"
 	)
 
-	url, _ := url.Parse(server.URL)
+	baseURL, _ := url.Parse(server.URL)
 	getNetworkURL := fmt.Sprintf("/v1/networks/%d/%d/%s", projectID, regionID, networkID)
 	mux.HandleFunc(getNetworkURL, func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadGateway)
@@ -325,14 +328,14 @@ func TestWithRetryAndBackoffsForResourceMethods(t *testing.T) {
 	}
 
 	client, err := New(nil, WithRetryAndBackoffs(retryConfig))
-	client.BaseURL = url
+	client.BaseURL = baseURL
 	client.Project = projectID
 	client.Region = regionID
 	if err != nil {
 		t.Fatalf("err: %v", err)
 	}
 
-	expectingErr := fmt.Sprintf("GET %s%s: 502 broken; giving up after 3 attempt(s)", url, getNetworkURL)
+	expectingErr := fmt.Sprintf("GET %s%s: 502 broken; giving up after 3 attempt(s)", baseURL, getNetworkURL)
 	_, resp, err := client.Networks.Get(context.Background(), networkID)
 	if err == nil || (err.Error() != expectingErr) {
 		t.Fatalf("expected giving up error, got: %s", err.Error())

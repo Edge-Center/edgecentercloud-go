@@ -154,19 +154,16 @@ func addOptions(s string, opt interface{}) (string, error) {
 }
 
 // NewWithRetries returns a new EdgecenterCloud API client with default retries config.
-func NewWithRetries(httpClient *http.Client) *Client {
-	client, err := New(httpClient, WithRetryAndBackoffs(
+func NewWithRetries(httpClient *http.Client, opts ...ClientOpt) (*Client, error) {
+	opts = append(opts, WithRetryAndBackoffs(
 		RetryConfig{
 			RetryMax:     defaultRetryMax,
 			RetryWaitMin: PtrTo(float64(defaultRetryWaitMin)),
 			RetryWaitMax: PtrTo(float64(defaultRetryWaitMax)),
 		},
 	))
-	if err != nil {
-		panic(err)
-	}
 
-	return client
+	return New(httpClient, opts...)
 }
 
 // NewClient returns a new EdgecenterCloud API, using the given
@@ -379,8 +376,8 @@ func (c *Client) Do(ctx context.Context, req *http.Request, v interface{}) (*Res
 			_, _ = io.CopyN(io.Discard, resp.Body, maxBodySlurpSize)
 		}
 
-		if rerr := resp.Body.Close(); err == nil {
-			err = rerr
+		if rErr := resp.Body.Close(); err == nil {
+			err = rErr
 		}
 	}()
 
