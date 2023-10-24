@@ -57,6 +57,7 @@ type Client struct {
 	Loadbalancers  LoadbalancersService
 	Networks       NetworksService
 	Projects       ProjectsService
+	Quotas         QuotasService
 	SecurityGroups SecurityGroupsService
 	ServerGroups   ServerGroupsService
 	Subnetworks    SubnetworksService
@@ -183,6 +184,7 @@ func NewClient(httpClient *http.Client) *Client {
 	c.Loadbalancers = &LoadbalancersServiceOp{client: c}
 	c.Networks = &NetworksServiceOp{client: c}
 	c.Projects = &ProjectsServiceOp{client: c}
+	c.Quotas = &QuotasServiceOp{client: c}
 	c.SecurityGroups = &SecurityGroupsServiceOp{client: c}
 	c.ServerGroups = &ServerGroupsServiceOp{client: c}
 	c.Subnetworks = &SubnetworksServiceOp{client: c}
