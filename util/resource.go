@@ -33,12 +33,17 @@ type GetResourceFunc[T any] func(ctx context.Context, id string) (*T, *edgecloud
 
 func ResourceIsExist[T any](ctx context.Context, getResourceFunc GetResourceFunc[T], id string) (bool, error) {
 	_, resp, _ := getResourceFunc(ctx, id)
-	switch resp.StatusCode {
+
+	return HandleStatusCode(resp.StatusCode)
+}
+
+func HandleStatusCode(statusCode int) (bool, error) {
+	switch statusCode {
 	case http.StatusOK:
 		return true, nil
 	case http.StatusNotFound, http.StatusForbidden:
 		return false, nil
 	default:
-		return false, fmt.Errorf("%w, status code: %d", errGetResourceInfo, resp.StatusCode)
+		return false, fmt.Errorf("%w, status code: %d", errGetResourceInfo, statusCode)
 	}
 }
