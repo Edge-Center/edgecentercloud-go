@@ -8,10 +8,11 @@ import (
 )
 
 const (
-	instancesBasePathV1      = "/v1/instances"
-	instancesBasePathV2      = "/v2/instances"
-	instanceMetadataPath     = "metadata"
-	instancesCheckLimitsPath = "check_limits"
+	instancesBasePathV1       = "/v1/instances"
+	instancesBasePathV2       = "/v2/instances"
+	instanceMetadataPath      = "metadata"
+	instancesCheckLimitsPath  = "check_limits"
+	instancesChangeFlavorPath = "changeflavor"
 )
 
 // InstancesService is an interface for creating and managing Instances with the EdgecenterCloud API.
@@ -22,6 +23,8 @@ type InstancesService interface {
 	Delete(context.Context, string, *InstanceDeleteOptions) (*TaskResponse, *Response, error)
 
 	CheckLimits(context.Context, *InstanceCheckLimitsRequest) (*map[string]int, *Response, error)
+
+	UpdateFlavor(context.Context, string, *InstanceFlavorUpdateRequest) (*TaskResponse, *Response, error)
 
 	InstanceMetadata
 }
@@ -166,6 +169,10 @@ type InstanceCheckLimitsRequest struct {
 	Flavor        string                      `json:"flavor,omitempty"`
 	Interfaces    []InstanceInterface         `json:"interfaces,omitempty" required:"true" validate:"required,dive"`
 	Volumes       []InstanceCheckLimitsVolume `json:"volumes,omitempty" required:"true" validate:"required,dive"`
+}
+
+type InstanceFlavorUpdateRequest struct {
+	FlavorID string `json:"flavor_id" required:"true" validate:"required"`
 }
 
 // Get individual Instance.
@@ -319,4 +326,30 @@ func (s *InstancesServiceOp) CheckLimits(ctx context.Context, checkLimitsRequest
 	}
 
 	return limits, resp, nil
+}
+
+func (s *InstancesServiceOp) UpdateFlavor(ctx context.Context, instanceID string, instanceFlavorUpdateRequest *InstanceFlavorUpdateRequest) (*TaskResponse, *Response, error) {
+	if err := isValidUUID(instanceID, "instanceID"); err != nil {
+		return nil, nil, err
+	}
+
+	if err := s.client.Validate(); err != nil {
+		return nil, nil, err
+	}
+
+	path := s.client.addServicePath(instancesBasePathV1)
+	path = fmt.Sprintf("%s/%s/%s", path, instanceID, instancesChangeFlavorPath)
+
+	req, err := s.client.NewRequest(ctx, http.MethodPost, path, instanceFlavorUpdateRequest)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	tasks := new(TaskResponse)
+	resp, err := s.client.Do(ctx, req, tasks)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return tasks, resp, err
 }

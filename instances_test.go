@@ -206,3 +206,32 @@ func TestInstances_CheckLimits(t *testing.T) {
 	_, _, err := client.Instances.CheckLimits(ctx, checkLimitsRequest)
 	require.NoError(t, err)
 }
+
+func TestInstances_UpdateFlavor(t *testing.T) {
+	setup()
+	defer teardown()
+
+	const (
+		taskID     = "f0d19cec-5c3f-4853-886e-304915960ff6"
+		instanceID = "f0d19cec-5c3f-4853-886e-304915960ff6"
+	)
+
+	instanceFlavorUpdateRequest := &InstanceFlavorUpdateRequest{
+		FlavorID: "g1-standard-1-2",
+	}
+
+	taskResponse := &TaskResponse{Tasks: []string{taskID}}
+
+	instancesChangeFlavorURL := fmt.Sprintf("/v1/instances/%d/%d/%s/%s", projectID, regionID, instanceID, instancesChangeFlavorPath)
+
+	mux.HandleFunc(instancesChangeFlavorURL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodPost)
+		resp, _ := json.Marshal(taskResponse)
+		_, _ = fmt.Fprint(w, string(resp))
+	})
+
+	resp, _, err := client.Instances.UpdateFlavor(ctx, instanceID, instanceFlavorUpdateRequest)
+	require.NoError(t, err)
+
+	assert.Equal(t, taskResponse, resp)
+}
