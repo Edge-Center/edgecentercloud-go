@@ -59,6 +59,7 @@ type Client struct {
 	Networks       NetworksService
 	Projects       ProjectsService
 	Quotas         QuotasService
+	Regions        RegionsService
 	SecurityGroups SecurityGroupsService
 	ServerGroups   ServerGroupsService
 	Subnetworks    SubnetworksService
@@ -187,6 +188,7 @@ func NewClient(httpClient *http.Client) *Client {
 	c.Networks = &NetworksServiceOp{client: c}
 	c.Projects = &ProjectsServiceOp{client: c}
 	c.Quotas = &QuotasServiceOp{client: c}
+	c.Regions = &RegionsServiceOp{client: c}
 	c.SecurityGroups = &SecurityGroupsServiceOp{client: c}
 	c.ServerGroups = &ServerGroupsServiceOp{client: c}
 	c.Subnetworks = &SubnetworksServiceOp{client: c}

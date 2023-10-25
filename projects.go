@@ -2,8 +2,8 @@ package edgecloud
 
 import (
 	"context"
+	"fmt"
 	"net/http"
-	"path"
 )
 
 const (
@@ -20,6 +20,8 @@ type ProjectsService interface {
 type ProjectsServiceOp struct {
 	client *Client
 }
+
+var _ ProjectsService = &ProjectsServiceOp{}
 
 // ProjectState the model 'ProjectState'.
 type ProjectState string
@@ -43,15 +45,13 @@ type Project struct {
 	TaskID      *string      `json:"task_id"`
 }
 
-var _ ProjectsService = &ProjectsServiceOp{}
-
 // Get retrieves a single project by its ID.
 func (p *ProjectsServiceOp) Get(ctx context.Context, projectID string) (*Project, *Response, error) {
 	return p.getHelper(ctx, projectID)
 }
 
 func (p *ProjectsServiceOp) getHelper(ctx context.Context, projectID string) (*Project, *Response, error) {
-	path := path.Join(projectsBasePath, projectID)
+	path := fmt.Sprintf("%s/%s", projectsBasePath, projectID)
 
 	req, err := p.client.NewRequest(ctx, http.MethodGet, path, nil)
 	if err != nil {
