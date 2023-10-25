@@ -3,6 +3,7 @@ package util
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/http"
 
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
@@ -26,4 +27,18 @@ func ResourceIsDeleted[T any](ctx context.Context, retrieveResourceFunc Retrieve
 	}
 
 	return errGetResourceInfo
+}
+
+type GetResourceFunc[T any] func(ctx context.Context, id string) (*T, *edgecloud.Response, error)
+
+func ResourceIsExist[T any](ctx context.Context, getResourceFunc GetResourceFunc[T], id string) (bool, error) {
+	_, resp, _ := getResourceFunc(ctx, id)
+	switch resp.StatusCode {
+	case http.StatusOK:
+		return true, nil
+	case http.StatusNotFound, http.StatusForbidden:
+		return false, nil
+	default:
+		return false, fmt.Errorf("%w, status code: %d", errGetResourceInfo, resp.StatusCode)
+	}
 }

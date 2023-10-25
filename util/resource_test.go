@@ -69,3 +69,64 @@ func TestResourceIsDeleted(t *testing.T) {
 		})
 	}
 }
+
+func TestResourceIsExist(t *testing.T) {
+	resourceID := "f0d19cec-5c3f-4853-886e-304915960ff6"
+	projectID := 2750
+	regionID := 8
+
+	tests := []struct {
+		name          string
+		statusCode    int
+		expectedError error
+		exist         bool
+	}{
+		{
+			name:          "exist",
+			statusCode:    http.StatusOK,
+			expectedError: nil,
+			exist:         true,
+		},
+		{
+			name:          "not exist",
+			statusCode:    http.StatusNotFound,
+			expectedError: nil,
+			exist:         false,
+		},
+		{
+			name:          "error getting resource",
+			statusCode:    http.StatusInternalServerError,
+			expectedError: fmt.Errorf("%w, status code: %d", errGetResourceInfo, http.StatusInternalServerError),
+			exist:         false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			mux := http.NewServeMux()
+			server := httptest.NewServer(mux)
+			defer server.Close()
+
+			getResourceURL := fmt.Sprintf("/v1/networks/%d/%d/%s", projectID, regionID, resourceID)
+			mux.HandleFunc(getResourceURL, func(w http.ResponseWriter, r *http.Request) {
+				w.WriteHeader(tt.statusCode)
+				resp, _ := json.MarshalIndent(edgecloud.Response{}, "", "    ")
+				_, _ = fmt.Fprint(w, string(resp))
+			})
+
+			client := edgecloud.NewClient(nil)
+			baseURL, _ := url.Parse(server.URL)
+			client.BaseURL = baseURL
+			client.Project = projectID
+			client.Region = regionID
+
+			getFunc := func(ctx context.Context, id string) (*edgecloud.Network, *edgecloud.Response, error) {
+				return client.Networks.Get(ctx, id)
+			}
+
+			exist, err := ResourceIsExist(context.Background(), getFunc, resourceID)
+			assert.Equal(t, tt.expectedError, err)
+			assert.Equal(t, tt.exist, exist)
+		})
+	}
+}

@@ -11,6 +11,7 @@ const (
 	loadbalancersBasePathV1      = "/v1/loadbalancers"
 	lblistenersBasePathV1        = "/v1/lblisteners"
 	lbpoolsBasePathV1            = "/v1/lbpools"
+	lbflavorsBasePathV1          = "/v1/lbflavors"
 	loadbalancersCheckLimitsPath = "check_limits"
 )
 
@@ -25,6 +26,7 @@ type LoadbalancersService interface {
 
 	LoadbalancerListeners
 	LoadbalancerPools
+	LoadbalancerFlavors
 }
 
 type LoadbalancerListeners interface {
@@ -39,6 +41,10 @@ type LoadbalancerPools interface {
 	PoolDelete(context.Context, string) (*TaskResponse, *Response, error)
 	PoolUpdate(context.Context, string, *PoolUpdateRequest) (*TaskResponse, *Response, error)
 	PoolList(context.Context, *PoolListOptions) ([]Pool, *Response, error)
+}
+
+type LoadbalancerFlavors interface {
+	FlavorList(context.Context, *LoadbalancerFlavorsOptions) ([]Flavor, *Response, error)
 }
 
 // LoadbalancersServiceOp handles communication with Loadbalancers methods of the EdgecenterCloud API.
@@ -359,6 +365,17 @@ type LoadbalancerCheckLimitsRequest struct {
 	FloatingIP InterfaceFloatingIP `json:"floating_ip,omitempty"`
 }
 
+// LoadbalancerFlavorsOptions specifies the optional query parameters to Get loadbalancer flavor method.
+type LoadbalancerFlavorsOptions struct {
+	IncludePrices bool `url:"include_prices,omitempty"  validate:"omitempty"`
+}
+
+// loadbalancerFlavorRoot represents a Loadbalancer Flavor root.
+type loadbalancerFlavorRoot struct {
+	Count   int
+	Flavors []Flavor `json:"results"`
+}
+
 // Get individual Loadbalancer.
 func (s *LoadbalancersServiceOp) Get(ctx context.Context, loadbalancerID string) (*Loadbalancer, *Response, error) {
 	if err := isValidUUID(loadbalancerID, "loadbalancerID"); err != nil {
@@ -666,4 +683,30 @@ func (s *LoadbalancersServiceOp) CheckLimits(ctx context.Context, checkLimitsReq
 	}
 
 	return limits, resp, nil
+}
+
+// FlavorList get load balancer flavors.
+func (s *LoadbalancersServiceOp) FlavorList(ctx context.Context, opts *LoadbalancerFlavorsOptions) ([]Flavor, *Response, error) {
+	if err := s.client.Validate(); err != nil {
+		return nil, nil, err
+	}
+
+	path := s.client.addServicePath(lbflavorsBasePathV1)
+	path, err := addOptions(path, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	root := new(loadbalancerFlavorRoot)
+	resp, err := s.client.Do(ctx, req, root)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return root.Flavors, resp, err
 }
