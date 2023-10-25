@@ -171,7 +171,7 @@ type LoadbalancerCreateRequest struct {
 	VipSubnetID  string                              `json:"vip_subnet_id,omitempty"`
 	Metadata     Metadata                            `json:"metadata,omitempty" validate:"omitempty,dive"`
 	Tags         []string                            `json:"tag,omitempty"`
-	FloatingIP   InterfaceFloatingIP                 `json:"floating_ip,omitempty"`
+	FloatingIP   InterfaceFloatingIP                 `json:"floating_ip,omitempty" validate:"omitempty,dive"`
 }
 
 type LoadBalancerAlgorithm string

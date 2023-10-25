@@ -171,6 +171,7 @@ type InstanceCheckLimitsRequest struct {
 	Volumes       []InstanceCheckLimitsVolume `json:"volumes,omitempty" required:"true" validate:"required,dive"`
 }
 
+// InstanceFlavorUpdateRequest represents a request to change the flavor of the instance.
 type InstanceFlavorUpdateRequest struct {
 	FlavorID string `json:"flavor_id" required:"true" validate:"required"`
 }
@@ -328,6 +329,7 @@ func (s *InstancesServiceOp) CheckLimits(ctx context.Context, checkLimitsRequest
 	return limits, resp, nil
 }
 
+// UpdateFlavor changes the flavor of the server instance.
 func (s *InstancesServiceOp) UpdateFlavor(ctx context.Context, instanceID string, instanceFlavorUpdateRequest *InstanceFlavorUpdateRequest) (*TaskResponse, *Response, error) {
 	if err := isValidUUID(instanceID, "instanceID"); err != nil {
 		return nil, nil, err
