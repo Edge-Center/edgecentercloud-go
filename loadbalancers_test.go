@@ -351,3 +351,28 @@ func TestLoadbalancers_CheckLimits(t *testing.T) {
 	_, _, err := client.Loadbalancers.CheckLimits(ctx, checkLimitsRequest)
 	require.NoError(t, err)
 }
+
+func TestLoadbalancers_FlavorList(t *testing.T) {
+	setup()
+	defer teardown()
+
+	loadbalancerFlavorsOptions := LoadbalancerFlavorsOptions{
+		IncludePrices: true,
+	}
+
+	flavors := []Flavor{{FlavorID: "g1-gpu-1-2-1"}}
+
+	poolsListURL := fmt.Sprintf("/v1/lbflavors/%d/%d", projectID, regionID)
+	mux.HandleFunc(poolsListURL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodGet)
+		resp, _ := json.Marshal(flavors)
+		_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))
+	})
+
+	resp, _, err := client.Loadbalancers.FlavorList(ctx, &loadbalancerFlavorsOptions)
+	require.NoError(t, err)
+
+	if !reflect.DeepEqual(resp, flavors) {
+		t.Errorf("Loadbalancers.FlavorList\n returned %+v,\n expected %+v", resp, flavors)
+	}
+}
