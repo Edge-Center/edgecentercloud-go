@@ -105,12 +105,12 @@ type VolumeCreateRequest struct {
 
 // Get individual Volume.
 func (s *VolumesServiceOp) Get(ctx context.Context, volumeID string) (*Volume, *Response, error) {
-	if err := isValidUUID(volumeID, "volumeID"); err != nil {
-		return nil, nil, err
+	if resp, err := isValidUUID(volumeID, "volumeID"); err != nil {
+		return nil, resp, err
 	}
 
-	if err := s.client.Validate(); err != nil {
-		return nil, nil, err
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
 	}
 
 	path := fmt.Sprintf("%s/%s", s.client.addServicePath(volumesBasePathV1), volumeID)
@@ -135,8 +135,8 @@ func (s *VolumesServiceOp) Create(ctx context.Context, createRequest *VolumeCrea
 		return nil, nil, NewArgError("createRequest", "cannot be nil")
 	}
 
-	if err := s.client.Validate(); err != nil {
-		return nil, nil, err
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
 	}
 
 	path := s.client.addServicePath(volumesBasePathV1)
@@ -157,12 +157,12 @@ func (s *VolumesServiceOp) Create(ctx context.Context, createRequest *VolumeCrea
 
 // Delete the Volume.
 func (s *VolumesServiceOp) Delete(ctx context.Context, volumeID string) (*TaskResponse, *Response, error) {
-	if err := isValidUUID(volumeID, "volumeID"); err != nil {
-		return nil, nil, err
+	if resp, err := isValidUUID(volumeID, "volumeID"); err != nil {
+		return nil, resp, err
 	}
 
-	if err := s.client.Validate(); err != nil {
-		return nil, nil, err
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
 	}
 
 	path := fmt.Sprintf("%s/%s", s.client.addServicePath(volumesBasePathV1), volumeID)

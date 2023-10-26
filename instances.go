@@ -178,12 +178,12 @@ type InstanceFlavorUpdateRequest struct {
 
 // Get individual Instance.
 func (s *InstancesServiceOp) Get(ctx context.Context, instanceID string) (*Instance, *Response, error) {
-	if err := isValidUUID(instanceID, "instanceID"); err != nil {
-		return nil, nil, err
+	if resp, err := isValidUUID(instanceID, "instanceID"); err != nil {
+		return nil, resp, err
 	}
 
-	if err := s.client.Validate(); err != nil {
-		return nil, nil, err
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
 	}
 
 	path := fmt.Sprintf("%s/%s", s.client.addServicePath(instancesBasePathV1), instanceID)
@@ -208,8 +208,8 @@ func (s *InstancesServiceOp) Create(ctx context.Context, createRequest *Instance
 		return nil, nil, NewArgError("createRequest", "cannot be nil")
 	}
 
-	if err := s.client.Validate(); err != nil {
-		return nil, nil, err
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
 	}
 
 	path := s.client.addServicePath(instancesBasePathV2)
@@ -230,12 +230,12 @@ func (s *InstancesServiceOp) Create(ctx context.Context, createRequest *Instance
 
 // Delete the Instance.
 func (s *InstancesServiceOp) Delete(ctx context.Context, instanceID string, opts *InstanceDeleteOptions) (*TaskResponse, *Response, error) {
-	if err := isValidUUID(instanceID, "instanceID"); err != nil {
-		return nil, nil, err
+	if resp, err := isValidUUID(instanceID, "instanceID"); err != nil {
+		return nil, resp, err
 	}
 
-	if err := s.client.Validate(); err != nil {
-		return nil, nil, err
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
 	}
 
 	path := fmt.Sprintf("%s/%s", s.client.addServicePath(instancesBasePathV1), instanceID)
@@ -260,12 +260,12 @@ func (s *InstancesServiceOp) Delete(ctx context.Context, instanceID string, opts
 
 // MetadataGet instance detailed metadata (tags).
 func (s *InstancesServiceOp) MetadataGet(ctx context.Context, instanceID string) (*MetadataDetailed, *Response, error) {
-	if err := isValidUUID(instanceID, "instanceID"); err != nil {
-		return nil, nil, err
+	if resp, err := isValidUUID(instanceID, "instanceID"); err != nil {
+		return nil, resp, err
 	}
 
-	if err := s.client.Validate(); err != nil {
-		return nil, nil, err
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
 	}
 
 	path := s.client.addServicePath(instancesBasePathV1)
@@ -287,12 +287,12 @@ func (s *InstancesServiceOp) MetadataGet(ctx context.Context, instanceID string)
 
 // MetadataCreate instance metadata (tags).
 func (s *InstancesServiceOp) MetadataCreate(ctx context.Context, instanceID string, metadata *MetadataCreateRequest) (*Response, error) {
-	if err := isValidUUID(instanceID, "instanceID"); err != nil {
-		return nil, err
+	if resp, err := isValidUUID(instanceID, "instanceID"); err != nil {
+		return resp, err
 	}
 
-	if err := s.client.Validate(); err != nil {
-		return nil, err
+	if resp, err := s.client.Validate(); err != nil {
+		return resp, err
 	}
 
 	path := s.client.addServicePath(instancesBasePathV1)
@@ -308,8 +308,8 @@ func (s *InstancesServiceOp) MetadataCreate(ctx context.Context, instanceID stri
 
 // CheckLimits check a quota for instance creation.
 func (s *InstancesServiceOp) CheckLimits(ctx context.Context, checkLimitsRequest *InstanceCheckLimitsRequest) (*map[string]int, *Response, error) {
-	if err := s.client.Validate(); err != nil {
-		return nil, nil, err
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
 	}
 
 	path := s.client.addServicePath(instancesBasePathV2)
@@ -331,12 +331,12 @@ func (s *InstancesServiceOp) CheckLimits(ctx context.Context, checkLimitsRequest
 
 // UpdateFlavor changes the flavor of the server instance.
 func (s *InstancesServiceOp) UpdateFlavor(ctx context.Context, instanceID string, instanceFlavorUpdateRequest *InstanceFlavorUpdateRequest) (*TaskResponse, *Response, error) {
-	if err := isValidUUID(instanceID, "instanceID"); err != nil {
-		return nil, nil, err
+	if resp, err := isValidUUID(instanceID, "instanceID"); err != nil {
+		return nil, resp, err
 	}
 
-	if err := s.client.Validate(); err != nil {
-		return nil, nil, err
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
 	}
 
 	path := s.client.addServicePath(instancesBasePathV1)

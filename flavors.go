@@ -59,8 +59,8 @@ type flavorsRoot struct {
 
 // List get flavors.
 func (s *FlavorsServiceOp) List(ctx context.Context, opts *FlavorListOptions) ([]Flavor, *Response, error) {
-	if err := s.client.Validate(); err != nil {
-		return nil, nil, err
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
 	}
 
 	path := s.client.addServicePath(flavorsBasePathV1)

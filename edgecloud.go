@@ -100,15 +100,21 @@ func (c *Client) addServicePath(s string) string {
 	return path.Join(s, projectStr, regionStr)
 }
 
-func (c *Client) Validate() error {
+func (c *Client) Validate() (*Response, error) {
+	badResponse := &Response{
+		Response: &http.Response{
+			Status:     http.StatusText(http.StatusBadRequest),
+			StatusCode: http.StatusBadRequest,
+		},
+	}
 	if c.Project == 0 {
-		return NewArgError("Client.Project", "is not set")
+		return badResponse, NewArgError("Client.Project", "is not set")
 	}
 	if c.Region == 0 {
-		return NewArgError("Client.Region", "is not set")
+		return badResponse, NewArgError("Client.Region", "is not set")
 	}
 
-	return nil
+	return nil, nil // nolint
 }
 
 // Response is a EdgecenterCloud response. This wraps the standard http.Response returned from EdgecenterCloud.
@@ -364,7 +370,12 @@ func newResponse(r *http.Response) *Response {
 func (c *Client) Do(ctx context.Context, req *http.Request, v interface{}) (*Response, error) {
 	resp, err := DoRequestWithClient(ctx, c.HTTPClient, req)
 	if err != nil {
-		return nil, err
+		return &Response{
+			Response: &http.Response{
+				Status:     http.StatusText(http.StatusInternalServerError),
+				StatusCode: http.StatusInternalServerError,
+			},
+		}, err
 	}
 	if c.onRequestCompleted != nil {
 		c.onRequestCompleted(req, resp)
@@ -401,7 +412,12 @@ func (c *Client) Do(ctx context.Context, req *http.Request, v interface{}) (*Res
 			err = json.NewDecoder(resp.Body).Decode(v)
 		}
 		if err != nil {
-			return nil, err
+			return &Response{
+				Response: &http.Response{
+					Status:     http.StatusText(http.StatusInternalServerError),
+					StatusCode: http.StatusInternalServerError,
+				},
+			}, err
 		}
 	}
 

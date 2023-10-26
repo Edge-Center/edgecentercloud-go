@@ -87,8 +87,8 @@ type floatingipsRoot struct {
 
 // List get floating IPs.
 func (s *FloatingipsServiceOp) List(ctx context.Context) ([]FloatingIP, *Response, error) {
-	if err := s.client.Validate(); err != nil {
-		return nil, nil, err
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
 	}
 
 	path := s.client.addServicePath(floatingipsBasePathV1)
@@ -109,12 +109,12 @@ func (s *FloatingipsServiceOp) List(ctx context.Context) ([]FloatingIP, *Respons
 
 // Get a Floating IP.
 func (s *FloatingipsServiceOp) Get(ctx context.Context, fipID string) (*FloatingIP, *Response, error) {
-	if err := isValidUUID(fipID, "fipID"); err != nil {
-		return nil, nil, err
+	if resp, err := isValidUUID(fipID, "fipID"); err != nil {
+		return nil, resp, err
 	}
 
-	if err := s.client.Validate(); err != nil {
-		return nil, nil, err
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
 	}
 
 	path := fmt.Sprintf("%s/%s", s.client.addServicePath(floatingipsBasePathV1), fipID)
@@ -139,8 +139,8 @@ func (s *FloatingipsServiceOp) Create(ctx context.Context, createRequest *Floati
 		return nil, nil, NewArgError("createRequest", "cannot be nil")
 	}
 
-	if err := s.client.Validate(); err != nil {
-		return nil, nil, err
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
 	}
 
 	path := s.client.addServicePath(floatingipsBasePathV1)
@@ -161,12 +161,12 @@ func (s *FloatingipsServiceOp) Create(ctx context.Context, createRequest *Floati
 
 // Delete the Floating IP.
 func (s *FloatingipsServiceOp) Delete(ctx context.Context, fipID string) (*TaskResponse, *Response, error) {
-	if err := isValidUUID(fipID, "fipID"); err != nil {
-		return nil, nil, err
+	if resp, err := isValidUUID(fipID, "fipID"); err != nil {
+		return nil, resp, err
 	}
 
-	if err := s.client.Validate(); err != nil {
-		return nil, nil, err
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
 	}
 
 	path := fmt.Sprintf("%s/%s", s.client.addServicePath(floatingipsBasePathV1), fipID)
@@ -187,16 +187,16 @@ func (s *FloatingipsServiceOp) Delete(ctx context.Context, fipID string) (*TaskR
 
 // Assign a floating IP to an instance or a load balancer.
 func (s *FloatingipsServiceOp) Assign(ctx context.Context, fipID string, assignRequest *AssignRequest) (*FloatingIP, *Response, error) {
-	if err := isValidUUID(fipID, "fipID"); err != nil {
-		return nil, nil, err
+	if resp, err := isValidUUID(fipID, "fipID"); err != nil {
+		return nil, resp, err
 	}
 
 	if assignRequest == nil {
 		return nil, nil, NewArgError("assignRequest", "cannot be nil")
 	}
 
-	if err := s.client.Validate(); err != nil {
-		return nil, nil, err
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
 	}
 
 	path := fmt.Sprintf("%s/%s/%s", s.client.addServicePath(floatingipsBasePathV1), fipID, floatingipsAssign)
@@ -217,12 +217,12 @@ func (s *FloatingipsServiceOp) Assign(ctx context.Context, fipID string, assignR
 
 // UnAssign a floating IP from an instance or a load balancer.
 func (s *FloatingipsServiceOp) UnAssign(ctx context.Context, fipID string) (*FloatingIP, *Response, error) {
-	if err := isValidUUID(fipID, "fipID"); err != nil {
-		return nil, nil, err
+	if resp, err := isValidUUID(fipID, "fipID"); err != nil {
+		return nil, resp, err
 	}
 
-	if err := s.client.Validate(); err != nil {
-		return nil, nil, err
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
 	}
 
 	path := fmt.Sprintf("%s/%s/%s", s.client.addServicePath(floatingipsBasePathV1), fipID, floatingipsUnAssign)

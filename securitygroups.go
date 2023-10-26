@@ -115,12 +115,12 @@ const (
 
 // Get individual Security Group.
 func (s *SecurityGroupsServiceOp) Get(ctx context.Context, securityGroupID string) (*SecurityGroup, *Response, error) {
-	if err := isValidUUID(securityGroupID, "securityGroupID"); err != nil {
-		return nil, nil, err
+	if resp, err := isValidUUID(securityGroupID, "securityGroupID"); err != nil {
+		return nil, resp, err
 	}
 
-	if err := s.client.Validate(); err != nil {
-		return nil, nil, err
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
 	}
 
 	path := fmt.Sprintf("%s/%s", s.client.addServicePath(securitygroupsBasePathV1), securityGroupID)
@@ -145,8 +145,8 @@ func (s *SecurityGroupsServiceOp) Create(ctx context.Context, createRequest *Sec
 		return nil, nil, NewArgError("createRequest", "cannot be nil")
 	}
 
-	if err := s.client.Validate(); err != nil {
-		return nil, nil, err
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
 	}
 
 	path := s.client.addServicePath(securitygroupsBasePathV1)
@@ -167,12 +167,12 @@ func (s *SecurityGroupsServiceOp) Create(ctx context.Context, createRequest *Sec
 
 // Delete the Security Group.
 func (s *SecurityGroupsServiceOp) Delete(ctx context.Context, securityGroupID string) (*TaskResponse, *Response, error) {
-	if err := isValidUUID(securityGroupID, "securityGroupID"); err != nil {
-		return nil, nil, err
+	if resp, err := isValidUUID(securityGroupID, "securityGroupID"); err != nil {
+		return nil, resp, err
 	}
 
-	if err := s.client.Validate(); err != nil {
-		return nil, nil, err
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
 	}
 
 	path := fmt.Sprintf("%s/%s", s.client.addServicePath(securitygroupsBasePathV1), securityGroupID)

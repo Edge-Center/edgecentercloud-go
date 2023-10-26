@@ -27,23 +27,23 @@ var _ NetworksService = &NetworksServiceOp{}
 
 // Network represents an EdgecenterCloud Network.
 type Network struct {
-	ID             string   `json:"id"`
-	Name           string   `json:"name"`
-	CreatedAt      string   `json:"created_at"`
-	CreatorTaskID  string   `json:"creator_task_id"`
-	Default        bool     `json:"default"`
-	External       bool     `json:"external"`
-	MTU            int      `json:"mtu"`
-	Metadata       Metadata `json:"metadata"`
-	ProjectID      int      `json:"project_id"`
-	Region         string   `json:"region"`
-	RegionID       int      `json:"region_id"`
-	SegmentationID int      `json:"segmentation_id"`
-	Shared         bool     `json:"shared"`
-	Subnets        []string `json:"subnets"`
-	TaskID         string   `json:"task_id"`
-	Type           string   `json:"type"`
-	UpdatedAt      string   `json:"updated_at"`
+	ID             string     `json:"id"`
+	Name           string     `json:"name"`
+	CreatedAt      string     `json:"created_at"`
+	CreatorTaskID  string     `json:"creator_task_id"`
+	Default        bool       `json:"default"`
+	External       bool       `json:"external"`
+	MTU            int        `json:"mtu"`
+	Metadata       []Metadata `json:"metadata,omitempty"`
+	ProjectID      int        `json:"project_id"`
+	Region         string     `json:"region"`
+	RegionID       int        `json:"region_id"`
+	SegmentationID int        `json:"segmentation_id"`
+	Shared         bool       `json:"shared"`
+	Subnets        []string   `json:"subnets"`
+	TaskID         string     `json:"task_id"`
+	Type           string     `json:"type"`
+	UpdatedAt      string     `json:"updated_at"`
 }
 
 // NetworkCreateRequest represents a request to create a Network.
@@ -63,12 +63,12 @@ const (
 
 // Get individual Network.
 func (s *NetworksServiceOp) Get(ctx context.Context, networkID string) (*Network, *Response, error) {
-	if err := isValidUUID(networkID, "networkID"); err != nil {
-		return nil, nil, err
+	if resp, err := isValidUUID(networkID, "networkID"); err != nil {
+		return nil, resp, err
 	}
 
-	if err := s.client.Validate(); err != nil {
-		return nil, nil, err
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
 	}
 
 	path := fmt.Sprintf("%s/%s", s.client.addServicePath(networksBasePathV1), networkID)
@@ -93,8 +93,8 @@ func (s *NetworksServiceOp) Create(ctx context.Context, createRequest *NetworkCr
 		return nil, nil, NewArgError("createRequest", "cannot be nil")
 	}
 
-	if err := s.client.Validate(); err != nil {
-		return nil, nil, err
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
 	}
 
 	path := s.client.addServicePath(networksBasePathV1)
@@ -115,12 +115,12 @@ func (s *NetworksServiceOp) Create(ctx context.Context, createRequest *NetworkCr
 
 // Delete the Network.
 func (s *NetworksServiceOp) Delete(ctx context.Context, networkID string) (*TaskResponse, *Response, error) {
-	if err := isValidUUID(networkID, "networkID"); err != nil {
-		return nil, nil, err
+	if resp, err := isValidUUID(networkID, "networkID"); err != nil {
+		return nil, resp, err
 	}
 
-	if err := s.client.Validate(); err != nil {
-		return nil, nil, err
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
 	}
 
 	path := fmt.Sprintf("%s/%s", s.client.addServicePath(networksBasePathV1), networkID)

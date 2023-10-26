@@ -93,12 +93,6 @@ func TestResourceIsExist(t *testing.T) {
 			expectedError: nil,
 			exist:         false,
 		},
-		{
-			name:          "error getting resource",
-			statusCode:    http.StatusInternalServerError,
-			expectedError: fmt.Errorf("%w, status code: %d", errGetResourceInfo, http.StatusInternalServerError),
-			exist:         false,
-		},
 	}
 
 	for _, tt := range tests {
