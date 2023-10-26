@@ -13,6 +13,7 @@ const (
 // RegionsService is an interface for creating and managing Regions with the EdgecenterCloud API.
 // See: https://apidocs.edgecenter.ru/cloud#tag/regions
 type RegionsService interface {
+	List(context.Context, *RegionListOptions) ([]Region, *Response, error)
 	Get(context.Context, string, *RegionGetOptions) (*Region, *Response, error)
 }
 
@@ -135,21 +136,53 @@ type RegionGetOptions struct {
 	ShowVolumeTypes bool `url:"show_volume_types,omitempty"  validate:"omitempty"`
 }
 
+// RegionListOptions specifies the optional query parameters to List method.
+type RegionListOptions struct {
+	ShowVolumeTypes bool `url:"show_volume_types,omitempty"  validate:"omitempty"`
+}
+
+// regionsRoot represents a Region root.
+type regionsRoot struct {
+	Count  int
+	Region []Region `json:"results"`
+}
+
+// List get regions.
+func (s *RegionsServiceOp) List(ctx context.Context, opts *RegionListOptions) ([]Region, *Response, error) {
+	path, err := addOptions(regionsBasePath, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	root := new(regionsRoot)
+	resp, err := s.client.Do(ctx, req, root)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return root.Region, resp, err
+}
+
 // Get retrieves a single region by its ID.
-func (p *RegionsServiceOp) Get(ctx context.Context, regionID string, opts *RegionGetOptions) (*Region, *Response, error) {
+func (s *RegionsServiceOp) Get(ctx context.Context, regionID string, opts *RegionGetOptions) (*Region, *Response, error) {
 	path := fmt.Sprintf("%s/%s", regionsBasePath, regionID)
 	path, err := addOptions(path, opts)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	req, err := p.client.NewRequest(ctx, http.MethodGet, path, nil)
+	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
 	if err != nil {
 		return nil, nil, err
 	}
 
 	project := new(Region)
-	resp, err := p.client.Do(ctx, req, project)
+	resp, err := s.client.Do(ctx, req, project)
 	if err != nil {
 		return nil, resp, err
 	}

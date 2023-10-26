@@ -46,20 +46,16 @@ type Project struct {
 }
 
 // Get retrieves a single project by its ID.
-func (p *ProjectsServiceOp) Get(ctx context.Context, projectID string) (*Project, *Response, error) {
-	return p.getHelper(ctx, projectID)
-}
-
-func (p *ProjectsServiceOp) getHelper(ctx context.Context, projectID string) (*Project, *Response, error) {
+func (s *ProjectsServiceOp) Get(ctx context.Context, projectID string) (*Project, *Response, error) {
 	path := fmt.Sprintf("%s/%s", projectsBasePath, projectID)
 
-	req, err := p.client.NewRequest(ctx, http.MethodGet, path, nil)
+	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
 	if err != nil {
 		return nil, nil, err
 	}
 
 	project := new(Project)
-	resp, err := p.client.Do(ctx, req, project)
+	resp, err := s.client.Do(ctx, req, project)
 	if err != nil {
 		return nil, resp, err
 	}

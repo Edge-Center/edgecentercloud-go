@@ -11,6 +11,31 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func TestInstances_List(t *testing.T) {
+	setup()
+	defer teardown()
+
+	const (
+		instanceID = "f0d19cec-5c3f-4853-886e-304915960ff6"
+	)
+
+	instances := []Instance{{ID: instanceID}}
+	getInstancesURL := fmt.Sprintf("/v1/instances/%d/%d", projectID, regionID)
+
+	mux.HandleFunc(getInstancesURL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodGet)
+		resp, _ := json.Marshal(instances)
+		_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))
+	})
+
+	resp, _, err := client.Instances.List(ctx, nil)
+	require.NoError(t, err)
+
+	if !reflect.DeepEqual(resp, instances) {
+		t.Errorf("Instances.List\n returned %+v,\n expected %+v", resp, instances)
+	}
+}
+
 func TestInstances_Get(t *testing.T) {
 	setup()
 	defer teardown()

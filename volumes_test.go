@@ -11,6 +11,31 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func TestVolumes_List(t *testing.T) {
+	setup()
+	defer teardown()
+
+	const (
+		volumeID = "f0d19cec-5c3f-4853-886e-304915960ff6"
+	)
+
+	volumes := []Volume{{ID: volumeID}}
+	getVolumesURL := fmt.Sprintf("/v1/volumes/%d/%d", projectID, regionID)
+
+	mux.HandleFunc(getVolumesURL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodGet)
+		resp, _ := json.Marshal(volumes)
+		_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))
+	})
+
+	resp, _, err := client.Volumes.List(ctx, nil)
+	require.NoError(t, err)
+
+	if !reflect.DeepEqual(resp, volumes) {
+		t.Errorf("Volumes.List\n returned %+v,\n expected %+v", resp, volumes)
+	}
+}
+
 func TestVolumes_Get(t *testing.T) {
 	setup()
 	defer teardown()

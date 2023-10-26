@@ -11,6 +11,31 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func TestLoadbalancers_List(t *testing.T) {
+	setup()
+	defer teardown()
+
+	const (
+		loadbalancerID = "f0d19cec-5c3f-4853-886e-304915960ff6"
+	)
+
+	loadbalancers := []Loadbalancer{{ID: loadbalancerID}}
+	getLoadbalancerURL := fmt.Sprintf("/v1/loadbalancers/%d/%d", projectID, regionID)
+
+	mux.HandleFunc(getLoadbalancerURL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodGet)
+		resp, _ := json.Marshal(loadbalancers)
+		_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))
+	})
+
+	resp, _, err := client.Loadbalancers.List(ctx, nil)
+	require.NoError(t, err)
+
+	if !reflect.DeepEqual(resp, loadbalancers) {
+		t.Errorf("Loadbalancers.List\n returned %+v,\n expected %+v", resp, loadbalancers)
+	}
+}
+
 func TestLoadbalancers_Get(t *testing.T) {
 	setup()
 	defer teardown()

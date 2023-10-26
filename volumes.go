@@ -13,6 +13,7 @@ const (
 // VolumesService is an interface for creating and managing Volumes with the EdgecenterCloud API.
 // See: https://apidocs.edgecenter.ru/cloud#tag/volumes
 type VolumesService interface {
+	List(context.Context, *VolumeListOptions) ([]Volume, *Response, error)
 	Create(context.Context, *VolumeCreateRequest) (*TaskResponse, *Response, error)
 	Get(context.Context, string) (*Volume, *Response, error)
 	Delete(context.Context, string) (*TaskResponse, *Response, error)
@@ -101,6 +102,52 @@ type VolumeCreateRequest struct {
 	SnapshotID           string       `json:"snapshot_id,omitempty" validate:"rfe=Source:snapshot,allowed_without=ImageID,omitempty,uuid4"`
 	Source               VolumeSource `json:"source" required:"true" validate:"required,enum"`
 	TypeName             VolumeType   `json:"type_name" required:"true" validate:"required,enum"`
+}
+
+// VolumeListOptions specifies the optional query parameters to List method.
+type VolumeListOptions struct {
+	InstanceID     string `url:"instance_id,omitempty"  validate:"omitempty"`
+	ClusterID      string `url:"cluster_id,omitempty"  validate:"omitempty"`
+	Limit          int    `url:"limit,omitempty"  validate:"omitempty"`
+	Offset         int    `url:"offset,omitempty"  validate:"omitempty"`
+	Bootable       bool   `url:"bootable,omitempty"  validate:"omitempty"`
+	HasAttachments bool   `url:"has_attachments,omitempty"  validate:"omitempty"`
+	IDPart         string `url:"id_part,omitempty"  validate:"omitempty"`
+	NamePart       string `url:"name_part,omitempty"  validate:"omitempty"`
+	MetadataKV     string `url:"metadata_kv,omitempty"  validate:"omitempty"`
+	MetadataK      string `url:"metadata_k,omitempty"  validate:"omitempty"`
+}
+
+// volumesRoot represents a Volume root.
+type volumesRoot struct {
+	Count  int
+	Volume []Volume `json:"results"`
+}
+
+// List get volumes.
+func (s *VolumesServiceOp) List(ctx context.Context, opts *VolumeListOptions) ([]Volume, *Response, error) {
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	path := s.client.addServicePath(volumesBasePathV1)
+	path, err := addOptions(path, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	root := new(volumesRoot)
+	resp, err := s.client.Do(ctx, req, root)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return root.Volume, resp, err
 }
 
 // Get individual Volume.

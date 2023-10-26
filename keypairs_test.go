@@ -11,6 +11,31 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func TestKeyPairs_List(t *testing.T) {
+	setup()
+	defer teardown()
+
+	const (
+		publicKey = "ssh-key"
+	)
+
+	keyPairs := []KeyPair{{PublicKey: publicKey}}
+	getKeyPairsURL := fmt.Sprintf("/v1/keypairs/%d/%d", projectID, regionID)
+
+	mux.HandleFunc(getKeyPairsURL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodGet)
+		resp, _ := json.Marshal(keyPairs)
+		_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))
+	})
+
+	resp, _, err := client.KeyPairs.List(ctx)
+	require.NoError(t, err)
+
+	if !reflect.DeepEqual(resp, keyPairs) {
+		t.Errorf("KeyPairs.List\n returned %+v,\n expected %+v", resp, keyPairs)
+	}
+}
+
 func TestKeyPairs_Get(t *testing.T) {
 	setup()
 	defer teardown()
