@@ -32,18 +32,14 @@ func ResourceIsDeleted[T any](ctx context.Context, retrieveResourceFunc Retrieve
 type GetResourceFunc[T any] func(ctx context.Context, id string) (*T, *edgecloud.Response, error)
 
 func ResourceIsExist[T any](ctx context.Context, getResourceFunc GetResourceFunc[T], id string) (bool, error) {
-	_, resp, _ := getResourceFunc(ctx, id)
+	_, resp, err := getResourceFunc(ctx, id)
 
-	return HandleStatusCode(resp.StatusCode)
-}
-
-func HandleStatusCode(statusCode int) (bool, error) {
-	switch statusCode {
+	switch resp.StatusCode {
 	case http.StatusOK:
 		return true, nil
 	case http.StatusNotFound, http.StatusForbidden:
 		return false, nil
 	default:
-		return false, fmt.Errorf("%w, status code: %d", errGetResourceInfo, statusCode)
+		return false, fmt.Errorf("%w, status code: %d, details: %w", errGetResourceInfo, resp.StatusCode, err)
 	}
 }

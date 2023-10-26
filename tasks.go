@@ -63,8 +63,8 @@ type TaskResponse struct {
 
 // Get individual Task.
 func (s *TasksServiceOp) Get(ctx context.Context, taskID string) (*Task, *Response, error) {
-	if err := isValidUUID(taskID, "taskID"); err != nil {
-		return nil, nil, err
+	if resp, err := isValidUUID(taskID, "taskID"); err != nil {
+		return nil, resp, err
 	}
 
 	path := fmt.Sprintf("%s/%s", tasksBasePathV1, taskID)

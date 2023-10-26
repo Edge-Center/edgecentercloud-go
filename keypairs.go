@@ -47,12 +47,12 @@ type KeyPairCreateRequest struct {
 
 // Get individual Key Pair.
 func (s *KeyPairsServiceOp) Get(ctx context.Context, keypairID string) (*KeyPair, *Response, error) {
-	if err := isValidUUID(keypairID, "keypairID"); err != nil {
-		return nil, nil, err
+	if resp, err := isValidUUID(keypairID, "keypairID"); err != nil {
+		return nil, resp, err
 	}
 
-	if err := s.client.Validate(); err != nil {
-		return nil, nil, err
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
 	}
 
 	path := fmt.Sprintf("%s/%s", s.client.addServicePath(keypairsBasePathV1), keypairID)
@@ -77,8 +77,8 @@ func (s *KeyPairsServiceOp) Create(ctx context.Context, createRequest *KeyPairCr
 		return nil, nil, NewArgError("createRequest", "cannot be nil")
 	}
 
-	if err := s.client.Validate(); err != nil {
-		return nil, nil, err
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
 	}
 
 	path := s.client.addServicePath(keypairsBasePathV1)
@@ -99,12 +99,12 @@ func (s *KeyPairsServiceOp) Create(ctx context.Context, createRequest *KeyPairCr
 
 // Delete the Key Pair.
 func (s *KeyPairsServiceOp) Delete(ctx context.Context, keypairID string) (*TaskResponse, *Response, error) {
-	if err := isValidUUID(keypairID, "keypairID"); err != nil {
-		return nil, nil, err
+	if resp, err := isValidUUID(keypairID, "keypairID"); err != nil {
+		return nil, resp, err
 	}
 
-	if err := s.client.Validate(); err != nil {
-		return nil, nil, err
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
 	}
 
 	path := fmt.Sprintf("%s/%s", s.client.addServicePath(keypairsBasePathV1), keypairID)

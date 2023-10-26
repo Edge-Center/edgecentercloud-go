@@ -27,6 +27,7 @@ type SubnetworksServiceOp struct {
 var _ SubnetworksService = &SubnetworksServiceOp{}
 
 // Subnetwork represents an EdgecenterCloud Subnetwork.
+// todo add cidr parsing
 type Subnetwork struct {
 	ID                     string      `json:"id"`
 	Name                   string      `json:"name"`
@@ -34,7 +35,7 @@ type Subnetwork struct {
 	IPVersion              int         `json:"ip_version"`
 	EnableDHCP             bool        `json:"enable_dhcp"`
 	ConnectToNetworkRouter bool        `json:"connect_to_network_router"`
-	CIDR                   net.IPNet   `json:"cidr"`
+	CIDR                   string      `json:"cidr"`
 	CreatedAt              string      `json:"created_at"`
 	UpdatedAt              string      `json:"updated_at"`
 	CreatorTaskID          string      `json:"creator_task_id"`
@@ -45,7 +46,7 @@ type Subnetwork struct {
 	DNSNameservers         []net.IP    `json:"dns_nameservers"`
 	HostRoutes             []HostRoute `json:"host_routes"`
 	GatewayIP              net.IP      `json:"gateway_ip"`
-	Metadata               Metadata    `json:"metadata"`
+	Metadata               []Metadata  `json:"metadata,omitempty"`
 	Region                 string      `json:"region"`
 	ProjectID              int         `json:"project_id"`
 	RegionID               int         `json:"region_id"`
@@ -56,12 +57,16 @@ type SubnetworkCreateRequest struct {
 	Name                   string      `json:"name" required:"true"`
 	NetworkID              string      `json:"network_id" required:"true"`
 	EnableDHCP             bool        `json:"enable_dhcp,omitempty"`
-	CIDR                   net.IPNet   `json:"cidr" required:"true"`
+	CIDR                   string      `json:"cidr" required:"true"`
 	ConnectToNetworkRouter bool        `json:"connect_to_network_router"`
 	DNSNameservers         []net.IP    `json:"dns_nameservers,omitempty"`
 	GatewayIP              *net.IP     `json:"gateway_ip"`
 	Metadata               Metadata    `json:"metadata"`
 	HostRoutes             []HostRoute `json:"host_routes,omitempty"`
+}
+
+type CIDR struct {
+	net.IPNet
 }
 
 // HostRoute represents a route that should be used by devices with IPs from
@@ -73,12 +78,12 @@ type HostRoute struct {
 
 // Get individual Network.
 func (s *SubnetworksServiceOp) Get(ctx context.Context, subnetworkID string) (*Subnetwork, *Response, error) {
-	if err := isValidUUID(subnetworkID, "subnetworkID"); err != nil {
-		return nil, nil, err
+	if resp, err := isValidUUID(subnetworkID, "subnetworkID"); err != nil {
+		return nil, resp, err
 	}
 
-	if err := s.client.Validate(); err != nil {
-		return nil, nil, err
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
 	}
 
 	path := fmt.Sprintf("%s/%s", s.client.addServicePath(subnetsBasePathV1), subnetworkID)
@@ -103,8 +108,8 @@ func (s *SubnetworksServiceOp) Create(ctx context.Context, createRequest *Subnet
 		return nil, nil, NewArgError("createRequest", "cannot be nil")
 	}
 
-	if err := s.client.Validate(); err != nil {
-		return nil, nil, err
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
 	}
 
 	path := s.client.addServicePath(subnetsBasePathV1)
@@ -125,12 +130,12 @@ func (s *SubnetworksServiceOp) Create(ctx context.Context, createRequest *Subnet
 
 // Delete the Network.
 func (s *SubnetworksServiceOp) Delete(ctx context.Context, subnetworkID string) (*TaskResponse, *Response, error) {
-	if err := isValidUUID(subnetworkID, "subnetworkID"); err != nil {
-		return nil, nil, err
+	if resp, err := isValidUUID(subnetworkID, "subnetworkID"); err != nil {
+		return nil, resp, err
 	}
 
-	if err := s.client.Validate(); err != nil {
-		return nil, nil, err
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
 	}
 
 	path := fmt.Sprintf("%s/%s", s.client.addServicePath(subnetsBasePathV1), subnetworkID)

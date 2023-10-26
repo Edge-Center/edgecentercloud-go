@@ -57,12 +57,12 @@ type ServerGroupCreateRequest struct {
 
 // Get individual Server Group.
 func (s *ServerGroupsServiceOp) Get(ctx context.Context, serverGroupID string) (*ServerGroup, *Response, error) {
-	if err := isValidUUID(serverGroupID, "serverGroupID"); err != nil {
-		return nil, nil, err
+	if resp, err := isValidUUID(serverGroupID, "serverGroupID"); err != nil {
+		return nil, resp, err
 	}
 
-	if err := s.client.Validate(); err != nil {
-		return nil, nil, err
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
 	}
 
 	path := fmt.Sprintf("%s/%s", s.client.addServicePath(servergroupsBasePathV1), serverGroupID)
@@ -87,8 +87,8 @@ func (s *ServerGroupsServiceOp) Create(ctx context.Context, createRequest *Serve
 		return nil, nil, NewArgError("createRequest", "cannot be nil")
 	}
 
-	if err := s.client.Validate(); err != nil {
-		return nil, nil, err
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
 	}
 
 	path := s.client.addServicePath(servergroupsBasePathV1)
@@ -109,12 +109,12 @@ func (s *ServerGroupsServiceOp) Create(ctx context.Context, createRequest *Serve
 
 // Delete the Server Group.
 func (s *ServerGroupsServiceOp) Delete(ctx context.Context, serverGroupID string) (*Response, error) {
-	if err := isValidUUID(serverGroupID, "serverGroupID"); err != nil {
-		return nil, err
+	if resp, err := isValidUUID(serverGroupID, "serverGroupID"); err != nil {
+		return resp, err
 	}
 
-	if err := s.client.Validate(); err != nil {
-		return nil, err
+	if resp, err := s.client.Validate(); err != nil {
+		return resp, err
 	}
 
 	path := fmt.Sprintf("%s/%s", s.client.addServicePath(servergroupsBasePathV1), serverGroupID)

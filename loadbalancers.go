@@ -378,12 +378,12 @@ type loadbalancerFlavorRoot struct {
 
 // Get individual Loadbalancer.
 func (s *LoadbalancersServiceOp) Get(ctx context.Context, loadbalancerID string) (*Loadbalancer, *Response, error) {
-	if err := isValidUUID(loadbalancerID, "loadbalancerID"); err != nil {
-		return nil, nil, err
+	if resp, err := isValidUUID(loadbalancerID, "loadbalancerID"); err != nil {
+		return nil, resp, err
 	}
 
-	if err := s.client.Validate(); err != nil {
-		return nil, nil, err
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
 	}
 
 	path := fmt.Sprintf("%s/%s", s.client.addServicePath(loadbalancersBasePathV1), loadbalancerID)
@@ -408,8 +408,8 @@ func (s *LoadbalancersServiceOp) Create(ctx context.Context, createRequest *Load
 		return nil, nil, NewArgError("createRequest", "cannot be nil")
 	}
 
-	if err := s.client.Validate(); err != nil {
-		return nil, nil, err
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
 	}
 
 	path := s.client.addServicePath(loadbalancersBasePathV1)
@@ -430,12 +430,12 @@ func (s *LoadbalancersServiceOp) Create(ctx context.Context, createRequest *Load
 
 // Delete the Loadbalancer.
 func (s *LoadbalancersServiceOp) Delete(ctx context.Context, loadbalancerID string) (*TaskResponse, *Response, error) {
-	if err := isValidUUID(loadbalancerID, "loadbalancerID"); err != nil {
-		return nil, nil, err
+	if resp, err := isValidUUID(loadbalancerID, "loadbalancerID"); err != nil {
+		return nil, resp, err
 	}
 
-	if err := s.client.Validate(); err != nil {
-		return nil, nil, err
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
 	}
 
 	path := fmt.Sprintf("%s/%s", s.client.addServicePath(loadbalancersBasePathV1), loadbalancerID)
@@ -456,12 +456,12 @@ func (s *LoadbalancersServiceOp) Delete(ctx context.Context, loadbalancerID stri
 
 // ListenerGet a Loadbalancer Listener.
 func (s *LoadbalancersServiceOp) ListenerGet(ctx context.Context, listenerID string) (*Listener, *Response, error) {
-	if err := isValidUUID(listenerID, "listenerID"); err != nil {
-		return nil, nil, err
+	if resp, err := isValidUUID(listenerID, "listenerID"); err != nil {
+		return nil, resp, err
 	}
 
-	if err := s.client.Validate(); err != nil {
-		return nil, nil, err
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
 	}
 
 	path := fmt.Sprintf("%s/%s", s.client.addServicePath(lblistenersBasePathV1), listenerID)
@@ -486,8 +486,8 @@ func (s *LoadbalancersServiceOp) ListenerCreate(ctx context.Context, createReque
 		return nil, nil, NewArgError("createRequest", "cannot be nil")
 	}
 
-	if err := s.client.Validate(); err != nil {
-		return nil, nil, err
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
 	}
 
 	path := s.client.addServicePath(lblistenersBasePathV1)
@@ -508,12 +508,12 @@ func (s *LoadbalancersServiceOp) ListenerCreate(ctx context.Context, createReque
 
 // ListenerDelete the Loadbalancer Listener.
 func (s *LoadbalancersServiceOp) ListenerDelete(ctx context.Context, listenerID string) (*TaskResponse, *Response, error) {
-	if err := isValidUUID(listenerID, "listenerID"); err != nil {
-		return nil, nil, err
+	if resp, err := isValidUUID(listenerID, "listenerID"); err != nil {
+		return nil, resp, err
 	}
 
-	if err := s.client.Validate(); err != nil {
-		return nil, nil, err
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
 	}
 
 	path := fmt.Sprintf("%s/%s", s.client.addServicePath(lblistenersBasePathV1), listenerID)
@@ -534,12 +534,12 @@ func (s *LoadbalancersServiceOp) ListenerDelete(ctx context.Context, listenerID 
 
 // PoolGet a Loadbalancer Pool.
 func (s *LoadbalancersServiceOp) PoolGet(ctx context.Context, poolID string) (*Pool, *Response, error) {
-	if err := isValidUUID(poolID, "poolID"); err != nil {
-		return nil, nil, err
+	if resp, err := isValidUUID(poolID, "poolID"); err != nil {
+		return nil, resp, err
 	}
 
-	if err := s.client.Validate(); err != nil {
-		return nil, nil, err
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
 	}
 
 	path := fmt.Sprintf("%s/%s", s.client.addServicePath(lbpoolsBasePathV1), poolID)
@@ -564,8 +564,8 @@ func (s *LoadbalancersServiceOp) PoolCreate(ctx context.Context, createRequest *
 		return nil, nil, NewArgError("createRequest", "cannot be nil")
 	}
 
-	if err := s.client.Validate(); err != nil {
-		return nil, nil, err
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
 	}
 
 	path := s.client.addServicePath(lbpoolsBasePathV1)
@@ -586,12 +586,12 @@ func (s *LoadbalancersServiceOp) PoolCreate(ctx context.Context, createRequest *
 
 // PoolDelete the Loadbalancer Pool.
 func (s *LoadbalancersServiceOp) PoolDelete(ctx context.Context, poolID string) (*TaskResponse, *Response, error) {
-	if err := isValidUUID(poolID, "poolID"); err != nil {
-		return nil, nil, err
+	if resp, err := isValidUUID(poolID, "poolID"); err != nil {
+		return nil, resp, err
 	}
 
-	if err := s.client.Validate(); err != nil {
-		return nil, nil, err
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
 	}
 
 	path := fmt.Sprintf("%s/%s", s.client.addServicePath(lbpoolsBasePathV1), poolID)
@@ -612,12 +612,12 @@ func (s *LoadbalancersServiceOp) PoolDelete(ctx context.Context, poolID string) 
 
 // PoolUpdate a Loadbalancer Pool.
 func (s *LoadbalancersServiceOp) PoolUpdate(ctx context.Context, poolID string, updateRequest *PoolUpdateRequest) (*TaskResponse, *Response, error) {
-	if err := isValidUUID(poolID, "poolID"); err != nil {
-		return nil, nil, err
+	if resp, err := isValidUUID(poolID, "poolID"); err != nil {
+		return nil, resp, err
 	}
 
-	if err := s.client.Validate(); err != nil {
-		return nil, nil, err
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
 	}
 
 	path := fmt.Sprintf("%s/%s", s.client.addServicePath(lbpoolsBasePathV1), poolID)
@@ -638,8 +638,8 @@ func (s *LoadbalancersServiceOp) PoolUpdate(ctx context.Context, poolID string, 
 
 // PoolList get Loadbalancer Pools.
 func (s *LoadbalancersServiceOp) PoolList(ctx context.Context, opts *PoolListOptions) ([]Pool, *Response, error) {
-	if err := s.client.Validate(); err != nil {
-		return nil, nil, err
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
 	}
 
 	path := s.client.addServicePath(lbpoolsBasePathV1)
@@ -664,8 +664,8 @@ func (s *LoadbalancersServiceOp) PoolList(ctx context.Context, opts *PoolListOpt
 
 // CheckLimits check a quota for load balancer creation.
 func (s *LoadbalancersServiceOp) CheckLimits(ctx context.Context, checkLimitsRequest *LoadbalancerCheckLimitsRequest) (*map[string]int, *Response, error) {
-	if err := s.client.Validate(); err != nil {
-		return nil, nil, err
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
 	}
 
 	path := s.client.addServicePath(loadbalancersBasePathV1)
@@ -687,8 +687,8 @@ func (s *LoadbalancersServiceOp) CheckLimits(ctx context.Context, checkLimitsReq
 
 // FlavorList get load balancer flavors.
 func (s *LoadbalancersServiceOp) FlavorList(ctx context.Context, opts *LoadbalancerFlavorsOptions) ([]Flavor, *Response, error) {
-	if err := s.client.Validate(); err != nil {
-		return nil, nil, err
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
 	}
 
 	path := s.client.addServicePath(lbflavorsBasePathV1)
