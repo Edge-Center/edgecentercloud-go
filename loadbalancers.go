@@ -18,6 +18,7 @@ const (
 // LoadbalancersService is an interface for creating and managing Loadbalancer with the EdgecenterCloud API.
 // See: https://apidocs.edgecenter.ru/cloud#tag/loadbalancers
 type LoadbalancersService interface {
+	List(context.Context, *LoadbalancerListOptions) ([]Loadbalancer, *Response, error)
 	Get(context.Context, string) (*Loadbalancer, *Response, error)
 	Create(context.Context, *LoadbalancerCreateRequest) (*TaskResponse, *Response, error)
 	Delete(context.Context, string) (*TaskResponse, *Response, error)
@@ -317,6 +318,20 @@ type LoadbalancerSessionPersistence struct {
 	PersistenceGranularity string             `json:"persistence_granularity,omitempty"`
 }
 
+// LoadbalancerListOptions specifies the optional query parameters to List method.
+type LoadbalancerListOptions struct {
+	ShowStats        bool   `url:"show_stats,omitempty"  validate:"omitempty"`
+	AssignedFloating bool   `url:"assigned_floating,omitempty"  validate:"omitempty"`
+	MetadataKV       string `url:"metadata_kv,omitempty"  validate:"omitempty"`
+	MetadataK        string `url:"metadata_k,omitempty"  validate:"omitempty"`
+}
+
+// loadbalancersRoot represents a Loadbalancers root.
+type loadbalancersRoot struct {
+	Count         int
+	Loadbalancers []Loadbalancer `json:"results"`
+}
+
 // loadbalancerRoot represents a Loadbalancer Pools root.
 type loadbalancerPoolsRoot struct {
 	Count int
@@ -374,6 +389,32 @@ type LoadbalancerFlavorsOptions struct {
 type loadbalancerFlavorRoot struct {
 	Count   int
 	Flavors []Flavor `json:"results"`
+}
+
+// List get load balancers.
+func (s *LoadbalancersServiceOp) List(ctx context.Context, opts *LoadbalancerListOptions) ([]Loadbalancer, *Response, error) {
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	path := s.client.addServicePath(loadbalancersBasePathV1)
+	path, err := addOptions(path, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	root := new(loadbalancersRoot)
+	resp, err := s.client.Do(ctx, req, root)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return root.Loadbalancers, resp, err
 }
 
 // Get individual Loadbalancer.

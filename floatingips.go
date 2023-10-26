@@ -62,7 +62,7 @@ const (
 
 type InterfaceFloatingIP struct {
 	Source             FloatingIPSource `json:"source" validate:"required,enum"`
-	ExistingFloatingID string           `json:"existing_floating_id" validate:"rfe=Source:existing,sfe=Source:new,omitempty,uuid"`
+	ExistingFloatingID string           `json:"existing_floating_id" validate:"rfe=Source:existing,sfe=Source:new,omitempty,UUID"`
 }
 
 // FloatingIPCreateRequest represents a request to create a Floating IP.

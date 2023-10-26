@@ -18,6 +18,7 @@ const (
 // InstancesService is an interface for creating and managing Instances with the EdgecenterCloud API.
 // See: https://apidocs.edgecenter.ru/cloud#tag/instances
 type InstancesService interface {
+	List(context.Context, *InstanceListOptions) ([]Instance, *Response, error)
 	Get(context.Context, string) (*Instance, *Response, error)
 	Create(context.Context, *InstanceCreateRequest) (*TaskResponse, *Response, error)
 	Delete(context.Context, string, *InstanceDeleteOptions) (*TaskResponse, *Response, error)
@@ -154,6 +155,32 @@ type InstanceDeleteOptions struct {
 	ReservedFixedIPs []string `url:"reserved_fixed_ips,omitempty" validate:"omitempty,dive,uuid4" delimiter:"comma"`
 }
 
+// InstanceListOptions specifies the optional query parameters to List method.
+type InstanceListOptions struct {
+	IncludeBaremetal  bool   `url:"include_baremetal,omitempty"  validate:"omitempty"`
+	IncludeK8S        bool   `url:"include_k8s,omitempty"  validate:"omitempty"`
+	ExcludeSecgroup   string `url:"exclude_secgroup,omitempty"  validate:"omitempty"`
+	AvailableFloating string `url:"available_floating,omitempty"  validate:"omitempty"`
+	Name              string `url:"name,omitempty"  validate:"omitempty"`
+	FlavorID          string `url:"flavor_id,omitempty"  validate:"omitempty"`
+	Limit             int    `url:"limit,omitempty"  validate:"omitempty"`
+	Offset            int    `url:"offset,omitempty"  validate:"omitempty"`
+	Status            string `url:"status,omitempty"  validate:"omitempty"`
+	ChangesSince      string `url:"changes-since,omitempty"  validate:"omitempty"`
+	ChangesBefore     string `url:"changes-before,omitempty"  validate:"omitempty"`
+	IP                string `url:"ip,omitempty"  validate:"omitempty"`
+	UUID              string `url:"uuid,omitempty"  validate:"omitempty"`
+	MetadataKV        string `url:"metadata_kv,omitempty"  validate:"omitempty"`
+	MetadataK         string `url:"metadata_k,omitempty"  validate:"omitempty"`
+	OrderBy           string `url:"order_by,omitempty"  validate:"omitempty"`
+}
+
+// instancesRoot represents an Instance root.
+type instancesRoot struct {
+	Count     int
+	Instances []Instance `json:"results"`
+}
+
 type InstanceCheckLimitsVolume struct {
 	Source     VolumeSource `json:"source" required:"true" validate:"required,enum"`
 	TypeName   VolumeType   `json:"type_name,omitempty" validate:"omitempty"`
@@ -174,6 +201,32 @@ type InstanceCheckLimitsRequest struct {
 // InstanceFlavorUpdateRequest represents a request to change the flavor of the instance.
 type InstanceFlavorUpdateRequest struct {
 	FlavorID string `json:"flavor_id" required:"true" validate:"required"`
+}
+
+// List get instances.
+func (s *InstancesServiceOp) List(ctx context.Context, opts *InstanceListOptions) ([]Instance, *Response, error) {
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	path := s.client.addServicePath(instancesBasePathV1)
+	path, err := addOptions(path, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	root := new(instancesRoot)
+	resp, err := s.client.Do(ctx, req, root)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return root.Instances, resp, err
 }
 
 // Get individual Instance.

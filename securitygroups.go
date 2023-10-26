@@ -13,6 +13,7 @@ const (
 // SecurityGroupsService is an interface for creating and managing Security Groups (Firewalls) with the EdgecenterCloud API.
 // See: https://apidocs.edgecenter.ru/cloud#tag/securitygroups
 type SecurityGroupsService interface {
+	List(context.Context, *SecurityGroupListOptions) ([]SecurityGroup, *Response, error)
 	Get(context.Context, string) (*SecurityGroup, *Response, error)
 	Create(context.Context, *SecurityGroupCreateRequest) (*TaskResponse, *Response, error)
 	Delete(context.Context, string) (*TaskResponse, *Response, error)
@@ -112,6 +113,44 @@ const (
 	SGRuleDirectionEgress  SecurityGroupRuleDirection = "egress"
 	SGRuleDirectionIngress SecurityGroupRuleDirection = "ingress"
 )
+
+// SecurityGroupListOptions specifies the optional query parameters to List method.
+type SecurityGroupListOptions struct {
+	MetadataKV string `url:"metadata_kv,omitempty"  validate:"omitempty"`
+	MetadataK  string `url:"metadata_k,omitempty"  validate:"omitempty"`
+}
+
+// securityGroupsRoot represents a SecurityGroup root.
+type securityGroupsRoot struct {
+	Count          int
+	SecurityGroups []SecurityGroup `json:"results"`
+}
+
+// List get security groups.
+func (s *SecurityGroupsServiceOp) List(ctx context.Context, opts *SecurityGroupListOptions) ([]SecurityGroup, *Response, error) {
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	path := s.client.addServicePath(securitygroupsBasePathV1)
+	path, err := addOptions(path, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	root := new(securityGroupsRoot)
+	resp, err := s.client.Do(ctx, req, root)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return root.SecurityGroups, resp, err
+}
 
 // Get individual Security Group.
 func (s *SecurityGroupsServiceOp) Get(ctx context.Context, securityGroupID string) (*SecurityGroup, *Response, error) {

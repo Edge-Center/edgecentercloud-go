@@ -13,6 +13,7 @@ const (
 // KeyPairsService is an interface for creating and managing SSH keys with the EdgecenterCloud API.
 // See: https://apidocs.edgecenter.ru/cloud#tag/keypairs
 type KeyPairsService interface {
+	List(context.Context) ([]KeyPair, *Response, error)
 	Get(context.Context, string) (*KeyPair, *Response, error)
 	Create(context.Context, *KeyPairCreateRequest) (*TaskResponse, *Response, error)
 	Delete(context.Context, string) (*TaskResponse, *Response, error)
@@ -43,6 +44,34 @@ type KeyPairCreateRequest struct {
 	SSHKeyName      string `json:"sshkey_name" required:"true"`
 	PublicKey       string `json:"public_key"`
 	SharedInProject bool   `json:"shared_in_project"`
+}
+
+// keyPairsRoot represents a KeyPair root.
+type keyPairsRoot struct {
+	Count   int
+	KeyPair []KeyPair `json:"results"`
+}
+
+// List get KeyPairs.
+func (s *KeyPairsServiceOp) List(ctx context.Context) ([]KeyPair, *Response, error) {
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	path := s.client.addServicePath(keypairsBasePathV1)
+
+	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	root := new(keyPairsRoot)
+	resp, err := s.client.Do(ctx, req, root)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return root.KeyPair, resp, err
 }
 
 // Get individual Key Pair.

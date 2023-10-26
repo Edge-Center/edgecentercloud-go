@@ -51,7 +51,7 @@ type FlavorListOptions struct {
 	ExcludeWindows bool `url:"exclude_windows,omitempty"  validate:"omitempty"`
 }
 
-// floatingipsRoot represents a FloatingIPs root.
+// flavorsRoot represents a Flavors root.
 type flavorsRoot struct {
 	Count   int
 	Flavors []Flavor `json:"results"`

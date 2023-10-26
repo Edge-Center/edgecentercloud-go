@@ -14,6 +14,7 @@ const (
 // SubnetworksService is an interface for creating and managing Subnetworks with the EdgecenterCloud API.
 // See: https://apidocs.edgecenter.ru/cloud#tag/subnets
 type SubnetworksService interface {
+	List(context.Context, *SubnetworkListOptions) ([]Subnetwork, *Response, error)
 	Get(context.Context, string) (*Subnetwork, *Response, error)
 	Create(context.Context, *SubnetworkCreateRequest) (*TaskResponse, *Response, error)
 	Delete(context.Context, string) (*TaskResponse, *Response, error)
@@ -27,7 +28,6 @@ type SubnetworksServiceOp struct {
 var _ SubnetworksService = &SubnetworksServiceOp{}
 
 // Subnetwork represents an EdgecenterCloud Subnetwork.
-// todo add cidr parsing
 type Subnetwork struct {
 	ID                     string      `json:"id"`
 	Name                   string      `json:"name"`
@@ -35,7 +35,7 @@ type Subnetwork struct {
 	IPVersion              int         `json:"ip_version"`
 	EnableDHCP             bool        `json:"enable_dhcp"`
 	ConnectToNetworkRouter bool        `json:"connect_to_network_router"`
-	CIDR                   string      `json:"cidr"`
+	CIDR                   string      `json:"cidr"` // TODO add cidr parsing.
 	CreatedAt              string      `json:"created_at"`
 	UpdatedAt              string      `json:"updated_at"`
 	CreatorTaskID          string      `json:"creator_task_id"`
@@ -76,7 +76,46 @@ type HostRoute struct {
 	NextHop     net.IP    `json:"nexthop"`
 }
 
-// Get individual Network.
+// SubnetworkListOptions specifies the optional query parameters to List method.
+type SubnetworkListOptions struct {
+	NetworkID  bool   `url:"network_id,omitempty"  validate:"omitempty"`
+	MetadataKV string `url:"metadata_kv,omitempty"  validate:"omitempty"`
+	MetadataK  string `url:"metadata_k,omitempty"  validate:"omitempty"`
+}
+
+// subnetworkRoot represents a Subnetworks root.
+type subnetworkRoot struct {
+	Count       int
+	Subnetworks []Subnetwork `json:"results"`
+}
+
+// List get subnetworks.
+func (s *SubnetworksServiceOp) List(ctx context.Context, opts *SubnetworkListOptions) ([]Subnetwork, *Response, error) {
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	path := s.client.addServicePath(subnetsBasePathV1)
+	path, err := addOptions(path, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	root := new(subnetworkRoot)
+	resp, err := s.client.Do(ctx, req, root)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return root.Subnetworks, resp, err
+}
+
+// Get individual Subnetwork.
 func (s *SubnetworksServiceOp) Get(ctx context.Context, subnetworkID string) (*Subnetwork, *Response, error) {
 	if resp, err := isValidUUID(subnetworkID, "subnetworkID"); err != nil {
 		return nil, resp, err
@@ -102,7 +141,7 @@ func (s *SubnetworksServiceOp) Get(ctx context.Context, subnetworkID string) (*S
 	return subnetwork, resp, err
 }
 
-// Create a Network.
+// Create a Subnetwork.
 func (s *SubnetworksServiceOp) Create(ctx context.Context, createRequest *SubnetworkCreateRequest) (*TaskResponse, *Response, error) {
 	if createRequest == nil {
 		return nil, nil, NewArgError("createRequest", "cannot be nil")
@@ -128,7 +167,7 @@ func (s *SubnetworksServiceOp) Create(ctx context.Context, createRequest *Subnet
 	return tasks, resp, err
 }
 
-// Delete the Network.
+// Delete the Subnetwork.
 func (s *SubnetworksServiceOp) Delete(ctx context.Context, subnetworkID string) (*TaskResponse, *Response, error) {
 	if resp, err := isValidUUID(subnetworkID, "subnetworkID"); err != nil {
 		return nil, resp, err

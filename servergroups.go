@@ -13,6 +13,7 @@ const (
 // ServerGroupsService is an interface for creating and managing Server Groups with the EdgecenterCloud API.
 // See: https://apidocs.edgecenter.ru/cloud#tag/servergroups
 type ServerGroupsService interface {
+	List(context.Context) ([]ServerGroup, *Response, error)
 	Get(context.Context, string) (*ServerGroup, *Response, error)
 	Create(context.Context, *ServerGroupCreateRequest) (*ServerGroup, *Response, error)
 	Delete(context.Context, string) (*Response, error)
@@ -53,6 +54,34 @@ const (
 type ServerGroupCreateRequest struct {
 	Name   string            `json:"name" required:"true"`
 	Policy ServerGroupPolicy `json:"policy" required:"true" validate:"enum"`
+}
+
+// serverGroupsRoot represents a Server Group root.
+type serverGroupsRoot struct {
+	Count       int
+	ServerGroup []ServerGroup `json:"results"`
+}
+
+// List get Server Groups.
+func (s *ServerGroupsServiceOp) List(ctx context.Context) ([]ServerGroup, *Response, error) {
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	path := s.client.addServicePath(servergroupsBasePathV1)
+
+	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	root := new(serverGroupsRoot)
+	resp, err := s.client.Do(ctx, req, root)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return root.ServerGroup, resp, err
 }
 
 // Get individual Server Group.

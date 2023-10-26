@@ -11,6 +11,31 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func TestSubnetworks_List(t *testing.T) {
+	setup()
+	defer teardown()
+
+	const (
+		subnetworkID = "f0d19cec-5c3f-4853-886e-304915960ff6"
+	)
+
+	subnetworks := []Subnetwork{{ID: subnetworkID}}
+	getSubnetworkURL := fmt.Sprintf("/v1/subnets/%d/%d", projectID, regionID)
+
+	mux.HandleFunc(getSubnetworkURL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodGet)
+		resp, _ := json.Marshal(subnetworks)
+		_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))
+	})
+
+	resp, _, err := client.Subnetworks.List(ctx, nil)
+	require.NoError(t, err)
+
+	if !reflect.DeepEqual(resp, subnetworks) {
+		t.Errorf("Subnetworks.List\n returned %+v,\n expected %+v", resp, subnetworks)
+	}
+}
+
 func TestSubnetworks_Get(t *testing.T) {
 	setup()
 	defer teardown()

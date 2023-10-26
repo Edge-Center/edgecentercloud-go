@@ -11,6 +11,31 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func TestSecurityGroups_List(t *testing.T) {
+	setup()
+	defer teardown()
+
+	const (
+		sgID = "f0d19cec-5c3f-4853-886e-304915960ff6"
+	)
+
+	securityGroups := []SecurityGroup{{ID: sgID}}
+	getSecurityGroupsURL := fmt.Sprintf("/v1/securitygroups/%d/%d", projectID, regionID)
+
+	mux.HandleFunc(getSecurityGroupsURL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodGet)
+		resp, _ := json.Marshal(securityGroups)
+		_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))
+	})
+
+	resp, _, err := client.SecurityGroups.List(ctx, nil)
+	require.NoError(t, err)
+
+	if !reflect.DeepEqual(resp, securityGroups) {
+		t.Errorf("SecurityGroups.List\n returned %+v,\n expected %+v", resp, securityGroups)
+	}
+}
+
 func TestSecurityGroups_Get(t *testing.T) {
 	setup()
 	defer teardown()

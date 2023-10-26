@@ -11,6 +11,31 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func TestServerGroups_List(t *testing.T) {
+	setup()
+	defer teardown()
+
+	const (
+		serverGroupID = "f0d19cec-5c3f-4853-886e-304915960ff6"
+	)
+
+	serverGroups := []ServerGroup{{ID: serverGroupID}}
+	getServerGroupsURL := fmt.Sprintf("/v1/servergroups/%d/%d", projectID, regionID)
+
+	mux.HandleFunc(getServerGroupsURL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodGet)
+		resp, _ := json.Marshal(serverGroups)
+		_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))
+	})
+
+	resp, _, err := client.ServerGroups.List(ctx)
+	require.NoError(t, err)
+
+	if !reflect.DeepEqual(resp, serverGroups) {
+		t.Errorf("ServerGroups.List\n returned %+v,\n expected %+v", resp, serverGroups)
+	}
+}
+
 func TestServerGroups_Get(t *testing.T) {
 	setup()
 	defer teardown()
