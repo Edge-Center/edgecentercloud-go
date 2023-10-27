@@ -121,3 +121,70 @@ func TestVolumes_Delete(t *testing.T) {
 
 	assert.Equal(t, taskResponse, resp)
 }
+
+func TestVolumes_ChangeType(t *testing.T) {
+	setup()
+	defer teardown()
+
+	const (
+		volumeID = "f0d19cec-5c3f-4853-886e-304915960ff6"
+	)
+
+	changeTypeRequest := &VolumeChangeTypeRequest{
+		VolumeType: SsdHiIops,
+	}
+
+	volumeResponse := &Volume{ID: volumeID, VolumeType: SsdHiIops}
+
+	changeTypeVolumeURL := fmt.Sprintf("/v1/volumes/%d/%d/%s/%s", projectID, regionID, volumeID, volumesRetypePath)
+
+	mux.HandleFunc(changeTypeVolumeURL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodPost)
+		reqBody := new(VolumeChangeTypeRequest)
+		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
+			t.Errorf("failed to decode request body: %v", err)
+		}
+		assert.Equal(t, changeTypeRequest, reqBody)
+		resp, _ := json.Marshal(volumeResponse)
+		_, _ = fmt.Fprint(w, string(resp))
+	})
+
+	resp, _, err := client.Volumes.ChangeType(ctx, volumeID, changeTypeRequest)
+	require.NoError(t, err)
+
+	assert.Equal(t, volumeResponse, resp)
+}
+
+func TestVolumes_ExtendSize(t *testing.T) {
+	setup()
+	defer teardown()
+
+	const (
+		taskID   = "f0d19cec-5c3f-4853-886e-304915960ff6"
+		volumeID = "f0d19cec-5c3f-4853-886e-304915960ff6"
+	)
+
+	extendSizeRequest := &VolumeExtendSizeRequest{
+		Size: 20,
+	}
+
+	taskResponse := &TaskResponse{Tasks: []string{taskID}}
+
+	extendSizeVolumeURL := fmt.Sprintf("/v1/volumes/%d/%d/%s/%s", projectID, regionID, volumeID, volumesExtendPath)
+
+	mux.HandleFunc(extendSizeVolumeURL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodPost)
+		reqBody := new(VolumeExtendSizeRequest)
+		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
+			t.Errorf("failed to decode request body: %v", err)
+		}
+		assert.Equal(t, extendSizeRequest, reqBody)
+		resp, _ := json.Marshal(taskResponse)
+		_, _ = fmt.Fprint(w, string(resp))
+	})
+
+	resp, _, err := client.Volumes.Extend(ctx, volumeID, extendSizeRequest)
+	require.NoError(t, err)
+
+	assert.Equal(t, taskResponse, resp)
+}
