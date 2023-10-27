@@ -45,7 +45,7 @@ type LoadbalancerPools interface {
 }
 
 type LoadbalancerFlavors interface {
-	FlavorList(context.Context, *LoadbalancerFlavorsOptions) ([]Flavor, *Response, error)
+	FlavorList(context.Context, *FlavorsOptions) ([]Flavor, *Response, error)
 }
 
 // LoadbalancersServiceOp handles communication with Loadbalancers methods of the EdgecenterCloud API.
@@ -378,11 +378,6 @@ type PoolListOptions struct {
 // LoadbalancerCheckLimitsRequest represents a request to check the limits of a loadbalancer.
 type LoadbalancerCheckLimitsRequest struct {
 	FloatingIP InterfaceFloatingIP `json:"floating_ip,omitempty"`
-}
-
-// LoadbalancerFlavorsOptions specifies the optional query parameters to Get loadbalancer flavor method.
-type LoadbalancerFlavorsOptions struct {
-	IncludePrices bool `url:"include_prices,omitempty"  validate:"omitempty"`
 }
 
 // loadbalancerFlavorRoot represents a Loadbalancer Flavor root.
@@ -727,7 +722,7 @@ func (s *LoadbalancersServiceOp) CheckLimits(ctx context.Context, checkLimitsReq
 }
 
 // FlavorList get load balancer flavors.
-func (s *LoadbalancersServiceOp) FlavorList(ctx context.Context, opts *LoadbalancerFlavorsOptions) ([]Flavor, *Response, error) {
+func (s *LoadbalancersServiceOp) FlavorList(ctx context.Context, opts *FlavorsOptions) ([]Flavor, *Response, error) {
 	if resp, err := s.client.Validate(); err != nil {
 		return nil, resp, err
 	}

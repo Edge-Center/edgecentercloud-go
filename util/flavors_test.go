@@ -85,3 +85,43 @@ func TestFlavorIsExist(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, exist, true)
 }
+
+func TestFlavorIsAvailable(t *testing.T) {
+	mux := http.NewServeMux()
+	server := httptest.NewServer(mux)
+	defer server.Close()
+
+	const (
+		projectID = 27520
+		regionID  = 8
+	)
+
+	flavor := "g1-standard-2-8"
+	flavors := []edgecloud.Flavor{{
+		FlavorName: flavor,
+		FlavorID:   flavor,
+	}}
+
+	instanceCheckFlavorVolumeRequest := &edgecloud.InstanceCheckFlavorVolumeRequest{
+		Volumes: []edgecloud.InstanceVolumeCreate{{Source: edgecloud.ExistingVolume}},
+	}
+
+	flavorsListURL := fmt.Sprintf("/v1/instances/%d/%d/available_flavors", projectID, regionID)
+	mux.HandleFunc(flavorsListURL, func(w http.ResponseWriter, r *http.Request) {
+		resp, err := json.Marshal(flavors)
+		if err != nil {
+			t.Fatalf("failed to marshal JSON: %v", err)
+		}
+		_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))
+	})
+
+	client := edgecloud.NewClient(nil)
+	baseURL, _ := url.Parse(server.URL)
+	client.BaseURL = baseURL
+	client.Project = projectID
+	client.Region = regionID
+
+	available, err := FlavorIsAvailable(context.Background(), client, flavor, instanceCheckFlavorVolumeRequest)
+	assert.NoError(t, err)
+	assert.Equal(t, available, true)
+}
