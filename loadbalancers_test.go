@@ -381,7 +381,7 @@ func TestLoadbalancers_FlavorList(t *testing.T) {
 	setup()
 	defer teardown()
 
-	loadbalancerFlavorsOptions := LoadbalancerFlavorsOptions{
+	loadbalancerFlavorsOptions := FlavorsOptions{
 		IncludePrices: true,
 	}
 

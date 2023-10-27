@@ -8,11 +8,12 @@ import (
 )
 
 const (
-	instancesBasePathV1       = "/v1/instances"
-	instancesBasePathV2       = "/v2/instances"
-	instanceMetadataPath      = "metadata"
-	instancesCheckLimitsPath  = "check_limits"
-	instancesChangeFlavorPath = "changeflavor"
+	instancesBasePathV1           = "/v1/instances"
+	instancesBasePathV2           = "/v2/instances"
+	instanceMetadataPath          = "metadata"
+	instancesCheckLimitsPath      = "check_limits"
+	instancesChangeFlavorPath     = "changeflavor"
+	instancesAvailableFlavorsPath = "available_flavors"
 )
 
 // InstancesService is an interface for creating and managing Instances with the EdgecenterCloud API.
@@ -26,6 +27,7 @@ type InstancesService interface {
 	CheckLimits(context.Context, *InstanceCheckLimitsRequest) (*map[string]int, *Response, error)
 
 	UpdateFlavor(context.Context, string, *InstanceFlavorUpdateRequest) (*TaskResponse, *Response, error)
+	AvailableFlavors(context.Context, *InstanceCheckFlavorVolumeRequest, *FlavorsOptions) ([]Flavor, *Response, error)
 
 	InstanceMetadata
 }
@@ -201,6 +203,17 @@ type InstanceCheckLimitsRequest struct {
 // InstanceFlavorUpdateRequest represents a request to change the flavor of the instance.
 type InstanceFlavorUpdateRequest struct {
 	FlavorID string `json:"flavor_id" required:"true" validate:"required"`
+}
+
+// InstanceCheckFlavorVolumeRequest represents a request to get flavors of the instance.
+type InstanceCheckFlavorVolumeRequest struct {
+	Volumes []InstanceVolumeCreate `json:"volumes" required:"true" validate:"required,dive"`
+}
+
+// instanceFlavorsRoot represents an Instance Flavors root.
+type instanceFlavorsRoot struct {
+	Count   int
+	Flavors []Flavor `json:"results"`
 }
 
 // List get instances.
@@ -384,6 +397,10 @@ func (s *InstancesServiceOp) CheckLimits(ctx context.Context, checkLimitsRequest
 
 // UpdateFlavor changes the flavor of the server instance.
 func (s *InstancesServiceOp) UpdateFlavor(ctx context.Context, instanceID string, instanceFlavorUpdateRequest *InstanceFlavorUpdateRequest) (*TaskResponse, *Response, error) {
+	if instanceFlavorUpdateRequest == nil {
+		return nil, nil, NewArgError("instanceFlavorUpdateRequest", "cannot be nil")
+	}
+
 	if resp, err := isValidUUID(instanceID, "instanceID"); err != nil {
 		return nil, resp, err
 	}
@@ -407,4 +424,35 @@ func (s *InstancesServiceOp) UpdateFlavor(ctx context.Context, instanceID string
 	}
 
 	return tasks, resp, err
+}
+
+// AvailableFlavors get flavors for an instance by volume config.
+func (s *InstancesServiceOp) AvailableFlavors(ctx context.Context, checkFlavorVolumeRequest *InstanceCheckFlavorVolumeRequest, opts *FlavorsOptions) ([]Flavor, *Response, error) {
+	if checkFlavorVolumeRequest == nil {
+		return nil, nil, NewArgError("instanceCheckFlavorVolumeRequest", "cannot be nil")
+	}
+
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	path, err := addOptions(s.client.addServicePath(instancesBasePathV1), opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	path = fmt.Sprintf("%s/%s", path, instancesAvailableFlavorsPath)
+
+	req, err := s.client.NewRequest(ctx, http.MethodPost, path, checkFlavorVolumeRequest)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	flavors := new(instanceFlavorsRoot)
+	resp, err := s.client.Do(ctx, req, flavors)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return flavors.Flavors, resp, err
 }

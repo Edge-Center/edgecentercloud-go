@@ -51,6 +51,11 @@ type FlavorListOptions struct {
 	ExcludeWindows bool `url:"exclude_windows,omitempty"  validate:"omitempty"`
 }
 
+// FlavorsOptions specifies the optional query parameters to Get loadbalancer or instance flavor method.
+type FlavorsOptions struct {
+	IncludePrices bool `url:"include_prices,omitempty"  validate:"omitempty"`
+}
+
 // flavorsRoot represents a Flavors root.
 type flavorsRoot struct {
 	Count   int

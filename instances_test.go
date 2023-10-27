@@ -260,3 +260,32 @@ func TestInstances_UpdateFlavor(t *testing.T) {
 
 	assert.Equal(t, taskResponse, resp)
 }
+
+func TestInstances_AvailableFlavors(t *testing.T) {
+	setup()
+	defer teardown()
+
+	const (
+		flavor = "g1-standard-2-8"
+	)
+
+	instanceCheckFlavorVolumeRequest := &InstanceCheckFlavorVolumeRequest{
+		Volumes: []InstanceVolumeCreate{{Source: ExistingVolume}},
+	}
+
+	flavors := []Flavor{{FlavorID: flavor}}
+	getAvailableFlavorsURL := fmt.Sprintf("/v1/instances/%d/%d/%s", projectID, regionID, instancesAvailableFlavorsPath)
+
+	mux.HandleFunc(getAvailableFlavorsURL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodPost)
+		resp, _ := json.Marshal(flavors)
+		_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))
+	})
+
+	resp, _, err := client.Instances.AvailableFlavors(ctx, instanceCheckFlavorVolumeRequest, nil)
+	require.NoError(t, err)
+
+	if !reflect.DeepEqual(resp, flavors) {
+		t.Errorf("Instances.AvailableFlavors\n returned %+v,\n expected %+v", resp, flavors)
+	}
+}
