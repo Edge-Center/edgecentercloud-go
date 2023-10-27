@@ -8,6 +8,8 @@ import (
 
 const (
 	volumesBasePathV1 = "/v1/volumes"
+	volumesRetypePath = "retype"
+	volumesExtendPath = "extend"
 )
 
 // VolumesService is an interface for creating and managing Volumes with the EdgecenterCloud API.
@@ -17,6 +19,8 @@ type VolumesService interface {
 	Create(context.Context, *VolumeCreateRequest) (*TaskResponse, *Response, error)
 	Get(context.Context, string) (*Volume, *Response, error)
 	Delete(context.Context, string) (*TaskResponse, *Response, error)
+	ChangeType(context.Context, string, *VolumeChangeTypeRequest) (*Volume, *Response, error)
+	Extend(context.Context, string, *VolumeExtendSizeRequest) (*TaskResponse, *Response, error)
 }
 
 // VolumesServiceOp handles communication with Volumes methods of the EdgecenterCloud API.
@@ -118,6 +122,16 @@ type VolumeListOptions struct {
 	MetadataK      string `url:"metadata_k,omitempty"  validate:"omitempty"`
 }
 
+// VolumeChangeTypeRequest represents a request to change a Volume type.
+type VolumeChangeTypeRequest struct {
+	VolumeType VolumeType `json:"volume_type" required:"true" validate:"required,enum"`
+}
+
+// VolumeExtendSizeRequest represents a request to extend a Volume size.
+type VolumeExtendSizeRequest struct {
+	Size int `json:"size" required:"true" validate:"required"`
+}
+
 // volumesRoot represents a Volume root.
 type volumesRoot struct {
 	Count  int
@@ -215,6 +229,66 @@ func (s *VolumesServiceOp) Delete(ctx context.Context, volumeID string) (*TaskRe
 	path := fmt.Sprintf("%s/%s", s.client.addServicePath(volumesBasePathV1), volumeID)
 
 	req, err := s.client.NewRequest(ctx, http.MethodDelete, path, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	tasks := new(TaskResponse)
+	resp, err := s.client.Do(ctx, req, tasks)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return tasks, resp, err
+}
+
+// ChangeType of the volume.
+func (s *VolumesServiceOp) ChangeType(ctx context.Context, volumeID string, changeTypeRequest *VolumeChangeTypeRequest) (*Volume, *Response, error) {
+	if resp, err := isValidUUID(volumeID, "volumeID"); err != nil {
+		return nil, resp, err
+	}
+
+	if changeTypeRequest == nil {
+		return nil, nil, NewArgError("changeTypeRequest", "cannot be nil")
+	}
+
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	path := fmt.Sprintf("%s/%s/%s", s.client.addServicePath(volumesBasePathV1), volumeID, volumesRetypePath)
+
+	req, err := s.client.NewRequest(ctx, http.MethodPost, path, changeTypeRequest)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	volume := new(Volume)
+	resp, err := s.client.Do(ctx, req, volume)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return volume, resp, err
+}
+
+// Extend the volume size.
+func (s *VolumesServiceOp) Extend(ctx context.Context, volumeID string, extendSizeRequest *VolumeExtendSizeRequest) (*TaskResponse, *Response, error) {
+	if resp, err := isValidUUID(volumeID, "volumeID"); err != nil {
+		return nil, resp, err
+	}
+
+	if extendSizeRequest == nil {
+		return nil, nil, NewArgError("extendSizeRequest", "cannot be nil")
+	}
+
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	path := fmt.Sprintf("%s/%s/%s", s.client.addServicePath(volumesBasePathV1), volumeID, volumesExtendPath)
+
+	req, err := s.client.NewRequest(ctx, http.MethodPost, path, extendSizeRequest)
 	if err != nil {
 		return nil, nil, err
 	}
