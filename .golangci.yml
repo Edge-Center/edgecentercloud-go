@@ -42,6 +42,7 @@ linters:
     - musttag          # Enforce field tags in (un)marshaled structs.
     - dupl             # Tool for code clone detection.
     - nolintlint
+    - interfacebloat
     # complexity
     - cyclop           # Checks function and package cyclomatic complexity.
     # tests

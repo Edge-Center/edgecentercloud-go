@@ -7,9 +7,14 @@ import (
 )
 
 const (
-	volumesBasePathV1 = "/v1/volumes"
-	volumesRetypePath = "retype"
-	volumesExtendPath = "extend"
+	volumesBasePathV1       = "/v1/volumes"
+	volumesRetypePath       = "retype"
+	volumesExtendPath       = "extend"
+	volumesAttachPath       = "attach"
+	volumesDetachPath       = "detach"
+	volumesRevertPath       = "revert"
+	volumesMetadataPath     = "metadata"
+	volumesMetadataItemPath = "metadata_item"
 )
 
 // VolumesService is an interface for creating and managing Volumes with the EdgecenterCloud API.
@@ -21,6 +26,20 @@ type VolumesService interface {
 	Delete(context.Context, string) (*TaskResponse, *Response, error)
 	ChangeType(context.Context, string, *VolumeChangeTypeRequest) (*Volume, *Response, error)
 	Extend(context.Context, string, *VolumeExtendSizeRequest) (*TaskResponse, *Response, error)
+	Rename(context.Context, string, *VolumeRenameRequest) (*Volume, *Response, error)
+	Attach(context.Context, string, *VolumeAttachRequest) (*Volume, *Response, error)
+	Detach(context.Context, string, *VolumeDetachRequest) (*Volume, *Response, error)
+	Revert(context.Context, string) (*TaskResponse, *Response, error)
+
+	VolumeMetadata
+}
+
+type VolumeMetadata interface {
+	MetadataList(context.Context, string) ([]MetadataDetailed, *Response, error)
+	MetadataCreate(context.Context, string, *MetadataCreateRequest) (*Response, error)
+	MetadataUpdate(context.Context, string, *MetadataCreateRequest) (*Response, error)
+	MetadataDeleteItem(context.Context, string, *MetadataItemOptions) (*Response, error)
+	MetadataGetItem(context.Context, string, *MetadataItemOptions) (*MetadataDetailed, *Response, error)
 }
 
 // VolumesServiceOp handles communication with Volumes methods of the EdgecenterCloud API.
@@ -130,6 +149,22 @@ type VolumeChangeTypeRequest struct {
 // VolumeExtendSizeRequest represents a request to extend a Volume size.
 type VolumeExtendSizeRequest struct {
 	Size int `json:"size" required:"true" validate:"required"`
+}
+
+// VolumeRenameRequest represents a request to rename a Volume.
+type VolumeRenameRequest struct {
+	Name string `json:"name" required:"true" validate:"required"`
+}
+
+// VolumeAttachRequest represents a request to attach a Volume to Instance.
+type VolumeAttachRequest struct {
+	InstanceID    string `json:"instance_id" required:"true" validate:"required"`
+	AttachmentTag string `json:"attachment_tag,omitempty" validate:"omitempty"`
+}
+
+// VolumeDetachRequest represents a request to detach a Volume from an Instance.
+type VolumeDetachRequest struct {
+	InstanceID string `json:"instance_id" required:"true" validate:"required"`
 }
 
 // volumesRoot represents a Volume root.
@@ -300,4 +335,247 @@ func (s *VolumesServiceOp) Extend(ctx context.Context, volumeID string, extendSi
 	}
 
 	return tasks, resp, err
+}
+
+// Rename the volume.
+func (s *VolumesServiceOp) Rename(ctx context.Context, volumeID string, renameRequest *VolumeRenameRequest) (*Volume, *Response, error) {
+	if resp, err := isValidUUID(volumeID, "volumeID"); err != nil {
+		return nil, resp, err
+	}
+
+	if renameRequest == nil {
+		return nil, nil, NewArgError("renameRequest", "cannot be nil")
+	}
+
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	path := fmt.Sprintf("%s/%s", s.client.addServicePath(volumesBasePathV1), volumeID)
+
+	req, err := s.client.NewRequest(ctx, http.MethodPatch, path, renameRequest)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	volume := new(Volume)
+	resp, err := s.client.Do(ctx, req, volume)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return volume, resp, err
+}
+
+// Attach the volume.
+func (s *VolumesServiceOp) Attach(ctx context.Context, volumeID string, attachRequest *VolumeAttachRequest) (*Volume, *Response, error) {
+	if resp, err := isValidUUID(volumeID, "volumeID"); err != nil {
+		return nil, resp, err
+	}
+
+	if attachRequest == nil {
+		return nil, nil, NewArgError("attachRequest", "cannot be nil")
+	}
+
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	path := fmt.Sprintf("%s/%s/%s", s.client.addServicePath(volumesBasePathV1), volumeID, volumesAttachPath)
+
+	req, err := s.client.NewRequest(ctx, http.MethodPost, path, attachRequest)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	volume := new(Volume)
+	resp, err := s.client.Do(ctx, req, volume)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return volume, resp, err
+}
+
+// Detach the volume.
+func (s *VolumesServiceOp) Detach(ctx context.Context, volumeID string, detachRequest *VolumeDetachRequest) (*Volume, *Response, error) {
+	if resp, err := isValidUUID(volumeID, "volumeID"); err != nil {
+		return nil, resp, err
+	}
+
+	if detachRequest == nil {
+		return nil, nil, NewArgError("detachRequest", "cannot be nil")
+	}
+
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	path := fmt.Sprintf("%s/%s/%s", s.client.addServicePath(volumesBasePathV1), volumeID, volumesDetachPath)
+
+	req, err := s.client.NewRequest(ctx, http.MethodPost, path, detachRequest)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	volume := new(Volume)
+	resp, err := s.client.Do(ctx, req, volume)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return volume, resp, err
+}
+
+// Revert a volume to its last snapshot.
+func (s *VolumesServiceOp) Revert(ctx context.Context, volumeID string) (*TaskResponse, *Response, error) {
+	if resp, err := isValidUUID(volumeID, "volumeID"); err != nil {
+		return nil, resp, err
+	}
+
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	path := fmt.Sprintf("%s/%s/%s", s.client.addServicePath(volumesBasePathV1), volumeID, volumesRevertPath)
+
+	req, err := s.client.NewRequest(ctx, http.MethodPost, path, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	tasks := new(TaskResponse)
+	resp, err := s.client.Do(ctx, req, tasks)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return tasks, resp, err
+}
+
+// MetadataList volume detailed metadata items.
+func (s *VolumesServiceOp) MetadataList(ctx context.Context, volumeID string) ([]MetadataDetailed, *Response, error) {
+	if resp, err := isValidUUID(volumeID, "volumeID"); err != nil {
+		return nil, resp, err
+	}
+
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	path := s.client.addServicePath(volumesBasePathV1)
+	path = fmt.Sprintf("%s/%s/%s", path, volumeID, volumesMetadataPath)
+
+	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	metadata := new(MetadataRoot)
+	resp, err := s.client.Do(ctx, req, metadata)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return metadata.Metadata, resp, err
+}
+
+// MetadataCreate or update volume metadata.
+func (s *VolumesServiceOp) MetadataCreate(ctx context.Context, volumeID string, metadata *MetadataCreateRequest) (*Response, error) {
+	if resp, err := isValidUUID(volumeID, "volumeID"); err != nil {
+		return resp, err
+	}
+
+	if resp, err := s.client.Validate(); err != nil {
+		return resp, err
+	}
+
+	path := s.client.addServicePath(volumesBasePathV1)
+	path = fmt.Sprintf("%s/%s/%s", path, volumeID, volumesMetadataPath)
+
+	req, err := s.client.NewRequest(ctx, http.MethodPost, path, metadata)
+	if err != nil {
+		return nil, err
+	}
+
+	return s.client.Do(ctx, req, nil)
+}
+
+// MetadataUpdate volume metadata.
+func (s *VolumesServiceOp) MetadataUpdate(ctx context.Context, volumeID string, metadata *MetadataCreateRequest) (*Response, error) {
+	if resp, err := isValidUUID(volumeID, "volumeID"); err != nil {
+		return resp, err
+	}
+
+	if resp, err := s.client.Validate(); err != nil {
+		return resp, err
+	}
+
+	path := s.client.addServicePath(volumesBasePathV1)
+	path = fmt.Sprintf("%s/%s/%s", path, volumeID, volumesMetadataPath)
+
+	req, err := s.client.NewRequest(ctx, http.MethodPut, path, metadata)
+	if err != nil {
+		return nil, err
+	}
+
+	return s.client.Do(ctx, req, nil)
+}
+
+// MetadataDeleteItem a volume metadata item by key.
+func (s *VolumesServiceOp) MetadataDeleteItem(ctx context.Context, volumeID string, opts *MetadataItemOptions) (*Response, error) {
+	if resp, err := isValidUUID(volumeID, "volumeID"); err != nil {
+		return resp, err
+	}
+
+	if resp, err := s.client.Validate(); err != nil {
+		return resp, err
+	}
+
+	path := s.client.addServicePath(volumesBasePathV1)
+	path, err := addOptions(path, opts)
+	if err != nil {
+		return nil, err
+	}
+
+	path = fmt.Sprintf("%s/%s/%s", path, volumeID, volumesMetadataItemPath)
+
+	req, err := s.client.NewRequest(ctx, http.MethodDelete, path, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return s.client.Do(ctx, req, nil)
+}
+
+// MetadataGetItem volume detailed metadata.
+func (s *VolumesServiceOp) MetadataGetItem(ctx context.Context, volumeID string, opts *MetadataItemOptions) (*MetadataDetailed, *Response, error) {
+	if resp, err := isValidUUID(volumeID, "volumeID"); err != nil {
+		return nil, resp, err
+	}
+
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	path := s.client.addServicePath(volumesBasePathV1)
+	path, err := addOptions(path, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	path = fmt.Sprintf("%s/%s/%s", path, volumeID, volumesMetadataItemPath)
+
+	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	metadata := new(MetadataDetailed)
+	resp, err := s.client.Do(ctx, req, metadata)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return metadata, resp, err
 }
