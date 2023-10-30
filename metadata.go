@@ -12,3 +12,13 @@ type Metadata map[string]interface{}
 type MetadataCreateRequest struct {
 	Metadata
 }
+
+type MetadataItemOptions struct {
+	Key string `url:"key,omitempty" validate:"omitempty"`
+}
+
+// MetadataRoot represents a Metadata root.
+type MetadataRoot struct {
+	Count    int
+	Metadata []MetadataDetailed `json:"results"`
+}
