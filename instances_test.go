@@ -172,7 +172,7 @@ func TestInstances_MetadataGet(t *testing.T) {
 		Value:    "b3c52ece-147e-4af5-8d7c-84691309b879",
 		ReadOnly: true,
 	}
-	getInstanceMetadataURL := fmt.Sprintf("/v1/instances/%d/%d/%s/%s", projectID, regionID, instanceID, instanceMetadataPath)
+	getInstanceMetadataURL := fmt.Sprintf("/v1/instances/%d/%d/%s/%s", projectID, regionID, instanceID, metadataPath)
 
 	mux.HandleFunc(getInstanceMetadataURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
@@ -200,7 +200,7 @@ func TestInstances_MetadataCreate(t *testing.T) {
 		map[string]interface{}{"key": "value"},
 	}
 
-	createInstanceMetadataURL := fmt.Sprintf("/v1/instances/%d/%d/%s/%s", projectID, regionID, instanceID, instanceMetadataPath)
+	createInstanceMetadataURL := fmt.Sprintf("/v1/instances/%d/%d/%s/%s", projectID, regionID, instanceID, metadataPath)
 
 	mux.HandleFunc(createInstanceMetadataURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPut)

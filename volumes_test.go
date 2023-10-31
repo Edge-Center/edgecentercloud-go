@@ -329,7 +329,7 @@ func TestVolumes_MetadataList(t *testing.T) {
 		Value:    "b3c52ece-147e-4af5-8d7c-84691309b879",
 		ReadOnly: true,
 	}}
-	getVolumesMetadataListURL := fmt.Sprintf("/v1/volumes/%d/%d/%s/%s", projectID, regionID, volumeID, volumesMetadataPath)
+	getVolumesMetadataListURL := fmt.Sprintf("/v1/volumes/%d/%d/%s/%s", projectID, regionID, volumeID, metadataPath)
 
 	mux.HandleFunc(getVolumesMetadataListURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
@@ -357,7 +357,7 @@ func TestVolumes_MetadataCreate(t *testing.T) {
 		map[string]interface{}{"key": "value"},
 	}
 
-	createVolumesMetadataURL := fmt.Sprintf("/v1/volumes/%d/%d/%s/%s", projectID, regionID, volumeID, volumesMetadataPath)
+	createVolumesMetadataURL := fmt.Sprintf("/v1/volumes/%d/%d/%s/%s", projectID, regionID, volumeID, metadataPath)
 
 	mux.HandleFunc(createVolumesMetadataURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
@@ -379,7 +379,7 @@ func TestVolumes_MetadataUpdate(t *testing.T) {
 		map[string]interface{}{"key": "value"},
 	}
 
-	createVolumesMetadataURL := fmt.Sprintf("/v1/volumes/%d/%d/%s/%s", projectID, regionID, volumeID, volumesMetadataPath)
+	createVolumesMetadataURL := fmt.Sprintf("/v1/volumes/%d/%d/%s/%s", projectID, regionID, volumeID, metadataPath)
 
 	mux.HandleFunc(createVolumesMetadataURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPut)
@@ -397,7 +397,7 @@ func TestVolumes_MetadataDeleteItem(t *testing.T) {
 		volumeID = "f0d19cec-5c3f-4853-886e-304915960ff6"
 	)
 
-	deleteVolumesMetadataItemURL := fmt.Sprintf("/v1/volumes/%d/%d/%s/%s", projectID, regionID, volumeID, volumesMetadataItemPath)
+	deleteVolumesMetadataItemURL := fmt.Sprintf("/v1/volumes/%d/%d/%s/%s", projectID, regionID, volumeID, metadataItemPath)
 
 	mux.HandleFunc(deleteVolumesMetadataItemURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodDelete)
@@ -420,7 +420,7 @@ func TestVolumes_MetadataGetItem(t *testing.T) {
 		Value:    "b3c52ece-147e-4af5-8d7c-84691309b879",
 		ReadOnly: true,
 	}
-	getVolumesMetadataItemURL := fmt.Sprintf("/v1/volumes/%d/%d/%s/%s", projectID, regionID, volumeID, volumesMetadataItemPath)
+	getVolumesMetadataItemURL := fmt.Sprintf("/v1/volumes/%d/%d/%s/%s", projectID, regionID, volumeID, metadataItemPath)
 
 	mux.HandleFunc(getVolumesMetadataItemURL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)

@@ -8,9 +8,10 @@ import (
 )
 
 const (
-	floatingipsBasePathV1 = "/v1/floatingips"
-	floatingipsAssign     = "assign"
-	floatingipsUnAssign   = "unassign"
+	floatingipsBasePathV1      = "/v1/floatingips"
+	availableFloatingipsPathV1 = "/v1/availablefloatingips"
+	floatingipsAssign          = "assign"
+	floatingipsUnAssign        = "unassign"
 )
 
 // FloatingIPsService is an interface for creating and managing FloatingIPs with the EdgecenterCloud API.
@@ -22,6 +23,16 @@ type FloatingIPsService interface {
 	Delete(context.Context, string) (*TaskResponse, *Response, error)
 	Assign(context.Context, string, *AssignRequest) (*FloatingIP, *Response, error)
 	UnAssign(context.Context, string) (*FloatingIP, *Response, error)
+	ListAvailable(context.Context) ([]FloatingIP, *Response, error)
+	FloatingIPMetadata
+}
+
+type FloatingIPMetadata interface {
+	MetadataList(context.Context, string) ([]MetadataDetailed, *Response, error)
+	MetadataCreate(context.Context, string, *MetadataCreateRequest) (*Response, error)
+	MetadataUpdate(context.Context, string, *MetadataCreateRequest) (*Response, error)
+	MetadataDeleteItem(context.Context, string, *MetadataItemOptions) (*Response, error)
+	MetadataGetItem(context.Context, string, *MetadataItemOptions) (*MetadataDetailed, *Response, error)
 }
 
 // FloatingipsServiceOp handles communication with FloatingIPs methods of the EdgecenterCloud API.
@@ -33,24 +44,25 @@ var _ FloatingIPsService = &FloatingipsServiceOp{}
 
 // FloatingIP represents an EdgecenterCloud FloatingIP.
 type FloatingIP struct {
-	ID                string     `json:"id"`
-	CreatedAt         string     `json:"created_at"`
-	UpdatedAt         string     `json:"updated_at"`
-	Status            string     `json:"status"`
-	FixedIPAddress    net.IP     `json:"fixed_ip_address,omitempty"`
-	FloatingIPAddress string     `json:"floating_ip_address,omitempty"`
-	DNSDomain         string     `json:"dns_domain"`
-	DNSName           string     `json:"dns_name"`
-	RouterID          string     `json:"router_id"`
-	SubnetID          string     `json:"subnet_id"`
-	CreatorTaskID     string     `json:"creator_task_id"`
-	Metadata          []Metadata `json:"metadata,omitempty"`
-	TaskID            string     `json:"task_id"`
-	PortID            string     `json:"port_id,omitempty"`
-	ProjectID         int        `json:"project_id"`
-	RegionID          int        `json:"region_id"`
-	Region            string     `json:"region"`
-	Instance          Instance   `json:"instance,omitempty"`
+	ID                string       `json:"id"`
+	CreatedAt         string       `json:"created_at"`
+	UpdatedAt         string       `json:"updated_at"`
+	Status            string       `json:"status"`
+	FixedIPAddress    net.IP       `json:"fixed_ip_address,omitempty"`
+	FloatingIPAddress string       `json:"floating_ip_address,omitempty"`
+	DNSDomain         string       `json:"dns_domain"`
+	DNSName           string       `json:"dns_name"`
+	RouterID          string       `json:"router_id"`
+	SubnetID          string       `json:"subnet_id"`
+	CreatorTaskID     string       `json:"creator_task_id"`
+	Metadata          []Metadata   `json:"metadata,omitempty"`
+	TaskID            string       `json:"task_id"`
+	PortID            string       `json:"port_id,omitempty"`
+	ProjectID         int          `json:"project_id"`
+	RegionID          int          `json:"region_id"`
+	Region            string       `json:"region"`
+	Instance          Instance     `json:"instance,omitempty"`
+	Loadbalancer      Loadbalancer `json:"loadbalancer,omitempty"`
 }
 
 type FloatingIPSource string
@@ -239,4 +251,153 @@ func (s *FloatingipsServiceOp) UnAssign(ctx context.Context, fipID string) (*Flo
 	}
 
 	return fip, resp, err
+}
+
+// ListAvailable floating IPs.
+func (s *FloatingipsServiceOp) ListAvailable(ctx context.Context) ([]FloatingIP, *Response, error) {
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	path := s.client.addProjectRegionPath(availableFloatingipsPathV1)
+
+	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	root := new(floatingipsRoot)
+	resp, err := s.client.Do(ctx, req, root)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return root.FloatingIPs, resp, err
+}
+
+// MetadataList floating IP detailed metadata items.
+func (s *FloatingipsServiceOp) MetadataList(ctx context.Context, fipID string) ([]MetadataDetailed, *Response, error) {
+	if resp, err := isValidUUID(fipID, "fipID"); err != nil {
+		return nil, resp, err
+	}
+
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	path := s.client.addProjectRegionPath(floatingipsBasePathV1)
+	path = fmt.Sprintf("%s/%s/%s", path, fipID, metadataPath)
+
+	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	metadata := new(MetadataRoot)
+	resp, err := s.client.Do(ctx, req, metadata)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return metadata.Metadata, resp, err
+}
+
+// MetadataCreate or update floating IP metadata.
+func (s *FloatingipsServiceOp) MetadataCreate(ctx context.Context, fipID string, metadata *MetadataCreateRequest) (*Response, error) {
+	if resp, err := isValidUUID(fipID, "fipID"); err != nil {
+		return resp, err
+	}
+
+	if resp, err := s.client.Validate(); err != nil {
+		return resp, err
+	}
+
+	path := s.client.addProjectRegionPath(floatingipsBasePathV1)
+	path = fmt.Sprintf("%s/%s/%s", path, fipID, metadataPath)
+
+	req, err := s.client.NewRequest(ctx, http.MethodPost, path, metadata)
+	if err != nil {
+		return nil, err
+	}
+
+	return s.client.Do(ctx, req, nil)
+}
+
+// MetadataUpdate floating IP metadata.
+func (s *FloatingipsServiceOp) MetadataUpdate(ctx context.Context, fipID string, metadata *MetadataCreateRequest) (*Response, error) {
+	if resp, err := isValidUUID(fipID, "fipID"); err != nil {
+		return resp, err
+	}
+
+	if resp, err := s.client.Validate(); err != nil {
+		return resp, err
+	}
+
+	path := s.client.addProjectRegionPath(floatingipsBasePathV1)
+	path = fmt.Sprintf("%s/%s/%s", path, fipID, metadataPath)
+
+	req, err := s.client.NewRequest(ctx, http.MethodPut, path, metadata)
+	if err != nil {
+		return nil, err
+	}
+
+	return s.client.Do(ctx, req, nil)
+}
+
+// MetadataDeleteItem a floating IP metadata item by key.
+func (s *FloatingipsServiceOp) MetadataDeleteItem(ctx context.Context, fipID string, opts *MetadataItemOptions) (*Response, error) {
+	if resp, err := isValidUUID(fipID, "fipID"); err != nil {
+		return resp, err
+	}
+
+	if resp, err := s.client.Validate(); err != nil {
+		return resp, err
+	}
+
+	path := s.client.addProjectRegionPath(floatingipsBasePathV1)
+	path, err := addOptions(path, opts)
+	if err != nil {
+		return nil, err
+	}
+
+	path = fmt.Sprintf("%s/%s/%s", path, fipID, metadataItemPath)
+
+	req, err := s.client.NewRequest(ctx, http.MethodDelete, path, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return s.client.Do(ctx, req, nil)
+}
+
+// MetadataGetItem floating IP detailed metadata.
+func (s *FloatingipsServiceOp) MetadataGetItem(ctx context.Context, fipID string, opts *MetadataItemOptions) (*MetadataDetailed, *Response, error) {
+	if resp, err := isValidUUID(fipID, "fipID"); err != nil {
+		return nil, resp, err
+	}
+
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	path := s.client.addProjectRegionPath(floatingipsBasePathV1)
+	path, err := addOptions(path, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	path = fmt.Sprintf("%s/%s/%s", path, fipID, metadataItemPath)
+
+	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	metadata := new(MetadataDetailed)
+	resp, err := s.client.Do(ctx, req, metadata)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return metadata, resp, err
 }

@@ -7,14 +7,12 @@ import (
 )
 
 const (
-	volumesBasePathV1       = "/v1/volumes"
-	volumesRetypePath       = "retype"
-	volumesExtendPath       = "extend"
-	volumesAttachPath       = "attach"
-	volumesDetachPath       = "detach"
-	volumesRevertPath       = "revert"
-	volumesMetadataPath     = "metadata"
-	volumesMetadataItemPath = "metadata_item"
+	volumesBasePathV1 = "/v1/volumes"
+	volumesRetypePath = "retype"
+	volumesExtendPath = "extend"
+	volumesAttachPath = "attach"
+	volumesDetachPath = "detach"
+	volumesRevertPath = "revert"
 )
 
 // VolumesService is an interface for creating and managing Volumes with the EdgecenterCloud API.
@@ -464,7 +462,7 @@ func (s *VolumesServiceOp) MetadataList(ctx context.Context, volumeID string) ([
 	}
 
 	path := s.client.addProjectRegionPath(volumesBasePathV1)
-	path = fmt.Sprintf("%s/%s/%s", path, volumeID, volumesMetadataPath)
+	path = fmt.Sprintf("%s/%s/%s", path, volumeID, metadataPath)
 
 	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
 	if err != nil {
@@ -491,7 +489,7 @@ func (s *VolumesServiceOp) MetadataCreate(ctx context.Context, volumeID string, 
 	}
 
 	path := s.client.addProjectRegionPath(volumesBasePathV1)
-	path = fmt.Sprintf("%s/%s/%s", path, volumeID, volumesMetadataPath)
+	path = fmt.Sprintf("%s/%s/%s", path, volumeID, metadataPath)
 
 	req, err := s.client.NewRequest(ctx, http.MethodPost, path, metadata)
 	if err != nil {
@@ -512,7 +510,7 @@ func (s *VolumesServiceOp) MetadataUpdate(ctx context.Context, volumeID string, 
 	}
 
 	path := s.client.addProjectRegionPath(volumesBasePathV1)
-	path = fmt.Sprintf("%s/%s/%s", path, volumeID, volumesMetadataPath)
+	path = fmt.Sprintf("%s/%s/%s", path, volumeID, metadataPath)
 
 	req, err := s.client.NewRequest(ctx, http.MethodPut, path, metadata)
 	if err != nil {
@@ -538,7 +536,7 @@ func (s *VolumesServiceOp) MetadataDeleteItem(ctx context.Context, volumeID stri
 		return nil, err
 	}
 
-	path = fmt.Sprintf("%s/%s/%s", path, volumeID, volumesMetadataItemPath)
+	path = fmt.Sprintf("%s/%s/%s", path, volumeID, metadataItemPath)
 
 	req, err := s.client.NewRequest(ctx, http.MethodDelete, path, nil)
 	if err != nil {
@@ -564,7 +562,7 @@ func (s *VolumesServiceOp) MetadataGetItem(ctx context.Context, volumeID string,
 		return nil, nil, err
 	}
 
-	path = fmt.Sprintf("%s/%s/%s", path, volumeID, volumesMetadataItemPath)
+	path = fmt.Sprintf("%s/%s/%s", path, volumeID, metadataItemPath)
 
 	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
 	if err != nil {
