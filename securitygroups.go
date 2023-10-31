@@ -17,6 +17,16 @@ type SecurityGroupsService interface {
 	Get(context.Context, string) (*SecurityGroup, *Response, error)
 	Create(context.Context, *SecurityGroupCreateRequest) (*TaskResponse, *Response, error)
 	Delete(context.Context, string) (*TaskResponse, *Response, error)
+
+	SecurityGroupsMetadata
+}
+
+type SecurityGroupsMetadata interface {
+	MetadataList(context.Context, string) ([]MetadataDetailed, *Response, error)
+	MetadataCreate(context.Context, string, *MetadataCreateRequest) (*Response, error)
+	MetadataUpdate(context.Context, string, *MetadataCreateRequest) (*Response, error)
+	MetadataDeleteItem(context.Context, string, *MetadataItemOptions) (*Response, error)
+	MetadataGetItem(context.Context, string, *MetadataItemOptions) (*MetadataDetailed, *Response, error)
 }
 
 // SecurityGroupsServiceOp handles communication with Security Groups (Firewalls) methods of the EdgecenterCloud API.
@@ -228,4 +238,69 @@ func (s *SecurityGroupsServiceOp) Delete(ctx context.Context, securityGroupID st
 	}
 
 	return tasks, resp, err
+}
+
+// MetadataList security group detailed metadata items.
+func (s *SecurityGroupsServiceOp) MetadataList(ctx context.Context, securityGroupID string) ([]MetadataDetailed, *Response, error) {
+	if resp, err := isValidUUID(securityGroupID, "securityGroupID"); err != nil {
+		return nil, resp, err
+	}
+
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	return metadataList(ctx, s.client, securityGroupID, securitygroupsBasePathV1)
+}
+
+// MetadataCreate or update security group metadata.
+func (s *SecurityGroupsServiceOp) MetadataCreate(ctx context.Context, securityGroupID string, metadata *MetadataCreateRequest) (*Response, error) {
+	if resp, err := isValidUUID(securityGroupID, "securityGroupID"); err != nil {
+		return resp, err
+	}
+
+	if resp, err := s.client.Validate(); err != nil {
+		return resp, err
+	}
+
+	return metadataCreate(ctx, s.client, securityGroupID, securitygroupsBasePathV1, metadata)
+}
+
+// MetadataUpdate security group metadata.
+func (s *SecurityGroupsServiceOp) MetadataUpdate(ctx context.Context, securityGroupID string, metadata *MetadataCreateRequest) (*Response, error) {
+	if resp, err := isValidUUID(securityGroupID, "securityGroupID"); err != nil {
+		return resp, err
+	}
+
+	if resp, err := s.client.Validate(); err != nil {
+		return resp, err
+	}
+
+	return metadataUpdate(ctx, s.client, securityGroupID, securitygroupsBasePathV1, metadata)
+}
+
+// MetadataDeleteItem a security group metadata item by key.
+func (s *SecurityGroupsServiceOp) MetadataDeleteItem(ctx context.Context, securityGroupID string, opts *MetadataItemOptions) (*Response, error) {
+	if resp, err := isValidUUID(securityGroupID, "securityGroupID"); err != nil {
+		return resp, err
+	}
+
+	if resp, err := s.client.Validate(); err != nil {
+		return resp, err
+	}
+
+	return metadataDeleteItem(ctx, s.client, securityGroupID, securitygroupsBasePathV1, opts)
+}
+
+// MetadataGetItem security group detailed metadata.
+func (s *SecurityGroupsServiceOp) MetadataGetItem(ctx context.Context, securityGroupID string, opts *MetadataItemOptions) (*MetadataDetailed, *Response, error) {
+	if resp, err := isValidUUID(securityGroupID, "securityGroupID"); err != nil {
+		return nil, resp, err
+	}
+
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	return metadataGetItem(ctx, s.client, securityGroupID, securitygroupsBasePathV1, opts)
 }
