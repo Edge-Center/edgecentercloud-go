@@ -1,5 +1,10 @@
 package edgecloud
 
+const (
+	metadataPath     = "metadata"
+	metadataItemPath = "metadata_item"
+)
+
 type MetadataDetailed struct {
 	Key      string `json:"key"`
 	Value    string `json:"value"`

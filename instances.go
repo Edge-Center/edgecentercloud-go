@@ -10,7 +10,6 @@ import (
 const (
 	instancesBasePathV1           = "/v1/instances"
 	instancesBasePathV2           = "/v2/instances"
-	instanceMetadataPath          = "metadata"
 	instancesCheckLimitsPath      = "check_limits"
 	instancesChangeFlavorPath     = "changeflavor"
 	instancesAvailableFlavorsPath = "available_flavors"
@@ -335,7 +334,7 @@ func (s *InstancesServiceOp) MetadataGet(ctx context.Context, instanceID string)
 	}
 
 	path := s.client.addProjectRegionPath(instancesBasePathV1)
-	path = fmt.Sprintf("%s/%s/%s", path, instanceID, instanceMetadataPath)
+	path = fmt.Sprintf("%s/%s/%s", path, instanceID, metadataPath)
 
 	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
 	if err != nil {
@@ -362,7 +361,7 @@ func (s *InstancesServiceOp) MetadataCreate(ctx context.Context, instanceID stri
 	}
 
 	path := s.client.addProjectRegionPath(instancesBasePathV1)
-	path = fmt.Sprintf("%s/%s/%s", path, instanceID, instanceMetadataPath)
+	path = fmt.Sprintf("%s/%s/%s", path, instanceID, metadataPath)
 
 	req, err := s.client.NewRequest(ctx, http.MethodPut, path, metadata)
 	if err != nil {
