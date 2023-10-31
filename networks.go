@@ -9,6 +9,7 @@ import (
 const (
 	networksBasePathV1          = "/v1/networks"
 	availablenetworksBasePathV1 = "/v1/availablenetworks"
+	networksPortsPath           = "ports"
 )
 
 // NetworksService is an interface for creating and managing Networks with the EdgecenterCloud API.
@@ -20,6 +21,16 @@ type NetworksService interface {
 	Delete(context.Context, string) (*TaskResponse, *Response, error)
 	UpdateName(context.Context, string, *NetworkUpdateNameRequest) (*Network, *Response, error)
 	ListNetworksWithSubnets(context.Context, *NetworksWithSubnetsOptions) ([]NetworkSubnetwork, *Response, error)
+	PortList(context.Context, string) ([]PortsInstance, *Response, error)
+	NetworksMetadata
+}
+
+type NetworksMetadata interface {
+	MetadataList(context.Context, string) ([]MetadataDetailed, *Response, error)
+	MetadataCreate(context.Context, string, *MetadataCreateRequest) (*Response, error)
+	MetadataUpdate(context.Context, string, *MetadataCreateRequest) (*Response, error)
+	MetadataDeleteItem(context.Context, string, *MetadataItemOptions) (*Response, error)
+	MetadataGetItem(context.Context, string, *MetadataItemOptions) (*MetadataDetailed, *Response, error)
 }
 
 // NetworksServiceOp handles communication with Networks methods of the EdgecenterCloud API.
@@ -102,6 +113,19 @@ type NetworkSubnetwork struct {
 	ID             string       `json:"id"`
 	ProjectID      int          `json:"project_id"`
 	Subnets        []Subnetwork `json:"subnets"`
+}
+
+// PortsInstance represent instances ports.
+type PortsInstance struct {
+	InstanceID   string `json:"instance_id"`
+	InstanceName string `json:"instance_name"`
+	ID           string `json:"id"`
+}
+
+// portsInstanceRoot represents a Port Instance root.
+type portsInstanceRoot struct {
+	Count         int
+	PortsInstance []PortsInstance `json:"results"`
 }
 
 // NetworksWithSubnetsOptions specifies the optional query parameters to ListNetworksWithSubnets method.
@@ -274,4 +298,154 @@ func (s *NetworksServiceOp) ListNetworksWithSubnets(ctx context.Context, opts *N
 	}
 
 	return root.NetworkSubnetwork, resp, err
+}
+
+// PortList get instance ports by network_id.
+func (s *NetworksServiceOp) PortList(ctx context.Context, networkID string) ([]PortsInstance, *Response, error) {
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	path := fmt.Sprintf("%s/%s", s.client.addProjectRegionPath(networksBasePathV1), networkID)
+	path = fmt.Sprintf("%s/%s", path, networksPortsPath)
+
+	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	root := new(portsInstanceRoot)
+	resp, err := s.client.Do(ctx, req, root)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return root.PortsInstance, resp, err
+}
+
+// MetadataList volume detailed metadata items.
+func (s *NetworksServiceOp) MetadataList(ctx context.Context, networkID string) ([]MetadataDetailed, *Response, error) {
+	if resp, err := isValidUUID(networkID, "networkID"); err != nil {
+		return nil, resp, err
+	}
+
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	path := s.client.addProjectRegionPath(networksBasePathV1)
+	path = fmt.Sprintf("%s/%s/%s", path, networkID, metadataPath)
+
+	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	metadata := new(MetadataRoot)
+	resp, err := s.client.Do(ctx, req, metadata)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return metadata.Metadata, resp, err
+}
+
+// MetadataCreate or update volume metadata.
+func (s *NetworksServiceOp) MetadataCreate(ctx context.Context, networkID string, metadata *MetadataCreateRequest) (*Response, error) {
+	if resp, err := isValidUUID(networkID, "networkID"); err != nil {
+		return resp, err
+	}
+
+	if resp, err := s.client.Validate(); err != nil {
+		return resp, err
+	}
+
+	path := s.client.addProjectRegionPath(networksBasePathV1)
+	path = fmt.Sprintf("%s/%s/%s", path, networkID, metadataPath)
+
+	req, err := s.client.NewRequest(ctx, http.MethodPost, path, metadata)
+	if err != nil {
+		return nil, err
+	}
+
+	return s.client.Do(ctx, req, nil)
+}
+
+// MetadataUpdate volume metadata.
+func (s *NetworksServiceOp) MetadataUpdate(ctx context.Context, networkID string, metadata *MetadataCreateRequest) (*Response, error) {
+	if resp, err := isValidUUID(networkID, "networkID"); err != nil {
+		return resp, err
+	}
+
+	if resp, err := s.client.Validate(); err != nil {
+		return resp, err
+	}
+
+	path := s.client.addProjectRegionPath(networksBasePathV1)
+	path = fmt.Sprintf("%s/%s/%s", path, networkID, metadataPath)
+
+	req, err := s.client.NewRequest(ctx, http.MethodPut, path, metadata)
+	if err != nil {
+		return nil, err
+	}
+
+	return s.client.Do(ctx, req, nil)
+}
+
+// MetadataDeleteItem a volume metadata item by key.
+func (s *NetworksServiceOp) MetadataDeleteItem(ctx context.Context, networkID string, opts *MetadataItemOptions) (*Response, error) {
+	if resp, err := isValidUUID(networkID, "networkID"); err != nil {
+		return resp, err
+	}
+
+	if resp, err := s.client.Validate(); err != nil {
+		return resp, err
+	}
+
+	path := s.client.addProjectRegionPath(networksBasePathV1)
+	path, err := addOptions(path, opts)
+	if err != nil {
+		return nil, err
+	}
+
+	path = fmt.Sprintf("%s/%s/%s", path, networkID, metadataItemPath)
+
+	req, err := s.client.NewRequest(ctx, http.MethodDelete, path, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return s.client.Do(ctx, req, nil)
+}
+
+// MetadataGetItem volume detailed metadata.
+func (s *NetworksServiceOp) MetadataGetItem(ctx context.Context, networkID string, opts *MetadataItemOptions) (*MetadataDetailed, *Response, error) {
+	if resp, err := isValidUUID(networkID, "networkID"); err != nil {
+		return nil, resp, err
+	}
+
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	path := s.client.addProjectRegionPath(networksBasePathV1)
+	path, err := addOptions(path, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	path = fmt.Sprintf("%s/%s/%s", path, networkID, metadataItemPath)
+
+	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	metadata := new(MetadataDetailed)
+	resp, err := s.client.Do(ctx, req, metadata)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return metadata, resp, err
 }
