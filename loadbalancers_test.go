@@ -332,3 +332,101 @@ func TestLoadbalancers_FlavorList(t *testing.T) {
 		t.Errorf("Loadbalancers.FlavorList\n returned %+v,\n expected %+v", resp, flavors)
 	}
 }
+
+func TestLoadbalancers_MetadataList(t *testing.T) {
+	setup()
+	defer teardown()
+
+	metadataList := []MetadataDetailed{{
+		Key:      "image_id",
+		Value:    "b3c52ece-147e-4af5-8d7c-84691309b879",
+		ReadOnly: true,
+	}}
+	URL := fmt.Sprintf("/v1/loadbalancers/%d/%d/%s/%s", projectID, regionID, testResourceID, metadataPath)
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodGet)
+		resp, _ := json.Marshal(metadataList)
+		_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))
+	})
+
+	resp, _, err := client.Loadbalancers.MetadataList(ctx, testResourceID)
+	require.NoError(t, err)
+
+	if !reflect.DeepEqual(resp, metadataList) {
+		t.Errorf("Loadbalancers.MetadataList\n returned %+v,\n expected %+v", resp, metadataList)
+	}
+}
+
+func TestLoadbalancers_MetadataCreate(t *testing.T) {
+	setup()
+	defer teardown()
+
+	metadataCreateRequest := &MetadataCreateRequest{
+		map[string]interface{}{"key": "value"},
+	}
+	URL := fmt.Sprintf("/v1/loadbalancers/%d/%d/%s/%s", projectID, regionID, testResourceID, metadataPath)
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodPost)
+	})
+
+	_, err := client.Loadbalancers.MetadataCreate(ctx, testResourceID, metadataCreateRequest)
+	require.NoError(t, err)
+}
+
+func TestLoadbalancers_MetadataUpdate(t *testing.T) {
+	setup()
+	defer teardown()
+
+	metadataCreateRequest := &MetadataCreateRequest{
+		map[string]interface{}{"key": "value"},
+	}
+	URL := fmt.Sprintf("/v1/loadbalancers/%d/%d/%s/%s", projectID, regionID, testResourceID, metadataPath)
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodPut)
+	})
+
+	_, err := client.Loadbalancers.MetadataUpdate(ctx, testResourceID, metadataCreateRequest)
+	require.NoError(t, err)
+}
+
+func TestLoadbalancers_MetadataDeleteItem(t *testing.T) {
+	setup()
+	defer teardown()
+
+	URL := fmt.Sprintf("/v1/loadbalancers/%d/%d/%s/%s", projectID, regionID, testResourceID, metadataItemPath)
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodDelete)
+	})
+
+	_, err := client.Loadbalancers.MetadataDeleteItem(ctx, testResourceID, nil)
+	require.NoError(t, err)
+}
+
+func TestLoadbalancers_MetadataGetItem(t *testing.T) {
+	setup()
+	defer teardown()
+
+	metadata := &MetadataDetailed{
+		Key:      "image_id",
+		Value:    "b3c52ece-147e-4af5-8d7c-84691309b879",
+		ReadOnly: true,
+	}
+	URL := fmt.Sprintf("/v1/loadbalancers/%d/%d/%s/%s", projectID, regionID, testResourceID, metadataItemPath)
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodGet)
+		resp, _ := json.Marshal(metadata)
+		_, _ = fmt.Fprint(w, string(resp))
+	})
+
+	resp, _, err := client.Loadbalancers.MetadataGetItem(ctx, testResourceID, nil)
+	require.NoError(t, err)
+
+	if !reflect.DeepEqual(resp, metadata) {
+		t.Errorf("Loadbalancers.MetadataGetItem\n returned %+v,\n expected %+v", resp, metadata)
+	}
+}

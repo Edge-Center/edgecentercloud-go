@@ -22,12 +22,12 @@ type LoadbalancersService interface {
 	Get(context.Context, string) (*Loadbalancer, *Response, error)
 	Create(context.Context, *LoadbalancerCreateRequest) (*TaskResponse, *Response, error)
 	Delete(context.Context, string) (*TaskResponse, *Response, error)
-
 	CheckLimits(context.Context, *LoadbalancerCheckLimitsRequest) (*map[string]int, *Response, error)
 
 	LoadbalancerListeners
 	LoadbalancerPools
 	LoadbalancerFlavors
+	LoadbalancerMetadata
 }
 
 type LoadbalancerListeners interface {
@@ -46,6 +46,14 @@ type LoadbalancerPools interface {
 
 type LoadbalancerFlavors interface {
 	FlavorList(context.Context, *FlavorsOptions) ([]Flavor, *Response, error)
+}
+
+type LoadbalancerMetadata interface {
+	MetadataList(context.Context, string) ([]MetadataDetailed, *Response, error)
+	MetadataCreate(context.Context, string, *MetadataCreateRequest) (*Response, error)
+	MetadataUpdate(context.Context, string, *MetadataCreateRequest) (*Response, error)
+	MetadataDeleteItem(context.Context, string, *MetadataItemOptions) (*Response, error)
+	MetadataGetItem(context.Context, string, *MetadataItemOptions) (*MetadataDetailed, *Response, error)
 }
 
 // LoadbalancersServiceOp handles communication with Loadbalancers methods of the EdgecenterCloud API.
@@ -745,4 +753,69 @@ func (s *LoadbalancersServiceOp) FlavorList(ctx context.Context, opts *FlavorsOp
 	}
 
 	return root.Flavors, resp, err
+}
+
+// MetadataList load balancer detailed metadata items.
+func (s *LoadbalancersServiceOp) MetadataList(ctx context.Context, loadbalancerID string) ([]MetadataDetailed, *Response, error) {
+	if resp, err := isValidUUID(loadbalancerID, "loadbalancerID"); err != nil {
+		return nil, resp, err
+	}
+
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	return metadataList(ctx, s.client, loadbalancerID, loadbalancersBasePathV1)
+}
+
+// MetadataCreate or update load balancer metadata.
+func (s *LoadbalancersServiceOp) MetadataCreate(ctx context.Context, loadbalancerID string, metadata *MetadataCreateRequest) (*Response, error) {
+	if resp, err := isValidUUID(loadbalancerID, "loadbalancerID"); err != nil {
+		return resp, err
+	}
+
+	if resp, err := s.client.Validate(); err != nil {
+		return resp, err
+	}
+
+	return metadataCreate(ctx, s.client, loadbalancerID, loadbalancersBasePathV1, metadata)
+}
+
+// MetadataUpdate load balancer metadata.
+func (s *LoadbalancersServiceOp) MetadataUpdate(ctx context.Context, loadbalancerID string, metadata *MetadataCreateRequest) (*Response, error) {
+	if resp, err := isValidUUID(loadbalancerID, "loadbalancerID"); err != nil {
+		return resp, err
+	}
+
+	if resp, err := s.client.Validate(); err != nil {
+		return resp, err
+	}
+
+	return metadataUpdate(ctx, s.client, loadbalancerID, loadbalancersBasePathV1, metadata)
+}
+
+// MetadataDeleteItem a load balancer metadata item by key.
+func (s *LoadbalancersServiceOp) MetadataDeleteItem(ctx context.Context, loadbalancerID string, opts *MetadataItemOptions) (*Response, error) {
+	if resp, err := isValidUUID(loadbalancerID, "loadbalancerID"); err != nil {
+		return resp, err
+	}
+
+	if resp, err := s.client.Validate(); err != nil {
+		return resp, err
+	}
+
+	return metadataDeleteItem(ctx, s.client, loadbalancerID, loadbalancersBasePathV1, opts)
+}
+
+// MetadataGetItem load balancer detailed metadata.
+func (s *LoadbalancersServiceOp) MetadataGetItem(ctx context.Context, loadbalancerID string, opts *MetadataItemOptions) (*MetadataDetailed, *Response, error) {
+	if resp, err := isValidUUID(loadbalancerID, "loadbalancerID"); err != nil {
+		return nil, resp, err
+	}
+
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	return metadataGetItem(ctx, s.client, loadbalancerID, loadbalancersBasePathV1, opts)
 }
