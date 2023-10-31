@@ -58,7 +58,7 @@ func (s *KeyPairsServiceOp) List(ctx context.Context) ([]KeyPair, *Response, err
 		return nil, resp, err
 	}
 
-	path := s.client.addServicePath(keypairsBasePathV1)
+	path := s.client.addProjectRegionPath(keypairsBasePathV1)
 
 	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
 	if err != nil {
@@ -84,7 +84,7 @@ func (s *KeyPairsServiceOp) Get(ctx context.Context, keypairID string) (*KeyPair
 		return nil, resp, err
 	}
 
-	path := fmt.Sprintf("%s/%s", s.client.addServicePath(keypairsBasePathV1), keypairID)
+	path := fmt.Sprintf("%s/%s", s.client.addProjectRegionPath(keypairsBasePathV1), keypairID)
 
 	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
 	if err != nil {
@@ -110,7 +110,7 @@ func (s *KeyPairsServiceOp) Create(ctx context.Context, createRequest *KeyPairCr
 		return nil, resp, err
 	}
 
-	path := s.client.addServicePath(keypairsBasePathV1)
+	path := s.client.addProjectRegionPath(keypairsBasePathV1)
 
 	req, err := s.client.NewRequest(ctx, http.MethodPost, path, createRequest)
 	if err != nil {
@@ -136,7 +136,7 @@ func (s *KeyPairsServiceOp) Delete(ctx context.Context, keypairID string) (*Task
 		return nil, resp, err
 	}
 
-	path := fmt.Sprintf("%s/%s", s.client.addServicePath(keypairsBasePathV1), keypairID)
+	path := fmt.Sprintf("%s/%s", s.client.addProjectRegionPath(keypairsBasePathV1), keypairID)
 
 	req, err := s.client.NewRequest(ctx, http.MethodDelete, path, nil)
 	if err != nil {

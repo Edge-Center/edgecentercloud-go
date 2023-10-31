@@ -6,13 +6,16 @@ import (
 )
 
 const (
-	flavorsBasePathV1 = "/v1/flavors"
+	flavorsBasePathV1   = "/v1/flavors"
+	bmflavorsBasePathV1 = "/v1/bmflavors"
 )
 
 // FlavorsService is an interface for creating and managing Flavors with the EdgecenterCloud API.
 // See: https://apidocs.edgecenter.ru/cloud#tag/flavors
 type FlavorsService interface {
 	List(context.Context, *FlavorListOptions) ([]Flavor, *Response, error)
+	ListBaremetal(context.Context, *FlavorListOptions) ([]Flavor, *Response, error)
+	ListBaremetalForClient(context.Context, *FlavorListOptions) ([]Flavor, *Response, error)
 }
 
 // FlavorsServiceOp handles communication with Flavors methods of the EdgecenterCloud API.
@@ -68,7 +71,59 @@ func (s *FlavorsServiceOp) List(ctx context.Context, opts *FlavorListOptions) ([
 		return nil, resp, err
 	}
 
-	path := s.client.addServicePath(flavorsBasePathV1)
+	path := s.client.addProjectRegionPath(flavorsBasePathV1)
+	path, err := addOptions(path, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	root := new(flavorsRoot)
+	resp, err := s.client.Do(ctx, req, root)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return root.Flavors, resp, err
+}
+
+// ListBaremetal get baremetal flavors.
+func (s *FlavorsServiceOp) ListBaremetal(ctx context.Context, opts *FlavorListOptions) ([]Flavor, *Response, error) {
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	path := s.client.addProjectRegionPath(bmflavorsBasePathV1)
+	path, err := addOptions(path, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	root := new(flavorsRoot)
+	resp, err := s.client.Do(ctx, req, root)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return root.Flavors, resp, err
+}
+
+// ListBaremetalForClient get baremetal flavors from default project for current client.
+func (s *FlavorsServiceOp) ListBaremetalForClient(ctx context.Context, opts *FlavorListOptions) ([]Flavor, *Response, error) {
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	path := s.client.addRegionPath(bmflavorsBasePathV1)
 	path, err := addOptions(path, opts)
 	if err != nil {
 		return nil, nil, err

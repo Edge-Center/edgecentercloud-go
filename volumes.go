@@ -179,7 +179,7 @@ func (s *VolumesServiceOp) List(ctx context.Context, opts *VolumeListOptions) ([
 		return nil, resp, err
 	}
 
-	path := s.client.addServicePath(volumesBasePathV1)
+	path := s.client.addProjectRegionPath(volumesBasePathV1)
 	path, err := addOptions(path, opts)
 	if err != nil {
 		return nil, nil, err
@@ -209,7 +209,7 @@ func (s *VolumesServiceOp) Get(ctx context.Context, volumeID string) (*Volume, *
 		return nil, resp, err
 	}
 
-	path := fmt.Sprintf("%s/%s", s.client.addServicePath(volumesBasePathV1), volumeID)
+	path := fmt.Sprintf("%s/%s", s.client.addProjectRegionPath(volumesBasePathV1), volumeID)
 
 	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
 	if err != nil {
@@ -235,7 +235,7 @@ func (s *VolumesServiceOp) Create(ctx context.Context, createRequest *VolumeCrea
 		return nil, resp, err
 	}
 
-	path := s.client.addServicePath(volumesBasePathV1)
+	path := s.client.addProjectRegionPath(volumesBasePathV1)
 
 	req, err := s.client.NewRequest(ctx, http.MethodPost, path, createRequest)
 	if err != nil {
@@ -261,7 +261,7 @@ func (s *VolumesServiceOp) Delete(ctx context.Context, volumeID string) (*TaskRe
 		return nil, resp, err
 	}
 
-	path := fmt.Sprintf("%s/%s", s.client.addServicePath(volumesBasePathV1), volumeID)
+	path := fmt.Sprintf("%s/%s", s.client.addProjectRegionPath(volumesBasePathV1), volumeID)
 
 	req, err := s.client.NewRequest(ctx, http.MethodDelete, path, nil)
 	if err != nil {
@@ -291,7 +291,7 @@ func (s *VolumesServiceOp) ChangeType(ctx context.Context, volumeID string, chan
 		return nil, resp, err
 	}
 
-	path := fmt.Sprintf("%s/%s/%s", s.client.addServicePath(volumesBasePathV1), volumeID, volumesRetypePath)
+	path := fmt.Sprintf("%s/%s/%s", s.client.addProjectRegionPath(volumesBasePathV1), volumeID, volumesRetypePath)
 
 	req, err := s.client.NewRequest(ctx, http.MethodPost, path, changeTypeRequest)
 	if err != nil {
@@ -321,7 +321,7 @@ func (s *VolumesServiceOp) Extend(ctx context.Context, volumeID string, extendSi
 		return nil, resp, err
 	}
 
-	path := fmt.Sprintf("%s/%s/%s", s.client.addServicePath(volumesBasePathV1), volumeID, volumesExtendPath)
+	path := fmt.Sprintf("%s/%s/%s", s.client.addProjectRegionPath(volumesBasePathV1), volumeID, volumesExtendPath)
 
 	req, err := s.client.NewRequest(ctx, http.MethodPost, path, extendSizeRequest)
 	if err != nil {
@@ -351,7 +351,7 @@ func (s *VolumesServiceOp) Rename(ctx context.Context, volumeID string, renameRe
 		return nil, resp, err
 	}
 
-	path := fmt.Sprintf("%s/%s", s.client.addServicePath(volumesBasePathV1), volumeID)
+	path := fmt.Sprintf("%s/%s", s.client.addProjectRegionPath(volumesBasePathV1), volumeID)
 
 	req, err := s.client.NewRequest(ctx, http.MethodPatch, path, renameRequest)
 	if err != nil {
@@ -381,7 +381,7 @@ func (s *VolumesServiceOp) Attach(ctx context.Context, volumeID string, attachRe
 		return nil, resp, err
 	}
 
-	path := fmt.Sprintf("%s/%s/%s", s.client.addServicePath(volumesBasePathV1), volumeID, volumesAttachPath)
+	path := fmt.Sprintf("%s/%s/%s", s.client.addProjectRegionPath(volumesBasePathV1), volumeID, volumesAttachPath)
 
 	req, err := s.client.NewRequest(ctx, http.MethodPost, path, attachRequest)
 	if err != nil {
@@ -411,7 +411,7 @@ func (s *VolumesServiceOp) Detach(ctx context.Context, volumeID string, detachRe
 		return nil, resp, err
 	}
 
-	path := fmt.Sprintf("%s/%s/%s", s.client.addServicePath(volumesBasePathV1), volumeID, volumesDetachPath)
+	path := fmt.Sprintf("%s/%s/%s", s.client.addProjectRegionPath(volumesBasePathV1), volumeID, volumesDetachPath)
 
 	req, err := s.client.NewRequest(ctx, http.MethodPost, path, detachRequest)
 	if err != nil {
@@ -437,7 +437,7 @@ func (s *VolumesServiceOp) Revert(ctx context.Context, volumeID string) (*TaskRe
 		return nil, resp, err
 	}
 
-	path := fmt.Sprintf("%s/%s/%s", s.client.addServicePath(volumesBasePathV1), volumeID, volumesRevertPath)
+	path := fmt.Sprintf("%s/%s/%s", s.client.addProjectRegionPath(volumesBasePathV1), volumeID, volumesRevertPath)
 
 	req, err := s.client.NewRequest(ctx, http.MethodPost, path, nil)
 	if err != nil {
@@ -463,7 +463,7 @@ func (s *VolumesServiceOp) MetadataList(ctx context.Context, volumeID string) ([
 		return nil, resp, err
 	}
 
-	path := s.client.addServicePath(volumesBasePathV1)
+	path := s.client.addProjectRegionPath(volumesBasePathV1)
 	path = fmt.Sprintf("%s/%s/%s", path, volumeID, volumesMetadataPath)
 
 	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
@@ -490,7 +490,7 @@ func (s *VolumesServiceOp) MetadataCreate(ctx context.Context, volumeID string, 
 		return resp, err
 	}
 
-	path := s.client.addServicePath(volumesBasePathV1)
+	path := s.client.addProjectRegionPath(volumesBasePathV1)
 	path = fmt.Sprintf("%s/%s/%s", path, volumeID, volumesMetadataPath)
 
 	req, err := s.client.NewRequest(ctx, http.MethodPost, path, metadata)
@@ -511,7 +511,7 @@ func (s *VolumesServiceOp) MetadataUpdate(ctx context.Context, volumeID string, 
 		return resp, err
 	}
 
-	path := s.client.addServicePath(volumesBasePathV1)
+	path := s.client.addProjectRegionPath(volumesBasePathV1)
 	path = fmt.Sprintf("%s/%s/%s", path, volumeID, volumesMetadataPath)
 
 	req, err := s.client.NewRequest(ctx, http.MethodPut, path, metadata)
@@ -532,7 +532,7 @@ func (s *VolumesServiceOp) MetadataDeleteItem(ctx context.Context, volumeID stri
 		return resp, err
 	}
 
-	path := s.client.addServicePath(volumesBasePathV1)
+	path := s.client.addProjectRegionPath(volumesBasePathV1)
 	path, err := addOptions(path, opts)
 	if err != nil {
 		return nil, err
@@ -558,7 +558,7 @@ func (s *VolumesServiceOp) MetadataGetItem(ctx context.Context, volumeID string,
 		return nil, resp, err
 	}
 
-	path := s.client.addServicePath(volumesBasePathV1)
+	path := s.client.addProjectRegionPath(volumesBasePathV1)
 	path, err := addOptions(path, opts)
 	if err != nil {
 		return nil, nil, err

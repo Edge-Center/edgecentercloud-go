@@ -93,11 +93,17 @@ type RetryConfig struct {
 // RequestCompletionCallback defines the type of the request callback function.
 type RequestCompletionCallback func(*http.Request, *http.Response)
 
-func (c *Client) addServicePath(s string) string {
+func (c *Client) addProjectRegionPath(s string) string {
 	projectStr := strconv.Itoa(c.Project)
 	regionStr := strconv.Itoa(c.Region)
 
 	return path.Join(s, projectStr, regionStr)
+}
+
+func (c *Client) addRegionPath(s string) string {
+	regionStr := strconv.Itoa(c.Region)
+
+	return path.Join(s, regionStr)
 }
 
 func (c *Client) Validate() (*Response, error) {

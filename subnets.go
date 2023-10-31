@@ -95,7 +95,7 @@ func (s *SubnetworksServiceOp) List(ctx context.Context, opts *SubnetworkListOpt
 		return nil, resp, err
 	}
 
-	path := s.client.addServicePath(subnetsBasePathV1)
+	path := s.client.addProjectRegionPath(subnetsBasePathV1)
 	path, err := addOptions(path, opts)
 	if err != nil {
 		return nil, nil, err
@@ -125,7 +125,7 @@ func (s *SubnetworksServiceOp) Get(ctx context.Context, subnetworkID string) (*S
 		return nil, resp, err
 	}
 
-	path := fmt.Sprintf("%s/%s", s.client.addServicePath(subnetsBasePathV1), subnetworkID)
+	path := fmt.Sprintf("%s/%s", s.client.addProjectRegionPath(subnetsBasePathV1), subnetworkID)
 
 	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
 	if err != nil {
@@ -151,7 +151,7 @@ func (s *SubnetworksServiceOp) Create(ctx context.Context, createRequest *Subnet
 		return nil, resp, err
 	}
 
-	path := s.client.addServicePath(subnetsBasePathV1)
+	path := s.client.addProjectRegionPath(subnetsBasePathV1)
 
 	req, err := s.client.NewRequest(ctx, http.MethodPost, path, createRequest)
 	if err != nil {
@@ -177,7 +177,7 @@ func (s *SubnetworksServiceOp) Delete(ctx context.Context, subnetworkID string) 
 		return nil, resp, err
 	}
 
-	path := fmt.Sprintf("%s/%s", s.client.addServicePath(subnetsBasePathV1), subnetworkID)
+	path := fmt.Sprintf("%s/%s", s.client.addProjectRegionPath(subnetsBasePathV1), subnetworkID)
 
 	req, err := s.client.NewRequest(ctx, http.MethodDelete, path, nil)
 	if err != nil {

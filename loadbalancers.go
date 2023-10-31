@@ -392,7 +392,7 @@ func (s *LoadbalancersServiceOp) List(ctx context.Context, opts *LoadbalancerLis
 		return nil, resp, err
 	}
 
-	path := s.client.addServicePath(loadbalancersBasePathV1)
+	path := s.client.addProjectRegionPath(loadbalancersBasePathV1)
 	path, err := addOptions(path, opts)
 	if err != nil {
 		return nil, nil, err
@@ -422,7 +422,7 @@ func (s *LoadbalancersServiceOp) Get(ctx context.Context, loadbalancerID string)
 		return nil, resp, err
 	}
 
-	path := fmt.Sprintf("%s/%s", s.client.addServicePath(loadbalancersBasePathV1), loadbalancerID)
+	path := fmt.Sprintf("%s/%s", s.client.addProjectRegionPath(loadbalancersBasePathV1), loadbalancerID)
 
 	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
 	if err != nil {
@@ -448,7 +448,7 @@ func (s *LoadbalancersServiceOp) Create(ctx context.Context, createRequest *Load
 		return nil, resp, err
 	}
 
-	path := s.client.addServicePath(loadbalancersBasePathV1)
+	path := s.client.addProjectRegionPath(loadbalancersBasePathV1)
 
 	req, err := s.client.NewRequest(ctx, http.MethodPost, path, createRequest)
 	if err != nil {
@@ -474,7 +474,7 @@ func (s *LoadbalancersServiceOp) Delete(ctx context.Context, loadbalancerID stri
 		return nil, resp, err
 	}
 
-	path := fmt.Sprintf("%s/%s", s.client.addServicePath(loadbalancersBasePathV1), loadbalancerID)
+	path := fmt.Sprintf("%s/%s", s.client.addProjectRegionPath(loadbalancersBasePathV1), loadbalancerID)
 
 	req, err := s.client.NewRequest(ctx, http.MethodDelete, path, nil)
 	if err != nil {
@@ -500,7 +500,7 @@ func (s *LoadbalancersServiceOp) ListenerGet(ctx context.Context, listenerID str
 		return nil, resp, err
 	}
 
-	path := fmt.Sprintf("%s/%s", s.client.addServicePath(lblistenersBasePathV1), listenerID)
+	path := fmt.Sprintf("%s/%s", s.client.addProjectRegionPath(lblistenersBasePathV1), listenerID)
 
 	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
 	if err != nil {
@@ -526,7 +526,7 @@ func (s *LoadbalancersServiceOp) ListenerCreate(ctx context.Context, createReque
 		return nil, resp, err
 	}
 
-	path := s.client.addServicePath(lblistenersBasePathV1)
+	path := s.client.addProjectRegionPath(lblistenersBasePathV1)
 
 	req, err := s.client.NewRequest(ctx, http.MethodPost, path, createRequest)
 	if err != nil {
@@ -552,7 +552,7 @@ func (s *LoadbalancersServiceOp) ListenerDelete(ctx context.Context, listenerID 
 		return nil, resp, err
 	}
 
-	path := fmt.Sprintf("%s/%s", s.client.addServicePath(lblistenersBasePathV1), listenerID)
+	path := fmt.Sprintf("%s/%s", s.client.addProjectRegionPath(lblistenersBasePathV1), listenerID)
 
 	req, err := s.client.NewRequest(ctx, http.MethodDelete, path, nil)
 	if err != nil {
@@ -578,7 +578,7 @@ func (s *LoadbalancersServiceOp) PoolGet(ctx context.Context, poolID string) (*P
 		return nil, resp, err
 	}
 
-	path := fmt.Sprintf("%s/%s", s.client.addServicePath(lbpoolsBasePathV1), poolID)
+	path := fmt.Sprintf("%s/%s", s.client.addProjectRegionPath(lbpoolsBasePathV1), poolID)
 
 	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
 	if err != nil {
@@ -604,7 +604,7 @@ func (s *LoadbalancersServiceOp) PoolCreate(ctx context.Context, createRequest *
 		return nil, resp, err
 	}
 
-	path := s.client.addServicePath(lbpoolsBasePathV1)
+	path := s.client.addProjectRegionPath(lbpoolsBasePathV1)
 
 	req, err := s.client.NewRequest(ctx, http.MethodPost, path, createRequest)
 	if err != nil {
@@ -630,7 +630,7 @@ func (s *LoadbalancersServiceOp) PoolDelete(ctx context.Context, poolID string) 
 		return nil, resp, err
 	}
 
-	path := fmt.Sprintf("%s/%s", s.client.addServicePath(lbpoolsBasePathV1), poolID)
+	path := fmt.Sprintf("%s/%s", s.client.addProjectRegionPath(lbpoolsBasePathV1), poolID)
 
 	req, err := s.client.NewRequest(ctx, http.MethodDelete, path, nil)
 	if err != nil {
@@ -656,7 +656,7 @@ func (s *LoadbalancersServiceOp) PoolUpdate(ctx context.Context, poolID string, 
 		return nil, resp, err
 	}
 
-	path := fmt.Sprintf("%s/%s", s.client.addServicePath(lbpoolsBasePathV1), poolID)
+	path := fmt.Sprintf("%s/%s", s.client.addProjectRegionPath(lbpoolsBasePathV1), poolID)
 
 	req, err := s.client.NewRequest(ctx, http.MethodPatch, path, updateRequest)
 	if err != nil {
@@ -678,7 +678,7 @@ func (s *LoadbalancersServiceOp) PoolList(ctx context.Context, opts *PoolListOpt
 		return nil, resp, err
 	}
 
-	path := s.client.addServicePath(lbpoolsBasePathV1)
+	path := s.client.addProjectRegionPath(lbpoolsBasePathV1)
 	path, err := addOptions(path, opts)
 	if err != nil {
 		return nil, nil, err
@@ -704,7 +704,7 @@ func (s *LoadbalancersServiceOp) CheckLimits(ctx context.Context, checkLimitsReq
 		return nil, resp, err
 	}
 
-	path := s.client.addServicePath(loadbalancersBasePathV1)
+	path := s.client.addProjectRegionPath(loadbalancersBasePathV1)
 	path = fmt.Sprintf("%s/%s", path, loadbalancersCheckLimitsPath)
 
 	req, err := s.client.NewRequest(ctx, http.MethodPost, path, checkLimitsRequest)
@@ -727,7 +727,7 @@ func (s *LoadbalancersServiceOp) FlavorList(ctx context.Context, opts *FlavorsOp
 		return nil, resp, err
 	}
 
-	path := s.client.addServicePath(lbflavorsBasePathV1)
+	path := s.client.addProjectRegionPath(lbflavorsBasePathV1)
 	path, err := addOptions(path, opts)
 	if err != nil {
 		return nil, nil, err
