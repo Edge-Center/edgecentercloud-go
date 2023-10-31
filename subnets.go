@@ -18,6 +18,17 @@ type SubnetworksService interface {
 	Get(context.Context, string) (*Subnetwork, *Response, error)
 	Create(context.Context, *SubnetworkCreateRequest) (*TaskResponse, *Response, error)
 	Delete(context.Context, string) (*TaskResponse, *Response, error)
+	Update(context.Context, string, *SubnetworkUpdateRequest) (*Subnetwork, *Response, error)
+
+	SubnetworksMetadata
+}
+
+type SubnetworksMetadata interface {
+	MetadataList(context.Context, string) ([]MetadataDetailed, *Response, error)
+	MetadataCreate(context.Context, string, *MetadataCreateRequest) (*Response, error)
+	MetadataUpdate(context.Context, string, *MetadataCreateRequest) (*Response, error)
+	MetadataDeleteItem(context.Context, string, *MetadataItemOptions) (*Response, error)
+	MetadataGetItem(context.Context, string, *MetadataItemOptions) (*MetadataDetailed, *Response, error)
 }
 
 // SubnetworksServiceOp handles communication with Subnetworks methods of the EdgecenterCloud API.
@@ -63,6 +74,15 @@ type SubnetworkCreateRequest struct {
 	GatewayIP              *net.IP     `json:"gateway_ip"`
 	Metadata               Metadata    `json:"metadata"`
 	HostRoutes             []HostRoute `json:"host_routes,omitempty"`
+}
+
+// SubnetworkUpdateRequest represents a request to update a Subnetwork properties.
+type SubnetworkUpdateRequest struct {
+	Name           string      `json:"name" required:"true"`
+	DNSNameservers []net.IP    `json:"dns_nameservers,omitempty"`
+	EnableDHCP     bool        `json:"enable_dhcp,omitempty"`
+	HostRoutes     []HostRoute `json:"host_routes,omitempty"`
+	GatewayIP      *net.IP     `json:"gateway_ip"`
 }
 
 type CIDR struct {
@@ -191,4 +211,157 @@ func (s *SubnetworksServiceOp) Delete(ctx context.Context, subnetworkID string) 
 	}
 
 	return tasks, resp, err
+}
+
+// Update the Subnetwork properties.
+func (s *SubnetworksServiceOp) Update(ctx context.Context, subnetworkID string, updateRequest *SubnetworkUpdateRequest) (*Subnetwork, *Response, error) {
+	if updateRequest == nil {
+		return nil, nil, NewArgError("updateRequest", "cannot be nil")
+	}
+
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	path := fmt.Sprintf("%s/%s", s.client.addProjectRegionPath(subnetsBasePathV1), subnetworkID)
+
+	req, err := s.client.NewRequest(ctx, http.MethodPatch, path, updateRequest)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	subnetwork := new(Subnetwork)
+	resp, err := s.client.Do(ctx, req, subnetwork)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return subnetwork, resp, err
+}
+
+// MetadataList subnetwork detailed metadata items.
+func (s *SubnetworksServiceOp) MetadataList(ctx context.Context, subnetworkID string) ([]MetadataDetailed, *Response, error) {
+	if resp, err := isValidUUID(subnetworkID, "subnetworkID"); err != nil {
+		return nil, resp, err
+	}
+
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	path := s.client.addProjectRegionPath(subnetsBasePathV1)
+	path = fmt.Sprintf("%s/%s/%s", path, subnetworkID, metadataPath)
+
+	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	metadata := new(MetadataRoot)
+	resp, err := s.client.Do(ctx, req, metadata)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return metadata.Metadata, resp, err
+}
+
+// MetadataCreate or update subnetwork metadata.
+func (s *SubnetworksServiceOp) MetadataCreate(ctx context.Context, subnetworkID string, metadata *MetadataCreateRequest) (*Response, error) {
+	if resp, err := isValidUUID(subnetworkID, "subnetworkID"); err != nil {
+		return resp, err
+	}
+
+	if resp, err := s.client.Validate(); err != nil {
+		return resp, err
+	}
+
+	path := s.client.addProjectRegionPath(subnetsBasePathV1)
+	path = fmt.Sprintf("%s/%s/%s", path, subnetworkID, metadataPath)
+
+	req, err := s.client.NewRequest(ctx, http.MethodPost, path, metadata)
+	if err != nil {
+		return nil, err
+	}
+
+	return s.client.Do(ctx, req, nil)
+}
+
+// MetadataUpdate subnetwork metadata.
+func (s *SubnetworksServiceOp) MetadataUpdate(ctx context.Context, subnetworkID string, metadata *MetadataCreateRequest) (*Response, error) {
+	if resp, err := isValidUUID(subnetworkID, "subnetworkID"); err != nil {
+		return resp, err
+	}
+
+	if resp, err := s.client.Validate(); err != nil {
+		return resp, err
+	}
+
+	path := s.client.addProjectRegionPath(subnetsBasePathV1)
+	path = fmt.Sprintf("%s/%s/%s", path, subnetworkID, metadataPath)
+
+	req, err := s.client.NewRequest(ctx, http.MethodPut, path, metadata)
+	if err != nil {
+		return nil, err
+	}
+
+	return s.client.Do(ctx, req, nil)
+}
+
+// MetadataDeleteItem a subnetwork metadata item by key.
+func (s *SubnetworksServiceOp) MetadataDeleteItem(ctx context.Context, subnetworkID string, opts *MetadataItemOptions) (*Response, error) {
+	if resp, err := isValidUUID(subnetworkID, "subnetworkID"); err != nil {
+		return resp, err
+	}
+
+	if resp, err := s.client.Validate(); err != nil {
+		return resp, err
+	}
+
+	path := s.client.addProjectRegionPath(subnetsBasePathV1)
+	path, err := addOptions(path, opts)
+	if err != nil {
+		return nil, err
+	}
+
+	path = fmt.Sprintf("%s/%s/%s", path, subnetworkID, metadataItemPath)
+
+	req, err := s.client.NewRequest(ctx, http.MethodDelete, path, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return s.client.Do(ctx, req, nil)
+}
+
+// MetadataGetItem subnetwork detailed metadata.
+func (s *SubnetworksServiceOp) MetadataGetItem(ctx context.Context, subnetworkID string, opts *MetadataItemOptions) (*MetadataDetailed, *Response, error) {
+	if resp, err := isValidUUID(subnetworkID, "subnetworkID"); err != nil {
+		return nil, resp, err
+	}
+
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	path := s.client.addProjectRegionPath(subnetsBasePathV1)
+	path, err := addOptions(path, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	path = fmt.Sprintf("%s/%s/%s", path, subnetworkID, metadataItemPath)
+
+	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	metadata := new(MetadataDetailed)
+	resp, err := s.client.Do(ctx, req, metadata)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return metadata, resp, err
 }

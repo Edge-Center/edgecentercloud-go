@@ -323,7 +323,7 @@ func (s *NetworksServiceOp) PortList(ctx context.Context, networkID string) ([]P
 	return root.PortsInstance, resp, err
 }
 
-// MetadataList volume detailed metadata items.
+// MetadataList network detailed metadata items.
 func (s *NetworksServiceOp) MetadataList(ctx context.Context, networkID string) ([]MetadataDetailed, *Response, error) {
 	if resp, err := isValidUUID(networkID, "networkID"); err != nil {
 		return nil, resp, err
@@ -350,7 +350,7 @@ func (s *NetworksServiceOp) MetadataList(ctx context.Context, networkID string) 
 	return metadata.Metadata, resp, err
 }
 
-// MetadataCreate or update volume metadata.
+// MetadataCreate or update network metadata.
 func (s *NetworksServiceOp) MetadataCreate(ctx context.Context, networkID string, metadata *MetadataCreateRequest) (*Response, error) {
 	if resp, err := isValidUUID(networkID, "networkID"); err != nil {
 		return resp, err
@@ -371,7 +371,7 @@ func (s *NetworksServiceOp) MetadataCreate(ctx context.Context, networkID string
 	return s.client.Do(ctx, req, nil)
 }
 
-// MetadataUpdate volume metadata.
+// MetadataUpdate network metadata.
 func (s *NetworksServiceOp) MetadataUpdate(ctx context.Context, networkID string, metadata *MetadataCreateRequest) (*Response, error) {
 	if resp, err := isValidUUID(networkID, "networkID"); err != nil {
 		return resp, err
@@ -392,7 +392,7 @@ func (s *NetworksServiceOp) MetadataUpdate(ctx context.Context, networkID string
 	return s.client.Do(ctx, req, nil)
 }
 
-// MetadataDeleteItem a volume metadata item by key.
+// MetadataDeleteItem a network metadata item by key.
 func (s *NetworksServiceOp) MetadataDeleteItem(ctx context.Context, networkID string, opts *MetadataItemOptions) (*Response, error) {
 	if resp, err := isValidUUID(networkID, "networkID"); err != nil {
 		return resp, err
@@ -418,7 +418,7 @@ func (s *NetworksServiceOp) MetadataDeleteItem(ctx context.Context, networkID st
 	return s.client.Do(ctx, req, nil)
 }
 
-// MetadataGetItem volume detailed metadata.
+// MetadataGetItem network detailed metadata.
 func (s *NetworksServiceOp) MetadataGetItem(ctx context.Context, networkID string, opts *MetadataItemOptions) (*MetadataDetailed, *Response, error) {
 	if resp, err := isValidUUID(networkID, "networkID"); err != nil {
 		return nil, resp, err
