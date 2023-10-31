@@ -126,7 +126,7 @@ func (s *NetworksServiceOp) List(ctx context.Context, opts *NetworkListOptions) 
 		return nil, resp, err
 	}
 
-	path := s.client.addServicePath(networksBasePathV1)
+	path := s.client.addProjectRegionPath(networksBasePathV1)
 	path, err := addOptions(path, opts)
 	if err != nil {
 		return nil, nil, err
@@ -156,7 +156,7 @@ func (s *NetworksServiceOp) Get(ctx context.Context, networkID string) (*Network
 		return nil, resp, err
 	}
 
-	path := fmt.Sprintf("%s/%s", s.client.addServicePath(networksBasePathV1), networkID)
+	path := fmt.Sprintf("%s/%s", s.client.addProjectRegionPath(networksBasePathV1), networkID)
 
 	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
 	if err != nil {
@@ -182,7 +182,7 @@ func (s *NetworksServiceOp) Create(ctx context.Context, createRequest *NetworkCr
 		return nil, resp, err
 	}
 
-	path := s.client.addServicePath(networksBasePathV1)
+	path := s.client.addProjectRegionPath(networksBasePathV1)
 
 	req, err := s.client.NewRequest(ctx, http.MethodPost, path, createRequest)
 	if err != nil {
@@ -208,7 +208,7 @@ func (s *NetworksServiceOp) Delete(ctx context.Context, networkID string) (*Task
 		return nil, resp, err
 	}
 
-	path := fmt.Sprintf("%s/%s", s.client.addServicePath(networksBasePathV1), networkID)
+	path := fmt.Sprintf("%s/%s", s.client.addProjectRegionPath(networksBasePathV1), networkID)
 
 	req, err := s.client.NewRequest(ctx, http.MethodDelete, path, nil)
 	if err != nil {
@@ -234,7 +234,7 @@ func (s *NetworksServiceOp) UpdateName(ctx context.Context, networkID string, ne
 		return nil, resp, err
 	}
 
-	path := fmt.Sprintf("%s/%s", s.client.addServicePath(networksBasePathV1), networkID)
+	path := fmt.Sprintf("%s/%s", s.client.addProjectRegionPath(networksBasePathV1), networkID)
 
 	req, err := s.client.NewRequest(ctx, http.MethodPatch, path, networkUpdateNameRequest)
 	if err != nil {
@@ -256,7 +256,7 @@ func (s *NetworksServiceOp) ListNetworksWithSubnets(ctx context.Context, opts *N
 		return nil, resp, err
 	}
 
-	path := s.client.addServicePath(availablenetworksBasePathV1)
+	path := s.client.addProjectRegionPath(availablenetworksBasePathV1)
 	path, err := addOptions(path, opts)
 	if err != nil {
 		return nil, nil, err

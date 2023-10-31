@@ -222,7 +222,7 @@ func (s *InstancesServiceOp) List(ctx context.Context, opts *InstanceListOptions
 		return nil, resp, err
 	}
 
-	path := s.client.addServicePath(instancesBasePathV1)
+	path := s.client.addProjectRegionPath(instancesBasePathV1)
 	path, err := addOptions(path, opts)
 	if err != nil {
 		return nil, nil, err
@@ -252,7 +252,7 @@ func (s *InstancesServiceOp) Get(ctx context.Context, instanceID string) (*Insta
 		return nil, resp, err
 	}
 
-	path := fmt.Sprintf("%s/%s", s.client.addServicePath(instancesBasePathV1), instanceID)
+	path := fmt.Sprintf("%s/%s", s.client.addProjectRegionPath(instancesBasePathV1), instanceID)
 
 	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
 	if err != nil {
@@ -278,7 +278,7 @@ func (s *InstancesServiceOp) Create(ctx context.Context, createRequest *Instance
 		return nil, resp, err
 	}
 
-	path := s.client.addServicePath(instancesBasePathV2)
+	path := s.client.addProjectRegionPath(instancesBasePathV2)
 
 	req, err := s.client.NewRequest(ctx, http.MethodPost, path, createRequest)
 	if err != nil {
@@ -304,7 +304,7 @@ func (s *InstancesServiceOp) Delete(ctx context.Context, instanceID string, opts
 		return nil, resp, err
 	}
 
-	path := fmt.Sprintf("%s/%s", s.client.addServicePath(instancesBasePathV1), instanceID)
+	path := fmt.Sprintf("%s/%s", s.client.addProjectRegionPath(instancesBasePathV1), instanceID)
 	path, err := addOptions(path, opts)
 	if err != nil {
 		return nil, nil, err
@@ -334,7 +334,7 @@ func (s *InstancesServiceOp) MetadataGet(ctx context.Context, instanceID string)
 		return nil, resp, err
 	}
 
-	path := s.client.addServicePath(instancesBasePathV1)
+	path := s.client.addProjectRegionPath(instancesBasePathV1)
 	path = fmt.Sprintf("%s/%s/%s", path, instanceID, instanceMetadataPath)
 
 	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
@@ -361,7 +361,7 @@ func (s *InstancesServiceOp) MetadataCreate(ctx context.Context, instanceID stri
 		return resp, err
 	}
 
-	path := s.client.addServicePath(instancesBasePathV1)
+	path := s.client.addProjectRegionPath(instancesBasePathV1)
 	path = fmt.Sprintf("%s/%s/%s", path, instanceID, instanceMetadataPath)
 
 	req, err := s.client.NewRequest(ctx, http.MethodPut, path, metadata)
@@ -378,7 +378,7 @@ func (s *InstancesServiceOp) CheckLimits(ctx context.Context, checkLimitsRequest
 		return nil, resp, err
 	}
 
-	path := s.client.addServicePath(instancesBasePathV2)
+	path := s.client.addProjectRegionPath(instancesBasePathV2)
 	path = fmt.Sprintf("%s/%s", path, instancesCheckLimitsPath)
 
 	req, err := s.client.NewRequest(ctx, http.MethodPost, path, checkLimitsRequest)
@@ -409,7 +409,7 @@ func (s *InstancesServiceOp) UpdateFlavor(ctx context.Context, instanceID string
 		return nil, resp, err
 	}
 
-	path := s.client.addServicePath(instancesBasePathV1)
+	path := s.client.addProjectRegionPath(instancesBasePathV1)
 	path = fmt.Sprintf("%s/%s/%s", path, instanceID, instancesChangeFlavorPath)
 
 	req, err := s.client.NewRequest(ctx, http.MethodPost, path, instanceFlavorUpdateRequest)
@@ -436,7 +436,7 @@ func (s *InstancesServiceOp) AvailableFlavors(ctx context.Context, checkFlavorVo
 		return nil, resp, err
 	}
 
-	path, err := addOptions(s.client.addServicePath(instancesBasePathV1), opts)
+	path, err := addOptions(s.client.addProjectRegionPath(instancesBasePathV1), opts)
 	if err != nil {
 		return nil, nil, err
 	}

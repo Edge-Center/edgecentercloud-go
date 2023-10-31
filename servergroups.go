@@ -68,7 +68,7 @@ func (s *ServerGroupsServiceOp) List(ctx context.Context) ([]ServerGroup, *Respo
 		return nil, resp, err
 	}
 
-	path := s.client.addServicePath(servergroupsBasePathV1)
+	path := s.client.addProjectRegionPath(servergroupsBasePathV1)
 
 	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
 	if err != nil {
@@ -94,7 +94,7 @@ func (s *ServerGroupsServiceOp) Get(ctx context.Context, serverGroupID string) (
 		return nil, resp, err
 	}
 
-	path := fmt.Sprintf("%s/%s", s.client.addServicePath(servergroupsBasePathV1), serverGroupID)
+	path := fmt.Sprintf("%s/%s", s.client.addProjectRegionPath(servergroupsBasePathV1), serverGroupID)
 
 	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
 	if err != nil {
@@ -120,7 +120,7 @@ func (s *ServerGroupsServiceOp) Create(ctx context.Context, createRequest *Serve
 		return nil, resp, err
 	}
 
-	path := s.client.addServicePath(servergroupsBasePathV1)
+	path := s.client.addProjectRegionPath(servergroupsBasePathV1)
 
 	req, err := s.client.NewRequest(ctx, http.MethodPost, path, createRequest)
 	if err != nil {
@@ -146,7 +146,7 @@ func (s *ServerGroupsServiceOp) Delete(ctx context.Context, serverGroupID string
 		return resp, err
 	}
 
-	path := fmt.Sprintf("%s/%s", s.client.addServicePath(servergroupsBasePathV1), serverGroupID)
+	path := fmt.Sprintf("%s/%s", s.client.addProjectRegionPath(servergroupsBasePathV1), serverGroupID)
 
 	req, err := s.client.NewRequest(ctx, http.MethodDelete, path, nil)
 	if err != nil {

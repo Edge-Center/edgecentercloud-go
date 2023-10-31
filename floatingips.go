@@ -91,7 +91,7 @@ func (s *FloatingipsServiceOp) List(ctx context.Context) ([]FloatingIP, *Respons
 		return nil, resp, err
 	}
 
-	path := s.client.addServicePath(floatingipsBasePathV1)
+	path := s.client.addProjectRegionPath(floatingipsBasePathV1)
 
 	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
 	if err != nil {
@@ -117,7 +117,7 @@ func (s *FloatingipsServiceOp) Get(ctx context.Context, fipID string) (*Floating
 		return nil, resp, err
 	}
 
-	path := fmt.Sprintf("%s/%s", s.client.addServicePath(floatingipsBasePathV1), fipID)
+	path := fmt.Sprintf("%s/%s", s.client.addProjectRegionPath(floatingipsBasePathV1), fipID)
 
 	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
 	if err != nil {
@@ -143,7 +143,7 @@ func (s *FloatingipsServiceOp) Create(ctx context.Context, createRequest *Floati
 		return nil, resp, err
 	}
 
-	path := s.client.addServicePath(floatingipsBasePathV1)
+	path := s.client.addProjectRegionPath(floatingipsBasePathV1)
 
 	req, err := s.client.NewRequest(ctx, http.MethodPost, path, createRequest)
 	if err != nil {
@@ -169,7 +169,7 @@ func (s *FloatingipsServiceOp) Delete(ctx context.Context, fipID string) (*TaskR
 		return nil, resp, err
 	}
 
-	path := fmt.Sprintf("%s/%s", s.client.addServicePath(floatingipsBasePathV1), fipID)
+	path := fmt.Sprintf("%s/%s", s.client.addProjectRegionPath(floatingipsBasePathV1), fipID)
 
 	req, err := s.client.NewRequest(ctx, http.MethodDelete, path, nil)
 	if err != nil {
@@ -199,7 +199,7 @@ func (s *FloatingipsServiceOp) Assign(ctx context.Context, fipID string, assignR
 		return nil, resp, err
 	}
 
-	path := fmt.Sprintf("%s/%s/%s", s.client.addServicePath(floatingipsBasePathV1), fipID, floatingipsAssign)
+	path := fmt.Sprintf("%s/%s/%s", s.client.addProjectRegionPath(floatingipsBasePathV1), fipID, floatingipsAssign)
 
 	req, err := s.client.NewRequest(ctx, http.MethodPost, path, assignRequest)
 	if err != nil {
@@ -225,7 +225,7 @@ func (s *FloatingipsServiceOp) UnAssign(ctx context.Context, fipID string) (*Flo
 		return nil, resp, err
 	}
 
-	path := fmt.Sprintf("%s/%s/%s", s.client.addServicePath(floatingipsBasePathV1), fipID, floatingipsUnAssign)
+	path := fmt.Sprintf("%s/%s/%s", s.client.addProjectRegionPath(floatingipsBasePathV1), fipID, floatingipsUnAssign)
 
 	req, err := s.client.NewRequest(ctx, http.MethodPost, path, nil)
 	if err != nil {
