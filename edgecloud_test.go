@@ -23,8 +23,10 @@ var (
 )
 
 const (
-	projectID = 27520
-	regionID  = 8
+	projectID      = 27520
+	regionID       = 8
+	testResourceID = "f0d19cec-5c3f-4853-886e-304915960ff6"
+	taskID         = "f0d19cec-5c3f-4853-886e-304915960ff6"
 )
 
 func setup() {

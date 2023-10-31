@@ -15,14 +15,10 @@ func TestLoadbalancers_List(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		loadbalancerID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	)
+	loadbalancers := []Loadbalancer{{ID: testResourceID}}
+	URL := fmt.Sprintf("/v1/loadbalancers/%d/%d", projectID, regionID)
 
-	loadbalancers := []Loadbalancer{{ID: loadbalancerID}}
-	getLoadbalancerURL := fmt.Sprintf("/v1/loadbalancers/%d/%d", projectID, regionID)
-
-	mux.HandleFunc(getLoadbalancerURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
 		resp, _ := json.Marshal(loadbalancers)
 		_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))
@@ -40,20 +36,16 @@ func TestLoadbalancers_Get(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		loadbalancerID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	)
+	loadbalancer := &Loadbalancer{ID: testResourceID}
+	URL := fmt.Sprintf("/v1/loadbalancers/%d/%d/%s", projectID, regionID, testResourceID)
 
-	loadbalancer := &Loadbalancer{ID: loadbalancerID}
-	getLoadbalancerURL := fmt.Sprintf("/v1/loadbalancers/%d/%d/%s", projectID, regionID, loadbalancerID)
-
-	mux.HandleFunc(getLoadbalancerURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
 		resp, _ := json.Marshal(loadbalancer)
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Loadbalancers.Get(ctx, loadbalancerID)
+	resp, _, err := client.Loadbalancers.Get(ctx, testResourceID)
 	require.NoError(t, err)
 
 	if !reflect.DeepEqual(resp, loadbalancer) {
@@ -65,20 +57,14 @@ func TestLoadbalancers_Create(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		taskID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	)
-
 	loadbalancerCreateRequest := &LoadbalancerCreateRequest{
 		Name:   "test-loadbalancer",
 		Flavor: "lb1-1-2",
 	}
-
 	taskResponse := &TaskResponse{Tasks: []string{taskID}}
+	URL := fmt.Sprintf("/v1/loadbalancers/%d/%d", projectID, regionID)
 
-	createLoadbalancerURL := fmt.Sprintf("/v1/loadbalancers/%d/%d", projectID, regionID)
-
-	mux.HandleFunc(createLoadbalancerURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
 		reqBody := new(LoadbalancerCreateRequest)
 		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
@@ -99,22 +85,16 @@ func TestLoadbalancers_Delete(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		taskID         = "f0d19cec-5c3f-4853-886e-304915960ff6"
-		loadbalancerID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	)
-
 	taskResponse := &TaskResponse{Tasks: []string{taskID}}
+	URL := fmt.Sprintf("/v1/loadbalancers/%d/%d/%s", projectID, regionID, testResourceID)
 
-	deleteLoadbalancerURL := fmt.Sprintf("/v1/loadbalancers/%d/%d/%s", projectID, regionID, loadbalancerID)
-
-	mux.HandleFunc(deleteLoadbalancerURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodDelete)
 		resp, _ := json.Marshal(taskResponse)
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Loadbalancers.Delete(ctx, loadbalancerID)
+	resp, _, err := client.Loadbalancers.Delete(ctx, testResourceID)
 	require.NoError(t, err)
 
 	assert.Equal(t, taskResponse, resp)
@@ -124,20 +104,16 @@ func TestLoadbalancers_ListenerGet(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		listenerID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	)
+	listener := &Listener{ID: testResourceID}
+	URL := fmt.Sprintf("/v1/lblisteners/%d/%d/%s", projectID, regionID, testResourceID)
 
-	listener := &Listener{ID: listenerID}
-	getLBListenersURL := fmt.Sprintf("/v1/lblisteners/%d/%d/%s", projectID, regionID, listenerID)
-
-	mux.HandleFunc(getLBListenersURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
 		resp, _ := json.Marshal(listener)
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Loadbalancers.ListenerGet(ctx, listenerID)
+	resp, _, err := client.Loadbalancers.ListenerGet(ctx, testResourceID)
 	require.NoError(t, err)
 
 	if !reflect.DeepEqual(resp, listener) {
@@ -149,23 +125,16 @@ func TestLoadbalancers_ListenerCreate(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		taskID         = "f0d19cec-5c3f-4853-886e-304915960ff6"
-		loadbalancerID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	)
-
 	listenerCreateRequest := &ListenerCreateRequest{
 		Name:           "test-loadbalancer",
 		Protocol:       ListenerProtocolTCP,
 		ProtocolPort:   80,
-		LoadBalancerID: loadbalancerID,
+		LoadBalancerID: testResourceID,
 	}
-
 	taskResponse := &TaskResponse{Tasks: []string{taskID}}
+	URL := fmt.Sprintf("/v1/lblisteners/%d/%d", projectID, regionID)
 
-	createLBListenersURL := fmt.Sprintf("/v1/lblisteners/%d/%d", projectID, regionID)
-
-	mux.HandleFunc(createLBListenersURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
 		reqBody := new(ListenerCreateRequest)
 		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
@@ -186,22 +155,16 @@ func TestLoadbalancers_ListenerDelete(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		taskID     = "f0d19cec-5c3f-4853-886e-304915960ff6"
-		listenerID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	)
-
 	taskResponse := &TaskResponse{Tasks: []string{taskID}}
+	URL := fmt.Sprintf("/v1/lblisteners/%d/%d/%s", projectID, regionID, testResourceID)
 
-	deleteLBListenersURL := fmt.Sprintf("/v1/lblisteners/%d/%d/%s", projectID, regionID, listenerID)
-
-	mux.HandleFunc(deleteLBListenersURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodDelete)
 		resp, _ := json.Marshal(taskResponse)
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Loadbalancers.ListenerDelete(ctx, listenerID)
+	resp, _, err := client.Loadbalancers.ListenerDelete(ctx, testResourceID)
 	require.NoError(t, err)
 
 	assert.Equal(t, taskResponse, resp)
@@ -211,20 +174,16 @@ func TestLoadbalancers_PoolGet(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		poolID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	)
+	pool := &Pool{ID: testResourceID}
+	URL := fmt.Sprintf("/v1/lbpools/%d/%d/%s", projectID, regionID, testResourceID)
 
-	pool := &Pool{ID: poolID}
-	getLBPoolsURL := fmt.Sprintf("/v1/lbpools/%d/%d/%s", projectID, regionID, poolID)
-
-	mux.HandleFunc(getLBPoolsURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
 		resp, _ := json.Marshal(pool)
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Loadbalancers.PoolGet(ctx, poolID)
+	resp, _, err := client.Loadbalancers.PoolGet(ctx, testResourceID)
 	require.NoError(t, err)
 
 	if !reflect.DeepEqual(resp, pool) {
@@ -236,23 +195,16 @@ func TestLoadbalancers_PoolCreate(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		taskID     = "f0d19cec-5c3f-4853-886e-304915960ff6"
-		listenerID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	)
-
 	poolCreateRequest := &PoolCreateRequest{
 		LoadbalancerPoolCreateRequest: LoadbalancerPoolCreateRequest{
 			Name:       "test-loadbalancer",
-			ListenerID: listenerID,
+			ListenerID: testResourceID,
 		},
 	}
-
 	taskResponse := &TaskResponse{Tasks: []string{taskID}}
+	URL := fmt.Sprintf("/v1/lbpools/%d/%d", projectID, regionID)
 
-	createLBPoolsURL := fmt.Sprintf("/v1/lbpools/%d/%d", projectID, regionID)
-
-	mux.HandleFunc(createLBPoolsURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
 		reqBody := new(PoolCreateRequest)
 		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
@@ -273,22 +225,16 @@ func TestLoadbalancers_PoolDelete(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		taskID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-		poolID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	)
-
 	taskResponse := &TaskResponse{Tasks: []string{taskID}}
+	URL := fmt.Sprintf("/v1/lbpools/%d/%d/%s", projectID, regionID, testResourceID)
 
-	deleteLBPoolsURL := fmt.Sprintf("/v1/lbpools/%d/%d/%s", projectID, regionID, poolID)
-
-	mux.HandleFunc(deleteLBPoolsURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodDelete)
 		resp, _ := json.Marshal(taskResponse)
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Loadbalancers.PoolDelete(ctx, poolID)
+	resp, _, err := client.Loadbalancers.PoolDelete(ctx, testResourceID)
 	require.NoError(t, err)
 
 	assert.Equal(t, taskResponse, resp)
@@ -298,21 +244,14 @@ func TestLoadbalancers_PoolUpdate(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		taskID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-		poolID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	)
-
 	poolUpdateRequest := &PoolUpdateRequest{
-		ID:   poolID,
+		ID:   testResourceID,
 		Name: "test-lbpool",
 	}
-
 	taskResponse := &TaskResponse{Tasks: []string{taskID}}
+	URL := fmt.Sprintf("/v1/lbpools/%d/%d/%s", projectID, regionID, testResourceID)
 
-	createLBPoolsURL := fmt.Sprintf("/v1/lbpools/%d/%d/%s", projectID, regionID, poolID)
-
-	mux.HandleFunc(createLBPoolsURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPatch)
 		reqBody := new(PoolUpdateRequest)
 		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
@@ -323,7 +262,7 @@ func TestLoadbalancers_PoolUpdate(t *testing.T) {
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Loadbalancers.PoolUpdate(ctx, poolID, poolUpdateRequest)
+	resp, _, err := client.Loadbalancers.PoolUpdate(ctx, testResourceID, poolUpdateRequest)
 	require.NoError(t, err)
 
 	assert.Equal(t, taskResponse, resp)
@@ -333,19 +272,13 @@ func TestLoadbalancers_PoolList(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		poolID         = "f0d19cec-5c3f-4853-886e-304915960ff6"
-		loadbalancerID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	)
-
 	poolListOptions := PoolListOptions{
-		LoadBalancerID: loadbalancerID,
+		LoadBalancerID: testResourceID,
 	}
+	pools := []Pool{{ID: testResourceID}}
+	URL := fmt.Sprintf("/v1/lbpools/%d/%d", projectID, regionID)
 
-	pools := []Pool{{ID: poolID}}
-
-	poolsListURL := fmt.Sprintf("/v1/lbpools/%d/%d", projectID, regionID)
-	mux.HandleFunc(poolsListURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
 		resp, _ := json.Marshal(pools)
 		_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))
@@ -364,10 +297,9 @@ func TestLoadbalancers_CheckLimits(t *testing.T) {
 	defer teardown()
 
 	checkLimitsRequest := &LoadbalancerCheckLimitsRequest{}
+	URL := fmt.Sprintf("/v1/loadbalancers/%d/%d/%s", projectID, regionID, loadbalancersCheckLimitsPath)
 
-	checkLimitsInstanceURL := fmt.Sprintf("/v1/loadbalancers/%d/%d/%s", projectID, regionID, loadbalancersCheckLimitsPath)
-
-	mux.HandleFunc(checkLimitsInstanceURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
 		resp, _ := json.Marshal(map[string]int{})
 		_, _ = fmt.Fprint(w, string(resp))
@@ -384,11 +316,10 @@ func TestLoadbalancers_FlavorList(t *testing.T) {
 	loadbalancerFlavorsOptions := FlavorsOptions{
 		IncludePrices: true,
 	}
-
 	flavors := []Flavor{{FlavorID: "g1-gpu-1-2-1"}}
+	URL := fmt.Sprintf("/v1/lbflavors/%d/%d", projectID, regionID)
 
-	poolsListURL := fmt.Sprintf("/v1/lbflavors/%d/%d", projectID, regionID)
-	mux.HandleFunc(poolsListURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
 		resp, _ := json.Marshal(flavors)
 		_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))

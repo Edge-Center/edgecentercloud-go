@@ -14,14 +14,10 @@ func TestFlavors_List(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		flavorID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	)
+	flavors := []Flavor{{FlavorID: testResourceID}}
+	URL := fmt.Sprintf("/v1/flavors/%d/%d", projectID, regionID)
 
-	flavors := []Flavor{{FlavorID: flavorID}}
-	getFlavorsURL := fmt.Sprintf("/v1/flavors/%d/%d", projectID, regionID)
-
-	mux.HandleFunc(getFlavorsURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
 		resp, _ := json.Marshal(flavors)
 		_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))
@@ -39,14 +35,10 @@ func TestFlavors_ListBaremetal(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		flavorID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	)
+	flavors := []Flavor{{FlavorID: testResourceID}}
+	URL := fmt.Sprintf("/v1/bmflavors/%d/%d", projectID, regionID)
 
-	flavors := []Flavor{{FlavorID: flavorID}}
-	getFlavorsURL := fmt.Sprintf("/v1/bmflavors/%d/%d", projectID, regionID)
-
-	mux.HandleFunc(getFlavorsURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
 		resp, _ := json.Marshal(flavors)
 		_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))
@@ -64,14 +56,10 @@ func TestFlavors_ListBaremetalForClient(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		flavorID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	)
+	flavors := []Flavor{{FlavorID: testResourceID}}
+	URL := fmt.Sprintf("/v1/bmflavors/%d", regionID)
 
-	flavors := []Flavor{{FlavorID: flavorID}}
-	getFlavorsURL := fmt.Sprintf("/v1/bmflavors/%d", regionID)
-
-	mux.HandleFunc(getFlavorsURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
 		resp, _ := json.Marshal(flavors)
 		_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))

@@ -15,14 +15,10 @@ func TestVolumes_List(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		volumeID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	)
+	volumes := []Volume{{ID: testResourceID}}
+	URL := fmt.Sprintf("/v1/volumes/%d/%d", projectID, regionID)
 
-	volumes := []Volume{{ID: volumeID}}
-	getVolumesURL := fmt.Sprintf("/v1/volumes/%d/%d", projectID, regionID)
-
-	mux.HandleFunc(getVolumesURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
 		resp, _ := json.Marshal(volumes)
 		_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))
@@ -40,20 +36,16 @@ func TestVolumes_Get(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		volumeID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	)
+	volume := &Volume{ID: testResourceID}
+	URL := fmt.Sprintf("/v1/volumes/%d/%d/%s", projectID, regionID, testResourceID)
 
-	volume := &Volume{ID: volumeID}
-	getVolumesURL := fmt.Sprintf("/v1/volumes/%d/%d/%s", projectID, regionID, volumeID)
-
-	mux.HandleFunc(getVolumesURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
 		resp, _ := json.Marshal(volume)
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Volumes.Get(ctx, volumeID)
+	resp, _, err := client.Volumes.Get(ctx, testResourceID)
 	require.NoError(t, err)
 
 	if !reflect.DeepEqual(resp, volume) {
@@ -65,22 +57,16 @@ func TestVolumes_Create(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		taskID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	)
-
 	volumeCreateRequest := &VolumeCreateRequest{
 		Name:     "test-volume",
 		Size:     20,
 		TypeName: Standard,
 		Source:   NewVolume,
 	}
+	taskResponse := &TaskResponse{Tasks: []string{testResourceID}}
+	URL := fmt.Sprintf("/v1/volumes/%d/%d", projectID, regionID)
 
-	taskResponse := &TaskResponse{Tasks: []string{taskID}}
-
-	createVolumeURL := fmt.Sprintf("/v1/volumes/%d/%d", projectID, regionID)
-
-	mux.HandleFunc(createVolumeURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
 		reqBody := new(VolumeCreateRequest)
 		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
@@ -101,22 +87,16 @@ func TestVolumes_Delete(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		taskID   = "f0d19cec-5c3f-4853-886e-304915960ff6"
-		volumeID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	)
-
 	taskResponse := &TaskResponse{Tasks: []string{taskID}}
+	URL := fmt.Sprintf("/v1/volumes/%d/%d/%s", projectID, regionID, testResourceID)
 
-	deleteVolumeURL := fmt.Sprintf("/v1/volumes/%d/%d/%s", projectID, regionID, volumeID)
-
-	mux.HandleFunc(deleteVolumeURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodDelete)
 		resp, _ := json.Marshal(taskResponse)
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Volumes.Delete(ctx, volumeID)
+	resp, _, err := client.Volumes.Delete(ctx, testResourceID)
 	require.NoError(t, err)
 
 	assert.Equal(t, taskResponse, resp)
@@ -126,19 +106,13 @@ func TestVolumes_ChangeType(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		volumeID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	)
-
 	changeTypeRequest := &VolumeChangeTypeRequest{
 		VolumeType: SsdHiIops,
 	}
+	volumeResponse := &Volume{ID: testResourceID, VolumeType: SsdHiIops}
+	URL := fmt.Sprintf("/v1/volumes/%d/%d/%s/%s", projectID, regionID, testResourceID, volumesRetypePath)
 
-	volumeResponse := &Volume{ID: volumeID, VolumeType: SsdHiIops}
-
-	changeTypeVolumeURL := fmt.Sprintf("/v1/volumes/%d/%d/%s/%s", projectID, regionID, volumeID, volumesRetypePath)
-
-	mux.HandleFunc(changeTypeVolumeURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
 		reqBody := new(VolumeChangeTypeRequest)
 		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
@@ -149,7 +123,7 @@ func TestVolumes_ChangeType(t *testing.T) {
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Volumes.ChangeType(ctx, volumeID, changeTypeRequest)
+	resp, _, err := client.Volumes.ChangeType(ctx, testResourceID, changeTypeRequest)
 	require.NoError(t, err)
 
 	assert.Equal(t, volumeResponse, resp)
@@ -159,20 +133,13 @@ func TestVolumes_ExtendSize(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		taskID   = "f0d19cec-5c3f-4853-886e-304915960ff6"
-		volumeID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	)
-
 	extendSizeRequest := &VolumeExtendSizeRequest{
 		Size: 20,
 	}
-
 	taskResponse := &TaskResponse{Tasks: []string{taskID}}
+	URL := fmt.Sprintf("/v1/volumes/%d/%d/%s/%s", projectID, regionID, testResourceID, volumesExtendPath)
 
-	extendSizeVolumeURL := fmt.Sprintf("/v1/volumes/%d/%d/%s/%s", projectID, regionID, volumeID, volumesExtendPath)
-
-	mux.HandleFunc(extendSizeVolumeURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
 		reqBody := new(VolumeExtendSizeRequest)
 		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
@@ -183,7 +150,7 @@ func TestVolumes_ExtendSize(t *testing.T) {
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Volumes.Extend(ctx, volumeID, extendSizeRequest)
+	resp, _, err := client.Volumes.Extend(ctx, testResourceID, extendSizeRequest)
 	require.NoError(t, err)
 
 	assert.Equal(t, taskResponse, resp)
@@ -194,19 +161,16 @@ func TestVolumes_Rename(t *testing.T) {
 	defer teardown()
 
 	const (
-		volumeID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-		name     = "new-name"
+		name = "new-name"
 	)
 
 	volumeRenameRequest := &VolumeRenameRequest{
 		Name: name,
 	}
+	volumeResponse := &Volume{ID: testResourceID, Name: name}
+	URL := fmt.Sprintf("/v1/volumes/%d/%d/%s", projectID, regionID, testResourceID)
 
-	volumeResponse := &Volume{ID: volumeID, Name: name}
-
-	renameVolumeURL := fmt.Sprintf("/v1/volumes/%d/%d/%s", projectID, regionID, volumeID)
-
-	mux.HandleFunc(renameVolumeURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPatch)
 		reqBody := new(VolumeRenameRequest)
 		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
@@ -217,7 +181,7 @@ func TestVolumes_Rename(t *testing.T) {
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Volumes.Rename(ctx, volumeID, volumeRenameRequest)
+	resp, _, err := client.Volumes.Rename(ctx, testResourceID, volumeRenameRequest)
 	require.NoError(t, err)
 
 	assert.Equal(t, volumeResponse, resp)
@@ -227,20 +191,13 @@ func TestVolumes_Attach(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		volumeID   = "f0d19cec-5c3f-4853-886e-304915960ff6"
-		instanceID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	)
-
 	volumeAttachRequest := &VolumeAttachRequest{
-		InstanceID: instanceID,
+		InstanceID: testResourceID,
 	}
+	volumeResponse := &Volume{ID: testResourceID}
+	URL := fmt.Sprintf("/v1/volumes/%d/%d/%s/%s", projectID, regionID, testResourceID, volumesAttachPath)
 
-	volumeResponse := &Volume{ID: volumeID}
-
-	attachVolumeURL := fmt.Sprintf("/v1/volumes/%d/%d/%s/%s", projectID, regionID, volumeID, volumesAttachPath)
-
-	mux.HandleFunc(attachVolumeURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
 		reqBody := new(VolumeAttachRequest)
 		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
@@ -251,7 +208,7 @@ func TestVolumes_Attach(t *testing.T) {
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Volumes.Attach(ctx, volumeID, volumeAttachRequest)
+	resp, _, err := client.Volumes.Attach(ctx, testResourceID, volumeAttachRequest)
 	require.NoError(t, err)
 
 	assert.Equal(t, volumeResponse, resp)
@@ -261,20 +218,13 @@ func TestVolumes_Detach(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		volumeID   = "f0d19cec-5c3f-4853-886e-304915960ff6"
-		instanceID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	)
-
 	volumeDetachRequest := &VolumeDetachRequest{
-		InstanceID: instanceID,
+		InstanceID: testResourceID,
 	}
+	volumeResponse := &Volume{ID: testResourceID}
+	URL := fmt.Sprintf("/v1/volumes/%d/%d/%s/%s", projectID, regionID, testResourceID, volumesDetachPath)
 
-	volumeResponse := &Volume{ID: volumeID}
-
-	detachVolumeURL := fmt.Sprintf("/v1/volumes/%d/%d/%s/%s", projectID, regionID, volumeID, volumesDetachPath)
-
-	mux.HandleFunc(detachVolumeURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
 		reqBody := new(VolumeDetachRequest)
 		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
@@ -285,7 +235,7 @@ func TestVolumes_Detach(t *testing.T) {
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Volumes.Detach(ctx, volumeID, volumeDetachRequest)
+	resp, _, err := client.Volumes.Detach(ctx, testResourceID, volumeDetachRequest)
 	require.NoError(t, err)
 
 	assert.Equal(t, volumeResponse, resp)
@@ -295,22 +245,16 @@ func TestVolumes_Revert(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		taskID   = "f0d19cec-5c3f-4853-886e-304915960ff6"
-		volumeID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	)
-
 	taskResponse := &TaskResponse{Tasks: []string{taskID}}
+	URL := fmt.Sprintf("/v1/volumes/%d/%d/%s/%s", projectID, regionID, testResourceID, volumesRevertPath)
 
-	revertVolumeURL := fmt.Sprintf("/v1/volumes/%d/%d/%s/%s", projectID, regionID, volumeID, volumesRevertPath)
-
-	mux.HandleFunc(revertVolumeURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
 		resp, _ := json.Marshal(taskResponse)
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Volumes.Revert(ctx, volumeID)
+	resp, _, err := client.Volumes.Revert(ctx, testResourceID)
 	require.NoError(t, err)
 
 	assert.Equal(t, taskResponse, resp)
@@ -320,24 +264,20 @@ func TestVolumes_MetadataList(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		volumeID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	)
-
 	metadataList := []MetadataDetailed{{
 		Key:      "image_id",
 		Value:    "b3c52ece-147e-4af5-8d7c-84691309b879",
 		ReadOnly: true,
 	}}
-	getVolumesMetadataListURL := fmt.Sprintf("/v1/volumes/%d/%d/%s/%s", projectID, regionID, volumeID, metadataPath)
+	URL := fmt.Sprintf("/v1/volumes/%d/%d/%s/%s", projectID, regionID, testResourceID, metadataPath)
 
-	mux.HandleFunc(getVolumesMetadataListURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
 		resp, _ := json.Marshal(metadataList)
 		_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))
 	})
 
-	resp, _, err := client.Volumes.MetadataList(ctx, volumeID)
+	resp, _, err := client.Volumes.MetadataList(ctx, testResourceID)
 	require.NoError(t, err)
 
 	if !reflect.DeepEqual(resp, metadataList) {
@@ -349,21 +289,16 @@ func TestVolumes_MetadataCreate(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		volumeID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	)
-
 	metadataCreateRequest := &MetadataCreateRequest{
 		map[string]interface{}{"key": "value"},
 	}
+	URL := fmt.Sprintf("/v1/volumes/%d/%d/%s/%s", projectID, regionID, testResourceID, metadataPath)
 
-	createVolumesMetadataURL := fmt.Sprintf("/v1/volumes/%d/%d/%s/%s", projectID, regionID, volumeID, metadataPath)
-
-	mux.HandleFunc(createVolumesMetadataURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
 	})
 
-	_, err := client.Volumes.MetadataCreate(ctx, volumeID, metadataCreateRequest)
+	_, err := client.Volumes.MetadataCreate(ctx, testResourceID, metadataCreateRequest)
 	require.NoError(t, err)
 }
 
@@ -371,21 +306,16 @@ func TestVolumes_MetadataUpdate(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		volumeID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	)
-
 	metadataCreateRequest := &MetadataCreateRequest{
 		map[string]interface{}{"key": "value"},
 	}
+	URL := fmt.Sprintf("/v1/volumes/%d/%d/%s/%s", projectID, regionID, testResourceID, metadataPath)
 
-	createVolumesMetadataURL := fmt.Sprintf("/v1/volumes/%d/%d/%s/%s", projectID, regionID, volumeID, metadataPath)
-
-	mux.HandleFunc(createVolumesMetadataURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPut)
 	})
 
-	_, err := client.Volumes.MetadataUpdate(ctx, volumeID, metadataCreateRequest)
+	_, err := client.Volumes.MetadataUpdate(ctx, testResourceID, metadataCreateRequest)
 	require.NoError(t, err)
 }
 
@@ -393,17 +323,13 @@ func TestVolumes_MetadataDeleteItem(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		volumeID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	)
+	URL := fmt.Sprintf("/v1/volumes/%d/%d/%s/%s", projectID, regionID, testResourceID, metadataItemPath)
 
-	deleteVolumesMetadataItemURL := fmt.Sprintf("/v1/volumes/%d/%d/%s/%s", projectID, regionID, volumeID, metadataItemPath)
-
-	mux.HandleFunc(deleteVolumesMetadataItemURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodDelete)
 	})
 
-	_, err := client.Volumes.MetadataDeleteItem(ctx, volumeID, nil)
+	_, err := client.Volumes.MetadataDeleteItem(ctx, testResourceID, nil)
 	require.NoError(t, err)
 }
 
@@ -411,24 +337,20 @@ func TestVolumes_MetadataGetItem(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		volumeID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	)
-
 	metadata := &MetadataDetailed{
 		Key:      "image_id",
 		Value:    "b3c52ece-147e-4af5-8d7c-84691309b879",
 		ReadOnly: true,
 	}
-	getVolumesMetadataItemURL := fmt.Sprintf("/v1/volumes/%d/%d/%s/%s", projectID, regionID, volumeID, metadataItemPath)
+	URL := fmt.Sprintf("/v1/volumes/%d/%d/%s/%s", projectID, regionID, testResourceID, metadataItemPath)
 
-	mux.HandleFunc(getVolumesMetadataItemURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
 		resp, _ := json.Marshal(metadata)
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Volumes.MetadataGetItem(ctx, volumeID, nil)
+	resp, _, err := client.Volumes.MetadataGetItem(ctx, testResourceID, nil)
 	require.NoError(t, err)
 
 	if !reflect.DeepEqual(resp, metadata) {

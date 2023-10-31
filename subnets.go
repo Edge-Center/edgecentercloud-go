@@ -249,21 +249,7 @@ func (s *SubnetworksServiceOp) MetadataList(ctx context.Context, subnetworkID st
 		return nil, resp, err
 	}
 
-	path := s.client.addProjectRegionPath(subnetsBasePathV1)
-	path = fmt.Sprintf("%s/%s/%s", path, subnetworkID, metadataPath)
-
-	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	metadata := new(MetadataRoot)
-	resp, err := s.client.Do(ctx, req, metadata)
-	if err != nil {
-		return nil, resp, err
-	}
-
-	return metadata.Metadata, resp, err
+	return metadataList(ctx, s.client, subnetworkID, subnetsBasePathV1)
 }
 
 // MetadataCreate or update subnetwork metadata.
@@ -276,15 +262,7 @@ func (s *SubnetworksServiceOp) MetadataCreate(ctx context.Context, subnetworkID 
 		return resp, err
 	}
 
-	path := s.client.addProjectRegionPath(subnetsBasePathV1)
-	path = fmt.Sprintf("%s/%s/%s", path, subnetworkID, metadataPath)
-
-	req, err := s.client.NewRequest(ctx, http.MethodPost, path, metadata)
-	if err != nil {
-		return nil, err
-	}
-
-	return s.client.Do(ctx, req, nil)
+	return metadataCreate(ctx, s.client, subnetworkID, subnetsBasePathV1, metadata)
 }
 
 // MetadataUpdate subnetwork metadata.
@@ -297,15 +275,7 @@ func (s *SubnetworksServiceOp) MetadataUpdate(ctx context.Context, subnetworkID 
 		return resp, err
 	}
 
-	path := s.client.addProjectRegionPath(subnetsBasePathV1)
-	path = fmt.Sprintf("%s/%s/%s", path, subnetworkID, metadataPath)
-
-	req, err := s.client.NewRequest(ctx, http.MethodPut, path, metadata)
-	if err != nil {
-		return nil, err
-	}
-
-	return s.client.Do(ctx, req, nil)
+	return metadataUpdate(ctx, s.client, subnetworkID, subnetsBasePathV1, metadata)
 }
 
 // MetadataDeleteItem a subnetwork metadata item by key.
@@ -318,20 +288,7 @@ func (s *SubnetworksServiceOp) MetadataDeleteItem(ctx context.Context, subnetwor
 		return resp, err
 	}
 
-	path := s.client.addProjectRegionPath(subnetsBasePathV1)
-	path, err := addOptions(path, opts)
-	if err != nil {
-		return nil, err
-	}
-
-	path = fmt.Sprintf("%s/%s/%s", path, subnetworkID, metadataItemPath)
-
-	req, err := s.client.NewRequest(ctx, http.MethodDelete, path, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return s.client.Do(ctx, req, nil)
+	return metadataDeleteItem(ctx, s.client, subnetworkID, subnetsBasePathV1, opts)
 }
 
 // MetadataGetItem subnetwork detailed metadata.
@@ -344,24 +301,5 @@ func (s *SubnetworksServiceOp) MetadataGetItem(ctx context.Context, subnetworkID
 		return nil, resp, err
 	}
 
-	path := s.client.addProjectRegionPath(subnetsBasePathV1)
-	path, err := addOptions(path, opts)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	path = fmt.Sprintf("%s/%s/%s", path, subnetworkID, metadataItemPath)
-
-	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	metadata := new(MetadataDetailed)
-	resp, err := s.client.Do(ctx, req, metadata)
-	if err != nil {
-		return nil, resp, err
-	}
-
-	return metadata, resp, err
+	return metadataGetItem(ctx, s.client, subnetworkID, subnetsBasePathV1, opts)
 }

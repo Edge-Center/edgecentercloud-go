@@ -29,9 +29,9 @@ func TestLoadbalancerFlavorIsExist(t *testing.T) {
 		FlavorName: flavor,
 		FlavorID:   flavor,
 	}}
+	URL := fmt.Sprintf("/v1/lbflavors/%d/%d", projectID, regionID)
 
-	flavorsListURL := fmt.Sprintf("/v1/lbflavors/%d/%d", projectID, regionID)
-	mux.HandleFunc(flavorsListURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		resp, err := json.Marshal(flavors)
 		if err != nil {
 			t.Fatalf("failed to marshal JSON: %v", err)
@@ -65,9 +65,9 @@ func TestFlavorIsExist(t *testing.T) {
 		FlavorName: flavor,
 		FlavorID:   flavor,
 	}}
+	URL := fmt.Sprintf("/v1/flavors/%d/%d", projectID, regionID)
 
-	flavorsListURL := fmt.Sprintf("/v1/flavors/%d/%d", projectID, regionID)
-	mux.HandleFunc(flavorsListURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		resp, err := json.Marshal(flavors)
 		if err != nil {
 			t.Fatalf("failed to marshal JSON: %v", err)
@@ -101,13 +101,12 @@ func TestFlavorIsAvailable(t *testing.T) {
 		FlavorName: flavor,
 		FlavorID:   flavor,
 	}}
-
 	instanceCheckFlavorVolumeRequest := &edgecloud.InstanceCheckFlavorVolumeRequest{
 		Volumes: []edgecloud.InstanceVolumeCreate{{Source: edgecloud.ExistingVolume}},
 	}
+	URL := fmt.Sprintf("/v1/instances/%d/%d/available_flavors", projectID, regionID)
 
-	flavorsListURL := fmt.Sprintf("/v1/instances/%d/%d/available_flavors", projectID, regionID)
-	mux.HandleFunc(flavorsListURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		resp, err := json.Marshal(flavors)
 		if err != nil {
 			t.Fatalf("failed to marshal JSON: %v", err)

@@ -15,14 +15,10 @@ func TestFloatingips_List(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		fipID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	)
+	floatingIPs := []FloatingIP{{ID: testResourceID}}
+	URL := fmt.Sprintf("/v1/floatingips/%d/%d", projectID, regionID)
 
-	floatingIPs := []FloatingIP{{ID: fipID}}
-	getFloatingipsURL := fmt.Sprintf("/v1/floatingips/%d/%d", projectID, regionID)
-
-	mux.HandleFunc(getFloatingipsURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
 		resp, _ := json.Marshal(&floatingIPs)
 		_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))
@@ -40,20 +36,16 @@ func TestFloatingips_Get(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		fipID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	)
+	floatingIP := &FloatingIP{ID: testResourceID}
+	URL := fmt.Sprintf("/v1/floatingips/%d/%d/%s", projectID, regionID, testResourceID)
 
-	floatingIP := &FloatingIP{ID: fipID}
-	getFloatingipsURL := fmt.Sprintf("/v1/floatingips/%d/%d/%s", projectID, regionID, fipID)
-
-	mux.HandleFunc(getFloatingipsURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
 		resp, _ := json.Marshal(floatingIP)
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Floatingips.Get(ctx, fipID)
+	resp, _, err := client.Floatingips.Get(ctx, testResourceID)
 	require.NoError(t, err)
 
 	if !reflect.DeepEqual(resp, floatingIP) {
@@ -65,17 +57,11 @@ func TestFloatingips_Create(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		taskID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	)
-
 	floatingIPCreateRequest := &FloatingIPCreateRequest{}
-
 	taskResponse := &TaskResponse{Tasks: []string{taskID}}
+	URL := fmt.Sprintf("/v1/floatingips/%d/%d", projectID, regionID)
 
-	createFloatingipsURL := fmt.Sprintf("/v1/floatingips/%d/%d", projectID, regionID)
-
-	mux.HandleFunc(createFloatingipsURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
 		reqBody := new(FloatingIPCreateRequest)
 		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
@@ -96,22 +82,17 @@ func TestFloatingips_Delete(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		taskID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-		fipID  = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	)
-
 	taskResponse := &TaskResponse{Tasks: []string{taskID}}
 
-	deleteFloatingipsURL := fmt.Sprintf("/v1/floatingips/%d/%d/%s", projectID, regionID, fipID)
+	URL := fmt.Sprintf("/v1/floatingips/%d/%d/%s", projectID, regionID, testResourceID)
 
-	mux.HandleFunc(deleteFloatingipsURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodDelete)
 		resp, _ := json.Marshal(taskResponse)
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Floatingips.Delete(ctx, fipID)
+	resp, _, err := client.Floatingips.Delete(ctx, testResourceID)
 	require.NoError(t, err)
 
 	assert.Equal(t, taskResponse, resp)
@@ -121,26 +102,21 @@ func TestFloatingips_Assign(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		fipID  = "f0d19cec-5c3f-4853-886e-304915960ff6"
-		portID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	)
-
-	assignRequest := &AssignRequest{PortID: portID}
+	assignRequest := &AssignRequest{PortID: testResourceID}
 
 	floatingIP := &FloatingIP{
-		ID:     fipID,
-		PortID: portID,
+		ID:     testResourceID,
+		PortID: testResourceID,
 	}
-	assignFloatingipsURL := fmt.Sprintf("/v1/floatingips/%d/%d/%s/%s", projectID, regionID, fipID, floatingipsAssign)
+	URL := fmt.Sprintf("/v1/floatingips/%d/%d/%s/%s", projectID, regionID, testResourceID, floatingipsAssign)
 
-	mux.HandleFunc(assignFloatingipsURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
 		resp, _ := json.Marshal(&floatingIP)
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Floatingips.Assign(ctx, fipID, assignRequest)
+	resp, _, err := client.Floatingips.Assign(ctx, testResourceID, assignRequest)
 	require.NoError(t, err)
 
 	if !reflect.DeepEqual(resp, floatingIP) {
@@ -152,20 +128,16 @@ func TestFloatingips_UnAssign(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		fipID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	)
+	floatingIP := &FloatingIP{ID: testResourceID}
+	URL := fmt.Sprintf("/v1/floatingips/%d/%d/%s/%s", projectID, regionID, testResourceID, floatingipsUnAssign)
 
-	floatingIP := &FloatingIP{ID: fipID}
-	assignFloatingipsURL := fmt.Sprintf("/v1/floatingips/%d/%d/%s/%s", projectID, regionID, fipID, floatingipsUnAssign)
-
-	mux.HandleFunc(assignFloatingipsURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
 		resp, _ := json.Marshal(&floatingIP)
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Floatingips.UnAssign(ctx, fipID)
+	resp, _, err := client.Floatingips.UnAssign(ctx, testResourceID)
 	require.NoError(t, err)
 
 	if !reflect.DeepEqual(resp, floatingIP) {
@@ -177,14 +149,10 @@ func TestFloatingips_ListAvailable(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		fipID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	)
+	floatingIPs := []FloatingIP{{ID: testResourceID}}
+	URL := fmt.Sprintf("/v1/availablefloatingips/%d/%d", projectID, regionID)
 
-	floatingIPs := []FloatingIP{{ID: fipID}}
-	getFloatingipsURL := fmt.Sprintf("/v1/availablefloatingips/%d/%d", projectID, regionID)
-
-	mux.HandleFunc(getFloatingipsURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
 		resp, _ := json.Marshal(&floatingIPs)
 		_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))
@@ -202,24 +170,20 @@ func TestFloatingips_MetadataList(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		fipID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	)
-
 	metadataList := []MetadataDetailed{{
 		Key:      "image_id",
 		Value:    "b3c52ece-147e-4af5-8d7c-84691309b879",
 		ReadOnly: true,
 	}}
-	getFloatingipsMetadataListURL := fmt.Sprintf("/v1/floatingips/%d/%d/%s/%s", projectID, regionID, fipID, metadataPath)
+	URL := fmt.Sprintf("/v1/floatingips/%d/%d/%s/%s", projectID, regionID, testResourceID, metadataPath)
 
-	mux.HandleFunc(getFloatingipsMetadataListURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
 		resp, _ := json.Marshal(metadataList)
 		_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))
 	})
 
-	resp, _, err := client.Floatingips.MetadataList(ctx, fipID)
+	resp, _, err := client.Floatingips.MetadataList(ctx, testResourceID)
 	require.NoError(t, err)
 
 	if !reflect.DeepEqual(resp, metadataList) {
@@ -231,21 +195,16 @@ func TestFloatingips_MetadataCreate(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		fipID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	)
-
 	metadataCreateRequest := &MetadataCreateRequest{
 		map[string]interface{}{"key": "value"},
 	}
+	URL := fmt.Sprintf("/v1/floatingips/%d/%d/%s/%s", projectID, regionID, testResourceID, metadataPath)
 
-	createFloatingipsMetadataURL := fmt.Sprintf("/v1/floatingips/%d/%d/%s/%s", projectID, regionID, fipID, metadataPath)
-
-	mux.HandleFunc(createFloatingipsMetadataURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
 	})
 
-	_, err := client.Floatingips.MetadataCreate(ctx, fipID, metadataCreateRequest)
+	_, err := client.Floatingips.MetadataCreate(ctx, testResourceID, metadataCreateRequest)
 	require.NoError(t, err)
 }
 
@@ -253,21 +212,16 @@ func TestFloatingips_MetadataUpdate(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		fipID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	)
-
 	metadataCreateRequest := &MetadataCreateRequest{
 		map[string]interface{}{"key": "value"},
 	}
+	URL := fmt.Sprintf("/v1/floatingips/%d/%d/%s/%s", projectID, regionID, testResourceID, metadataPath)
 
-	createFloatingipsMetadataURL := fmt.Sprintf("/v1/floatingips/%d/%d/%s/%s", projectID, regionID, fipID, metadataPath)
-
-	mux.HandleFunc(createFloatingipsMetadataURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPut)
 	})
 
-	_, err := client.Floatingips.MetadataUpdate(ctx, fipID, metadataCreateRequest)
+	_, err := client.Floatingips.MetadataUpdate(ctx, testResourceID, metadataCreateRequest)
 	require.NoError(t, err)
 }
 
@@ -275,17 +229,13 @@ func TestFloatingips_MetadataDeleteItem(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		fipID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	)
+	URL := fmt.Sprintf("/v1/floatingips/%d/%d/%s/%s", projectID, regionID, testResourceID, metadataItemPath)
 
-	deleteFloatingipsMetadataItemURL := fmt.Sprintf("/v1/floatingips/%d/%d/%s/%s", projectID, regionID, fipID, metadataItemPath)
-
-	mux.HandleFunc(deleteFloatingipsMetadataItemURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodDelete)
 	})
 
-	_, err := client.Floatingips.MetadataDeleteItem(ctx, fipID, nil)
+	_, err := client.Floatingips.MetadataDeleteItem(ctx, testResourceID, nil)
 	require.NoError(t, err)
 }
 
@@ -293,24 +243,20 @@ func TestFloatingips_MetadataGetItem(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		fipID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	)
-
 	metadata := &MetadataDetailed{
 		Key:      "image_id",
 		Value:    "b3c52ece-147e-4af5-8d7c-84691309b879",
 		ReadOnly: true,
 	}
-	getFloatingipsMetadataItemURL := fmt.Sprintf("/v1/floatingips/%d/%d/%s/%s", projectID, regionID, fipID, metadataItemPath)
+	URL := fmt.Sprintf("/v1/floatingips/%d/%d/%s/%s", projectID, regionID, testResourceID, metadataItemPath)
 
-	mux.HandleFunc(getFloatingipsMetadataItemURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
 		resp, _ := json.Marshal(metadata)
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Floatingips.MetadataGetItem(ctx, fipID, nil)
+	resp, _, err := client.Floatingips.MetadataGetItem(ctx, testResourceID, nil)
 	require.NoError(t, err)
 
 	if !reflect.DeepEqual(resp, metadata) {

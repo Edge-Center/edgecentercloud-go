@@ -15,14 +15,10 @@ func TestNetworks_List(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		networkID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	)
+	networks := []Network{{ID: testResourceID}}
+	URL := fmt.Sprintf("/v1/networks/%d/%d", projectID, regionID)
 
-	networks := []Network{{ID: networkID}}
-	getNetworksURL := fmt.Sprintf("/v1/networks/%d/%d", projectID, regionID)
-
-	mux.HandleFunc(getNetworksURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
 		resp, _ := json.Marshal(networks)
 		_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))
@@ -40,20 +36,16 @@ func TestNetworks_Get(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		networkID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	)
+	network := &Network{ID: testResourceID}
+	URL := fmt.Sprintf("/v1/networks/%d/%d/%s", projectID, regionID, testResourceID)
 
-	network := &Network{ID: networkID}
-	getNetworkURL := fmt.Sprintf("/v1/networks/%d/%d/%s", projectID, regionID, networkID)
-
-	mux.HandleFunc(getNetworkURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
 		resp, _ := json.Marshal(network)
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Networks.Get(ctx, networkID)
+	resp, _, err := client.Networks.Get(ctx, testResourceID)
 	require.NoError(t, err)
 
 	if !reflect.DeepEqual(resp, network) {
@@ -65,20 +57,14 @@ func TestNetworks_Create(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		taskID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	)
-
 	networkCreateRequest := &NetworkCreateRequest{
 		Name:         "test-instance",
 		CreateRouter: false,
 	}
-
 	taskResponse := &TaskResponse{Tasks: []string{taskID}}
+	URL := fmt.Sprintf("/v1/networks/%d/%d", projectID, regionID)
 
-	createNetworkURL := fmt.Sprintf("/v1/networks/%d/%d", projectID, regionID)
-
-	mux.HandleFunc(createNetworkURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
 		reqBody := new(NetworkCreateRequest)
 		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
@@ -99,22 +85,16 @@ func TestNetworks_Delete(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		taskID    = "f0d19cec-5c3f-4853-886e-304915960ff6"
-		networkID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	)
-
 	taskResponse := &TaskResponse{Tasks: []string{taskID}}
+	URL := fmt.Sprintf("/v1/networks/%d/%d/%s", projectID, regionID, testResourceID)
 
-	deleteNetworkURL := fmt.Sprintf("/v1/networks/%d/%d/%s", projectID, regionID, networkID)
-
-	mux.HandleFunc(deleteNetworkURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodDelete)
 		resp, _ := json.Marshal(taskResponse)
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Networks.Delete(ctx, networkID)
+	resp, _, err := client.Networks.Delete(ctx, testResourceID)
 	require.NoError(t, err)
 
 	assert.Equal(t, taskResponse, resp)
@@ -125,19 +105,16 @@ func TestNetworks_UpdateName(t *testing.T) {
 	defer teardown()
 
 	const (
-		networkID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-		newName   = "new-network-name"
+		newName = "new-network-name"
 	)
 
 	networkUpdateNameRequest := &NetworkUpdateNameRequest{
 		Name: newName,
 	}
-
 	networkResponse := &Network{Name: newName}
+	URL := fmt.Sprintf("/v1/networks/%d/%d/%s", projectID, regionID, testResourceID)
 
-	updateNameNetworkURL := fmt.Sprintf("/v1/networks/%d/%d/%s", projectID, regionID, networkID)
-
-	mux.HandleFunc(updateNameNetworkURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPatch)
 		reqBody := new(NetworkUpdateNameRequest)
 		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
@@ -148,7 +125,7 @@ func TestNetworks_UpdateName(t *testing.T) {
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Networks.UpdateName(ctx, networkID, networkUpdateNameRequest)
+	resp, _, err := client.Networks.UpdateName(ctx, testResourceID, networkUpdateNameRequest)
 	require.NoError(t, err)
 
 	assert.Equal(t, networkResponse, resp)
@@ -158,15 +135,12 @@ func Test_ListNetworksWithSubnets(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		networkID    = "f0d19cec-5c3f-4853-886e-304915960ff6"
-		subnetworkID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	)
+	networksSubnetworks := []NetworkSubnetwork{
+		{ID: testResourceID, Subnets: []Subnetwork{{ID: testResourceID}}},
+	}
+	URL := fmt.Sprintf("/v1/availablenetworks/%d/%d", projectID, regionID)
 
-	networksSubnetworks := []NetworkSubnetwork{{ID: networkID, Subnets: []Subnetwork{{ID: subnetworkID}}}}
-	availableNetworksURL := fmt.Sprintf("/v1/availablenetworks/%d/%d", projectID, regionID)
-
-	mux.HandleFunc(availableNetworksURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
 		resp, _ := json.Marshal(networksSubnetworks)
 		_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))
@@ -184,20 +158,16 @@ func TestNetworks_PortList(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		networkID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	)
+	portsInstances := []PortsInstance{{ID: testResourceID}}
+	URL := fmt.Sprintf("/v1/networks/%d/%d/%s/%s", projectID, regionID, testResourceID, networksPortsPath)
 
-	portsInstances := []PortsInstance{{ID: networkID}}
-	getNetworksURL := fmt.Sprintf("/v1/networks/%d/%d/%s/%s", projectID, regionID, networkID, networksPortsPath)
-
-	mux.HandleFunc(getNetworksURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
 		resp, _ := json.Marshal(portsInstances)
 		_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))
 	})
 
-	resp, _, err := client.Networks.PortList(ctx, networkID)
+	resp, _, err := client.Networks.PortList(ctx, testResourceID)
 	require.NoError(t, err)
 
 	if !reflect.DeepEqual(resp, portsInstances) {
@@ -209,24 +179,20 @@ func TestNetworks_MetadataList(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		networkID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	)
-
 	metadataList := []MetadataDetailed{{
 		Key:      "image_id",
 		Value:    "b3c52ece-147e-4af5-8d7c-84691309b879",
 		ReadOnly: true,
 	}}
-	getNetworksMetadataListURL := fmt.Sprintf("/v1/networks/%d/%d/%s/%s", projectID, regionID, networkID, metadataPath)
+	URL := fmt.Sprintf("/v1/networks/%d/%d/%s/%s", projectID, regionID, testResourceID, metadataPath)
 
-	mux.HandleFunc(getNetworksMetadataListURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
 		resp, _ := json.Marshal(metadataList)
 		_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))
 	})
 
-	resp, _, err := client.Networks.MetadataList(ctx, networkID)
+	resp, _, err := client.Networks.MetadataList(ctx, testResourceID)
 	require.NoError(t, err)
 
 	if !reflect.DeepEqual(resp, metadataList) {
@@ -238,21 +204,16 @@ func TestNetworks_MetadataCreate(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		networkID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	)
-
 	metadataCreateRequest := &MetadataCreateRequest{
 		map[string]interface{}{"key": "value"},
 	}
+	URL := fmt.Sprintf("/v1/networks/%d/%d/%s/%s", projectID, regionID, testResourceID, metadataPath)
 
-	createNetworksMetadataURL := fmt.Sprintf("/v1/networks/%d/%d/%s/%s", projectID, regionID, networkID, metadataPath)
-
-	mux.HandleFunc(createNetworksMetadataURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
 	})
 
-	_, err := client.Networks.MetadataCreate(ctx, networkID, metadataCreateRequest)
+	_, err := client.Networks.MetadataCreate(ctx, testResourceID, metadataCreateRequest)
 	require.NoError(t, err)
 }
 
@@ -260,21 +221,16 @@ func TestNetworks_MetadataUpdate(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		networkID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	)
-
 	metadataCreateRequest := &MetadataCreateRequest{
 		map[string]interface{}{"key": "value"},
 	}
+	URL := fmt.Sprintf("/v1/networks/%d/%d/%s/%s", projectID, regionID, testResourceID, metadataPath)
 
-	createNetworksMetadataURL := fmt.Sprintf("/v1/networks/%d/%d/%s/%s", projectID, regionID, networkID, metadataPath)
-
-	mux.HandleFunc(createNetworksMetadataURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPut)
 	})
 
-	_, err := client.Networks.MetadataUpdate(ctx, networkID, metadataCreateRequest)
+	_, err := client.Networks.MetadataUpdate(ctx, testResourceID, metadataCreateRequest)
 	require.NoError(t, err)
 }
 
@@ -282,17 +238,13 @@ func TestNetworks_MetadataDeleteItem(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		networkID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	)
+	URL := fmt.Sprintf("/v1/networks/%d/%d/%s/%s", projectID, regionID, testResourceID, metadataItemPath)
 
-	deleteNetworksMetadataItemURL := fmt.Sprintf("/v1/networks/%d/%d/%s/%s", projectID, regionID, networkID, metadataItemPath)
-
-	mux.HandleFunc(deleteNetworksMetadataItemURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodDelete)
 	})
 
-	_, err := client.Networks.MetadataDeleteItem(ctx, networkID, nil)
+	_, err := client.Networks.MetadataDeleteItem(ctx, testResourceID, nil)
 	require.NoError(t, err)
 }
 
@@ -300,24 +252,20 @@ func TestNetworks_MetadataGetItem(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		networkID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	)
-
 	metadata := &MetadataDetailed{
 		Key:      "image_id",
 		Value:    "b3c52ece-147e-4af5-8d7c-84691309b879",
 		ReadOnly: true,
 	}
-	getNetworksMetadataItemURL := fmt.Sprintf("/v1/networks/%d/%d/%s/%s", projectID, regionID, networkID, metadataItemPath)
+	URL := fmt.Sprintf("/v1/networks/%d/%d/%s/%s", projectID, regionID, testResourceID, metadataItemPath)
 
-	mux.HandleFunc(getNetworksMetadataItemURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
 		resp, _ := json.Marshal(metadata)
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Networks.MetadataGetItem(ctx, networkID, nil)
+	resp, _, err := client.Networks.MetadataGetItem(ctx, testResourceID, nil)
 	require.NoError(t, err)
 
 	if !reflect.DeepEqual(resp, metadata) {

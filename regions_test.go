@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"reflect"
+	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -14,13 +15,12 @@ func TestRegions_List(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		regionID = 1
-	)
+	regions := []Region{
+		{ID: regionID},
+	}
+	URL := "/v1/regions"
 
-	regions := []Region{{ID: regionID}}
-
-	mux.HandleFunc("/v1/regions", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
 		resp, _ := json.Marshal(regions)
 		_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))
@@ -39,16 +39,17 @@ func TestRegions_Get(t *testing.T) {
 	defer teardown()
 
 	region := &Region{
-		ID: 1,
+		ID: regionID,
 	}
+	URL := fmt.Sprintf("/v1/regions/%d", regionID)
 
-	mux.HandleFunc("/v1/regions/1", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
 		resp, _ := json.Marshal(region)
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Regions.Get(ctx, "1", nil)
+	resp, _, err := client.Regions.Get(ctx, strconv.Itoa(regionID), nil)
 	require.NoError(t, err)
 
 	if !reflect.DeepEqual(resp, region) {
