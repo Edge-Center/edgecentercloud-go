@@ -15,14 +15,10 @@ func TestServerGroups_List(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		serverGroupID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	)
+	serverGroups := []ServerGroup{{ID: testResourceID}}
+	URL := fmt.Sprintf("/v1/servergroups/%d/%d", projectID, regionID)
 
-	serverGroups := []ServerGroup{{ID: serverGroupID}}
-	getServerGroupsURL := fmt.Sprintf("/v1/servergroups/%d/%d", projectID, regionID)
-
-	mux.HandleFunc(getServerGroupsURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
 		resp, _ := json.Marshal(serverGroups)
 		_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))
@@ -40,20 +36,16 @@ func TestServerGroups_Get(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		sgID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	)
+	servergroup := &ServerGroup{ID: testResourceID}
+	URL := fmt.Sprintf("/v1/servergroups/%d/%d/%s", projectID, regionID, testResourceID)
 
-	servergroup := &ServerGroup{ID: sgID}
-	getServerGroupURL := fmt.Sprintf("/v1/servergroups/%d/%d/%s", projectID, regionID, sgID)
-
-	mux.HandleFunc(getServerGroupURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
 		resp, _ := json.Marshal(servergroup)
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.ServerGroups.Get(ctx, sgID)
+	resp, _, err := client.ServerGroups.Get(ctx, testResourceID)
 	require.NoError(t, err)
 
 	if !reflect.DeepEqual(resp, servergroup) {
@@ -65,19 +57,13 @@ func TestServerGroups_Create(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		serverGroupID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	)
-
 	servergroupCreateRequest := &ServerGroupCreateRequest{
 		Name: "test-subnet",
 	}
+	serverGroupResponse := &ServerGroup{ID: testResourceID}
+	URL := fmt.Sprintf("/v1/servergroups/%d/%d", projectID, regionID)
 
-	serverGroupResponse := &ServerGroup{ID: serverGroupID}
-
-	createServerGroupURL := fmt.Sprintf("/v1/servergroups/%d/%d", projectID, regionID)
-
-	mux.HandleFunc(createServerGroupURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
 		reqBody := new(ServerGroupCreateRequest)
 		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
@@ -98,16 +84,12 @@ func TestServerGroups_Delete(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		sgID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	)
+	URL := fmt.Sprintf("/v1/servergroups/%d/%d/%s", projectID, regionID, testResourceID)
 
-	deleteServerGroupURL := fmt.Sprintf("/v1/servergroups/%d/%d/%s", projectID, regionID, sgID)
-
-	mux.HandleFunc(deleteServerGroupURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodDelete)
 	})
 
-	_, err := client.ServerGroups.Delete(ctx, sgID)
+	_, err := client.ServerGroups.Delete(ctx, testResourceID)
 	require.NoError(t, err)
 }

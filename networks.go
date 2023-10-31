@@ -333,21 +333,7 @@ func (s *NetworksServiceOp) MetadataList(ctx context.Context, networkID string) 
 		return nil, resp, err
 	}
 
-	path := s.client.addProjectRegionPath(networksBasePathV1)
-	path = fmt.Sprintf("%s/%s/%s", path, networkID, metadataPath)
-
-	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	metadata := new(MetadataRoot)
-	resp, err := s.client.Do(ctx, req, metadata)
-	if err != nil {
-		return nil, resp, err
-	}
-
-	return metadata.Metadata, resp, err
+	return metadataList(ctx, s.client, networkID, networksBasePathV1)
 }
 
 // MetadataCreate or update network metadata.
@@ -360,15 +346,7 @@ func (s *NetworksServiceOp) MetadataCreate(ctx context.Context, networkID string
 		return resp, err
 	}
 
-	path := s.client.addProjectRegionPath(networksBasePathV1)
-	path = fmt.Sprintf("%s/%s/%s", path, networkID, metadataPath)
-
-	req, err := s.client.NewRequest(ctx, http.MethodPost, path, metadata)
-	if err != nil {
-		return nil, err
-	}
-
-	return s.client.Do(ctx, req, nil)
+	return metadataCreate(ctx, s.client, networkID, networksBasePathV1, metadata)
 }
 
 // MetadataUpdate network metadata.
@@ -381,15 +359,7 @@ func (s *NetworksServiceOp) MetadataUpdate(ctx context.Context, networkID string
 		return resp, err
 	}
 
-	path := s.client.addProjectRegionPath(networksBasePathV1)
-	path = fmt.Sprintf("%s/%s/%s", path, networkID, metadataPath)
-
-	req, err := s.client.NewRequest(ctx, http.MethodPut, path, metadata)
-	if err != nil {
-		return nil, err
-	}
-
-	return s.client.Do(ctx, req, nil)
+	return metadataUpdate(ctx, s.client, networkID, networksBasePathV1, metadata)
 }
 
 // MetadataDeleteItem a network metadata item by key.
@@ -402,20 +372,7 @@ func (s *NetworksServiceOp) MetadataDeleteItem(ctx context.Context, networkID st
 		return resp, err
 	}
 
-	path := s.client.addProjectRegionPath(networksBasePathV1)
-	path, err := addOptions(path, opts)
-	if err != nil {
-		return nil, err
-	}
-
-	path = fmt.Sprintf("%s/%s/%s", path, networkID, metadataItemPath)
-
-	req, err := s.client.NewRequest(ctx, http.MethodDelete, path, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return s.client.Do(ctx, req, nil)
+	return metadataDeleteItem(ctx, s.client, networkID, networksBasePathV1, opts)
 }
 
 // MetadataGetItem network detailed metadata.
@@ -428,24 +385,5 @@ func (s *NetworksServiceOp) MetadataGetItem(ctx context.Context, networkID strin
 		return nil, resp, err
 	}
 
-	path := s.client.addProjectRegionPath(networksBasePathV1)
-	path, err := addOptions(path, opts)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	path = fmt.Sprintf("%s/%s/%s", path, networkID, metadataItemPath)
-
-	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	metadata := new(MetadataDetailed)
-	resp, err := s.client.Do(ctx, req, metadata)
-	if err != nil {
-		return nil, resp, err
-	}
-
-	return metadata, resp, err
+	return metadataGetItem(ctx, s.client, networkID, networksBasePathV1, opts)
 }

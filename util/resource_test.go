@@ -47,8 +47,8 @@ func TestResourceIsDeleted(t *testing.T) {
 			server := httptest.NewServer(mux)
 			defer server.Close()
 
-			getResourceURL := fmt.Sprintf("/v1/floatingips/%d/%d/%s", projectID, regionID, resourceID)
-			mux.HandleFunc(getResourceURL, func(w http.ResponseWriter, r *http.Request) {
+			URL := fmt.Sprintf("/v1/floatingips/%d/%d/%s", projectID, regionID, resourceID)
+			mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(tt.statusCode)
 				resp, _ := json.MarshalIndent(edgecloud.Response{}, "", "    ")
 				_, _ = fmt.Fprint(w, string(resp))
@@ -101,8 +101,8 @@ func TestResourceIsExist(t *testing.T) {
 			server := httptest.NewServer(mux)
 			defer server.Close()
 
-			getResourceURL := fmt.Sprintf("/v1/networks/%d/%d/%s", projectID, regionID, resourceID)
-			mux.HandleFunc(getResourceURL, func(w http.ResponseWriter, r *http.Request) {
+			URL := fmt.Sprintf("/v1/networks/%d/%d/%s", projectID, regionID, resourceID)
+			mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(tt.statusCode)
 				resp, _ := json.MarshalIndent(edgecloud.Response{}, "", "    ")
 				_, _ = fmt.Fprint(w, string(resp))

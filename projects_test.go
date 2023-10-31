@@ -18,8 +18,9 @@ func TestProjects_Get(t *testing.T) {
 		ID:   1,
 		Name: "test-project",
 	}
+	URL := "/v1/projects/1"
 
-	mux.HandleFunc("/v1/projects/1", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
 		resp, _ := json.Marshal(project)
 		_, _ = fmt.Fprint(w, string(resp))

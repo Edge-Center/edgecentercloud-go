@@ -285,21 +285,7 @@ func (s *FloatingipsServiceOp) MetadataList(ctx context.Context, fipID string) (
 		return nil, resp, err
 	}
 
-	path := s.client.addProjectRegionPath(floatingipsBasePathV1)
-	path = fmt.Sprintf("%s/%s/%s", path, fipID, metadataPath)
-
-	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	metadata := new(MetadataRoot)
-	resp, err := s.client.Do(ctx, req, metadata)
-	if err != nil {
-		return nil, resp, err
-	}
-
-	return metadata.Metadata, resp, err
+	return metadataList(ctx, s.client, fipID, floatingipsBasePathV1)
 }
 
 // MetadataCreate or update floating IP metadata.
@@ -312,15 +298,7 @@ func (s *FloatingipsServiceOp) MetadataCreate(ctx context.Context, fipID string,
 		return resp, err
 	}
 
-	path := s.client.addProjectRegionPath(floatingipsBasePathV1)
-	path = fmt.Sprintf("%s/%s/%s", path, fipID, metadataPath)
-
-	req, err := s.client.NewRequest(ctx, http.MethodPost, path, metadata)
-	if err != nil {
-		return nil, err
-	}
-
-	return s.client.Do(ctx, req, nil)
+	return metadataCreate(ctx, s.client, fipID, floatingipsBasePathV1, metadata)
 }
 
 // MetadataUpdate floating IP metadata.
@@ -333,15 +311,7 @@ func (s *FloatingipsServiceOp) MetadataUpdate(ctx context.Context, fipID string,
 		return resp, err
 	}
 
-	path := s.client.addProjectRegionPath(floatingipsBasePathV1)
-	path = fmt.Sprintf("%s/%s/%s", path, fipID, metadataPath)
-
-	req, err := s.client.NewRequest(ctx, http.MethodPut, path, metadata)
-	if err != nil {
-		return nil, err
-	}
-
-	return s.client.Do(ctx, req, nil)
+	return metadataUpdate(ctx, s.client, fipID, floatingipsBasePathV1, metadata)
 }
 
 // MetadataDeleteItem a floating IP metadata item by key.
@@ -354,20 +324,7 @@ func (s *FloatingipsServiceOp) MetadataDeleteItem(ctx context.Context, fipID str
 		return resp, err
 	}
 
-	path := s.client.addProjectRegionPath(floatingipsBasePathV1)
-	path, err := addOptions(path, opts)
-	if err != nil {
-		return nil, err
-	}
-
-	path = fmt.Sprintf("%s/%s/%s", path, fipID, metadataItemPath)
-
-	req, err := s.client.NewRequest(ctx, http.MethodDelete, path, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return s.client.Do(ctx, req, nil)
+	return metadataDeleteItem(ctx, s.client, fipID, floatingipsBasePathV1, opts)
 }
 
 // MetadataGetItem floating IP detailed metadata.
@@ -380,24 +337,5 @@ func (s *FloatingipsServiceOp) MetadataGetItem(ctx context.Context, fipID string
 		return nil, resp, err
 	}
 
-	path := s.client.addProjectRegionPath(floatingipsBasePathV1)
-	path, err := addOptions(path, opts)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	path = fmt.Sprintf("%s/%s/%s", path, fipID, metadataItemPath)
-
-	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	metadata := new(MetadataDetailed)
-	resp, err := s.client.Do(ctx, req, metadata)
-	if err != nil {
-		return nil, resp, err
-	}
-
-	return metadata, resp, err
+	return metadataGetItem(ctx, s.client, fipID, floatingipsBasePathV1, opts)
 }

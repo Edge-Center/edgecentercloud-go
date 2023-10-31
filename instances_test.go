@@ -15,14 +15,10 @@ func TestInstances_List(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		instanceID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	)
+	instances := []Instance{{ID: testResourceID}}
+	URL := fmt.Sprintf("/v1/instances/%d/%d", projectID, regionID)
 
-	instances := []Instance{{ID: instanceID}}
-	getInstancesURL := fmt.Sprintf("/v1/instances/%d/%d", projectID, regionID)
-
-	mux.HandleFunc(getInstancesURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
 		resp, _ := json.Marshal(instances)
 		_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))
@@ -40,20 +36,16 @@ func TestInstances_Get(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		instanceID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	)
+	instance := &Instance{ID: testResourceID}
+	URL := fmt.Sprintf("/v1/instances/%d/%d/%s", projectID, regionID, testResourceID)
 
-	instance := &Instance{ID: instanceID}
-	getInstanceURL := fmt.Sprintf("/v1/instances/%d/%d/%s", projectID, regionID, instanceID)
-
-	mux.HandleFunc(getInstanceURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
 		resp, _ := json.Marshal(instance)
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Instances.Get(ctx, instanceID)
+	resp, _, err := client.Instances.Get(ctx, testResourceID)
 	require.NoError(t, err)
 
 	if !reflect.DeepEqual(resp, instance) {
@@ -64,10 +56,6 @@ func TestInstances_Get(t *testing.T) {
 func TestInstances_Create(t *testing.T) {
 	setup()
 	defer teardown()
-
-	const (
-		taskID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	)
 
 	instanceCreateRequest := &InstanceCreateRequest{
 		Names:          []string{"test-instance"},
@@ -86,10 +74,9 @@ func TestInstances_Create(t *testing.T) {
 	}
 
 	taskResponse := &TaskResponse{Tasks: []string{taskID}}
+	URL := fmt.Sprintf("/v2/instances/%d/%d", projectID, regionID)
 
-	createInstanceURL := fmt.Sprintf("/v2/instances/%d/%d", projectID, regionID)
-
-	mux.HandleFunc(createInstanceURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
 		reqBody := new(InstanceCreateRequest)
 		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
@@ -110,22 +97,16 @@ func TestInstances_Delete(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		taskID     = "f0d19cec-5c3f-4853-886e-304915960ff6"
-		instanceID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	)
-
 	taskResponse := &TaskResponse{Tasks: []string{taskID}}
+	URL := fmt.Sprintf("/v1/instances/%d/%d/%s", projectID, regionID, testResourceID)
 
-	deleteInstanceURL := fmt.Sprintf("/v1/instances/%d/%d/%s", projectID, regionID, instanceID)
-
-	mux.HandleFunc(deleteInstanceURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodDelete)
 		resp, _ := json.Marshal(taskResponse)
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Instances.Delete(ctx, instanceID, nil)
+	resp, _, err := client.Instances.Delete(ctx, testResourceID, nil)
 	require.NoError(t, err)
 
 	assert.Equal(t, taskResponse, resp)
@@ -135,25 +116,20 @@ func TestInstances_DeleteWithOptions(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		taskID     = "f0d19cec-5c3f-4853-886e-304915960ff6"
-		instanceID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	)
-
 	taskResponse := &TaskResponse{Tasks: []string{taskID}}
 	instanceDeleteOptions := InstanceDeleteOptions{
 		DeleteFloatings: true,
 		Volumes:         []string{"f0d19cec-5c3f-4853-886e-304915960ff6"},
 	}
+	URL := fmt.Sprintf("/v1/instances/%d/%d/%s", projectID, regionID, testResourceID)
 
-	deleteInstanceURL := fmt.Sprintf("/v1/instances/%d/%d/%s", projectID, regionID, instanceID)
-	mux.HandleFunc(deleteInstanceURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodDelete)
 		resp, _ := json.Marshal(taskResponse)
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Instances.Delete(ctx, instanceID, &instanceDeleteOptions)
+	resp, _, err := client.Instances.Delete(ctx, testResourceID, &instanceDeleteOptions)
 	require.NoError(t, err)
 
 	assert.Equal(t, taskResponse, resp)
@@ -163,24 +139,20 @@ func TestInstances_MetadataGet(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		instanceID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	)
-
 	metadata := &MetadataDetailed{
 		Key:      "image_id",
 		Value:    "b3c52ece-147e-4af5-8d7c-84691309b879",
 		ReadOnly: true,
 	}
-	getInstanceMetadataURL := fmt.Sprintf("/v1/instances/%d/%d/%s/%s", projectID, regionID, instanceID, metadataPath)
+	URL := fmt.Sprintf("/v1/instances/%d/%d/%s/%s", projectID, regionID, testResourceID, metadataPath)
 
-	mux.HandleFunc(getInstanceMetadataURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
 		resp, _ := json.Marshal(metadata)
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Instances.MetadataGet(ctx, instanceID)
+	resp, _, err := client.Instances.MetadataGet(ctx, testResourceID)
 	require.NoError(t, err)
 
 	if !reflect.DeepEqual(resp, metadata) {
@@ -192,21 +164,16 @@ func TestInstances_MetadataCreate(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		instanceID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	)
-
 	metadataCreateRequest := &MetadataCreateRequest{
 		map[string]interface{}{"key": "value"},
 	}
+	URL := fmt.Sprintf("/v1/instances/%d/%d/%s/%s", projectID, regionID, testResourceID, metadataPath)
 
-	createInstanceMetadataURL := fmt.Sprintf("/v1/instances/%d/%d/%s/%s", projectID, regionID, instanceID, metadataPath)
-
-	mux.HandleFunc(createInstanceMetadataURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPut)
 	})
 
-	_, err := client.Instances.MetadataCreate(ctx, instanceID, metadataCreateRequest)
+	_, err := client.Instances.MetadataCreate(ctx, testResourceID, metadataCreateRequest)
 	require.NoError(t, err)
 }
 
@@ -219,10 +186,9 @@ func TestInstances_CheckLimits(t *testing.T) {
 		Interfaces: []InstanceInterface{},
 		Volumes:    []InstanceCheckLimitsVolume{},
 	}
+	URL := fmt.Sprintf("/v2/instances/%d/%d/%s", projectID, regionID, instancesCheckLimitsPath)
 
-	checkLimitsInstanceURL := fmt.Sprintf("/v2/instances/%d/%d/%s", projectID, regionID, instancesCheckLimitsPath)
-
-	mux.HandleFunc(checkLimitsInstanceURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
 		resp, _ := json.Marshal(map[string]int{})
 		_, _ = fmt.Fprint(w, string(resp))
@@ -236,26 +202,19 @@ func TestInstances_UpdateFlavor(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		taskID     = "f0d19cec-5c3f-4853-886e-304915960ff6"
-		instanceID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	)
-
 	instanceFlavorUpdateRequest := &InstanceFlavorUpdateRequest{
 		FlavorID: "g1-standard-1-2",
 	}
-
 	taskResponse := &TaskResponse{Tasks: []string{taskID}}
+	URL := fmt.Sprintf("/v1/instances/%d/%d/%s/%s", projectID, regionID, testResourceID, instancesChangeFlavorPath)
 
-	instancesChangeFlavorURL := fmt.Sprintf("/v1/instances/%d/%d/%s/%s", projectID, regionID, instanceID, instancesChangeFlavorPath)
-
-	mux.HandleFunc(instancesChangeFlavorURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
 		resp, _ := json.Marshal(taskResponse)
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Instances.UpdateFlavor(ctx, instanceID, instanceFlavorUpdateRequest)
+	resp, _, err := client.Instances.UpdateFlavor(ctx, testResourceID, instanceFlavorUpdateRequest)
 	require.NoError(t, err)
 
 	assert.Equal(t, taskResponse, resp)
@@ -272,11 +231,10 @@ func TestInstances_AvailableFlavors(t *testing.T) {
 	instanceCheckFlavorVolumeRequest := &InstanceCheckFlavorVolumeRequest{
 		Volumes: []InstanceVolumeCreate{{Source: ExistingVolume}},
 	}
-
 	flavors := []Flavor{{FlavorID: flavor}}
-	getAvailableFlavorsURL := fmt.Sprintf("/v1/instances/%d/%d/%s", projectID, regionID, instancesAvailableFlavorsPath)
+	URL := fmt.Sprintf("/v1/instances/%d/%d/%s", projectID, regionID, instancesAvailableFlavorsPath)
 
-	mux.HandleFunc(getAvailableFlavorsURL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
 		resp, _ := json.Marshal(flavors)
 		_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))
