@@ -97,6 +97,122 @@ func TestSecurityGroups_Delete(t *testing.T) {
 	assert.Equal(t, taskResponse, resp)
 }
 
+func TestSecurityGroups_Update(t *testing.T) {
+	setup()
+	defer teardown()
+
+	securityGroupUpdateRequest := &SecurityGroupUpdateRequest{}
+	securityGroup := &SecurityGroup{ID: testResourceID}
+	URL := fmt.Sprintf("/v1/securitygroups/%d/%d/%s", projectID, regionID, testResourceID)
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodPatch)
+		reqBody := new(SecurityGroupUpdateRequest)
+		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
+			t.Errorf("failed to decode request body: %v", err)
+		}
+		assert.Equal(t, securityGroupUpdateRequest, reqBody)
+		resp, _ := json.Marshal(securityGroup)
+		_, _ = fmt.Fprint(w, string(resp))
+	})
+
+	resp, _, err := client.SecurityGroups.Update(ctx, testResourceID, securityGroupUpdateRequest)
+	require.NoError(t, err)
+
+	assert.Equal(t, securityGroup, resp)
+}
+
+func TestSecurityGroups_DeepCopy(t *testing.T) {
+	setup()
+	defer teardown()
+
+	securityGroupDeepCopyRequest := &SecurityGroupDeepCopyRequest{}
+	URL := fmt.Sprintf("/v1/securitygroups/%d/%d/%s/%s", projectID, regionID, testResourceID, securitygroupsCopyPath)
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodPost)
+		reqBody := new(SecurityGroupDeepCopyRequest)
+		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
+			t.Errorf("failed to decode request body: %v", err)
+		}
+		assert.Equal(t, securityGroupDeepCopyRequest, reqBody)
+	})
+
+	resp, err := client.SecurityGroups.DeepCopy(ctx, testResourceID, securityGroupDeepCopyRequest)
+	require.NoError(t, err)
+
+	assert.Equal(t, 200, resp.StatusCode)
+}
+
+func TestSecurityGroups_RuleCreate(t *testing.T) {
+	setup()
+	defer teardown()
+
+	ruleCreateRequest := &RuleCreateRequest{}
+	securityGroupRule := &SecurityGroupRule{ID: testResourceID}
+	URL := fmt.Sprintf("/v1/securitygroups/%d/%d/%s/%s", projectID, regionID, testResourceID, securitygroupsRulesPath)
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodPost)
+		reqBody := new(RuleCreateRequest)
+		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
+			t.Errorf("failed to decode request body: %v", err)
+		}
+		assert.Equal(t, ruleCreateRequest, reqBody)
+		resp, _ := json.Marshal(securityGroupRule)
+		_, _ = fmt.Fprint(w, string(resp))
+	})
+
+	resp, _, err := client.SecurityGroups.RuleCreate(ctx, testResourceID, ruleCreateRequest)
+	require.NoError(t, err)
+
+	assert.Equal(t, securityGroupRule, resp)
+}
+
+func TestSecurityGroups_RuleDelete(t *testing.T) {
+	setup()
+	defer teardown()
+
+	taskResponse := &TaskResponse{Tasks: []string{taskID}}
+	URL := fmt.Sprintf("/v1/securitygrouprules/%d/%d/%s", projectID, regionID, testResourceID)
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodDelete)
+		resp, _ := json.Marshal(taskResponse)
+		_, _ = fmt.Fprint(w, string(resp))
+	})
+
+	resp, _, err := client.SecurityGroups.RuleDelete(ctx, testResourceID)
+	require.NoError(t, err)
+
+	assert.Equal(t, taskResponse, resp)
+}
+
+func TestSecurityGroups_RuleUpdate(t *testing.T) {
+	setup()
+	defer teardown()
+
+	ruleUpdateRequest := &RuleUpdateRequest{}
+	securityGroupRule := &SecurityGroupRule{ID: testResourceID}
+	URL := fmt.Sprintf("/v1/securitygrouprules/%d/%d/%s", projectID, regionID, testResourceID)
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodPut)
+		reqBody := new(RuleUpdateRequest)
+		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
+			t.Errorf("failed to decode request body: %v", err)
+		}
+		assert.Equal(t, ruleUpdateRequest, reqBody)
+		resp, _ := json.Marshal(securityGroupRule)
+		_, _ = fmt.Fprint(w, string(resp))
+	})
+
+	resp, _, err := client.SecurityGroups.RuleUpdate(ctx, testResourceID, ruleUpdateRequest)
+	require.NoError(t, err)
+
+	assert.Equal(t, securityGroupRule, resp)
+}
+
 func TestSecurityGroups_MetadataList(t *testing.T) {
 	setup()
 	defer teardown()
