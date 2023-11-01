@@ -102,3 +102,30 @@ func TestKeyPairs_Delete(t *testing.T) {
 
 	assert.Equal(t, taskResponse, resp)
 }
+
+func TestKeyPairs_Share(t *testing.T) {
+	setup()
+	defer teardown()
+
+	keyPairShareRequest := &KeyPairShareRequest{
+		SharedInProject: true,
+	}
+	keypair := &KeyPair{SSHKeyID: testResourceID}
+	URL := fmt.Sprintf("/v1/keypairs/%d/%d/%s/%s", projectID, regionID, testResourceID, keypairsSharePath)
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodPatch)
+		reqBody := new(KeyPairShareRequest)
+		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
+			t.Errorf("failed to decode request body: %v", err)
+		}
+		assert.Equal(t, keyPairShareRequest, reqBody)
+		resp, _ := json.Marshal(keypair)
+		_, _ = fmt.Fprint(w, string(resp))
+	})
+
+	resp, _, err := client.KeyPairs.Share(ctx, testResourceID, keyPairShareRequest)
+	require.NoError(t, err)
+
+	assert.Equal(t, keypair, resp)
+}

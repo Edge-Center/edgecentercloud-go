@@ -8,6 +8,7 @@ import (
 
 const (
 	keypairsBasePathV1 = "/v1/keypairs"
+	keypairsSharePath  = "share"
 )
 
 // KeyPairsService is an interface for creating and managing SSH keys with the EdgecenterCloud API.
@@ -17,6 +18,7 @@ type KeyPairsService interface {
 	Get(context.Context, string) (*KeyPair, *Response, error)
 	Create(context.Context, *KeyPairCreateRequest) (*TaskResponse, *Response, error)
 	Delete(context.Context, string) (*TaskResponse, *Response, error)
+	Share(context.Context, string, *KeyPairShareRequest) (*KeyPair, *Response, error)
 }
 
 // KeyPairsServiceOp handles communication with Key Pairs (SSH keys) methods of the EdgecenterCloud API.
@@ -44,6 +46,11 @@ type KeyPairCreateRequest struct {
 	SSHKeyName      string `json:"sshkey_name" required:"true"`
 	PublicKey       string `json:"public_key"`
 	SharedInProject bool   `json:"shared_in_project"`
+}
+
+// KeyPairShareRequest represents a request to share a Key Pair.
+type KeyPairShareRequest struct {
+	SharedInProject bool `json:"shared_in_project" required:"true"`
 }
 
 // keyPairsRoot represents a KeyPair root.
@@ -150,4 +157,34 @@ func (s *KeyPairsServiceOp) Delete(ctx context.Context, keypairID string) (*Task
 	}
 
 	return tasks, resp, err
+}
+
+// Share a Key Pair to view for all users in project.
+func (s *KeyPairsServiceOp) Share(ctx context.Context, keypairID string, shareRequest *KeyPairShareRequest) (*KeyPair, *Response, error) {
+	if resp, err := isValidUUID(keypairID, "keypairID"); err != nil {
+		return nil, resp, err
+	}
+
+	if shareRequest == nil {
+		return nil, nil, NewArgError("shareRequest", "cannot be nil")
+	}
+
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	path := fmt.Sprintf("%s/%s/%s", s.client.addProjectRegionPath(keypairsBasePathV1), keypairID, keypairsSharePath)
+
+	req, err := s.client.NewRequest(ctx, http.MethodPatch, path, shareRequest)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	keyPair := new(KeyPair)
+	resp, err := s.client.Do(ctx, req, keyPair)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return keyPair, resp, err
 }
