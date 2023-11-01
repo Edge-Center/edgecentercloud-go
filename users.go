@@ -16,9 +16,9 @@ const (
 // UsersService is an interface for creating and managing UsersService with the EdgecenterCloud API.
 // See: https://apidocs.edgecenter.ru/cloud#tag/users
 type UsersService interface {
-	List(context.Context, *ProjectListOptions) ([]User, *Response, error)
-	ListRoles(context.Context, *ProjectRoleListOptions) ([]UserRole, *Response, error)
-	ListAssignment(context.Context, *ProjectRoleListOptions) ([]RoleAssignment, *Response, error)
+	List(context.Context, *UserListOptions) ([]User, *Response, error)
+	ListRoles(context.Context, *UserRoleListOptions) ([]UserRole, *Response, error)
+	ListAssignment(context.Context, *UserRoleListOptions) ([]RoleAssignment, *Response, error)
 	DeleteAssignment(context.Context, int) (*Response, error)
 	UpdateAssignment(context.Context, int, *UpdateAssignmentRequest) (*Response, error)
 	AssignRole(context.Context, *UpdateAssignmentRequest) (*UserRole, *Response, error)
@@ -55,13 +55,13 @@ type RoleAssignment struct {
 	UserID    int    `json:"user_id"`
 }
 
-// ProjectListOptions specifies the optional query parameters to List method.
-type ProjectListOptions struct {
+// UserListOptions specifies the optional query parameters to List method.
+type UserListOptions struct {
 	ClientID int `url:"client_id,omitempty" validate:"omitempty"`
 }
 
-// ProjectRoleListOptions specifies the optional query parameters to ListRoles method.
-type ProjectRoleListOptions struct {
+// UserRoleListOptions specifies the optional query parameters to ListRoles method.
+type UserRoleListOptions struct {
 	ClientID  int `url:"client_id,omitempty" validate:"omitempty"`
 	ProjectID int `url:"project_id,omitempty" validate:"omitempty"`
 }
@@ -86,7 +86,7 @@ type roleAssignmentsRoot struct {
 }
 
 // List get client’s users.
-func (s *UsersServiceOp) List(ctx context.Context, opts *ProjectListOptions) ([]User, *Response, error) {
+func (s *UsersServiceOp) List(ctx context.Context, opts *UserListOptions) ([]User, *Response, error) {
 	userPath, err := addOptions(usersBasePathV1, opts)
 	if err != nil {
 		return nil, nil, err
@@ -107,7 +107,7 @@ func (s *UsersServiceOp) List(ctx context.Context, opts *ProjectListOptions) ([]
 }
 
 // ListRoles get available roles.
-func (s *UsersServiceOp) ListRoles(ctx context.Context, opts *ProjectRoleListOptions) ([]UserRole, *Response, error) {
+func (s *UsersServiceOp) ListRoles(ctx context.Context, opts *UserRoleListOptions) ([]UserRole, *Response, error) {
 	userPath, err := addOptions(path.Join(usersBasePathV1, usersRolesPath), opts)
 	if err != nil {
 		return nil, nil, err
@@ -128,7 +128,7 @@ func (s *UsersServiceOp) ListRoles(ctx context.Context, opts *ProjectRoleListOpt
 }
 
 // ListAssignment get available assignment roles.
-func (s *UsersServiceOp) ListAssignment(ctx context.Context, opts *ProjectRoleListOptions) ([]RoleAssignment, *Response, error) {
+func (s *UsersServiceOp) ListAssignment(ctx context.Context, opts *UserRoleListOptions) ([]RoleAssignment, *Response, error) {
 	userPath, err := addOptions(path.Join(usersBasePathV1, assignmentsPath), opts)
 	if err != nil {
 		return nil, nil, err
