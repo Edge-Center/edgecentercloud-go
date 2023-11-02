@@ -109,6 +109,28 @@ func TestLoadbalancers_Delete(t *testing.T) {
 	require.Equal(t, respActual, expectedResp)
 }
 
+func TestLoadbalancers_ListenerList(t *testing.T) {
+	setup()
+	defer teardown()
+
+	expectedResp := []Listener{{ID: testResourceID}}
+	URL := path.Join(lblistenersBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID))
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodGet)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
+		_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))
+	})
+
+	respActual, resp, err := client.Loadbalancers.ListenerList(ctx, nil)
+	require.NoError(t, err)
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
+}
+
 func TestLoadbalancers_ListenerGet(t *testing.T) {
 	setup()
 	defer teardown()
@@ -181,6 +203,62 @@ func TestLoadbalancers_ListenerDelete(t *testing.T) {
 	})
 
 	respActual, resp, err := client.Loadbalancers.ListenerDelete(ctx, testResourceID)
+	require.NoError(t, err)
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
+}
+
+func TestLoadbalancers_ListenerUpdate(t *testing.T) {
+	setup()
+	defer teardown()
+
+	request := &ListenerUpdateRequest{Name: "test-listener"}
+	expectedResp := &TaskResponse{Tasks: []string{taskID}}
+	URL := path.Join(lblistenersBasePathV2, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID)
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodPatch)
+		reqBody := new(ListenerUpdateRequest)
+		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
+			t.Errorf("failed to decode request body: %v", err)
+		}
+		assert.Equal(t, request, reqBody)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
+		_, _ = fmt.Fprint(w, string(resp))
+	})
+
+	respActual, resp, err := client.Loadbalancers.ListenerUpdate(ctx, testResourceID, request)
+	require.NoError(t, err)
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
+}
+
+func TestLoadbalancers_ListenerRename(t *testing.T) {
+	setup()
+	defer teardown()
+
+	request := &LoadbalancerRenameRequest{Name: "test-listener"}
+	expectedResp := &Listener{ID: testResourceID}
+	URL := path.Join(lblistenersBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID)
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodPatch)
+		reqBody := new(LoadbalancerRenameRequest)
+		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
+			t.Errorf("failed to decode request body: %v", err)
+		}
+		assert.Equal(t, request, reqBody)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
+		_, _ = fmt.Fprint(w, string(resp))
+	})
+
+	respActual, resp, err := client.Loadbalancers.ListenerRename(ctx, testResourceID, request)
 	require.NoError(t, err)
 	require.Equal(t, resp.StatusCode, 200)
 	require.Equal(t, respActual, expectedResp)
@@ -315,6 +393,99 @@ func TestLoadbalancers_PoolList(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, resp.StatusCode, 200)
 	require.Equal(t, respActual, expectedResp)
+}
+
+func TestLoadbalancers_PoolMemberCreate(t *testing.T) {
+	setup()
+	defer teardown()
+
+	request := &PoolMemberCreateRequest{ID: testResourceID}
+	expectedResp := &TaskResponse{Tasks: []string{taskID}}
+	URL := path.Join(lbpoolsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, loadbalancersMember)
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodPost)
+		reqBody := new(PoolMemberCreateRequest)
+		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
+			t.Errorf("failed to decode request body: %v", err)
+		}
+		assert.Equal(t, request, reqBody)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
+		_, _ = fmt.Fprint(w, string(resp))
+	})
+
+	respActual, resp, err := client.Loadbalancers.PoolMemberCreate(ctx, testResourceID, request)
+	require.NoError(t, err)
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
+}
+
+func TestLoadbalancers_PoolMemberDelete(t *testing.T) {
+	setup()
+	defer teardown()
+
+	expectedResp := &TaskResponse{Tasks: []string{taskID}}
+	URL := path.Join(lbpoolsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, loadbalancersMember, testResourceID)
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodDelete)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
+		_, _ = fmt.Fprint(w, string(resp))
+	})
+
+	respActual, resp, err := client.Loadbalancers.PoolMemberDelete(ctx, testResourceID, testResourceID)
+	require.NoError(t, err)
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
+}
+
+func TestLoadbalancers_HealthMonitorCreate(t *testing.T) {
+	setup()
+	defer teardown()
+
+	request := &HealthMonitorCreateRequest{ID: testResourceID}
+	expectedResp := &TaskResponse{Tasks: []string{taskID}}
+	URL := path.Join(lbpoolsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, loadbalancersHealthMonitor)
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodPost)
+		reqBody := new(HealthMonitorCreateRequest)
+		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
+			t.Errorf("failed to decode request body: %v", err)
+		}
+		assert.Equal(t, request, reqBody)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
+		_, _ = fmt.Fprint(w, string(resp))
+	})
+
+	respActual, resp, err := client.Loadbalancers.HealthMonitorCreate(ctx, testResourceID, request)
+	require.NoError(t, err)
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
+}
+
+func TestLoadbalancers_HealthMonitorDelete(t *testing.T) {
+	setup()
+	defer teardown()
+
+	URL := path.Join(lbpoolsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, loadbalancersHealthMonitor)
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodDelete)
+	})
+
+	resp, err := client.Loadbalancers.HealthMonitorDelete(ctx, testResourceID)
+	require.NoError(t, err)
+	require.Equal(t, resp.StatusCode, 200)
 }
 
 func TestLoadbalancers_CheckLimits(t *testing.T) {
@@ -455,6 +626,93 @@ func TestLoadbalancers_MetadataGetItem(t *testing.T) {
 	})
 
 	respActual, resp, err := client.Loadbalancers.MetadataGetItem(ctx, testResourceID, nil)
+	require.NoError(t, err)
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
+}
+
+func TestLoadbalancers_Rename(t *testing.T) {
+	setup()
+	defer teardown()
+
+	request := &LoadbalancerRenameRequest{Name: "test-loadbalancer"}
+	expectedResp := &Loadbalancer{ID: testResourceID}
+	URL := path.Join(loadbalancersBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID)
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodPatch)
+		reqBody := new(LoadbalancerRenameRequest)
+		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
+			t.Errorf("failed to decode request body: %v", err)
+		}
+		assert.Equal(t, request, reqBody)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
+		_, _ = fmt.Fprint(w, string(resp))
+	})
+
+	respActual, resp, err := client.Loadbalancers.Rename(ctx, testResourceID, request)
+	require.NoError(t, err)
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
+}
+
+func TestLoadbalancers_SecurityGroupList(t *testing.T) {
+	setup()
+	defer teardown()
+
+	expectedResp := []LoadbalancerSecurityGroup{{ID: testResourceID}}
+	URL := path.Join(loadbalancersBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, loadbalancersSecurityGroup)
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodGet)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
+		_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))
+	})
+
+	respActual, resp, err := client.Loadbalancers.SecurityGroupList(ctx, testResourceID)
+	require.NoError(t, err)
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
+}
+
+func TestLoadbalancers_SecurityGroupCreate(t *testing.T) {
+	setup()
+	defer teardown()
+
+	URL := path.Join(loadbalancersBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, loadbalancersSecurityGroup)
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodPost)
+	})
+
+	resp, err := client.Loadbalancers.SecurityGroupCreate(ctx, testResourceID)
+	require.NoError(t, err)
+	require.Equal(t, resp.StatusCode, 200)
+}
+
+func TestLoadbalancers_MetricsList(t *testing.T) {
+	setup()
+	defer teardown()
+
+	expectedResp := []LoadbalancerMetrics{{}}
+	URL := path.Join(loadbalancersBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, loadbalancersMetrics)
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodGet)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
+		_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))
+	})
+
+	respActual, resp, err := client.Loadbalancers.MetricsList(ctx, testResourceID, nil)
 	require.NoError(t, err)
 	require.Equal(t, resp.StatusCode, 200)
 	require.Equal(t, respActual, expectedResp)

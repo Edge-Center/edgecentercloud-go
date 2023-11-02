@@ -10,12 +10,17 @@ import (
 const (
 	loadbalancersBasePathV1 = "/v1/loadbalancers"
 	lblistenersBasePathV1   = "/v1/lblisteners"
+	lblistenersBasePathV2   = "/v2/lblisteners"
 	lbpoolsBasePathV1       = "/v1/lbpools"
 	lbflavorsBasePathV1     = "/v1/lbflavors"
 )
 
 const (
-	loadbalancersCheckLimits = "check_limits"
+	loadbalancersCheckLimits   = "check_limits"
+	loadbalancersSecurityGroup = "securitygroup"
+	loadbalancersMetrics       = "metrics"
+	loadbalancersMember        = "member"
+	loadbalancersHealthMonitor = "healthmonitor"
 )
 
 // LoadbalancersService is an interface for creating and managing Loadbalancer with the EdgecenterCloud API.
@@ -26,17 +31,26 @@ type LoadbalancersService interface {
 	Create(context.Context, *LoadbalancerCreateRequest) (*TaskResponse, *Response, error)
 	Delete(context.Context, string) (*TaskResponse, *Response, error)
 	CheckLimits(context.Context, *LoadbalancerCheckLimitsRequest) (*map[string]int, *Response, error)
+	Rename(context.Context, string, *LoadbalancerRenameRequest) (*Loadbalancer, *Response, error)
+	SecurityGroupList(context.Context, string) ([]LoadbalancerSecurityGroup, *Response, error)
+	SecurityGroupCreate(context.Context, string) (*Response, error)
+	MetricsList(context.Context, string, *LoadbalancerMetricsListRequest) ([]LoadbalancerMetrics, *Response, error)
+	FlavorList(context.Context, *FlavorsOptions) ([]Flavor, *Response, error)
 
 	LoadbalancerListeners
 	LoadbalancerPools
-	LoadbalancerFlavors
+	LoadbalancerPoolsMember
+	LoadbalancerHealthMonitor
 	LoadbalancerMetadata
 }
 
 type LoadbalancerListeners interface {
+	ListenerList(context.Context, *ListenerListOptions) ([]Listener, *Response, error)
 	ListenerGet(context.Context, string) (*Listener, *Response, error)
 	ListenerCreate(context.Context, *ListenerCreateRequest) (*TaskResponse, *Response, error)
 	ListenerDelete(context.Context, string) (*TaskResponse, *Response, error)
+	ListenerRename(context.Context, string, *LoadbalancerRenameRequest) (*Listener, *Response, error)
+	ListenerUpdate(context.Context, string, *ListenerUpdateRequest) (*TaskResponse, *Response, error)
 }
 
 type LoadbalancerPools interface {
@@ -47,8 +61,14 @@ type LoadbalancerPools interface {
 	PoolList(context.Context, *PoolListOptions) ([]Pool, *Response, error)
 }
 
-type LoadbalancerFlavors interface {
-	FlavorList(context.Context, *FlavorsOptions) ([]Flavor, *Response, error)
+type LoadbalancerPoolsMember interface {
+	PoolMemberCreate(context.Context, string, *PoolMemberCreateRequest) (*TaskResponse, *Response, error)
+	PoolMemberDelete(context.Context, string, string) (*TaskResponse, *Response, error)
+}
+
+type LoadbalancerHealthMonitor interface {
+	HealthMonitorCreate(context.Context, string, *HealthMonitorCreateRequest) (*TaskResponse, *Response, error)
+	HealthMonitorDelete(context.Context, string) (*Response, error)
 }
 
 type LoadbalancerMetadata interface {
@@ -138,9 +158,44 @@ type LoadbalancerID struct {
 	ID string `json:"id"`
 }
 
+// LoadbalancerRenameRequest represents a request to rename a Loadbalancer.
+type LoadbalancerRenameRequest struct {
+	Name string `json:"name" required:"true" validate:"required,name"`
+}
+
 // ListenersID represents a listener ID struct.
 type ListenersID struct {
 	ID string `json:"id"`
+}
+
+// LoadbalancerSecurityGroup represents an EdgecenterCloud Loadbalancer security group.
+type LoadbalancerSecurityGroup struct {
+	Name string `json:"name"`
+	ID   string `json:"id"`
+}
+
+// LoadbalancerMetricsListRequest represents a request to get a Loadbalancer Metrics list.
+type LoadbalancerMetricsListRequest struct {
+	TimeInterval int      `json:"time_interval" required:"true" validate:"required,name"`
+	TimeUnit     TimeUnit `json:"time_unit" required:"true" validate:"required,name"`
+}
+
+type TimeUnit string
+
+const (
+	TimeUnitHour TimeUnit = "hour"
+	TimeUnitDay  TimeUnit = "day"
+)
+
+// LoadbalancerMetrics represents an EdgecenterCloud Loadbalancer metrics.
+type LoadbalancerMetrics struct {
+	CPUUtil           int    `json:"cpu_util"`
+	Time              string `json:"time"`
+	NetworkBpsEgress  int    `json:"network_Bps_egress"`
+	NetworkBpsIngress int    `json:"network_Bps_ingress"`
+	NetworkPpsEgress  int    `json:"network_pps_egress"`
+	NetworkPpsIngress int    `json:"network_pps_ingress"`
+	MemoryUtil        int    `json:"memory_util"`
 }
 
 // LoadbalancerStats represents an EdgecenterCloud Loadbalancer statistic.
@@ -229,8 +284,9 @@ type LoadbalancerPoolCreateRequest struct {
 
 // PoolMemberCreateRequest represents a request to create a Loadbalancer Pool PoolMember.
 type PoolMemberCreateRequest struct {
-	ProtocolPort int    `json:"protocol_port" required:"true"`
+	ID           string `json:"id,omitempty"`
 	Address      net.IP `json:"address" required:"true"`
+	ProtocolPort int    `json:"protocol_port" required:"true"`
 	SubnetID     string `json:"subnet_id,omitempty"`
 	InstanceID   string `json:"instance_id,omitempty"`
 	Weight       int    `json:"weight,omitempty"`
@@ -264,15 +320,15 @@ const (
 
 // HealthMonitorCreateRequest represents a request to create a Loadbalancer Pool Health Monitor.
 type HealthMonitorCreateRequest struct {
-	ID             string            `json:"id,omitempty"`
+	URLPath        *string           `json:"url_path,omitempty"`
+	HTTPMethod     *HTTPMethod       `json:"http_method,omitempty"`
+	MaxRetries     int               `json:"max_retries" required:"true"`
+	MaxRetriesDown int               `json:"max_retries_down,omitempty"`
+	ExpectedCodes  *string           `json:"expected_codes,omitempty"`
 	Type           HealthMonitorType `json:"type" required:"true"`
 	Delay          int               `json:"delay" required:"true"`
-	MaxRetries     int               `json:"max_retries" required:"true"`
 	Timeout        int               `json:"timeout" required:"true"`
-	MaxRetriesDown int               `json:"max_retries_down,omitempty"`
-	URLPath        string            `json:"url_path,omitempty"`
-	ExpectedCodes  *string           `json:"expected_codes,omitempty"`
-	HTTPMethod     *HTTPMethod       `json:"http_method,omitempty"`
+	ID             string            `json:"id,omitempty"`
 }
 
 // HealthMonitorUpdateRequest represents a request to update a Loadbalancer Pool Health Monitor.
@@ -301,6 +357,13 @@ type LoadbalancerListenerCreateRequest struct {
 	InsertXForwarded bool                            `json:"insert_x_forwarded"`
 	SNISecretID      []string                        `json:"sni_secret_id,omitempty"`
 	Pools            []LoadbalancerPoolCreateRequest `json:"pools,omitempty" validate:"omitempty,dive"`
+}
+
+// ListenerUpdateRequest represents a request to update a Loadbalancer Listener.
+type ListenerUpdateRequest struct {
+	Name        string   `json:"name,omitempty"`
+	SecretID    string   `json:"secret_id,omitempty"`
+	SNISecretID []string `json:"sni_secret_id,omitempty"`
 }
 
 type LoadbalancerListenerProtocol string
@@ -337,6 +400,12 @@ type LoadbalancerListOptions struct {
 	MetadataK        string `url:"metadata_k,omitempty"  validate:"omitempty"`
 }
 
+// ListenerListOptions specifies the optional query parameters to List method.
+type ListenerListOptions struct {
+	ShowStats      bool   `url:"show_stats,omitempty"  validate:"omitempty"`
+	LoadbalancerID string `url:"loadbalancer_id,omitempty"  validate:"omitempty"`
+}
+
 // loadbalancersRoot represents a Loadbalancers root.
 type loadbalancersRoot struct {
 	Count         int
@@ -347,6 +416,12 @@ type loadbalancersRoot struct {
 type loadbalancerPoolsRoot struct {
 	Count int
 	Pools []Pool `json:"results"`
+}
+
+// loadbalancerListenersRoot represents a Loadbalancers Listeners root.
+type loadbalancerListenersRoot struct {
+	Count    int
+	Listener []Listener `json:"results"`
 }
 
 // ListenerCreateRequest represents a request to create a Loadbalancer Listener.
@@ -395,6 +470,18 @@ type LoadbalancerCheckLimitsRequest struct {
 type loadbalancerFlavorRoot struct {
 	Count   int
 	Flavors []Flavor `json:"results"`
+}
+
+// loadbalancerSecurityGroupRoot represents a Loadbalancer Security group root.
+type loadbalancerSecurityGroupRoot struct {
+	Count                     int
+	LoadbalancerSecurityGroup []LoadbalancerSecurityGroup `json:"results"`
+}
+
+// loadbalancerMetricsRoot represents a Loadbalancer Metrics root.
+type loadbalancerMetricsRoot struct {
+	Count               int
+	LoadbalancerMetrics []LoadbalancerMetrics `json:"results"`
 }
 
 // List get load balancers.
@@ -501,6 +588,32 @@ func (s *LoadbalancersServiceOp) Delete(ctx context.Context, loadbalancerID stri
 	return tasks, resp, err
 }
 
+// ListenerList get load balancer listeners.
+func (s *LoadbalancersServiceOp) ListenerList(ctx context.Context, opts *ListenerListOptions) ([]Listener, *Response, error) {
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	path := s.client.addProjectRegionPath(lblistenersBasePathV1)
+	path, err := addOptions(path, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	root := new(loadbalancerListenersRoot)
+	resp, err := s.client.Do(ctx, req, root)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return root.Listener, resp, err
+}
+
 // ListenerGet a Loadbalancer Listener.
 func (s *LoadbalancersServiceOp) ListenerGet(ctx context.Context, listenerID string) (*Listener, *Response, error) {
 	if resp, err := isValidUUID(listenerID, "listenerID"); err != nil {
@@ -577,6 +690,66 @@ func (s *LoadbalancersServiceOp) ListenerDelete(ctx context.Context, listenerID 
 	}
 
 	return tasks, resp, err
+}
+
+// ListenerUpdate a Loadbalancer Listener.
+func (s *LoadbalancersServiceOp) ListenerUpdate(ctx context.Context, listenerID string, reqBody *ListenerUpdateRequest) (*TaskResponse, *Response, error) {
+	if resp, err := isValidUUID(listenerID, "listenerID"); err != nil {
+		return nil, resp, err
+	}
+
+	if reqBody == nil {
+		return nil, nil, NewArgError("reqBody", "cannot be nil")
+	}
+
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	path := fmt.Sprintf("%s/%s", s.client.addProjectRegionPath(lblistenersBasePathV2), listenerID)
+
+	req, err := s.client.NewRequest(ctx, http.MethodPatch, path, reqBody)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	tasks := new(TaskResponse)
+	resp, err := s.client.Do(ctx, req, tasks)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return tasks, resp, err
+}
+
+// ListenerRename a Loadbalancer Listener.
+func (s *LoadbalancersServiceOp) ListenerRename(ctx context.Context, listenerID string, reqBody *LoadbalancerRenameRequest) (*Listener, *Response, error) {
+	if resp, err := isValidUUID(listenerID, "listenerID"); err != nil {
+		return nil, resp, err
+	}
+
+	if reqBody == nil {
+		return nil, nil, NewArgError("reqBody", "cannot be nil")
+	}
+
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	path := fmt.Sprintf("%s/%s", s.client.addProjectRegionPath(lblistenersBasePathV1), listenerID)
+
+	req, err := s.client.NewRequest(ctx, http.MethodPatch, path, reqBody)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	listener := new(Listener)
+	resp, err := s.client.Do(ctx, req, listener)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return listener, resp, err
 }
 
 // PoolGet a Loadbalancer Pool.
@@ -709,6 +882,116 @@ func (s *LoadbalancersServiceOp) PoolList(ctx context.Context, opts *PoolListOpt
 	return root.Pools, resp, err
 }
 
+// PoolMemberCreate a Loadbalancer Pool Member.
+func (s *LoadbalancersServiceOp) PoolMemberCreate(ctx context.Context, poolID string, reqBody *PoolMemberCreateRequest) (*TaskResponse, *Response, error) {
+	if resp, err := isValidUUID(poolID, "poolID"); err != nil {
+		return nil, resp, err
+	}
+
+	if reqBody == nil {
+		return nil, nil, NewArgError("reqBody", "cannot be nil")
+	}
+
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	path := fmt.Sprintf("%s/%s/%s", s.client.addProjectRegionPath(lbpoolsBasePathV1), poolID, loadbalancersMember)
+
+	req, err := s.client.NewRequest(ctx, http.MethodPost, path, reqBody)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	tasks := new(TaskResponse)
+	resp, err := s.client.Do(ctx, req, tasks)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return tasks, resp, err
+}
+
+// PoolMemberDelete the Loadbalancer Pool Member.
+func (s *LoadbalancersServiceOp) PoolMemberDelete(ctx context.Context, poolID, memberID string) (*TaskResponse, *Response, error) {
+	if resp, err := isValidUUID(poolID, "poolID"); err != nil {
+		return nil, resp, err
+	}
+
+	if resp, err := isValidUUID(memberID, "memberID"); err != nil {
+		return nil, resp, err
+	}
+
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	path := fmt.Sprintf("%s/%s/%s/%s", s.client.addProjectRegionPath(lbpoolsBasePathV1), poolID, loadbalancersMember, memberID)
+
+	req, err := s.client.NewRequest(ctx, http.MethodDelete, path, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	tasks := new(TaskResponse)
+	resp, err := s.client.Do(ctx, req, tasks)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return tasks, resp, err
+}
+
+// HealthMonitorCreate a Loadbalancer Pool HealthMonitor.
+func (s *LoadbalancersServiceOp) HealthMonitorCreate(ctx context.Context, poolID string, reqBody *HealthMonitorCreateRequest) (*TaskResponse, *Response, error) {
+	if resp, err := isValidUUID(poolID, "poolID"); err != nil {
+		return nil, resp, err
+	}
+
+	if reqBody == nil {
+		return nil, nil, NewArgError("reqBody", "cannot be nil")
+	}
+
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	path := fmt.Sprintf("%s/%s/%s", s.client.addProjectRegionPath(lbpoolsBasePathV1), poolID, loadbalancersHealthMonitor)
+
+	req, err := s.client.NewRequest(ctx, http.MethodPost, path, reqBody)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	tasks := new(TaskResponse)
+	resp, err := s.client.Do(ctx, req, tasks)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return tasks, resp, err
+}
+
+// HealthMonitorDelete the Loadbalancer Pool HealthMonitor.
+func (s *LoadbalancersServiceOp) HealthMonitorDelete(ctx context.Context, poolID string) (*Response, error) {
+	if resp, err := isValidUUID(poolID, "poolID"); err != nil {
+		return resp, err
+	}
+
+	if resp, err := s.client.Validate(); err != nil {
+		return resp, err
+	}
+
+	path := fmt.Sprintf("%s/%s/%s", s.client.addProjectRegionPath(lbpoolsBasePathV1), poolID, loadbalancersHealthMonitor)
+
+	req, err := s.client.NewRequest(ctx, http.MethodDelete, path, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return s.client.Do(ctx, req, nil)
+}
+
 // CheckLimits check a quota for load balancer creation.
 func (s *LoadbalancersServiceOp) CheckLimits(ctx context.Context, reqBody *LoadbalancerCheckLimitsRequest) (*map[string]int, *Response, error) {
 	if resp, err := s.client.Validate(); err != nil {
@@ -730,6 +1013,104 @@ func (s *LoadbalancersServiceOp) CheckLimits(ctx context.Context, reqBody *Loadb
 	}
 
 	return limits, resp, nil
+}
+
+// Rename a load balancer.
+func (s *LoadbalancersServiceOp) Rename(ctx context.Context, loadbalancerID string, reqBody *LoadbalancerRenameRequest) (*Loadbalancer, *Response, error) {
+	if resp, err := isValidUUID(loadbalancerID, "loadbalancerID"); err != nil {
+		return nil, resp, err
+	}
+
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	path := fmt.Sprintf("%s/%s", s.client.addProjectRegionPath(loadbalancersBasePathV1), loadbalancerID)
+
+	req, err := s.client.NewRequest(ctx, http.MethodPatch, path, reqBody)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	loadbalancer := new(Loadbalancer)
+	resp, err := s.client.Do(ctx, req, loadbalancer)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return loadbalancer, resp, nil
+}
+
+// SecurityGroupList get a custom security group for a load balancer's ingress port.
+func (s *LoadbalancersServiceOp) SecurityGroupList(ctx context.Context, loadbalancerID string) ([]LoadbalancerSecurityGroup, *Response, error) {
+	if resp, err := isValidUUID(loadbalancerID, "loadbalancerID"); err != nil {
+		return nil, resp, err
+	}
+
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	path := fmt.Sprintf("%s/%s/%s", s.client.addProjectRegionPath(loadbalancersBasePathV1), loadbalancerID, loadbalancersSecurityGroup)
+
+	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	root := new(loadbalancerSecurityGroupRoot)
+	resp, err := s.client.Do(ctx, req, root)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return root.LoadbalancerSecurityGroup, resp, err
+}
+
+// SecurityGroupCreate a custom security group for load balancer's ingress port.
+func (s *LoadbalancersServiceOp) SecurityGroupCreate(ctx context.Context, loadbalancerID string) (*Response, error) {
+	if resp, err := isValidUUID(loadbalancerID, "loadbalancerID"); err != nil {
+		return resp, err
+	}
+
+	if resp, err := s.client.Validate(); err != nil {
+		return resp, err
+	}
+
+	path := fmt.Sprintf("%s/%s/%s", s.client.addProjectRegionPath(loadbalancersBasePathV1), loadbalancerID, loadbalancersSecurityGroup)
+
+	req, err := s.client.NewRequest(ctx, http.MethodPost, path, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return s.client.Do(ctx, req, nil)
+}
+
+// MetricsList get load balancer metrics.
+func (s *LoadbalancersServiceOp) MetricsList(ctx context.Context, loadbalancerID string, reqBody *LoadbalancerMetricsListRequest) ([]LoadbalancerMetrics, *Response, error) {
+	if resp, err := isValidUUID(loadbalancerID, "loadbalancerID"); err != nil {
+		return nil, resp, err
+	}
+
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	path := fmt.Sprintf("%s/%s/%s", s.client.addProjectRegionPath(loadbalancersBasePathV1), loadbalancerID, loadbalancersMetrics)
+
+	req, err := s.client.NewRequest(ctx, http.MethodGet, path, reqBody)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	root := new(loadbalancerMetricsRoot)
+	resp, err := s.client.Do(ctx, req, root)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return root.LoadbalancerMetrics, resp, err
 }
 
 // FlavorList get load balancer flavors.
