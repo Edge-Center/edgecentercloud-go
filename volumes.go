@@ -8,11 +8,14 @@ import (
 
 const (
 	volumesBasePathV1 = "/v1/volumes"
-	volumesRetypePath = "retype"
-	volumesExtendPath = "extend"
-	volumesAttachPath = "attach"
-	volumesDetachPath = "detach"
-	volumesRevertPath = "revert"
+)
+
+const (
+	volumesRetype = "retype"
+	volumesExtend = "extend"
+	volumesAttach = "attach"
+	volumesDetach = "detach"
+	volumesRevert = "revert"
 )
 
 // VolumesService is an interface for creating and managing Volumes with the EdgecenterCloud API.
@@ -224,9 +227,9 @@ func (s *VolumesServiceOp) Get(ctx context.Context, volumeID string) (*Volume, *
 }
 
 // Create a Volume.
-func (s *VolumesServiceOp) Create(ctx context.Context, createRequest *VolumeCreateRequest) (*TaskResponse, *Response, error) {
-	if createRequest == nil {
-		return nil, nil, NewArgError("createRequest", "cannot be nil")
+func (s *VolumesServiceOp) Create(ctx context.Context, reqBody *VolumeCreateRequest) (*TaskResponse, *Response, error) {
+	if reqBody == nil {
+		return nil, nil, NewArgError("reqBody", "cannot be nil")
 	}
 
 	if resp, err := s.client.Validate(); err != nil {
@@ -235,7 +238,7 @@ func (s *VolumesServiceOp) Create(ctx context.Context, createRequest *VolumeCrea
 
 	path := s.client.addProjectRegionPath(volumesBasePathV1)
 
-	req, err := s.client.NewRequest(ctx, http.MethodPost, path, createRequest)
+	req, err := s.client.NewRequest(ctx, http.MethodPost, path, reqBody)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -276,22 +279,22 @@ func (s *VolumesServiceOp) Delete(ctx context.Context, volumeID string) (*TaskRe
 }
 
 // ChangeType of the volume.
-func (s *VolumesServiceOp) ChangeType(ctx context.Context, volumeID string, changeTypeRequest *VolumeChangeTypeRequest) (*Volume, *Response, error) {
+func (s *VolumesServiceOp) ChangeType(ctx context.Context, volumeID string, reqBody *VolumeChangeTypeRequest) (*Volume, *Response, error) {
 	if resp, err := isValidUUID(volumeID, "volumeID"); err != nil {
 		return nil, resp, err
 	}
 
-	if changeTypeRequest == nil {
-		return nil, nil, NewArgError("changeTypeRequest", "cannot be nil")
+	if reqBody == nil {
+		return nil, nil, NewArgError("reqBody", "cannot be nil")
 	}
 
 	if resp, err := s.client.Validate(); err != nil {
 		return nil, resp, err
 	}
 
-	path := fmt.Sprintf("%s/%s/%s", s.client.addProjectRegionPath(volumesBasePathV1), volumeID, volumesRetypePath)
+	path := fmt.Sprintf("%s/%s/%s", s.client.addProjectRegionPath(volumesBasePathV1), volumeID, volumesRetype)
 
-	req, err := s.client.NewRequest(ctx, http.MethodPost, path, changeTypeRequest)
+	req, err := s.client.NewRequest(ctx, http.MethodPost, path, reqBody)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -306,22 +309,22 @@ func (s *VolumesServiceOp) ChangeType(ctx context.Context, volumeID string, chan
 }
 
 // Extend the volume size.
-func (s *VolumesServiceOp) Extend(ctx context.Context, volumeID string, extendSizeRequest *VolumeExtendSizeRequest) (*TaskResponse, *Response, error) {
+func (s *VolumesServiceOp) Extend(ctx context.Context, volumeID string, reqBody *VolumeExtendSizeRequest) (*TaskResponse, *Response, error) {
 	if resp, err := isValidUUID(volumeID, "volumeID"); err != nil {
 		return nil, resp, err
 	}
 
-	if extendSizeRequest == nil {
-		return nil, nil, NewArgError("extendSizeRequest", "cannot be nil")
+	if reqBody == nil {
+		return nil, nil, NewArgError("reqBody", "cannot be nil")
 	}
 
 	if resp, err := s.client.Validate(); err != nil {
 		return nil, resp, err
 	}
 
-	path := fmt.Sprintf("%s/%s/%s", s.client.addProjectRegionPath(volumesBasePathV1), volumeID, volumesExtendPath)
+	path := fmt.Sprintf("%s/%s/%s", s.client.addProjectRegionPath(volumesBasePathV1), volumeID, volumesExtend)
 
-	req, err := s.client.NewRequest(ctx, http.MethodPost, path, extendSizeRequest)
+	req, err := s.client.NewRequest(ctx, http.MethodPost, path, reqBody)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -336,13 +339,13 @@ func (s *VolumesServiceOp) Extend(ctx context.Context, volumeID string, extendSi
 }
 
 // Rename the volume.
-func (s *VolumesServiceOp) Rename(ctx context.Context, volumeID string, renameRequest *VolumeRenameRequest) (*Volume, *Response, error) {
+func (s *VolumesServiceOp) Rename(ctx context.Context, volumeID string, reqBody *VolumeRenameRequest) (*Volume, *Response, error) {
 	if resp, err := isValidUUID(volumeID, "volumeID"); err != nil {
 		return nil, resp, err
 	}
 
-	if renameRequest == nil {
-		return nil, nil, NewArgError("renameRequest", "cannot be nil")
+	if reqBody == nil {
+		return nil, nil, NewArgError("reqBody", "cannot be nil")
 	}
 
 	if resp, err := s.client.Validate(); err != nil {
@@ -351,7 +354,7 @@ func (s *VolumesServiceOp) Rename(ctx context.Context, volumeID string, renameRe
 
 	path := fmt.Sprintf("%s/%s", s.client.addProjectRegionPath(volumesBasePathV1), volumeID)
 
-	req, err := s.client.NewRequest(ctx, http.MethodPatch, path, renameRequest)
+	req, err := s.client.NewRequest(ctx, http.MethodPatch, path, reqBody)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -366,22 +369,22 @@ func (s *VolumesServiceOp) Rename(ctx context.Context, volumeID string, renameRe
 }
 
 // Attach the volume.
-func (s *VolumesServiceOp) Attach(ctx context.Context, volumeID string, attachRequest *VolumeAttachRequest) (*Volume, *Response, error) {
+func (s *VolumesServiceOp) Attach(ctx context.Context, volumeID string, reqBody *VolumeAttachRequest) (*Volume, *Response, error) {
 	if resp, err := isValidUUID(volumeID, "volumeID"); err != nil {
 		return nil, resp, err
 	}
 
-	if attachRequest == nil {
-		return nil, nil, NewArgError("attachRequest", "cannot be nil")
+	if reqBody == nil {
+		return nil, nil, NewArgError("reqBody", "cannot be nil")
 	}
 
 	if resp, err := s.client.Validate(); err != nil {
 		return nil, resp, err
 	}
 
-	path := fmt.Sprintf("%s/%s/%s", s.client.addProjectRegionPath(volumesBasePathV1), volumeID, volumesAttachPath)
+	path := fmt.Sprintf("%s/%s/%s", s.client.addProjectRegionPath(volumesBasePathV1), volumeID, volumesAttach)
 
-	req, err := s.client.NewRequest(ctx, http.MethodPost, path, attachRequest)
+	req, err := s.client.NewRequest(ctx, http.MethodPost, path, reqBody)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -396,22 +399,22 @@ func (s *VolumesServiceOp) Attach(ctx context.Context, volumeID string, attachRe
 }
 
 // Detach the volume.
-func (s *VolumesServiceOp) Detach(ctx context.Context, volumeID string, detachRequest *VolumeDetachRequest) (*Volume, *Response, error) {
+func (s *VolumesServiceOp) Detach(ctx context.Context, volumeID string, reqBody *VolumeDetachRequest) (*Volume, *Response, error) {
 	if resp, err := isValidUUID(volumeID, "volumeID"); err != nil {
 		return nil, resp, err
 	}
 
-	if detachRequest == nil {
-		return nil, nil, NewArgError("detachRequest", "cannot be nil")
+	if reqBody == nil {
+		return nil, nil, NewArgError("reqBody", "cannot be nil")
 	}
 
 	if resp, err := s.client.Validate(); err != nil {
 		return nil, resp, err
 	}
 
-	path := fmt.Sprintf("%s/%s/%s", s.client.addProjectRegionPath(volumesBasePathV1), volumeID, volumesDetachPath)
+	path := fmt.Sprintf("%s/%s/%s", s.client.addProjectRegionPath(volumesBasePathV1), volumeID, volumesDetach)
 
-	req, err := s.client.NewRequest(ctx, http.MethodPost, path, detachRequest)
+	req, err := s.client.NewRequest(ctx, http.MethodPost, path, reqBody)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -435,7 +438,7 @@ func (s *VolumesServiceOp) Revert(ctx context.Context, volumeID string) (*TaskRe
 		return nil, resp, err
 	}
 
-	path := fmt.Sprintf("%s/%s/%s", s.client.addProjectRegionPath(volumesBasePathV1), volumeID, volumesRevertPath)
+	path := fmt.Sprintf("%s/%s/%s", s.client.addProjectRegionPath(volumesBasePathV1), volumeID, volumesRevert)
 
 	req, err := s.client.NewRequest(ctx, http.MethodPost, path, nil)
 	if err != nil {
@@ -465,7 +468,7 @@ func (s *VolumesServiceOp) MetadataList(ctx context.Context, volumeID string) ([
 }
 
 // MetadataCreate or update volume metadata.
-func (s *VolumesServiceOp) MetadataCreate(ctx context.Context, volumeID string, metadata *MetadataCreateRequest) (*Response, error) {
+func (s *VolumesServiceOp) MetadataCreate(ctx context.Context, volumeID string, reqBody *MetadataCreateRequest) (*Response, error) {
 	if resp, err := isValidUUID(volumeID, "volumeID"); err != nil {
 		return resp, err
 	}
@@ -474,11 +477,11 @@ func (s *VolumesServiceOp) MetadataCreate(ctx context.Context, volumeID string, 
 		return resp, err
 	}
 
-	return metadataCreate(ctx, s.client, volumeID, volumesBasePathV1, metadata)
+	return metadataCreate(ctx, s.client, volumeID, volumesBasePathV1, reqBody)
 }
 
 // MetadataUpdate volume metadata.
-func (s *VolumesServiceOp) MetadataUpdate(ctx context.Context, volumeID string, metadata *MetadataCreateRequest) (*Response, error) {
+func (s *VolumesServiceOp) MetadataUpdate(ctx context.Context, volumeID string, reqBody *MetadataCreateRequest) (*Response, error) {
 	if resp, err := isValidUUID(volumeID, "volumeID"); err != nil {
 		return resp, err
 	}
@@ -487,7 +490,7 @@ func (s *VolumesServiceOp) MetadataUpdate(ctx context.Context, volumeID string, 
 		return resp, err
 	}
 
-	return metadataUpdate(ctx, s.client, volumeID, volumesBasePathV1, metadata)
+	return metadataUpdate(ctx, s.client, volumeID, volumesBasePathV1, reqBody)
 }
 
 // MetadataDeleteItem a volume metadata item by key.

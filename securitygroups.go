@@ -9,8 +9,11 @@ import (
 const (
 	securitygroupsBasePathV1      = "/v1/securitygroups"
 	securitygroupsRulesBasePathV1 = "/v1/securitygrouprules"
-	securitygroupsCopyPath        = "copy"
-	securitygroupsRulesPath       = "rules"
+)
+
+const (
+	securitygroupsCopy  = "copy"
+	securitygroupsRules = "rules"
 )
 
 // SecurityGroupsService is an interface for creating and managing Security Groups (Firewalls) with the EdgecenterCloud API.
@@ -255,9 +258,9 @@ func (s *SecurityGroupsServiceOp) Get(ctx context.Context, securityGroupID strin
 }
 
 // Create a Security Group.
-func (s *SecurityGroupsServiceOp) Create(ctx context.Context, createRequest *SecurityGroupCreateRequest) (*TaskResponse, *Response, error) {
-	if createRequest == nil {
-		return nil, nil, NewArgError("createRequest", "cannot be nil")
+func (s *SecurityGroupsServiceOp) Create(ctx context.Context, reqBody *SecurityGroupCreateRequest) (*TaskResponse, *Response, error) {
+	if reqBody == nil {
+		return nil, nil, NewArgError("reqBody", "cannot be nil")
 	}
 
 	if resp, err := s.client.Validate(); err != nil {
@@ -266,7 +269,7 @@ func (s *SecurityGroupsServiceOp) Create(ctx context.Context, createRequest *Sec
 
 	path := s.client.addProjectRegionPath(securitygroupsBasePathV1)
 
-	req, err := s.client.NewRequest(ctx, http.MethodPost, path, createRequest)
+	req, err := s.client.NewRequest(ctx, http.MethodPost, path, reqBody)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -307,13 +310,13 @@ func (s *SecurityGroupsServiceOp) Delete(ctx context.Context, securityGroupID st
 }
 
 // Update a Security Group.
-func (s *SecurityGroupsServiceOp) Update(ctx context.Context, securityGroupID string, updateRequest *SecurityGroupUpdateRequest) (*SecurityGroup, *Response, error) {
+func (s *SecurityGroupsServiceOp) Update(ctx context.Context, securityGroupID string, reqBody *SecurityGroupUpdateRequest) (*SecurityGroup, *Response, error) {
 	if resp, err := isValidUUID(securityGroupID, "securityGroupID"); err != nil {
 		return nil, resp, err
 	}
 
-	if updateRequest == nil {
-		return nil, nil, NewArgError("updateRequest", "cannot be nil")
+	if reqBody == nil {
+		return nil, nil, NewArgError("reqBody", "cannot be nil")
 	}
 
 	if resp, err := s.client.Validate(); err != nil {
@@ -322,7 +325,7 @@ func (s *SecurityGroupsServiceOp) Update(ctx context.Context, securityGroupID st
 
 	path := fmt.Sprintf("%s/%s", s.client.addProjectRegionPath(securitygroupsBasePathV1), securityGroupID)
 
-	req, err := s.client.NewRequest(ctx, http.MethodPatch, path, updateRequest)
+	req, err := s.client.NewRequest(ctx, http.MethodPatch, path, reqBody)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -337,12 +340,12 @@ func (s *SecurityGroupsServiceOp) Update(ctx context.Context, securityGroupID st
 }
 
 // DeepCopy creates a deep copy of a security group.
-func (s *SecurityGroupsServiceOp) DeepCopy(ctx context.Context, securityGroupID string, deepCopyRequest *SecurityGroupDeepCopyRequest) (*Response, error) {
+func (s *SecurityGroupsServiceOp) DeepCopy(ctx context.Context, securityGroupID string, reqBody *SecurityGroupDeepCopyRequest) (*Response, error) {
 	if resp, err := isValidUUID(securityGroupID, "securityGroupID"); err != nil {
 		return resp, err
 	}
 
-	if deepCopyRequest == nil {
+	if reqBody == nil {
 		return nil, NewArgError("deepCopyRequest", "cannot be nil")
 	}
 
@@ -351,9 +354,9 @@ func (s *SecurityGroupsServiceOp) DeepCopy(ctx context.Context, securityGroupID 
 	}
 
 	path := s.client.addProjectRegionPath(securitygroupsBasePathV1)
-	path = fmt.Sprintf("%s/%s/%s", path, securityGroupID, securitygroupsCopyPath)
+	path = fmt.Sprintf("%s/%s/%s", path, securityGroupID, securitygroupsCopy)
 
-	req, err := s.client.NewRequest(ctx, http.MethodPost, path, deepCopyRequest)
+	req, err := s.client.NewRequest(ctx, http.MethodPost, path, reqBody)
 	if err != nil {
 		return nil, err
 	}
@@ -362,13 +365,13 @@ func (s *SecurityGroupsServiceOp) DeepCopy(ctx context.Context, securityGroupID 
 }
 
 // RuleCreate to a security group.
-func (s *SecurityGroupsServiceOp) RuleCreate(ctx context.Context, securityGroupID string, ruleCreateRequest *RuleCreateRequest) (*SecurityGroupRule, *Response, error) {
+func (s *SecurityGroupsServiceOp) RuleCreate(ctx context.Context, securityGroupID string, reqBody *RuleCreateRequest) (*SecurityGroupRule, *Response, error) {
 	if resp, err := isValidUUID(securityGroupID, "securityGroupID"); err != nil {
 		return nil, resp, err
 	}
 
-	if ruleCreateRequest == nil {
-		return nil, nil, NewArgError("ruleCreateRequest", "cannot be nil")
+	if reqBody == nil {
+		return nil, nil, NewArgError("reqBody", "cannot be nil")
 	}
 
 	if resp, err := s.client.Validate(); err != nil {
@@ -376,9 +379,9 @@ func (s *SecurityGroupsServiceOp) RuleCreate(ctx context.Context, securityGroupI
 	}
 
 	path := s.client.addProjectRegionPath(securitygroupsBasePathV1)
-	path = fmt.Sprintf("%s/%s/%s", path, securityGroupID, securitygroupsRulesPath)
+	path = fmt.Sprintf("%s/%s/%s", path, securityGroupID, securitygroupsRules)
 
-	req, err := s.client.NewRequest(ctx, http.MethodPost, path, ruleCreateRequest)
+	req, err := s.client.NewRequest(ctx, http.MethodPost, path, reqBody)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -419,13 +422,13 @@ func (s *SecurityGroupsServiceOp) RuleDelete(ctx context.Context, securityGroupI
 }
 
 // RuleUpdate a security group rule.
-func (s *SecurityGroupsServiceOp) RuleUpdate(ctx context.Context, securityGroupID string, ruleUpdateRequest *RuleUpdateRequest) (*SecurityGroupRule, *Response, error) {
+func (s *SecurityGroupsServiceOp) RuleUpdate(ctx context.Context, securityGroupID string, reqBody *RuleUpdateRequest) (*SecurityGroupRule, *Response, error) {
 	if resp, err := isValidUUID(securityGroupID, "securityGroupID"); err != nil {
 		return nil, resp, err
 	}
 
-	if ruleUpdateRequest == nil {
-		return nil, nil, NewArgError("ruleUpdateRequest", "cannot be nil")
+	if reqBody == nil {
+		return nil, nil, NewArgError("reqBody", "cannot be nil")
 	}
 
 	if resp, err := s.client.Validate(); err != nil {
@@ -434,7 +437,7 @@ func (s *SecurityGroupsServiceOp) RuleUpdate(ctx context.Context, securityGroupI
 
 	path := fmt.Sprintf("%s/%s", s.client.addProjectRegionPath(securitygroupsRulesBasePathV1), securityGroupID)
 
-	req, err := s.client.NewRequest(ctx, http.MethodPut, path, ruleUpdateRequest)
+	req, err := s.client.NewRequest(ctx, http.MethodPut, path, reqBody)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -462,7 +465,7 @@ func (s *SecurityGroupsServiceOp) MetadataList(ctx context.Context, securityGrou
 }
 
 // MetadataCreate or update security group metadata.
-func (s *SecurityGroupsServiceOp) MetadataCreate(ctx context.Context, securityGroupID string, metadata *MetadataCreateRequest) (*Response, error) {
+func (s *SecurityGroupsServiceOp) MetadataCreate(ctx context.Context, securityGroupID string, reqBody *MetadataCreateRequest) (*Response, error) {
 	if resp, err := isValidUUID(securityGroupID, "securityGroupID"); err != nil {
 		return resp, err
 	}
@@ -471,11 +474,11 @@ func (s *SecurityGroupsServiceOp) MetadataCreate(ctx context.Context, securityGr
 		return resp, err
 	}
 
-	return metadataCreate(ctx, s.client, securityGroupID, securitygroupsBasePathV1, metadata)
+	return metadataCreate(ctx, s.client, securityGroupID, securitygroupsBasePathV1, reqBody)
 }
 
 // MetadataUpdate security group metadata.
-func (s *SecurityGroupsServiceOp) MetadataUpdate(ctx context.Context, securityGroupID string, metadata *MetadataCreateRequest) (*Response, error) {
+func (s *SecurityGroupsServiceOp) MetadataUpdate(ctx context.Context, securityGroupID string, reqBody *MetadataCreateRequest) (*Response, error) {
 	if resp, err := isValidUUID(securityGroupID, "securityGroupID"); err != nil {
 		return resp, err
 	}
@@ -484,7 +487,7 @@ func (s *SecurityGroupsServiceOp) MetadataUpdate(ctx context.Context, securityGr
 		return resp, err
 	}
 
-	return metadataUpdate(ctx, s.client, securityGroupID, securitygroupsBasePathV1, metadata)
+	return metadataUpdate(ctx, s.client, securityGroupID, securitygroupsBasePathV1, reqBody)
 }
 
 // MetadataDeleteItem a security group metadata item by key.

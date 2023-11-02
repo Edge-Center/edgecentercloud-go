@@ -4,7 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"reflect"
+	"path"
+	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -15,51 +16,53 @@ func TestSecurityGroups_List(t *testing.T) {
 	setup()
 	defer teardown()
 
-	securityGroups := []SecurityGroup{{ID: testResourceID}}
-	URL := fmt.Sprintf("/v1/securitygroups/%d/%d", projectID, regionID)
+	expectedResp := []SecurityGroup{{ID: testResourceID}}
+	URL := path.Join(securitygroupsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID))
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
-		resp, _ := json.Marshal(securityGroups)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))
 	})
 
-	resp, _, err := client.SecurityGroups.List(ctx, nil)
+	respActual, resp, err := client.SecurityGroups.List(ctx, nil)
 	require.NoError(t, err)
-
-	if !reflect.DeepEqual(resp, securityGroups) {
-		t.Errorf("SecurityGroups.List\n returned %+v,\n expected %+v", resp, securityGroups)
-	}
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }
 
 func TestSecurityGroups_Get(t *testing.T) {
 	setup()
 	defer teardown()
 
-	securityGroup := &SecurityGroup{ID: testResourceID}
-	URL := fmt.Sprintf("/v1/securitygroups/%d/%d/%s", projectID, regionID, testResourceID)
+	expectedResp := &SecurityGroup{ID: testResourceID}
+	URL := path.Join(securitygroupsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
-		resp, _ := json.Marshal(securityGroup)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.SecurityGroups.Get(ctx, testResourceID)
+	respActual, resp, err := client.SecurityGroups.Get(ctx, testResourceID)
 	require.NoError(t, err)
-
-	if !reflect.DeepEqual(resp, securityGroup) {
-		t.Errorf("SecurityGroups.Get\n returned %+v,\n expected %+v", resp, securityGroup)
-	}
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }
 
 func TestSecurityGroups_Create(t *testing.T) {
 	setup()
 	defer teardown()
 
-	securityGroupCreateRequest := &SecurityGroupCreateRequest{}
-	taskResponse := &TaskResponse{Tasks: []string{taskID}}
-	URL := fmt.Sprintf("/v1/securitygroups/%d/%d", projectID, regionID)
+	request := &SecurityGroupCreateRequest{}
+	expectedResp := &TaskResponse{Tasks: []string{taskID}}
+	URL := path.Join(securitygroupsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID))
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
@@ -67,43 +70,49 @@ func TestSecurityGroups_Create(t *testing.T) {
 		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
 			t.Errorf("failed to decode request body: %v", err)
 		}
-		assert.Equal(t, securityGroupCreateRequest, reqBody)
-		resp, _ := json.Marshal(taskResponse)
+		assert.Equal(t, request, reqBody)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.SecurityGroups.Create(ctx, securityGroupCreateRequest)
+	respActual, resp, err := client.SecurityGroups.Create(ctx, request)
 	require.NoError(t, err)
-
-	assert.Equal(t, taskResponse, resp)
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }
 
 func TestSecurityGroups_Delete(t *testing.T) {
 	setup()
 	defer teardown()
 
-	taskResponse := &TaskResponse{Tasks: []string{taskID}}
-	URL := fmt.Sprintf("/v1/securitygroups/%d/%d/%s", projectID, regionID, testResourceID)
+	expectedResp := &TaskResponse{Tasks: []string{taskID}}
+	URL := path.Join(securitygroupsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodDelete)
-		resp, _ := json.Marshal(taskResponse)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.SecurityGroups.Delete(ctx, testResourceID)
+	respActual, resp, err := client.SecurityGroups.Delete(ctx, testResourceID)
 	require.NoError(t, err)
-
-	assert.Equal(t, taskResponse, resp)
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }
 
 func TestSecurityGroups_Update(t *testing.T) {
 	setup()
 	defer teardown()
 
-	securityGroupUpdateRequest := &SecurityGroupUpdateRequest{}
-	securityGroup := &SecurityGroup{ID: testResourceID}
-	URL := fmt.Sprintf("/v1/securitygroups/%d/%d/%s", projectID, regionID, testResourceID)
+	request := &SecurityGroupUpdateRequest{}
+	expectedResp := &SecurityGroup{ID: testResourceID}
+	URL := path.Join(securitygroupsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPatch)
@@ -111,23 +120,26 @@ func TestSecurityGroups_Update(t *testing.T) {
 		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
 			t.Errorf("failed to decode request body: %v", err)
 		}
-		assert.Equal(t, securityGroupUpdateRequest, reqBody)
-		resp, _ := json.Marshal(securityGroup)
+		assert.Equal(t, request, reqBody)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.SecurityGroups.Update(ctx, testResourceID, securityGroupUpdateRequest)
+	respActual, resp, err := client.SecurityGroups.Update(ctx, testResourceID, request)
 	require.NoError(t, err)
-
-	assert.Equal(t, securityGroup, resp)
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }
 
 func TestSecurityGroups_DeepCopy(t *testing.T) {
 	setup()
 	defer teardown()
 
-	securityGroupDeepCopyRequest := &SecurityGroupDeepCopyRequest{}
-	URL := fmt.Sprintf("/v1/securitygroups/%d/%d/%s/%s", projectID, regionID, testResourceID, securitygroupsCopyPath)
+	request := &SecurityGroupDeepCopyRequest{}
+	URL := path.Join(securitygroupsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, securitygroupsCopy)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
@@ -135,22 +147,21 @@ func TestSecurityGroups_DeepCopy(t *testing.T) {
 		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
 			t.Errorf("failed to decode request body: %v", err)
 		}
-		assert.Equal(t, securityGroupDeepCopyRequest, reqBody)
+		assert.Equal(t, request, reqBody)
 	})
 
-	resp, err := client.SecurityGroups.DeepCopy(ctx, testResourceID, securityGroupDeepCopyRequest)
+	resp, err := client.SecurityGroups.DeepCopy(ctx, testResourceID, request)
 	require.NoError(t, err)
-
-	assert.Equal(t, 200, resp.StatusCode)
+	require.Equal(t, resp.StatusCode, 200)
 }
 
 func TestSecurityGroups_RuleCreate(t *testing.T) {
 	setup()
 	defer teardown()
 
-	ruleCreateRequest := &RuleCreateRequest{}
-	securityGroupRule := &SecurityGroupRule{ID: testResourceID}
-	URL := fmt.Sprintf("/v1/securitygroups/%d/%d/%s/%s", projectID, regionID, testResourceID, securitygroupsRulesPath)
+	request := &RuleCreateRequest{}
+	expectedResp := &SecurityGroupRule{ID: testResourceID}
+	URL := path.Join(securitygroupsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, securitygroupsRules)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
@@ -158,43 +169,49 @@ func TestSecurityGroups_RuleCreate(t *testing.T) {
 		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
 			t.Errorf("failed to decode request body: %v", err)
 		}
-		assert.Equal(t, ruleCreateRequest, reqBody)
-		resp, _ := json.Marshal(securityGroupRule)
+		assert.Equal(t, request, reqBody)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.SecurityGroups.RuleCreate(ctx, testResourceID, ruleCreateRequest)
+	respActual, resp, err := client.SecurityGroups.RuleCreate(ctx, testResourceID, request)
 	require.NoError(t, err)
-
-	assert.Equal(t, securityGroupRule, resp)
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }
 
 func TestSecurityGroups_RuleDelete(t *testing.T) {
 	setup()
 	defer teardown()
 
-	taskResponse := &TaskResponse{Tasks: []string{taskID}}
-	URL := fmt.Sprintf("/v1/securitygrouprules/%d/%d/%s", projectID, regionID, testResourceID)
+	expectedResp := &TaskResponse{Tasks: []string{taskID}}
+	URL := path.Join(securitygroupsRulesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodDelete)
-		resp, _ := json.Marshal(taskResponse)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.SecurityGroups.RuleDelete(ctx, testResourceID)
+	respActual, resp, err := client.SecurityGroups.RuleDelete(ctx, testResourceID)
 	require.NoError(t, err)
-
-	assert.Equal(t, taskResponse, resp)
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }
 
 func TestSecurityGroups_RuleUpdate(t *testing.T) {
 	setup()
 	defer teardown()
 
-	ruleUpdateRequest := &RuleUpdateRequest{}
-	securityGroupRule := &SecurityGroupRule{ID: testResourceID}
-	URL := fmt.Sprintf("/v1/securitygrouprules/%d/%d/%s", projectID, regionID, testResourceID)
+	request := &RuleUpdateRequest{}
+	expectedResp := &SecurityGroupRule{ID: testResourceID}
+	URL := path.Join(securitygroupsRulesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPut)
@@ -202,111 +219,115 @@ func TestSecurityGroups_RuleUpdate(t *testing.T) {
 		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
 			t.Errorf("failed to decode request body: %v", err)
 		}
-		assert.Equal(t, ruleUpdateRequest, reqBody)
-		resp, _ := json.Marshal(securityGroupRule)
+		assert.Equal(t, request, reqBody)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.SecurityGroups.RuleUpdate(ctx, testResourceID, ruleUpdateRequest)
+	respActual, resp, err := client.SecurityGroups.RuleUpdate(ctx, testResourceID, request)
 	require.NoError(t, err)
-
-	assert.Equal(t, securityGroupRule, resp)
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }
 
 func TestSecurityGroups_MetadataList(t *testing.T) {
 	setup()
 	defer teardown()
 
-	metadataList := []MetadataDetailed{{
+	expectedResp := []MetadataDetailed{{
 		Key:      "image_id",
 		Value:    "b3c52ece-147e-4af5-8d7c-84691309b879",
 		ReadOnly: true,
 	}}
-	URL := fmt.Sprintf("/v1/securitygroups/%d/%d/%s/%s", projectID, regionID, testResourceID, metadataPath)
+	URL := path.Join(securitygroupsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, metadataPath)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
-		resp, _ := json.Marshal(metadataList)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))
 	})
 
-	resp, _, err := client.SecurityGroups.MetadataList(ctx, testResourceID)
+	respActual, resp, err := client.SecurityGroups.MetadataList(ctx, testResourceID)
 	require.NoError(t, err)
-
-	if !reflect.DeepEqual(resp, metadataList) {
-		t.Errorf("SecurityGroups.MetadataList\n returned %+v,\n expected %+v", resp, metadataList)
-	}
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }
 
 func TestSecurityGroups_MetadataCreate(t *testing.T) {
 	setup()
 	defer teardown()
 
-	metadataCreateRequest := &MetadataCreateRequest{
-		map[string]interface{}{"key": "value"},
-	}
-	URL := fmt.Sprintf("/v1/securitygroups/%d/%d/%s/%s", projectID, regionID, testResourceID, metadataPath)
+	request := &MetadataCreateRequest{Metadata: map[string]interface{}{"key": "value"}}
+	URL := path.Join(securitygroupsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, metadataPath)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
 	})
 
-	_, err := client.SecurityGroups.MetadataCreate(ctx, testResourceID, metadataCreateRequest)
+	resp, err := client.SecurityGroups.MetadataCreate(ctx, testResourceID, request)
 	require.NoError(t, err)
+	require.Equal(t, resp.StatusCode, 200)
 }
 
 func TestSecurityGroups_MetadataUpdate(t *testing.T) {
 	setup()
 	defer teardown()
 
-	metadataCreateRequest := &MetadataCreateRequest{
-		map[string]interface{}{"key": "value"},
-	}
-	URL := fmt.Sprintf("/v1/securitygroups/%d/%d/%s/%s", projectID, regionID, testResourceID, metadataPath)
+	request := &MetadataCreateRequest{Metadata: map[string]interface{}{"key": "value"}}
+	URL := path.Join(securitygroupsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, metadataPath)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPut)
 	})
 
-	_, err := client.SecurityGroups.MetadataUpdate(ctx, testResourceID, metadataCreateRequest)
+	resp, err := client.SecurityGroups.MetadataUpdate(ctx, testResourceID, request)
 	require.NoError(t, err)
+	require.Equal(t, resp.StatusCode, 200)
 }
 
 func TestSecurityGroups_MetadataDeleteItem(t *testing.T) {
 	setup()
 	defer teardown()
 
-	URL := fmt.Sprintf("/v1/securitygroups/%d/%d/%s/%s", projectID, regionID, testResourceID, metadataItemPath)
+	URL := path.Join(securitygroupsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, metadataItemPath)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodDelete)
 	})
 
-	_, err := client.SecurityGroups.MetadataDeleteItem(ctx, testResourceID, nil)
+	resp, err := client.SecurityGroups.MetadataDeleteItem(ctx, testResourceID, nil)
 	require.NoError(t, err)
+	require.Equal(t, resp.StatusCode, 200)
 }
 
 func TestSecurityGroups_MetadataGetItem(t *testing.T) {
 	setup()
 	defer teardown()
 
-	metadata := &MetadataDetailed{
+	expectedResp := &MetadataDetailed{
 		Key:      "image_id",
 		Value:    "b3c52ece-147e-4af5-8d7c-84691309b879",
 		ReadOnly: true,
 	}
-	URL := fmt.Sprintf("/v1/securitygroups/%d/%d/%s/%s", projectID, regionID, testResourceID, metadataItemPath)
+	URL := path.Join(securitygroupsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, metadataItemPath)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
-		resp, _ := json.Marshal(metadata)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.SecurityGroups.MetadataGetItem(ctx, testResourceID, nil)
+	respActual, resp, err := client.SecurityGroups.MetadataGetItem(ctx, testResourceID, nil)
 	require.NoError(t, err)
-
-	if !reflect.DeepEqual(resp, metadata) {
-		t.Errorf("SecurityGroups.MetadataGetItem\n returned %+v,\n expected %+v", resp, metadata)
-	}
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }

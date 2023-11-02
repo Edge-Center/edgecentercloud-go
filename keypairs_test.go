@@ -4,7 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"reflect"
+	"path"
+	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -15,57 +16,53 @@ func TestKeyPairs_List(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		publicKey = "ssh-key"
-	)
-
-	keyPairs := []KeyPair{{PublicKey: publicKey}}
-	URL := fmt.Sprintf("/v1/keypairs/%d/%d", projectID, regionID)
+	expectedResp := []KeyPair{{PublicKey: "ssh-key"}}
+	URL := path.Join(keypairsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID))
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
-		resp, _ := json.Marshal(keyPairs)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))
 	})
 
-	resp, _, err := client.KeyPairs.List(ctx)
+	respActual, resp, err := client.KeyPairs.List(ctx)
 	require.NoError(t, err)
-
-	if !reflect.DeepEqual(resp, keyPairs) {
-		t.Errorf("KeyPairs.List\n returned %+v,\n expected %+v", resp, keyPairs)
-	}
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }
 
 func TestKeyPairs_Get(t *testing.T) {
 	setup()
 	defer teardown()
 
-	keypair := &KeyPair{SSHKeyID: testResourceID}
-	URL := fmt.Sprintf("/v1/keypairs/%d/%d/%s", projectID, regionID, testResourceID)
+	expectedResp := &KeyPair{SSHKeyID: testResourceID}
+	URL := path.Join(keypairsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
-		resp, _ := json.Marshal(keypair)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.KeyPairs.Get(ctx, testResourceID)
+	respActual, resp, err := client.KeyPairs.Get(ctx, testResourceID)
 	require.NoError(t, err)
-
-	if !reflect.DeepEqual(resp, keypair) {
-		t.Errorf("KeyPairs.Get\n returned %+v,\n expected %+v", resp, keypair)
-	}
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }
 
 func TestKeyPairs_Create(t *testing.T) {
 	setup()
 	defer teardown()
 
-	keyPairCreateRequest := &KeyPairCreateRequest{
-		SSHKeyName: "ssh-key",
-	}
-	taskResponse := &TaskResponse{Tasks: []string{taskID}}
-	URL := fmt.Sprintf("/v1/keypairs/%d/%d", projectID, regionID)
+	request := &KeyPairCreateRequest{SSHKeyName: "ssh-key"}
+	expectedResp := &TaskResponse{Tasks: []string{taskID}}
+	URL := path.Join(keypairsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID))
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
@@ -73,45 +70,49 @@ func TestKeyPairs_Create(t *testing.T) {
 		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
 			t.Errorf("failed to decode request body: %v", err)
 		}
-		assert.Equal(t, keyPairCreateRequest, reqBody)
-		resp, _ := json.Marshal(taskResponse)
+		assert.Equal(t, request, reqBody)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.KeyPairs.Create(ctx, keyPairCreateRequest)
+	respActual, resp, err := client.KeyPairs.Create(ctx, request)
 	require.NoError(t, err)
-
-	assert.Equal(t, taskResponse, resp)
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }
 
 func TestKeyPairs_Delete(t *testing.T) {
 	setup()
 	defer teardown()
 
-	taskResponse := &TaskResponse{Tasks: []string{taskID}}
-	URL := fmt.Sprintf("/v1/keypairs/%d/%d/%s", projectID, regionID, testResourceID)
+	expectedResp := &TaskResponse{Tasks: []string{taskID}}
+	URL := path.Join(keypairsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodDelete)
-		resp, _ := json.Marshal(taskResponse)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.KeyPairs.Delete(ctx, testResourceID)
+	respActual, resp, err := client.KeyPairs.Delete(ctx, testResourceID)
 	require.NoError(t, err)
-
-	assert.Equal(t, taskResponse, resp)
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }
 
 func TestKeyPairs_Share(t *testing.T) {
 	setup()
 	defer teardown()
 
-	keyPairShareRequest := &KeyPairShareRequest{
-		SharedInProject: true,
-	}
-	keypair := &KeyPair{SSHKeyID: testResourceID}
-	URL := fmt.Sprintf("/v1/keypairs/%d/%d/%s/%s", projectID, regionID, testResourceID, keypairsSharePath)
+	request := &KeyPairShareRequest{SharedInProject: true}
+	expectedResp := &KeyPair{SSHKeyID: testResourceID}
+	URL := path.Join(keypairsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, keypairsShare)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPatch)
@@ -119,13 +120,16 @@ func TestKeyPairs_Share(t *testing.T) {
 		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
 			t.Errorf("failed to decode request body: %v", err)
 		}
-		assert.Equal(t, keyPairShareRequest, reqBody)
-		resp, _ := json.Marshal(keypair)
+		assert.Equal(t, request, reqBody)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.KeyPairs.Share(ctx, testResourceID, keyPairShareRequest)
+	respActual, resp, err := client.KeyPairs.Share(ctx, testResourceID, request)
 	require.NoError(t, err)
-
-	assert.Equal(t, keypair, resp)
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }

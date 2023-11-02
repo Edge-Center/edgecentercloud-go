@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"path"
+	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -14,11 +16,9 @@ func TestPorts_Assign(t *testing.T) {
 	setup()
 	defer teardown()
 
-	allowedAddressPairsRequest := &AllowedAddressPairsRequest{
-		IPAddress: "192.168.0.1",
-	}
-	portResponse := &Port{PortID: testResourceID}
-	URL := fmt.Sprintf("/v1/ports/%d/%d/%s/%s", projectID, regionID, testResourceID, portsAllowAddressPairs)
+	request := &AllowedAddressPairsRequest{IPAddress: "192.168.0.1"}
+	expectedResp := &Port{PortID: testResourceID}
+	URL := path.Join(portsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, portsAllowAddressPairs)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPut)
@@ -26,51 +26,60 @@ func TestPorts_Assign(t *testing.T) {
 		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
 			t.Errorf("failed to decode request body: %v", err)
 		}
-		assert.Equal(t, allowedAddressPairsRequest, reqBody)
-		resp, _ := json.Marshal(portResponse)
+		assert.Equal(t, request, reqBody)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Ports.Assign(ctx, testResourceID, allowedAddressPairsRequest)
+	respActual, resp, err := client.Ports.Assign(ctx, testResourceID, request)
 	require.NoError(t, err)
-
-	assert.Equal(t, portResponse, resp)
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }
 
 func TestPorts_EnablePortSecurity(t *testing.T) {
 	setup()
 	defer teardown()
 
-	instancePortInterfaceResponse := &InstancePortInterface{PortID: testResourceID}
-	URL := fmt.Sprintf("/v1/ports/%d/%d/%s/%s", projectID, regionID, testResourceID, portsEnableSecurity)
+	expectedResp := &InstancePortInterface{PortID: testResourceID}
+	URL := path.Join(portsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, portsEnableSecurity)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
-		resp, _ := json.Marshal(instancePortInterfaceResponse)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Ports.EnablePortSecurity(ctx, testResourceID)
+	respActual, resp, err := client.Ports.EnablePortSecurity(ctx, testResourceID)
 	require.NoError(t, err)
-
-	assert.Equal(t, instancePortInterfaceResponse, resp)
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }
 
 func TestPorts_DisablePortSecurity(t *testing.T) {
 	setup()
 	defer teardown()
 
-	instancePortInterfaceResponse := &InstancePortInterface{PortID: testResourceID}
-	URL := fmt.Sprintf("/v1/ports/%d/%d/%s/%s", projectID, regionID, testResourceID, portsDisableSecurity)
+	expectedResp := &InstancePortInterface{PortID: testResourceID}
+	URL := path.Join(portsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, portsDisableSecurity)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
-		resp, _ := json.Marshal(instancePortInterfaceResponse)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Ports.DisablePortSecurity(ctx, testResourceID)
+	respActual, resp, err := client.Ports.DisablePortSecurity(ctx, testResourceID)
 	require.NoError(t, err)
-
-	assert.Equal(t, instancePortInterfaceResponse, resp)
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }

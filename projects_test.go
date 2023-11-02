@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"reflect"
+	"path"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -15,54 +15,56 @@ func TestProjects_Get(t *testing.T) {
 	setup()
 	defer teardown()
 
-	project := &Project{
+	expectedResp := &Project{
 		ID:   1,
 		Name: "test-project",
 	}
-	URL := fmt.Sprintf("%s/1", projectsBasePath)
+	URL := path.Join(projectsBasePath, "1")
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
-		resp, _ := json.Marshal(project)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Projects.Get(ctx, "1")
+	respActual, resp, err := client.Projects.Get(ctx, "1")
 	require.NoError(t, err)
-
-	if !reflect.DeepEqual(resp, project) {
-		t.Errorf("Projects.Get\n returned %+v,\n expected %+v", resp, project)
-	}
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }
 
 func TestProjects_Delete(t *testing.T) {
 	setup()
 	defer teardown()
 
-	taskResponse := &TaskResponse{Tasks: []string{taskID}}
-	URL := fmt.Sprintf("%s/1", projectsBasePath)
+	expectedResp := &TaskResponse{Tasks: []string{taskID}}
+	URL := path.Join(projectsBasePath, "1")
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodDelete)
-		resp, _ := json.Marshal(taskResponse)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Projects.Delete(ctx, "1")
+	respActual, resp, err := client.Projects.Delete(ctx, "1")
 	require.NoError(t, err)
-
-	assert.Equal(t, taskResponse, resp)
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }
 
 func TestProjects_Update(t *testing.T) {
 	setup()
 	defer teardown()
 
-	updateRequest := &ProjectUpdateRequest{
-		Name: "new-project",
-	}
-	projectResponse := &Project{Name: "new-project"}
-	URL := fmt.Sprintf("%s/1", projectsBasePath)
+	request := &ProjectUpdateRequest{Name: "new-project"}
+	expectedResp := &Project{Name: "new-project"}
+	URL := path.Join(projectsBasePath, "1")
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPut)
@@ -70,45 +72,47 @@ func TestProjects_Update(t *testing.T) {
 		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
 			t.Errorf("failed to decode request body: %v", err)
 		}
-		assert.Equal(t, updateRequest, reqBody)
-		resp, _ := json.Marshal(projectResponse)
+		assert.Equal(t, request, reqBody)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Projects.Update(ctx, "1", updateRequest)
+	respActual, resp, err := client.Projects.Update(ctx, "1", request)
 	require.NoError(t, err)
-
-	assert.Equal(t, projectResponse, resp)
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }
 
 func TestProjects_List(t *testing.T) {
 	setup()
 	defer teardown()
 
-	projects := []Project{{Name: "test-projects"}}
+	expectedResp := []Project{{Name: "test-projects"}}
 
 	mux.HandleFunc(projectsBasePath, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
-		resp, _ := json.Marshal(projects)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))
 	})
 
-	resp, _, err := client.Projects.List(ctx, nil)
+	respActual, resp, err := client.Projects.List(ctx, nil)
 	require.NoError(t, err)
-
-	if !reflect.DeepEqual(resp, projects) {
-		t.Errorf("Projects.List\n returned %+v,\n expected %+v", resp, projects)
-	}
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }
 
 func TestProjects_Create(t *testing.T) {
 	setup()
 	defer teardown()
 
-	createRequest := &ProjectCreateRequest{
-		Name: "new-project",
-	}
-	projectResponse := &Project{Name: "new-project"}
+	request := &ProjectCreateRequest{Name: "new-project"}
+	expectedResp := &Project{Name: "new-project"}
 
 	mux.HandleFunc(projectsBasePath, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
@@ -116,13 +120,16 @@ func TestProjects_Create(t *testing.T) {
 		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
 			t.Errorf("failed to decode request body: %v", err)
 		}
-		assert.Equal(t, createRequest, reqBody)
-		resp, _ := json.Marshal(projectResponse)
+		assert.Equal(t, request, reqBody)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Projects.Create(ctx, createRequest)
+	respActual, resp, err := client.Projects.Create(ctx, request)
 	require.NoError(t, err)
-
-	assert.Equal(t, projectResponse, resp)
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }

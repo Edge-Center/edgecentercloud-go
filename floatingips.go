@@ -10,8 +10,11 @@ import (
 const (
 	floatingipsBasePathV1      = "/v1/floatingips"
 	availableFloatingipsPathV1 = "/v1/availablefloatingips"
-	floatingipsAssign          = "assign"
-	floatingipsUnAssign        = "unassign"
+)
+
+const (
+	floatingipsAssign   = "assign"
+	floatingipsUnAssign = "unassign"
 )
 
 // FloatingIPsService is an interface for creating and managing FloatingIPs with the EdgecenterCloud API.
@@ -24,6 +27,7 @@ type FloatingIPsService interface {
 	Assign(context.Context, string, *AssignRequest) (*FloatingIP, *Response, error)
 	UnAssign(context.Context, string) (*FloatingIP, *Response, error)
 	ListAvailable(context.Context) ([]FloatingIP, *Response, error)
+
 	FloatingIPMetadata
 }
 
@@ -146,9 +150,9 @@ func (s *FloatingipsServiceOp) Get(ctx context.Context, fipID string) (*Floating
 }
 
 // Create a Floating IP.
-func (s *FloatingipsServiceOp) Create(ctx context.Context, createRequest *FloatingIPCreateRequest) (*TaskResponse, *Response, error) {
-	if createRequest == nil {
-		return nil, nil, NewArgError("createRequest", "cannot be nil")
+func (s *FloatingipsServiceOp) Create(ctx context.Context, reqBody *FloatingIPCreateRequest) (*TaskResponse, *Response, error) {
+	if reqBody == nil {
+		return nil, nil, NewArgError("reqBody", "cannot be nil")
 	}
 
 	if resp, err := s.client.Validate(); err != nil {
@@ -157,7 +161,7 @@ func (s *FloatingipsServiceOp) Create(ctx context.Context, createRequest *Floati
 
 	path := s.client.addProjectRegionPath(floatingipsBasePathV1)
 
-	req, err := s.client.NewRequest(ctx, http.MethodPost, path, createRequest)
+	req, err := s.client.NewRequest(ctx, http.MethodPost, path, reqBody)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -198,13 +202,13 @@ func (s *FloatingipsServiceOp) Delete(ctx context.Context, fipID string) (*TaskR
 }
 
 // Assign a floating IP to an instance or a load balancer.
-func (s *FloatingipsServiceOp) Assign(ctx context.Context, fipID string, assignRequest *AssignRequest) (*FloatingIP, *Response, error) {
+func (s *FloatingipsServiceOp) Assign(ctx context.Context, fipID string, reqBody *AssignRequest) (*FloatingIP, *Response, error) {
 	if resp, err := isValidUUID(fipID, "fipID"); err != nil {
 		return nil, resp, err
 	}
 
-	if assignRequest == nil {
-		return nil, nil, NewArgError("assignRequest", "cannot be nil")
+	if reqBody == nil {
+		return nil, nil, NewArgError("reqBody", "cannot be nil")
 	}
 
 	if resp, err := s.client.Validate(); err != nil {
@@ -213,7 +217,7 @@ func (s *FloatingipsServiceOp) Assign(ctx context.Context, fipID string, assignR
 
 	path := fmt.Sprintf("%s/%s/%s", s.client.addProjectRegionPath(floatingipsBasePathV1), fipID, floatingipsAssign)
 
-	req, err := s.client.NewRequest(ctx, http.MethodPost, path, assignRequest)
+	req, err := s.client.NewRequest(ctx, http.MethodPost, path, reqBody)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -289,7 +293,7 @@ func (s *FloatingipsServiceOp) MetadataList(ctx context.Context, fipID string) (
 }
 
 // MetadataCreate or update floating IP metadata.
-func (s *FloatingipsServiceOp) MetadataCreate(ctx context.Context, fipID string, metadata *MetadataCreateRequest) (*Response, error) {
+func (s *FloatingipsServiceOp) MetadataCreate(ctx context.Context, fipID string, reqBody *MetadataCreateRequest) (*Response, error) {
 	if resp, err := isValidUUID(fipID, "fipID"); err != nil {
 		return resp, err
 	}
@@ -298,11 +302,11 @@ func (s *FloatingipsServiceOp) MetadataCreate(ctx context.Context, fipID string,
 		return resp, err
 	}
 
-	return metadataCreate(ctx, s.client, fipID, floatingipsBasePathV1, metadata)
+	return metadataCreate(ctx, s.client, fipID, floatingipsBasePathV1, reqBody)
 }
 
 // MetadataUpdate floating IP metadata.
-func (s *FloatingipsServiceOp) MetadataUpdate(ctx context.Context, fipID string, metadata *MetadataCreateRequest) (*Response, error) {
+func (s *FloatingipsServiceOp) MetadataUpdate(ctx context.Context, fipID string, reqBody *MetadataCreateRequest) (*Response, error) {
 	if resp, err := isValidUUID(fipID, "fipID"); err != nil {
 		return resp, err
 	}
@@ -311,7 +315,7 @@ func (s *FloatingipsServiceOp) MetadataUpdate(ctx context.Context, fipID string,
 		return resp, err
 	}
 
-	return metadataUpdate(ctx, s.client, fipID, floatingipsBasePathV1, metadata)
+	return metadataUpdate(ctx, s.client, fipID, floatingipsBasePathV1, reqBody)
 }
 
 // MetadataDeleteItem a floating IP metadata item by key.

@@ -4,7 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"reflect"
+	"path"
+	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -15,54 +16,56 @@ func TestSubnetworks_List(t *testing.T) {
 	setup()
 	defer teardown()
 
-	subnetworks := []Subnetwork{{ID: testResourceID}}
-	URL := fmt.Sprintf("/v1/subnets/%d/%d", projectID, regionID)
+	expectedResp := []Subnetwork{{ID: testResourceID}}
+	URL := path.Join(subnetsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID))
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
-		resp, _ := json.Marshal(subnetworks)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))
 	})
 
-	resp, _, err := client.Subnetworks.List(ctx, nil)
+	respActual, resp, err := client.Subnetworks.List(ctx, nil)
 	require.NoError(t, err)
-
-	if !reflect.DeepEqual(resp, subnetworks) {
-		t.Errorf("Subnetworks.List\n returned %+v,\n expected %+v", resp, subnetworks)
-	}
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }
 
 func TestSubnetworks_Get(t *testing.T) {
 	setup()
 	defer teardown()
 
-	subnetwork := &Subnetwork{ID: testResourceID}
-	URL := fmt.Sprintf("/v1/subnets/%d/%d/%s", projectID, regionID, testResourceID)
+	expectedResp := &Subnetwork{ID: testResourceID}
+	URL := path.Join(subnetsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
-		resp, _ := json.Marshal(subnetwork)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Subnetworks.Get(ctx, testResourceID)
+	respActual, resp, err := client.Subnetworks.Get(ctx, testResourceID)
 	require.NoError(t, err)
-
-	if !reflect.DeepEqual(resp, subnetwork) {
-		t.Errorf("Subnetworks.Get\n returned %+v,\n expected %+v", resp, subnetwork)
-	}
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }
 
 func TestSubnetworks_Create(t *testing.T) {
 	setup()
 	defer teardown()
 
-	subnetworkCreateRequest := &SubnetworkCreateRequest{
+	request := &SubnetworkCreateRequest{
 		Name:      "test-subnet",
 		NetworkID: testResourceID,
 	}
-	taskResponse := &TaskResponse{Tasks: []string{taskID}}
-	URL := fmt.Sprintf("/v1/subnets/%d/%d", projectID, regionID)
+	expectedResp := &TaskResponse{Tasks: []string{taskID}}
+	URL := path.Join(subnetsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID))
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
@@ -70,45 +73,51 @@ func TestSubnetworks_Create(t *testing.T) {
 		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
 			t.Errorf("failed to decode request body: %v", err)
 		}
-		assert.Equal(t, subnetworkCreateRequest, reqBody)
-		resp, _ := json.Marshal(taskResponse)
+		assert.Equal(t, request, reqBody)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Subnetworks.Create(ctx, subnetworkCreateRequest)
+	respActual, resp, err := client.Subnetworks.Create(ctx, request)
 	require.NoError(t, err)
-
-	assert.Equal(t, taskResponse, resp)
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }
 
 func TestSubnetworks_Delete(t *testing.T) {
 	setup()
 	defer teardown()
 
-	taskResponse := &TaskResponse{Tasks: []string{taskID}}
-	URL := fmt.Sprintf("/v1/subnets/%d/%d/%s", projectID, regionID, testResourceID)
+	expectedResp := &TaskResponse{Tasks: []string{taskID}}
+	URL := path.Join(subnetsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodDelete)
-		resp, _ := json.Marshal(taskResponse)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Subnetworks.Delete(ctx, testResourceID)
+	respActual, resp, err := client.Subnetworks.Delete(ctx, testResourceID)
 	require.NoError(t, err)
-
-	assert.Equal(t, taskResponse, resp)
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }
 
 func TestSubnetworks_Update(t *testing.T) {
 	setup()
 	defer teardown()
 
-	subnetworkUpdateRequest := &SubnetworkUpdateRequest{
+	request := &SubnetworkUpdateRequest{
 		Name: "test-subnet",
 	}
-	subnetworkResponse := &Subnetwork{ID: testResourceID}
-	URL := fmt.Sprintf("/v1/subnets/%d/%d/%s", projectID, regionID, testResourceID)
+	expectedResp := &Subnetwork{ID: testResourceID}
+	URL := path.Join(subnetsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPatch)
@@ -116,111 +125,115 @@ func TestSubnetworks_Update(t *testing.T) {
 		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
 			t.Errorf("failed to decode request body: %v", err)
 		}
-		assert.Equal(t, subnetworkUpdateRequest, reqBody)
-		resp, _ := json.Marshal(subnetworkResponse)
+		assert.Equal(t, request, reqBody)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Subnetworks.Update(ctx, testResourceID, subnetworkUpdateRequest)
+	respActual, resp, err := client.Subnetworks.Update(ctx, testResourceID, request)
 	require.NoError(t, err)
-
-	assert.Equal(t, subnetworkResponse, resp)
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }
 
 func TestSubnetworks_MetadataList(t *testing.T) {
 	setup()
 	defer teardown()
 
-	metadataList := []MetadataDetailed{{
+	expectedResp := []MetadataDetailed{{
 		Key:      "image_id",
 		Value:    "b3c52ece-147e-4af5-8d7c-84691309b879",
 		ReadOnly: true,
 	}}
-	URL := fmt.Sprintf("/v1/subnets/%d/%d/%s/%s", projectID, regionID, testResourceID, metadataPath)
+	URL := path.Join(subnetsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, metadataPath)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
-		resp, _ := json.Marshal(metadataList)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))
 	})
 
-	resp, _, err := client.Subnetworks.MetadataList(ctx, testResourceID)
+	respActual, resp, err := client.Subnetworks.MetadataList(ctx, testResourceID)
 	require.NoError(t, err)
-
-	if !reflect.DeepEqual(resp, metadataList) {
-		t.Errorf("Subnetworks.MetadataList\n returned %+v,\n expected %+v", resp, metadataList)
-	}
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }
 
 func TestSubnetworks_MetadataCreate(t *testing.T) {
 	setup()
 	defer teardown()
 
-	metadataCreateRequest := &MetadataCreateRequest{
-		map[string]interface{}{"key": "value"},
-	}
-	URL := fmt.Sprintf("/v1/subnets/%d/%d/%s/%s", projectID, regionID, testResourceID, metadataPath)
+	request := &MetadataCreateRequest{Metadata: map[string]interface{}{"key": "value"}}
+	URL := path.Join(subnetsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, metadataPath)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
 	})
 
-	_, err := client.Subnetworks.MetadataCreate(ctx, testResourceID, metadataCreateRequest)
+	resp, err := client.Subnetworks.MetadataCreate(ctx, testResourceID, request)
 	require.NoError(t, err)
+	require.Equal(t, resp.StatusCode, 200)
 }
 
 func TestSubnetworks_MetadataUpdate(t *testing.T) {
 	setup()
 	defer teardown()
 
-	metadataCreateRequest := &MetadataCreateRequest{
-		map[string]interface{}{"key": "value"},
-	}
-	URL := fmt.Sprintf("/v1/subnets/%d/%d/%s/%s", projectID, regionID, testResourceID, metadataPath)
+	request := &MetadataCreateRequest{Metadata: map[string]interface{}{"key": "value"}}
+	URL := path.Join(subnetsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, metadataPath)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPut)
 	})
 
-	_, err := client.Subnetworks.MetadataUpdate(ctx, testResourceID, metadataCreateRequest)
+	resp, err := client.Subnetworks.MetadataUpdate(ctx, testResourceID, request)
 	require.NoError(t, err)
+	require.Equal(t, resp.StatusCode, 200)
 }
 
 func TestSubnetworks_MetadataDeleteItem(t *testing.T) {
 	setup()
 	defer teardown()
 
-	URL := fmt.Sprintf("/v1/subnets/%d/%d/%s/%s", projectID, regionID, testResourceID, metadataItemPath)
+	URL := path.Join(subnetsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, metadataItemPath)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodDelete)
 	})
 
-	_, err := client.Subnetworks.MetadataDeleteItem(ctx, testResourceID, nil)
+	resp, err := client.Subnetworks.MetadataDeleteItem(ctx, testResourceID, nil)
 	require.NoError(t, err)
+	require.Equal(t, resp.StatusCode, 200)
 }
 
 func TestSubnetworks_MetadataGetItem(t *testing.T) {
 	setup()
 	defer teardown()
 
-	metadata := &MetadataDetailed{
+	expectedResp := &MetadataDetailed{
 		Key:      "image_id",
 		Value:    "b3c52ece-147e-4af5-8d7c-84691309b879",
 		ReadOnly: true,
 	}
-	URL := fmt.Sprintf("/v1/subnets/%d/%d/%s/%s", projectID, regionID, testResourceID, metadataItemPath)
+	URL := path.Join(subnetsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, metadataItemPath)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
-		resp, _ := json.Marshal(metadata)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Subnetworks.MetadataGetItem(ctx, testResourceID, nil)
+	respActual, resp, err := client.Subnetworks.MetadataGetItem(ctx, testResourceID, nil)
 	require.NoError(t, err)
-
-	if !reflect.DeepEqual(resp, metadata) {
-		t.Errorf("Subnetworks.MetadataGetItem\n returned %+v,\n expected %+v", resp, metadata)
-	}
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }

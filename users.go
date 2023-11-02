@@ -9,8 +9,11 @@ import (
 
 const (
 	usersBasePathV1 = "/v1/users"
-	usersRolesPath  = "roles"
-	assignmentsPath = "assignments"
+)
+
+const (
+	usersRoles       = "roles"
+	usersAssignments = "assignments"
 )
 
 // UsersService is an interface for creating and managing UsersService with the EdgecenterCloud API.
@@ -108,7 +111,7 @@ func (s *UsersServiceOp) List(ctx context.Context, opts *UserListOptions) ([]Use
 
 // ListRoles get available roles.
 func (s *UsersServiceOp) ListRoles(ctx context.Context, opts *UserRoleListOptions) ([]UserRole, *Response, error) {
-	userPath, err := addOptions(path.Join(usersBasePathV1, usersRolesPath), opts)
+	userPath, err := addOptions(path.Join(usersBasePathV1, usersRoles), opts)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -129,7 +132,7 @@ func (s *UsersServiceOp) ListRoles(ctx context.Context, opts *UserRoleListOption
 
 // ListAssignment get available assignment roles.
 func (s *UsersServiceOp) ListAssignment(ctx context.Context, opts *UserRoleListOptions) ([]RoleAssignment, *Response, error) {
-	userPath, err := addOptions(path.Join(usersBasePathV1, assignmentsPath), opts)
+	userPath, err := addOptions(path.Join(usersBasePathV1, usersAssignments), opts)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -150,7 +153,7 @@ func (s *UsersServiceOp) ListAssignment(ctx context.Context, opts *UserRoleListO
 
 // DeleteAssignment deletes a role assignment.
 func (s *UsersServiceOp) DeleteAssignment(ctx context.Context, assignmentID int) (*Response, error) {
-	assignmentsPath := fmt.Sprintf("%s/%s/%d", usersBasePathV1, assignmentsPath, assignmentID)
+	assignmentsPath := fmt.Sprintf("%s/%s/%d", usersBasePathV1, usersAssignments, assignmentID)
 
 	req, err := s.client.NewRequest(ctx, http.MethodDelete, assignmentsPath, nil)
 	if err != nil {
@@ -161,14 +164,14 @@ func (s *UsersServiceOp) DeleteAssignment(ctx context.Context, assignmentID int)
 }
 
 // UpdateAssignment updates a role assignment.
-func (s *UsersServiceOp) UpdateAssignment(ctx context.Context, assignmentID int, updateRequest *UpdateAssignmentRequest) (*Response, error) {
-	if updateRequest == nil {
-		return nil, NewArgError("updateRequest", "cannot be nil")
+func (s *UsersServiceOp) UpdateAssignment(ctx context.Context, assignmentID int, reqBody *UpdateAssignmentRequest) (*Response, error) {
+	if reqBody == nil {
+		return nil, NewArgError("reqBody", "cannot be nil")
 	}
 
-	assignmentsPath := fmt.Sprintf("%s/%s/%d", usersBasePathV1, assignmentsPath, assignmentID)
+	assignmentsPath := fmt.Sprintf("%s/%s/%d", usersBasePathV1, usersAssignments, assignmentID)
 
-	req, err := s.client.NewRequest(ctx, http.MethodPatch, assignmentsPath, updateRequest)
+	req, err := s.client.NewRequest(ctx, http.MethodPatch, assignmentsPath, reqBody)
 	if err != nil {
 		return nil, err
 	}
@@ -177,14 +180,14 @@ func (s *UsersServiceOp) UpdateAssignment(ctx context.Context, assignmentID int,
 }
 
 // AssignRole to an existing user.
-func (s *UsersServiceOp) AssignRole(ctx context.Context, updateRequest *UpdateAssignmentRequest) (*UserRole, *Response, error) {
-	if updateRequest == nil {
-		return nil, nil, NewArgError("updateRequest", "cannot be nil")
+func (s *UsersServiceOp) AssignRole(ctx context.Context, reqBody *UpdateAssignmentRequest) (*UserRole, *Response, error) {
+	if reqBody == nil {
+		return nil, nil, NewArgError("reqBody", "cannot be nil")
 	}
 
-	assignmentsPath := fmt.Sprintf("%s/%s", usersBasePathV1, assignmentsPath)
+	assignmentsPath := fmt.Sprintf("%s/%s", usersBasePathV1, usersAssignments)
 
-	req, err := s.client.NewRequest(ctx, http.MethodPost, assignmentsPath, updateRequest)
+	req, err := s.client.NewRequest(ctx, http.MethodPost, assignmentsPath, reqBody)
 	if err != nil {
 		return nil, nil, err
 	}

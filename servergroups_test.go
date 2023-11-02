@@ -4,7 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"reflect"
+	"path"
+	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -15,53 +16,53 @@ func TestServerGroups_List(t *testing.T) {
 	setup()
 	defer teardown()
 
-	serverGroups := []ServerGroup{{ID: testResourceID}}
-	URL := fmt.Sprintf("/v1/servergroups/%d/%d", projectID, regionID)
+	expectedResp := []ServerGroup{{ID: testResourceID}}
+	URL := path.Join(servergroupsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID))
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
-		resp, _ := json.Marshal(serverGroups)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))
 	})
 
-	resp, _, err := client.ServerGroups.List(ctx)
+	respActual, resp, err := client.ServerGroups.List(ctx)
 	require.NoError(t, err)
-
-	if !reflect.DeepEqual(resp, serverGroups) {
-		t.Errorf("ServerGroups.List\n returned %+v,\n expected %+v", resp, serverGroups)
-	}
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }
 
 func TestServerGroups_Get(t *testing.T) {
 	setup()
 	defer teardown()
 
-	servergroup := &ServerGroup{ID: testResourceID}
-	URL := fmt.Sprintf("/v1/servergroups/%d/%d/%s", projectID, regionID, testResourceID)
+	expectedResp := &ServerGroup{ID: testResourceID}
+	URL := path.Join(servergroupsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
-		resp, _ := json.Marshal(servergroup)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.ServerGroups.Get(ctx, testResourceID)
+	respActual, resp, err := client.ServerGroups.Get(ctx, testResourceID)
 	require.NoError(t, err)
-
-	if !reflect.DeepEqual(resp, servergroup) {
-		t.Errorf("ServerGroups.Get\n returned %+v,\n expected %+v", resp, servergroup)
-	}
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }
 
 func TestServerGroups_Create(t *testing.T) {
 	setup()
 	defer teardown()
 
-	servergroupCreateRequest := &ServerGroupCreateRequest{
-		Name: "test-subnet",
-	}
-	serverGroupResponse := &ServerGroup{ID: testResourceID}
-	URL := fmt.Sprintf("/v1/servergroups/%d/%d", projectID, regionID)
+	request := &ServerGroupCreateRequest{Name: "test-subnet"}
+	expectedResp := &ServerGroup{ID: testResourceID}
+	URL := path.Join(servergroupsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID))
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
@@ -69,27 +70,31 @@ func TestServerGroups_Create(t *testing.T) {
 		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
 			t.Errorf("failed to decode request body: %v", err)
 		}
-		assert.Equal(t, servergroupCreateRequest, reqBody)
-		resp, _ := json.Marshal(serverGroupResponse)
+		assert.Equal(t, request, reqBody)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.ServerGroups.Create(ctx, servergroupCreateRequest)
+	respActual, resp, err := client.ServerGroups.Create(ctx, request)
 	require.NoError(t, err)
-
-	assert.Equal(t, serverGroupResponse, resp)
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }
 
 func TestServerGroups_Delete(t *testing.T) {
 	setup()
 	defer teardown()
 
-	URL := fmt.Sprintf("/v1/servergroups/%d/%d/%s", projectID, regionID, testResourceID)
+	URL := path.Join(servergroupsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodDelete)
 	})
 
-	_, err := client.ServerGroups.Delete(ctx, testResourceID)
+	resp, err := client.ServerGroups.Delete(ctx, testResourceID)
 	require.NoError(t, err)
+	require.Equal(t, resp.StatusCode, 200)
 }

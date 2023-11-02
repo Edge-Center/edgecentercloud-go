@@ -43,7 +43,7 @@ func (s *ImagesServiceOp) MetadataList(ctx context.Context, imageID string) ([]M
 }
 
 // MetadataCreate or update security group metadata.
-func (s *ImagesServiceOp) MetadataCreate(ctx context.Context, imageID string, metadata *MetadataCreateRequest) (*Response, error) {
+func (s *ImagesServiceOp) MetadataCreate(ctx context.Context, imageID string, reqBody *MetadataCreateRequest) (*Response, error) {
 	if resp, err := isValidUUID(imageID, "imageID"); err != nil {
 		return resp, err
 	}
@@ -52,11 +52,11 @@ func (s *ImagesServiceOp) MetadataCreate(ctx context.Context, imageID string, me
 		return resp, err
 	}
 
-	return metadataCreate(ctx, s.client, imageID, imagesBasePathV1, metadata)
+	return metadataCreate(ctx, s.client, imageID, imagesBasePathV1, reqBody)
 }
 
 // MetadataUpdate security group metadata.
-func (s *ImagesServiceOp) MetadataUpdate(ctx context.Context, imageID string, metadata *MetadataCreateRequest) (*Response, error) {
+func (s *ImagesServiceOp) MetadataUpdate(ctx context.Context, imageID string, reqBody *MetadataCreateRequest) (*Response, error) {
 	if resp, err := isValidUUID(imageID, "imageID"); err != nil {
 		return resp, err
 	}
@@ -65,7 +65,7 @@ func (s *ImagesServiceOp) MetadataUpdate(ctx context.Context, imageID string, me
 		return resp, err
 	}
 
-	return metadataUpdate(ctx, s.client, imageID, imagesBasePathV1, metadata)
+	return metadataUpdate(ctx, s.client, imageID, imagesBasePathV1, reqBody)
 }
 
 // MetadataDeleteItem a security group metadata item by key.

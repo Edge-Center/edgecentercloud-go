@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"reflect"
+	"path"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -15,73 +15,75 @@ func TestUsers_List(t *testing.T) {
 	setup()
 	defer teardown()
 
-	users := []User{{ID: 123}}
-	URL := "/v1/users"
+	expectedResp := []User{{ID: 123}}
 
-	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(usersBasePathV1, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
-		resp, _ := json.Marshal(users)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))
 	})
 
-	resp, _, err := client.Users.List(ctx, nil)
+	respActual, resp, err := client.Users.List(ctx, nil)
 	require.NoError(t, err)
-
-	if !reflect.DeepEqual(resp, users) {
-		t.Errorf("Users.List\n returned %+v,\n expected %+v", resp, users)
-	}
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }
 
 func TestUsers_ListRoles(t *testing.T) {
 	setup()
 	defer teardown()
 
-	roles := []UserRole{{Role: "test-role"}}
-	URL := "/v1/users/roles"
+	expectedResp := []UserRole{{Role: "test-role"}}
+	URL := path.Join(usersBasePathV1, usersRoles)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
-		resp, _ := json.Marshal(roles)
-		_, err := w.Write(resp)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
+		_, err = w.Write(resp)
 		if err != nil {
 			t.Fatal(err)
 		}
 	})
 
-	resp, _, err := client.Users.ListRoles(ctx, nil)
+	respActual, resp, err := client.Users.ListRoles(ctx, nil)
 	require.NoError(t, err)
-
-	if !reflect.DeepEqual(resp, roles) {
-		t.Errorf("Users.List\n returned %+v,\n expected %+v", resp, roles)
-	}
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }
 
 func TestUsers_ListAssignment(t *testing.T) {
 	setup()
 	defer teardown()
 
-	assignments := []RoleAssignment{{Role: "test-role"}}
-	URL := "/v1/users/assignments"
+	expectedResp := []RoleAssignment{{Role: "test-role"}}
+	URL := path.Join(usersBasePathV1, usersAssignments)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
-		resp, _ := json.Marshal(assignments)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))
 	})
 
-	resp, _, err := client.Users.ListAssignment(ctx, nil)
+	respActual, resp, err := client.Users.ListAssignment(ctx, nil)
 	require.NoError(t, err)
-
-	if !reflect.DeepEqual(resp, assignments) {
-		t.Errorf("Users.ListAssignment\n returned %+v,\n expected %+v", resp, assignments)
-	}
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }
 
 func TestUsers_DeleteAssignment(t *testing.T) {
 	setup()
 	defer teardown()
 
-	URL := fmt.Sprintf("/v1/users/assignments/%d", 123)
+	URL := path.Join(usersBasePathV1, usersAssignments, "123")
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodDelete)
@@ -96,8 +98,8 @@ func TestUsers_UpdateAssignment(t *testing.T) {
 	setup()
 	defer teardown()
 
-	updateAssignmentRequest := &UpdateAssignmentRequest{}
-	URL := fmt.Sprintf("/v1/users/assignments/%d", 123)
+	request := &UpdateAssignmentRequest{}
+	URL := path.Join(usersBasePathV1, usersAssignments, "123")
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPatch)
@@ -105,10 +107,10 @@ func TestUsers_UpdateAssignment(t *testing.T) {
 		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
 			t.Errorf("failed to decode request body: %v", err)
 		}
-		assert.Equal(t, updateAssignmentRequest, reqBody)
+		assert.Equal(t, request, reqBody)
 	})
 
-	resp, err := client.Users.UpdateAssignment(ctx, 123, updateAssignmentRequest)
+	resp, err := client.Users.UpdateAssignment(ctx, 123, request)
 	require.NoError(t, err)
 	require.Equal(t, resp.StatusCode, 200)
 }
@@ -117,9 +119,9 @@ func TestUsers_AssignRole(t *testing.T) {
 	setup()
 	defer teardown()
 
-	updateAssignmentRequest := &UpdateAssignmentRequest{}
-	userRoleResponse := &UserRole{Role: "test-role"}
-	URL := "/v1/users/assignments"
+	request := &UpdateAssignmentRequest{}
+	expectedResp := &UserRole{Role: "test-role"}
+	URL := path.Join(usersBasePathV1, usersAssignments)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
@@ -127,13 +129,16 @@ func TestUsers_AssignRole(t *testing.T) {
 		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
 			t.Errorf("failed to decode request body: %v", err)
 		}
-		assert.Equal(t, updateAssignmentRequest, reqBody)
-		resp, _ := json.Marshal(userRoleResponse)
+		assert.Equal(t, request, reqBody)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Users.AssignRole(ctx, updateAssignmentRequest)
+	respActual, resp, err := client.Users.AssignRole(ctx, request)
 	require.NoError(t, err)
-
-	assert.Equal(t, userRoleResponse, resp)
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }

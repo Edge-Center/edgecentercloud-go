@@ -4,7 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"reflect"
+	"path"
+	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -15,51 +16,53 @@ func TestFloatingips_List(t *testing.T) {
 	setup()
 	defer teardown()
 
-	floatingIPs := []FloatingIP{{ID: testResourceID}}
-	URL := fmt.Sprintf("/v1/floatingips/%d/%d", projectID, regionID)
+	expectedResp := []FloatingIP{{ID: testResourceID}}
+	URL := path.Join(floatingipsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID))
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
-		resp, _ := json.Marshal(&floatingIPs)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))
 	})
 
-	resp, _, err := client.Floatingips.List(ctx)
+	respActual, resp, err := client.Floatingips.List(ctx)
 	require.NoError(t, err)
-
-	if !reflect.DeepEqual(resp, floatingIPs) {
-		t.Errorf("Floatingips.List\n returned %+v,\n expected %+v", resp, floatingIPs)
-	}
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }
 
 func TestFloatingips_Get(t *testing.T) {
 	setup()
 	defer teardown()
 
-	floatingIP := &FloatingIP{ID: testResourceID}
-	URL := fmt.Sprintf("/v1/floatingips/%d/%d/%s", projectID, regionID, testResourceID)
+	expectedResp := &FloatingIP{ID: testResourceID}
+	URL := path.Join(floatingipsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
-		resp, _ := json.Marshal(floatingIP)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Floatingips.Get(ctx, testResourceID)
+	respActual, resp, err := client.Floatingips.Get(ctx, testResourceID)
 	require.NoError(t, err)
-
-	if !reflect.DeepEqual(resp, floatingIP) {
-		t.Errorf("Floatingips.Get\n returned %+v,\n expected %+v", resp, floatingIP)
-	}
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }
 
 func TestFloatingips_Create(t *testing.T) {
 	setup()
 	defer teardown()
 
-	floatingIPCreateRequest := &FloatingIPCreateRequest{}
-	taskResponse := &TaskResponse{Tasks: []string{taskID}}
-	URL := fmt.Sprintf("/v1/floatingips/%d/%d", projectID, regionID)
+	request := &FloatingIPCreateRequest{}
+	expectedResp := &TaskResponse{Tasks: []string{taskID}}
+	URL := path.Join(floatingipsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID))
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
@@ -67,199 +70,209 @@ func TestFloatingips_Create(t *testing.T) {
 		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
 			t.Errorf("failed to decode request body: %v", err)
 		}
-		assert.Equal(t, floatingIPCreateRequest, reqBody)
-		resp, _ := json.Marshal(taskResponse)
+		assert.Equal(t, request, reqBody)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Floatingips.Create(ctx, floatingIPCreateRequest)
+	respActual, resp, err := client.Floatingips.Create(ctx, request)
 	require.NoError(t, err)
-
-	assert.Equal(t, taskResponse, resp)
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }
 
 func TestFloatingips_Delete(t *testing.T) {
 	setup()
 	defer teardown()
 
-	taskResponse := &TaskResponse{Tasks: []string{taskID}}
-
-	URL := fmt.Sprintf("/v1/floatingips/%d/%d/%s", projectID, regionID, testResourceID)
+	expectedResp := &TaskResponse{Tasks: []string{taskID}}
+	URL := path.Join(floatingipsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodDelete)
-		resp, _ := json.Marshal(taskResponse)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Floatingips.Delete(ctx, testResourceID)
+	respActual, resp, err := client.Floatingips.Delete(ctx, testResourceID)
 	require.NoError(t, err)
-
-	assert.Equal(t, taskResponse, resp)
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }
 
 func TestFloatingips_Assign(t *testing.T) {
 	setup()
 	defer teardown()
 
-	assignRequest := &AssignRequest{PortID: testResourceID}
-
-	floatingIP := &FloatingIP{
+	request := &AssignRequest{PortID: testResourceID}
+	expectedResp := &FloatingIP{
 		ID:     testResourceID,
 		PortID: testResourceID,
 	}
-	URL := fmt.Sprintf("/v1/floatingips/%d/%d/%s/%s", projectID, regionID, testResourceID, floatingipsAssign)
+	URL := path.Join(floatingipsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, floatingipsAssign)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
-		resp, _ := json.Marshal(&floatingIP)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Floatingips.Assign(ctx, testResourceID, assignRequest)
+	respActual, resp, err := client.Floatingips.Assign(ctx, testResourceID, request)
 	require.NoError(t, err)
-
-	if !reflect.DeepEqual(resp, floatingIP) {
-		t.Errorf("Floatingips.Assign\n returned %+v,\n expected %+v", resp, floatingIP)
-	}
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }
 
 func TestFloatingips_UnAssign(t *testing.T) {
 	setup()
 	defer teardown()
 
-	floatingIP := &FloatingIP{ID: testResourceID}
-	URL := fmt.Sprintf("/v1/floatingips/%d/%d/%s/%s", projectID, regionID, testResourceID, floatingipsUnAssign)
+	expectedResp := &FloatingIP{ID: testResourceID}
+	URL := path.Join(floatingipsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, floatingipsUnAssign)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
-		resp, _ := json.Marshal(&floatingIP)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Floatingips.UnAssign(ctx, testResourceID)
+	respActual, resp, err := client.Floatingips.UnAssign(ctx, testResourceID)
 	require.NoError(t, err)
-
-	if !reflect.DeepEqual(resp, floatingIP) {
-		t.Errorf("Floatingips.UnAssign\n returned %+v,\n expected %+v", resp, floatingIP)
-	}
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }
 
 func TestFloatingips_ListAvailable(t *testing.T) {
 	setup()
 	defer teardown()
 
-	floatingIPs := []FloatingIP{{ID: testResourceID}}
-	URL := fmt.Sprintf("/v1/availablefloatingips/%d/%d", projectID, regionID)
+	expectedResp := []FloatingIP{{ID: testResourceID}}
+	URL := path.Join(availableFloatingipsPathV1, strconv.Itoa(projectID), strconv.Itoa(regionID))
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
-		resp, _ := json.Marshal(&floatingIPs)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))
 	})
 
-	resp, _, err := client.Floatingips.ListAvailable(ctx)
+	respActual, resp, err := client.Floatingips.ListAvailable(ctx)
 	require.NoError(t, err)
-
-	if !reflect.DeepEqual(resp, floatingIPs) {
-		t.Errorf("Floatingips.ListAvailable\n returned %+v,\n expected %+v", resp, floatingIPs)
-	}
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }
 
 func TestFloatingips_MetadataList(t *testing.T) {
 	setup()
 	defer teardown()
 
-	metadataList := []MetadataDetailed{{
+	expectedResp := []MetadataDetailed{{
 		Key:      "image_id",
 		Value:    "b3c52ece-147e-4af5-8d7c-84691309b879",
 		ReadOnly: true,
 	}}
-	URL := fmt.Sprintf("/v1/floatingips/%d/%d/%s/%s", projectID, regionID, testResourceID, metadataPath)
+	URL := path.Join(floatingipsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, metadataPath)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
-		resp, _ := json.Marshal(metadataList)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))
 	})
 
-	resp, _, err := client.Floatingips.MetadataList(ctx, testResourceID)
+	respActual, resp, err := client.Floatingips.MetadataList(ctx, testResourceID)
 	require.NoError(t, err)
-
-	if !reflect.DeepEqual(resp, metadataList) {
-		t.Errorf("Floatingips.MetadataList\n returned %+v,\n expected %+v", resp, metadataList)
-	}
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }
 
 func TestFloatingips_MetadataCreate(t *testing.T) {
 	setup()
 	defer teardown()
 
-	metadataCreateRequest := &MetadataCreateRequest{
-		map[string]interface{}{"key": "value"},
-	}
-	URL := fmt.Sprintf("/v1/floatingips/%d/%d/%s/%s", projectID, regionID, testResourceID, metadataPath)
+	request := &MetadataCreateRequest{Metadata: map[string]interface{}{"key": "value"}}
+	URL := path.Join(floatingipsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, metadataPath)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
 	})
 
-	_, err := client.Floatingips.MetadataCreate(ctx, testResourceID, metadataCreateRequest)
+	resp, err := client.Floatingips.MetadataCreate(ctx, testResourceID, request)
 	require.NoError(t, err)
+	require.Equal(t, resp.StatusCode, 200)
 }
 
 func TestFloatingips_MetadataUpdate(t *testing.T) {
 	setup()
 	defer teardown()
 
-	metadataCreateRequest := &MetadataCreateRequest{
+	request := &MetadataCreateRequest{
 		map[string]interface{}{"key": "value"},
 	}
-	URL := fmt.Sprintf("/v1/floatingips/%d/%d/%s/%s", projectID, regionID, testResourceID, metadataPath)
+	URL := path.Join(floatingipsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, metadataPath)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPut)
 	})
 
-	_, err := client.Floatingips.MetadataUpdate(ctx, testResourceID, metadataCreateRequest)
+	resp, err := client.Floatingips.MetadataUpdate(ctx, testResourceID, request)
 	require.NoError(t, err)
+	require.Equal(t, resp.StatusCode, 200)
 }
 
 func TestFloatingips_MetadataDeleteItem(t *testing.T) {
 	setup()
 	defer teardown()
 
-	URL := fmt.Sprintf("/v1/floatingips/%d/%d/%s/%s", projectID, regionID, testResourceID, metadataItemPath)
+	URL := path.Join(floatingipsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, metadataItemPath)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodDelete)
 	})
 
-	_, err := client.Floatingips.MetadataDeleteItem(ctx, testResourceID, nil)
+	resp, err := client.Floatingips.MetadataDeleteItem(ctx, testResourceID, nil)
 	require.NoError(t, err)
+	require.Equal(t, resp.StatusCode, 200)
 }
 
 func TestFloatingips_MetadataGetItem(t *testing.T) {
 	setup()
 	defer teardown()
 
-	metadata := &MetadataDetailed{
+	expectedResp := &MetadataDetailed{
 		Key:      "image_id",
 		Value:    "b3c52ece-147e-4af5-8d7c-84691309b879",
 		ReadOnly: true,
 	}
-	URL := fmt.Sprintf("/v1/floatingips/%d/%d/%s/%s", projectID, regionID, testResourceID, metadataItemPath)
+	URL := path.Join(floatingipsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, metadataItemPath)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
-		resp, _ := json.Marshal(metadata)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Floatingips.MetadataGetItem(ctx, testResourceID, nil)
+	respActual, resp, err := client.Floatingips.MetadataGetItem(ctx, testResourceID, nil)
 	require.NoError(t, err)
-
-	if !reflect.DeepEqual(resp, metadata) {
-		t.Errorf("Floatingips.MetadataGetItem\n returned %+v,\n expected %+v", resp, metadata)
-	}
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }
