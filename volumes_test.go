@@ -64,7 +64,7 @@ func TestVolumes_Create(t *testing.T) {
 		Name:     "test-volume",
 		Size:     20,
 		TypeName: Standard,
-		Source:   NewVolume,
+		Source:   VolumeSourceNewVolume,
 	}
 	expectedResp := &TaskResponse{Tasks: []string{testResourceID}}
 	URL := path.Join(volumesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID))

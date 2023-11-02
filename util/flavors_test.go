@@ -102,7 +102,7 @@ func TestFlavorIsAvailable(t *testing.T) {
 		FlavorID:   flavor,
 	}}
 	instanceCheckFlavorVolumeRequest := &edgecloud.InstanceCheckFlavorVolumeRequest{
-		Volumes: []edgecloud.InstanceVolumeCreate{{Source: edgecloud.ExistingVolume}},
+		Volumes: []edgecloud.InstanceVolumeCreate{{Source: edgecloud.VolumeSourceExistingVolume}},
 	}
 	URL := fmt.Sprintf("/v1/instances/%d/%d/available_flavors", projectID, regionID)
 

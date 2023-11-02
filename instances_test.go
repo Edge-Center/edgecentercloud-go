@@ -69,7 +69,7 @@ func TestInstances_Create(t *testing.T) {
 				TypeName:  SsdHiIops,
 				Size:      5,
 				BootIndex: 0,
-				Source:    Image,
+				Source:    VolumeSourceImage,
 				ImageID:   "f0d19cec-5c3f-4853-886e-304915960ff6",
 			},
 		},
@@ -240,7 +240,7 @@ func TestInstances_AvailableFlavors(t *testing.T) {
 	defer teardown()
 
 	request := &InstanceCheckFlavorVolumeRequest{
-		Volumes: []InstanceVolumeCreate{{Source: ExistingVolume}},
+		Volumes: []InstanceVolumeCreate{{Source: VolumeSourceExistingVolume}},
 	}
 	expectedResp := []Flavor{{FlavorID: "g1-standard-2-8"}}
 	URL := path.Join(instancesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), instancesAvailableFlavors)

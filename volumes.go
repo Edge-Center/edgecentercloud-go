@@ -107,11 +107,11 @@ const (
 type VolumeSource string
 
 const (
-	NewVolume      VolumeSource = "new-volume"
-	Image          VolumeSource = "image"
-	Snapshot       VolumeSource = "snapshot"
-	ExistingVolume VolumeSource = "existing-volume"
-	AppTemplate    VolumeSource = "apptemplate"
+	VolumeSourceNewVolume      VolumeSource = "new-volume"
+	VolumeSourceImage          VolumeSource = "image"
+	VolumeSourceSnapshot       VolumeSource = "snapshot"
+	VolumeSourceExistingVolume VolumeSource = "existing-volume"
+	VolumeSourceAppTemplate    VolumeSource = "apptemplate"
 )
 
 // VolumeCreateRequest represents a request to create a Volume.
