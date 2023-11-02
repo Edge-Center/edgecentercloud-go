@@ -222,9 +222,7 @@ func TestFloatingips_MetadataUpdate(t *testing.T) {
 	setup()
 	defer teardown()
 
-	request := &MetadataCreateRequest{
-		map[string]interface{}{"key": "value"},
-	}
+	request := &MetadataCreateRequest{Metadata: map[string]interface{}{"key": "value"}}
 	URL := path.Join(floatingipsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, metadataPath)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
