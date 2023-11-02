@@ -4,7 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"reflect"
+	"path"
+	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -15,49 +16,50 @@ func TestInstances_List(t *testing.T) {
 	setup()
 	defer teardown()
 
-	instances := []Instance{{ID: testResourceID}}
-	URL := fmt.Sprintf("/v1/instances/%d/%d", projectID, regionID)
+	expectedResp := []Instance{{ID: testResourceID}}
+	URL := path.Join(instancesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID))
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
-		resp, _ := json.Marshal(instances)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))
 	})
 
-	resp, _, err := client.Instances.List(ctx, nil)
+	respActual, resp, err := client.Instances.List(ctx, nil)
 	require.NoError(t, err)
-
-	if !reflect.DeepEqual(resp, instances) {
-		t.Errorf("Instances.List\n returned %+v,\n expected %+v", resp, instances)
-	}
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }
 
 func TestInstances_Get(t *testing.T) {
 	setup()
 	defer teardown()
 
-	instance := &Instance{ID: testResourceID}
-	URL := fmt.Sprintf("/v1/instances/%d/%d/%s", projectID, regionID, testResourceID)
+	expectedResp := &Instance{
+		ID: testResourceID,
+	}
+	URL := path.Join(instancesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
-		resp, _ := json.Marshal(instance)
+		resp, _ := json.Marshal(expectedResp)
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Instances.Get(ctx, testResourceID)
+	respActual, resp, err := client.Instances.Get(ctx, testResourceID)
 	require.NoError(t, err)
-
-	if !reflect.DeepEqual(resp, instance) {
-		t.Errorf("Instances.Get\n returned %+v,\n expected %+v", resp, instance)
-	}
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }
 
 func TestInstances_Create(t *testing.T) {
 	setup()
 	defer teardown()
 
-	instanceCreateRequest := &InstanceCreateRequest{
+	request := &InstanceCreateRequest{
 		Names:          []string{"test-instance"},
 		Flavor:         "g1-standard-1-2",
 		Interfaces:     []InstanceInterface{{Type: ExternalInterfaceType}},
@@ -72,9 +74,8 @@ func TestInstances_Create(t *testing.T) {
 			},
 		},
 	}
-
-	taskResponse := &TaskResponse{Tasks: []string{taskID}}
-	URL := fmt.Sprintf("/v2/instances/%d/%d", projectID, regionID)
+	expectedResp := &TaskResponse{Tasks: []string{taskID}}
+	URL := path.Join(instancesBasePathV2, strconv.Itoa(projectID), strconv.Itoa(regionID))
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
@@ -82,168 +83,179 @@ func TestInstances_Create(t *testing.T) {
 		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
 			t.Errorf("failed to decode request body: %v", err)
 		}
-		assert.Equal(t, instanceCreateRequest, reqBody)
-		resp, _ := json.Marshal(taskResponse)
+		assert.Equal(t, request, reqBody)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Instances.Create(ctx, instanceCreateRequest)
+	respActual, resp, err := client.Instances.Create(ctx, request)
 	require.NoError(t, err)
-
-	assert.Equal(t, taskResponse, resp)
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }
 
 func TestInstances_Delete(t *testing.T) {
 	setup()
 	defer teardown()
 
-	taskResponse := &TaskResponse{Tasks: []string{taskID}}
-	URL := fmt.Sprintf("/v1/instances/%d/%d/%s", projectID, regionID, testResourceID)
+	expectedResp := &TaskResponse{Tasks: []string{taskID}}
+	URL := path.Join(instancesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodDelete)
-		resp, _ := json.Marshal(taskResponse)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Instances.Delete(ctx, testResourceID, nil)
+	respActual, resp, err := client.Instances.Delete(ctx, testResourceID, nil)
 	require.NoError(t, err)
-
-	assert.Equal(t, taskResponse, resp)
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }
 
 func TestInstances_DeleteWithOptions(t *testing.T) {
 	setup()
 	defer teardown()
 
-	taskResponse := &TaskResponse{Tasks: []string{taskID}}
 	instanceDeleteOptions := InstanceDeleteOptions{
 		DeleteFloatings: true,
 		Volumes:         []string{"f0d19cec-5c3f-4853-886e-304915960ff6"},
 	}
-	URL := fmt.Sprintf("/v1/instances/%d/%d/%s", projectID, regionID, testResourceID)
+	expectedResp := &TaskResponse{Tasks: []string{taskID}}
+	URL := path.Join(instancesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodDelete)
-		resp, _ := json.Marshal(taskResponse)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Instances.Delete(ctx, testResourceID, &instanceDeleteOptions)
+	respActual, resp, err := client.Instances.Delete(ctx, testResourceID, &instanceDeleteOptions)
 	require.NoError(t, err)
-
-	assert.Equal(t, taskResponse, resp)
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }
 
 func TestInstances_MetadataGet(t *testing.T) {
 	setup()
 	defer teardown()
 
-	metadata := &MetadataDetailed{
+	expectedResp := &MetadataDetailed{
 		Key:      "image_id",
 		Value:    "b3c52ece-147e-4af5-8d7c-84691309b879",
 		ReadOnly: true,
 	}
-	URL := fmt.Sprintf("/v1/instances/%d/%d/%s/%s", projectID, regionID, testResourceID, metadataPath)
+	URL := path.Join(instancesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, metadataPath)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
-		resp, _ := json.Marshal(metadata)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Instances.MetadataGet(ctx, testResourceID)
+	respActual, resp, err := client.Instances.MetadataGet(ctx, testResourceID)
 	require.NoError(t, err)
-
-	if !reflect.DeepEqual(resp, metadata) {
-		t.Errorf("Instances.MetadataGet\n returned %+v,\n expected %+v", resp, metadata)
-	}
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }
 
 func TestInstances_MetadataCreate(t *testing.T) {
 	setup()
 	defer teardown()
 
-	metadataCreateRequest := &MetadataCreateRequest{
-		map[string]interface{}{"key": "value"},
-	}
-	URL := fmt.Sprintf("/v1/instances/%d/%d/%s/%s", projectID, regionID, testResourceID, metadataPath)
+	request := &MetadataCreateRequest{Metadata: map[string]interface{}{"key": "value"}}
+	URL := path.Join(instancesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, metadataPath)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPut)
 	})
 
-	_, err := client.Instances.MetadataCreate(ctx, testResourceID, metadataCreateRequest)
+	resp, err := client.Instances.MetadataCreate(ctx, testResourceID, request)
 	require.NoError(t, err)
+	require.Equal(t, resp.StatusCode, 200)
 }
 
 func TestInstances_CheckLimits(t *testing.T) {
 	setup()
 	defer teardown()
 
-	checkLimitsRequest := &InstanceCheckLimitsRequest{
+	request := &InstanceCheckLimitsRequest{
 		Names:      []string{""},
 		Interfaces: []InstanceInterface{},
 		Volumes:    []InstanceCheckLimitsVolume{},
 	}
-	URL := fmt.Sprintf("/v2/instances/%d/%d/%s", projectID, regionID, instancesCheckLimitsPath)
+	URL := path.Join(instancesBasePathV2, strconv.Itoa(projectID), strconv.Itoa(regionID), instancesCheckLimits)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
-		resp, _ := json.Marshal(map[string]int{})
+		resp, err := json.Marshal(map[string]int{})
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	_, _, err := client.Instances.CheckLimits(ctx, checkLimitsRequest)
+	_, resp, err := client.Instances.CheckLimits(ctx, request)
 	require.NoError(t, err)
+	require.Equal(t, resp.StatusCode, 200)
 }
 
 func TestInstances_UpdateFlavor(t *testing.T) {
 	setup()
 	defer teardown()
 
-	instanceFlavorUpdateRequest := &InstanceFlavorUpdateRequest{
-		FlavorID: "g1-standard-1-2",
-	}
-	taskResponse := &TaskResponse{Tasks: []string{taskID}}
-	URL := fmt.Sprintf("/v1/instances/%d/%d/%s/%s", projectID, regionID, testResourceID, instancesChangeFlavorPath)
+	request := &InstanceFlavorUpdateRequest{FlavorID: "g1-standard-1-2"}
+	expectedResp := &TaskResponse{Tasks: []string{taskID}}
+	URL := path.Join(instancesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, instancesChangeFlavor)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
-		resp, _ := json.Marshal(taskResponse)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Instances.UpdateFlavor(ctx, testResourceID, instanceFlavorUpdateRequest)
+	respActual, resp, err := client.Instances.UpdateFlavor(ctx, testResourceID, request)
 	require.NoError(t, err)
-
-	assert.Equal(t, taskResponse, resp)
+	require.Equal(t, resp.StatusCode, 200)
+	assert.Equal(t, expectedResp, respActual)
 }
 
 func TestInstances_AvailableFlavors(t *testing.T) {
 	setup()
 	defer teardown()
 
-	const (
-		flavor = "g1-standard-2-8"
-	)
-
-	instanceCheckFlavorVolumeRequest := &InstanceCheckFlavorVolumeRequest{
+	request := &InstanceCheckFlavorVolumeRequest{
 		Volumes: []InstanceVolumeCreate{{Source: ExistingVolume}},
 	}
-	flavors := []Flavor{{FlavorID: flavor}}
-	URL := fmt.Sprintf("/v1/instances/%d/%d/%s", projectID, regionID, instancesAvailableFlavorsPath)
+	expectedResp := []Flavor{{FlavorID: "g1-standard-2-8"}}
+	URL := path.Join(instancesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), instancesAvailableFlavors)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
-		resp, _ := json.Marshal(flavors)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))
 	})
 
-	resp, _, err := client.Instances.AvailableFlavors(ctx, instanceCheckFlavorVolumeRequest, nil)
+	respActual, resp, err := client.Instances.AvailableFlavors(ctx, request, nil)
 	require.NoError(t, err)
-
-	if !reflect.DeepEqual(resp, flavors) {
-		t.Errorf("Instances.AvailableFlavors\n returned %+v,\n expected %+v", resp, flavors)
-	}
+	require.Equal(t, resp.StatusCode, 200)
+	assert.Equal(t, expectedResp, respActual)
 }

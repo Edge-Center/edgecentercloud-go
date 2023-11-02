@@ -4,7 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"reflect"
+	"path"
+	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -15,56 +16,58 @@ func TestVolumes_List(t *testing.T) {
 	setup()
 	defer teardown()
 
-	volumes := []Volume{{ID: testResourceID}}
-	URL := fmt.Sprintf("/v1/volumes/%d/%d", projectID, regionID)
+	expectedResp := []Volume{{ID: testResourceID}}
+	URL := path.Join(volumesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID))
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
-		resp, _ := json.Marshal(volumes)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))
 	})
 
-	resp, _, err := client.Volumes.List(ctx, nil)
+	respActual, resp, err := client.Volumes.List(ctx, nil)
 	require.NoError(t, err)
-
-	if !reflect.DeepEqual(resp, volumes) {
-		t.Errorf("Volumes.List\n returned %+v,\n expected %+v", resp, volumes)
-	}
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }
 
 func TestVolumes_Get(t *testing.T) {
 	setup()
 	defer teardown()
 
-	volume := &Volume{ID: testResourceID}
-	URL := fmt.Sprintf("/v1/volumes/%d/%d/%s", projectID, regionID, testResourceID)
+	expectedResp := &Volume{ID: testResourceID}
+	URL := path.Join(volumesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
-		resp, _ := json.Marshal(volume)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Volumes.Get(ctx, testResourceID)
+	respActual, resp, err := client.Volumes.Get(ctx, testResourceID)
 	require.NoError(t, err)
-
-	if !reflect.DeepEqual(resp, volume) {
-		t.Errorf("Volumes.Get\n returned %+v,\n expected %+v", resp, volume)
-	}
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }
 
 func TestVolumes_Create(t *testing.T) {
 	setup()
 	defer teardown()
 
-	volumeCreateRequest := &VolumeCreateRequest{
+	request := &VolumeCreateRequest{
 		Name:     "test-volume",
 		Size:     20,
 		TypeName: Standard,
 		Source:   NewVolume,
 	}
-	taskResponse := &TaskResponse{Tasks: []string{testResourceID}}
-	URL := fmt.Sprintf("/v1/volumes/%d/%d", projectID, regionID)
+	expectedResp := &TaskResponse{Tasks: []string{testResourceID}}
+	URL := path.Join(volumesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID))
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
@@ -72,45 +75,49 @@ func TestVolumes_Create(t *testing.T) {
 		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
 			t.Errorf("failed to decode request body: %v", err)
 		}
-		assert.Equal(t, volumeCreateRequest, reqBody)
-		resp, _ := json.Marshal(taskResponse)
+		assert.Equal(t, request, reqBody)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Volumes.Create(ctx, volumeCreateRequest)
+	respActual, resp, err := client.Volumes.Create(ctx, request)
 	require.NoError(t, err)
-
-	assert.Equal(t, taskResponse, resp)
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }
 
 func TestVolumes_Delete(t *testing.T) {
 	setup()
 	defer teardown()
 
-	taskResponse := &TaskResponse{Tasks: []string{taskID}}
-	URL := fmt.Sprintf("/v1/volumes/%d/%d/%s", projectID, regionID, testResourceID)
+	expectedResp := &TaskResponse{Tasks: []string{taskID}}
+	URL := path.Join(volumesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodDelete)
-		resp, _ := json.Marshal(taskResponse)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Volumes.Delete(ctx, testResourceID)
+	respActual, resp, err := client.Volumes.Delete(ctx, testResourceID)
 	require.NoError(t, err)
-
-	assert.Equal(t, taskResponse, resp)
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }
 
 func TestVolumes_ChangeType(t *testing.T) {
 	setup()
 	defer teardown()
 
-	changeTypeRequest := &VolumeChangeTypeRequest{
-		VolumeType: SsdHiIops,
-	}
-	volumeResponse := &Volume{ID: testResourceID, VolumeType: SsdHiIops}
-	URL := fmt.Sprintf("/v1/volumes/%d/%d/%s/%s", projectID, regionID, testResourceID, volumesRetypePath)
+	request := &VolumeChangeTypeRequest{VolumeType: SsdHiIops}
+	expectedResp := &Volume{ID: testResourceID, VolumeType: SsdHiIops}
+	URL := path.Join(volumesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, volumesRetype)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
@@ -118,26 +125,27 @@ func TestVolumes_ChangeType(t *testing.T) {
 		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
 			t.Errorf("failed to decode request body: %v", err)
 		}
-		assert.Equal(t, changeTypeRequest, reqBody)
-		resp, _ := json.Marshal(volumeResponse)
+		assert.Equal(t, request, reqBody)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Volumes.ChangeType(ctx, testResourceID, changeTypeRequest)
+	respActual, resp, err := client.Volumes.ChangeType(ctx, testResourceID, request)
 	require.NoError(t, err)
-
-	assert.Equal(t, volumeResponse, resp)
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }
 
 func TestVolumes_ExtendSize(t *testing.T) {
 	setup()
 	defer teardown()
 
-	extendSizeRequest := &VolumeExtendSizeRequest{
-		Size: 20,
-	}
-	taskResponse := &TaskResponse{Tasks: []string{taskID}}
-	URL := fmt.Sprintf("/v1/volumes/%d/%d/%s/%s", projectID, regionID, testResourceID, volumesExtendPath)
+	request := &VolumeExtendSizeRequest{Size: 20}
+	expectedResp := &TaskResponse{Tasks: []string{taskID}}
+	URL := path.Join(volumesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, volumesExtend)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
@@ -145,15 +153,18 @@ func TestVolumes_ExtendSize(t *testing.T) {
 		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
 			t.Errorf("failed to decode request body: %v", err)
 		}
-		assert.Equal(t, extendSizeRequest, reqBody)
-		resp, _ := json.Marshal(taskResponse)
+		assert.Equal(t, request, reqBody)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Volumes.Extend(ctx, testResourceID, extendSizeRequest)
+	respActual, resp, err := client.Volumes.Extend(ctx, testResourceID, request)
 	require.NoError(t, err)
-
-	assert.Equal(t, taskResponse, resp)
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }
 
 func TestVolumes_Rename(t *testing.T) {
@@ -164,11 +175,9 @@ func TestVolumes_Rename(t *testing.T) {
 		name = "new-name"
 	)
 
-	volumeRenameRequest := &VolumeRenameRequest{
-		Name: name,
-	}
-	volumeResponse := &Volume{ID: testResourceID, Name: name}
-	URL := fmt.Sprintf("/v1/volumes/%d/%d/%s", projectID, regionID, testResourceID)
+	request := &VolumeRenameRequest{Name: name}
+	expectedResp := &Volume{ID: testResourceID, Name: name}
+	URL := path.Join(volumesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPatch)
@@ -176,26 +185,27 @@ func TestVolumes_Rename(t *testing.T) {
 		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
 			t.Errorf("failed to decode request body: %v", err)
 		}
-		assert.Equal(t, volumeRenameRequest, reqBody)
-		resp, _ := json.Marshal(volumeResponse)
+		assert.Equal(t, request, reqBody)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Volumes.Rename(ctx, testResourceID, volumeRenameRequest)
+	respActual, resp, err := client.Volumes.Rename(ctx, testResourceID, request)
 	require.NoError(t, err)
-
-	assert.Equal(t, volumeResponse, resp)
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }
 
 func TestVolumes_Attach(t *testing.T) {
 	setup()
 	defer teardown()
 
-	volumeAttachRequest := &VolumeAttachRequest{
-		InstanceID: testResourceID,
-	}
-	volumeResponse := &Volume{ID: testResourceID}
-	URL := fmt.Sprintf("/v1/volumes/%d/%d/%s/%s", projectID, regionID, testResourceID, volumesAttachPath)
+	request := &VolumeAttachRequest{InstanceID: testResourceID}
+	expectedResp := &Volume{ID: testResourceID}
+	URL := path.Join(volumesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, volumesAttach)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
@@ -203,26 +213,27 @@ func TestVolumes_Attach(t *testing.T) {
 		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
 			t.Errorf("failed to decode request body: %v", err)
 		}
-		assert.Equal(t, volumeAttachRequest, reqBody)
-		resp, _ := json.Marshal(volumeResponse)
+		assert.Equal(t, request, reqBody)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Volumes.Attach(ctx, testResourceID, volumeAttachRequest)
+	respActual, resp, err := client.Volumes.Attach(ctx, testResourceID, request)
 	require.NoError(t, err)
-
-	assert.Equal(t, volumeResponse, resp)
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }
 
 func TestVolumes_Detach(t *testing.T) {
 	setup()
 	defer teardown()
 
-	volumeDetachRequest := &VolumeDetachRequest{
-		InstanceID: testResourceID,
-	}
-	volumeResponse := &Volume{ID: testResourceID}
-	URL := fmt.Sprintf("/v1/volumes/%d/%d/%s/%s", projectID, regionID, testResourceID, volumesDetachPath)
+	request := &VolumeDetachRequest{InstanceID: testResourceID}
+	expectedResp := &Volume{ID: testResourceID}
+	URL := path.Join(volumesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, volumesDetach)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
@@ -230,130 +241,137 @@ func TestVolumes_Detach(t *testing.T) {
 		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
 			t.Errorf("failed to decode request body: %v", err)
 		}
-		assert.Equal(t, volumeDetachRequest, reqBody)
-		resp, _ := json.Marshal(volumeResponse)
+		assert.Equal(t, request, reqBody)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Volumes.Detach(ctx, testResourceID, volumeDetachRequest)
+	respActual, resp, err := client.Volumes.Detach(ctx, testResourceID, request)
 	require.NoError(t, err)
-
-	assert.Equal(t, volumeResponse, resp)
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }
 
 func TestVolumes_Revert(t *testing.T) {
 	setup()
 	defer teardown()
 
-	taskResponse := &TaskResponse{Tasks: []string{taskID}}
-	URL := fmt.Sprintf("/v1/volumes/%d/%d/%s/%s", projectID, regionID, testResourceID, volumesRevertPath)
+	expectedResp := &TaskResponse{Tasks: []string{taskID}}
+	URL := path.Join(volumesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, volumesRevert)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
-		resp, _ := json.Marshal(taskResponse)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Volumes.Revert(ctx, testResourceID)
+	respActual, resp, err := client.Volumes.Revert(ctx, testResourceID)
 	require.NoError(t, err)
-
-	assert.Equal(t, taskResponse, resp)
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }
 
 func TestVolumes_MetadataList(t *testing.T) {
 	setup()
 	defer teardown()
 
-	metadataList := []MetadataDetailed{{
+	expectedResp := []MetadataDetailed{{
 		Key:      "image_id",
 		Value:    "b3c52ece-147e-4af5-8d7c-84691309b879",
 		ReadOnly: true,
 	}}
-	URL := fmt.Sprintf("/v1/volumes/%d/%d/%s/%s", projectID, regionID, testResourceID, metadataPath)
+	URL := path.Join(volumesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, metadataPath)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
-		resp, _ := json.Marshal(metadataList)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))
 	})
 
-	resp, _, err := client.Volumes.MetadataList(ctx, testResourceID)
+	respActual, resp, err := client.Volumes.MetadataList(ctx, testResourceID)
 	require.NoError(t, err)
-
-	if !reflect.DeepEqual(resp, metadataList) {
-		t.Errorf("Volumes.MetadataList\n returned %+v,\n expected %+v", resp, metadataList)
-	}
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }
 
 func TestVolumes_MetadataCreate(t *testing.T) {
 	setup()
 	defer teardown()
 
-	metadataCreateRequest := &MetadataCreateRequest{
-		map[string]interface{}{"key": "value"},
-	}
-	URL := fmt.Sprintf("/v1/volumes/%d/%d/%s/%s", projectID, regionID, testResourceID, metadataPath)
+	request := &MetadataCreateRequest{Metadata: map[string]interface{}{"key": "value"}}
+	URL := path.Join(volumesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, metadataPath)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
 	})
 
-	_, err := client.Volumes.MetadataCreate(ctx, testResourceID, metadataCreateRequest)
+	resp, err := client.Volumes.MetadataCreate(ctx, testResourceID, request)
 	require.NoError(t, err)
+	require.Equal(t, resp.StatusCode, 200)
 }
 
 func TestVolumes_MetadataUpdate(t *testing.T) {
 	setup()
 	defer teardown()
 
-	metadataCreateRequest := &MetadataCreateRequest{
-		map[string]interface{}{"key": "value"},
-	}
-	URL := fmt.Sprintf("/v1/volumes/%d/%d/%s/%s", projectID, regionID, testResourceID, metadataPath)
+	request := &MetadataCreateRequest{Metadata: map[string]interface{}{"key": "value"}}
+	URL := path.Join(volumesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, metadataPath)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPut)
 	})
 
-	_, err := client.Volumes.MetadataUpdate(ctx, testResourceID, metadataCreateRequest)
+	resp, err := client.Volumes.MetadataUpdate(ctx, testResourceID, request)
 	require.NoError(t, err)
+	require.Equal(t, resp.StatusCode, 200)
 }
 
 func TestVolumes_MetadataDeleteItem(t *testing.T) {
 	setup()
 	defer teardown()
 
-	URL := fmt.Sprintf("/v1/volumes/%d/%d/%s/%s", projectID, regionID, testResourceID, metadataItemPath)
+	URL := path.Join(volumesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, metadataItemPath)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodDelete)
 	})
 
-	_, err := client.Volumes.MetadataDeleteItem(ctx, testResourceID, nil)
+	resp, err := client.Volumes.MetadataDeleteItem(ctx, testResourceID, nil)
 	require.NoError(t, err)
+	require.Equal(t, resp.StatusCode, 200)
 }
 
 func TestVolumes_MetadataGetItem(t *testing.T) {
 	setup()
 	defer teardown()
 
-	metadata := &MetadataDetailed{
+	expectedResp := &MetadataDetailed{
 		Key:      "image_id",
 		Value:    "b3c52ece-147e-4af5-8d7c-84691309b879",
 		ReadOnly: true,
 	}
-	URL := fmt.Sprintf("/v1/volumes/%d/%d/%s/%s", projectID, regionID, testResourceID, metadataItemPath)
+	URL := path.Join(volumesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, metadataItemPath)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
-		resp, _ := json.Marshal(metadata)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Volumes.MetadataGetItem(ctx, testResourceID, nil)
+	respActual, resp, err := client.Volumes.MetadataGetItem(ctx, testResourceID, nil)
 	require.NoError(t, err)
-
-	if !reflect.DeepEqual(resp, metadata) {
-		t.Errorf("Volumes.MetadataGetItem\n returned %+v,\n expected %+v", resp, metadata)
-	}
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }

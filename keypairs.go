@@ -8,7 +8,10 @@ import (
 
 const (
 	keypairsBasePathV1 = "/v1/keypairs"
-	keypairsSharePath  = "share"
+)
+
+const (
+	keypairsShare = "share"
 )
 
 // KeyPairsService is an interface for creating and managing SSH keys with the EdgecenterCloud API.
@@ -108,9 +111,9 @@ func (s *KeyPairsServiceOp) Get(ctx context.Context, keypairID string) (*KeyPair
 }
 
 // Create a Key Pair.
-func (s *KeyPairsServiceOp) Create(ctx context.Context, createRequest *KeyPairCreateRequest) (*TaskResponse, *Response, error) {
-	if createRequest == nil {
-		return nil, nil, NewArgError("createRequest", "cannot be nil")
+func (s *KeyPairsServiceOp) Create(ctx context.Context, reqBody *KeyPairCreateRequest) (*TaskResponse, *Response, error) {
+	if reqBody == nil {
+		return nil, nil, NewArgError("reqBody", "cannot be nil")
 	}
 
 	if resp, err := s.client.Validate(); err != nil {
@@ -119,7 +122,7 @@ func (s *KeyPairsServiceOp) Create(ctx context.Context, createRequest *KeyPairCr
 
 	path := s.client.addProjectRegionPath(keypairsBasePathV1)
 
-	req, err := s.client.NewRequest(ctx, http.MethodPost, path, createRequest)
+	req, err := s.client.NewRequest(ctx, http.MethodPost, path, reqBody)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -160,12 +163,12 @@ func (s *KeyPairsServiceOp) Delete(ctx context.Context, keypairID string) (*Task
 }
 
 // Share a Key Pair to view for all users in project.
-func (s *KeyPairsServiceOp) Share(ctx context.Context, keypairID string, shareRequest *KeyPairShareRequest) (*KeyPair, *Response, error) {
+func (s *KeyPairsServiceOp) Share(ctx context.Context, keypairID string, reqBody *KeyPairShareRequest) (*KeyPair, *Response, error) {
 	if resp, err := isValidUUID(keypairID, "keypairID"); err != nil {
 		return nil, resp, err
 	}
 
-	if shareRequest == nil {
+	if reqBody == nil {
 		return nil, nil, NewArgError("shareRequest", "cannot be nil")
 	}
 
@@ -173,9 +176,9 @@ func (s *KeyPairsServiceOp) Share(ctx context.Context, keypairID string, shareRe
 		return nil, resp, err
 	}
 
-	path := fmt.Sprintf("%s/%s/%s", s.client.addProjectRegionPath(keypairsBasePathV1), keypairID, keypairsSharePath)
+	path := fmt.Sprintf("%s/%s/%s", s.client.addProjectRegionPath(keypairsBasePathV1), keypairID, keypairsShare)
 
-	req, err := s.client.NewRequest(ctx, http.MethodPatch, path, shareRequest)
+	req, err := s.client.NewRequest(ctx, http.MethodPatch, path, reqBody)
 	if err != nil {
 		return nil, nil, err
 	}

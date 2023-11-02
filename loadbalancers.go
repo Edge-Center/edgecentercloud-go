@@ -8,11 +8,14 @@ import (
 )
 
 const (
-	loadbalancersBasePathV1      = "/v1/loadbalancers"
-	lblistenersBasePathV1        = "/v1/lblisteners"
-	lbpoolsBasePathV1            = "/v1/lbpools"
-	lbflavorsBasePathV1          = "/v1/lbflavors"
-	loadbalancersCheckLimitsPath = "check_limits"
+	loadbalancersBasePathV1 = "/v1/loadbalancers"
+	lblistenersBasePathV1   = "/v1/lblisteners"
+	lbpoolsBasePathV1       = "/v1/lbpools"
+	lbflavorsBasePathV1     = "/v1/lbflavors"
+)
+
+const (
+	loadbalancersCheckLimits = "check_limits"
 )
 
 // LoadbalancersService is an interface for creating and managing Loadbalancer with the EdgecenterCloud API.
@@ -447,9 +450,9 @@ func (s *LoadbalancersServiceOp) Get(ctx context.Context, loadbalancerID string)
 }
 
 // Create a Loadbalancer.
-func (s *LoadbalancersServiceOp) Create(ctx context.Context, createRequest *LoadbalancerCreateRequest) (*TaskResponse, *Response, error) {
-	if createRequest == nil {
-		return nil, nil, NewArgError("createRequest", "cannot be nil")
+func (s *LoadbalancersServiceOp) Create(ctx context.Context, reqBody *LoadbalancerCreateRequest) (*TaskResponse, *Response, error) {
+	if reqBody == nil {
+		return nil, nil, NewArgError("reqBody", "cannot be nil")
 	}
 
 	if resp, err := s.client.Validate(); err != nil {
@@ -458,7 +461,7 @@ func (s *LoadbalancersServiceOp) Create(ctx context.Context, createRequest *Load
 
 	path := s.client.addProjectRegionPath(loadbalancersBasePathV1)
 
-	req, err := s.client.NewRequest(ctx, http.MethodPost, path, createRequest)
+	req, err := s.client.NewRequest(ctx, http.MethodPost, path, reqBody)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -525,9 +528,9 @@ func (s *LoadbalancersServiceOp) ListenerGet(ctx context.Context, listenerID str
 }
 
 // ListenerCreate a Loadbalancer Listener.
-func (s *LoadbalancersServiceOp) ListenerCreate(ctx context.Context, createRequest *ListenerCreateRequest) (*TaskResponse, *Response, error) {
-	if createRequest == nil {
-		return nil, nil, NewArgError("createRequest", "cannot be nil")
+func (s *LoadbalancersServiceOp) ListenerCreate(ctx context.Context, reqBody *ListenerCreateRequest) (*TaskResponse, *Response, error) {
+	if reqBody == nil {
+		return nil, nil, NewArgError("reqBody", "cannot be nil")
 	}
 
 	if resp, err := s.client.Validate(); err != nil {
@@ -536,7 +539,7 @@ func (s *LoadbalancersServiceOp) ListenerCreate(ctx context.Context, createReque
 
 	path := s.client.addProjectRegionPath(lblistenersBasePathV1)
 
-	req, err := s.client.NewRequest(ctx, http.MethodPost, path, createRequest)
+	req, err := s.client.NewRequest(ctx, http.MethodPost, path, reqBody)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -603,9 +606,9 @@ func (s *LoadbalancersServiceOp) PoolGet(ctx context.Context, poolID string) (*P
 }
 
 // PoolCreate a Loadbalancer Pool.
-func (s *LoadbalancersServiceOp) PoolCreate(ctx context.Context, createRequest *PoolCreateRequest) (*TaskResponse, *Response, error) {
-	if createRequest == nil {
-		return nil, nil, NewArgError("createRequest", "cannot be nil")
+func (s *LoadbalancersServiceOp) PoolCreate(ctx context.Context, reqBody *PoolCreateRequest) (*TaskResponse, *Response, error) {
+	if reqBody == nil {
+		return nil, nil, NewArgError("reqBody", "cannot be nil")
 	}
 
 	if resp, err := s.client.Validate(); err != nil {
@@ -614,7 +617,7 @@ func (s *LoadbalancersServiceOp) PoolCreate(ctx context.Context, createRequest *
 
 	path := s.client.addProjectRegionPath(lbpoolsBasePathV1)
 
-	req, err := s.client.NewRequest(ctx, http.MethodPost, path, createRequest)
+	req, err := s.client.NewRequest(ctx, http.MethodPost, path, reqBody)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -655,7 +658,7 @@ func (s *LoadbalancersServiceOp) PoolDelete(ctx context.Context, poolID string) 
 }
 
 // PoolUpdate a Loadbalancer Pool.
-func (s *LoadbalancersServiceOp) PoolUpdate(ctx context.Context, poolID string, updateRequest *PoolUpdateRequest) (*TaskResponse, *Response, error) {
+func (s *LoadbalancersServiceOp) PoolUpdate(ctx context.Context, poolID string, reqBody *PoolUpdateRequest) (*TaskResponse, *Response, error) {
 	if resp, err := isValidUUID(poolID, "poolID"); err != nil {
 		return nil, resp, err
 	}
@@ -666,7 +669,7 @@ func (s *LoadbalancersServiceOp) PoolUpdate(ctx context.Context, poolID string, 
 
 	path := fmt.Sprintf("%s/%s", s.client.addProjectRegionPath(lbpoolsBasePathV1), poolID)
 
-	req, err := s.client.NewRequest(ctx, http.MethodPatch, path, updateRequest)
+	req, err := s.client.NewRequest(ctx, http.MethodPatch, path, reqBody)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -707,15 +710,15 @@ func (s *LoadbalancersServiceOp) PoolList(ctx context.Context, opts *PoolListOpt
 }
 
 // CheckLimits check a quota for load balancer creation.
-func (s *LoadbalancersServiceOp) CheckLimits(ctx context.Context, checkLimitsRequest *LoadbalancerCheckLimitsRequest) (*map[string]int, *Response, error) {
+func (s *LoadbalancersServiceOp) CheckLimits(ctx context.Context, reqBody *LoadbalancerCheckLimitsRequest) (*map[string]int, *Response, error) {
 	if resp, err := s.client.Validate(); err != nil {
 		return nil, resp, err
 	}
 
 	path := s.client.addProjectRegionPath(loadbalancersBasePathV1)
-	path = fmt.Sprintf("%s/%s", path, loadbalancersCheckLimitsPath)
+	path = fmt.Sprintf("%s/%s", path, loadbalancersCheckLimits)
 
-	req, err := s.client.NewRequest(ctx, http.MethodPost, path, checkLimitsRequest)
+	req, err := s.client.NewRequest(ctx, http.MethodPost, path, reqBody)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -769,7 +772,7 @@ func (s *LoadbalancersServiceOp) MetadataList(ctx context.Context, loadbalancerI
 }
 
 // MetadataCreate or update load balancer metadata.
-func (s *LoadbalancersServiceOp) MetadataCreate(ctx context.Context, loadbalancerID string, metadata *MetadataCreateRequest) (*Response, error) {
+func (s *LoadbalancersServiceOp) MetadataCreate(ctx context.Context, loadbalancerID string, reqBody *MetadataCreateRequest) (*Response, error) {
 	if resp, err := isValidUUID(loadbalancerID, "loadbalancerID"); err != nil {
 		return resp, err
 	}
@@ -778,11 +781,11 @@ func (s *LoadbalancersServiceOp) MetadataCreate(ctx context.Context, loadbalance
 		return resp, err
 	}
 
-	return metadataCreate(ctx, s.client, loadbalancerID, loadbalancersBasePathV1, metadata)
+	return metadataCreate(ctx, s.client, loadbalancerID, loadbalancersBasePathV1, reqBody)
 }
 
 // MetadataUpdate load balancer metadata.
-func (s *LoadbalancersServiceOp) MetadataUpdate(ctx context.Context, loadbalancerID string, metadata *MetadataCreateRequest) (*Response, error) {
+func (s *LoadbalancersServiceOp) MetadataUpdate(ctx context.Context, loadbalancerID string, reqBody *MetadataCreateRequest) (*Response, error) {
 	if resp, err := isValidUUID(loadbalancerID, "loadbalancerID"); err != nil {
 		return resp, err
 	}
@@ -791,7 +794,7 @@ func (s *LoadbalancersServiceOp) MetadataUpdate(ctx context.Context, loadbalance
 		return resp, err
 	}
 
-	return metadataUpdate(ctx, s.client, loadbalancerID, loadbalancersBasePathV1, metadata)
+	return metadataUpdate(ctx, s.client, loadbalancerID, loadbalancersBasePathV1, reqBody)
 }
 
 // MetadataDeleteItem a load balancer metadata item by key.

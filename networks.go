@@ -9,7 +9,10 @@ import (
 const (
 	networksBasePathV1          = "/v1/networks"
 	availablenetworksBasePathV1 = "/v1/availablenetworks"
-	networksPortsPath           = "ports"
+)
+
+const (
+	networksPorts = "ports"
 )
 
 // NetworksService is an interface for creating and managing Networks with the EdgecenterCloud API.
@@ -22,6 +25,7 @@ type NetworksService interface {
 	UpdateName(context.Context, string, *NetworkUpdateNameRequest) (*Network, *Response, error)
 	ListNetworksWithSubnets(context.Context, *NetworksWithSubnetsOptions) ([]NetworkSubnetwork, *Response, error)
 	PortList(context.Context, string) ([]PortsInstance, *Response, error)
+
 	NetworksMetadata
 }
 
@@ -197,9 +201,9 @@ func (s *NetworksServiceOp) Get(ctx context.Context, networkID string) (*Network
 }
 
 // Create a Network.
-func (s *NetworksServiceOp) Create(ctx context.Context, createRequest *NetworkCreateRequest) (*TaskResponse, *Response, error) {
-	if createRequest == nil {
-		return nil, nil, NewArgError("createRequest", "cannot be nil")
+func (s *NetworksServiceOp) Create(ctx context.Context, reqBody *NetworkCreateRequest) (*TaskResponse, *Response, error) {
+	if reqBody == nil {
+		return nil, nil, NewArgError("reqBody", "cannot be nil")
 	}
 
 	if resp, err := s.client.Validate(); err != nil {
@@ -208,7 +212,7 @@ func (s *NetworksServiceOp) Create(ctx context.Context, createRequest *NetworkCr
 
 	path := s.client.addProjectRegionPath(networksBasePathV1)
 
-	req, err := s.client.NewRequest(ctx, http.MethodPost, path, createRequest)
+	req, err := s.client.NewRequest(ctx, http.MethodPost, path, reqBody)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -249,7 +253,7 @@ func (s *NetworksServiceOp) Delete(ctx context.Context, networkID string) (*Task
 }
 
 // UpdateName of the network.
-func (s *NetworksServiceOp) UpdateName(ctx context.Context, networkID string, networkUpdateNameRequest *NetworkUpdateNameRequest) (*Network, *Response, error) {
+func (s *NetworksServiceOp) UpdateName(ctx context.Context, networkID string, reqBody *NetworkUpdateNameRequest) (*Network, *Response, error) {
 	if resp, err := isValidUUID(networkID, "networkID"); err != nil {
 		return nil, resp, err
 	}
@@ -260,7 +264,7 @@ func (s *NetworksServiceOp) UpdateName(ctx context.Context, networkID string, ne
 
 	path := fmt.Sprintf("%s/%s", s.client.addProjectRegionPath(networksBasePathV1), networkID)
 
-	req, err := s.client.NewRequest(ctx, http.MethodPatch, path, networkUpdateNameRequest)
+	req, err := s.client.NewRequest(ctx, http.MethodPatch, path, reqBody)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -307,7 +311,7 @@ func (s *NetworksServiceOp) PortList(ctx context.Context, networkID string) ([]P
 	}
 
 	path := fmt.Sprintf("%s/%s", s.client.addProjectRegionPath(networksBasePathV1), networkID)
-	path = fmt.Sprintf("%s/%s", path, networksPortsPath)
+	path = fmt.Sprintf("%s/%s", path, networksPorts)
 
 	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
 	if err != nil {
@@ -337,7 +341,7 @@ func (s *NetworksServiceOp) MetadataList(ctx context.Context, networkID string) 
 }
 
 // MetadataCreate or update network metadata.
-func (s *NetworksServiceOp) MetadataCreate(ctx context.Context, networkID string, metadata *MetadataCreateRequest) (*Response, error) {
+func (s *NetworksServiceOp) MetadataCreate(ctx context.Context, networkID string, reqBody *MetadataCreateRequest) (*Response, error) {
 	if resp, err := isValidUUID(networkID, "networkID"); err != nil {
 		return resp, err
 	}
@@ -346,11 +350,11 @@ func (s *NetworksServiceOp) MetadataCreate(ctx context.Context, networkID string
 		return resp, err
 	}
 
-	return metadataCreate(ctx, s.client, networkID, networksBasePathV1, metadata)
+	return metadataCreate(ctx, s.client, networkID, networksBasePathV1, reqBody)
 }
 
 // MetadataUpdate network metadata.
-func (s *NetworksServiceOp) MetadataUpdate(ctx context.Context, networkID string, metadata *MetadataCreateRequest) (*Response, error) {
+func (s *NetworksServiceOp) MetadataUpdate(ctx context.Context, networkID string, reqBody *MetadataCreateRequest) (*Response, error) {
 	if resp, err := isValidUUID(networkID, "networkID"); err != nil {
 		return resp, err
 	}
@@ -359,7 +363,7 @@ func (s *NetworksServiceOp) MetadataUpdate(ctx context.Context, networkID string
 		return resp, err
 	}
 
-	return metadataUpdate(ctx, s.client, networkID, networksBasePathV1, metadata)
+	return metadataUpdate(ctx, s.client, networkID, networksBasePathV1, reqBody)
 }
 
 // MetadataDeleteItem a network metadata item by key.

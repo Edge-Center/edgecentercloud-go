@@ -113,14 +113,14 @@ func (s *ProjectsServiceOp) Delete(ctx context.Context, projectID string) (*Task
 }
 
 // Update a project.
-func (s *ProjectsServiceOp) Update(ctx context.Context, projectID string, updateRequest *ProjectUpdateRequest) (*Project, *Response, error) {
-	if updateRequest == nil {
-		return nil, nil, NewArgError("updateRequest", "cannot be nil")
+func (s *ProjectsServiceOp) Update(ctx context.Context, projectID string, reqBody *ProjectUpdateRequest) (*Project, *Response, error) {
+	if reqBody == nil {
+		return nil, nil, NewArgError("reqBody", "cannot be nil")
 	}
 
 	path := fmt.Sprintf("%s/%s", projectsBasePath, projectID)
 
-	req, err := s.client.NewRequest(ctx, http.MethodPut, path, updateRequest)
+	req, err := s.client.NewRequest(ctx, http.MethodPut, path, reqBody)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -156,12 +156,12 @@ func (s *ProjectsServiceOp) List(ctx context.Context, opts *ProjectListOptions) 
 }
 
 // Create a project.
-func (s *ProjectsServiceOp) Create(ctx context.Context, createRequest *ProjectCreateRequest) (*Project, *Response, error) {
-	if createRequest == nil {
-		return nil, nil, NewArgError("createRequest", "cannot be nil")
+func (s *ProjectsServiceOp) Create(ctx context.Context, reqBody *ProjectCreateRequest) (*Project, *Response, error) {
+	if reqBody == nil {
+		return nil, nil, NewArgError("reqBody", "cannot be nil")
 	}
 
-	req, err := s.client.NewRequest(ctx, http.MethodPost, projectsBasePath, createRequest)
+	req, err := s.client.NewRequest(ctx, http.MethodPost, projectsBasePath, reqBody)
 	if err != nil {
 		return nil, nil, err
 	}

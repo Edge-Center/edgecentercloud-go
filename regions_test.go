@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"reflect"
+	"path"
 	"strconv"
 	"testing"
 
@@ -15,44 +15,41 @@ func TestRegions_List(t *testing.T) {
 	setup()
 	defer teardown()
 
-	regions := []Region{
-		{ID: regionID},
-	}
-	URL := "/v1/regions"
+	expectedResp := []Region{{ID: regionID}}
 
-	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(regionsBasePath, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
-		resp, _ := json.Marshal(regions)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))
 	})
 
-	resp, _, err := client.Regions.List(ctx, nil)
+	respActual, resp, err := client.Regions.List(ctx, nil)
 	require.NoError(t, err)
-
-	if !reflect.DeepEqual(resp, regions) {
-		t.Errorf("Regions.List\n returned %+v,\n expected %+v", resp, regions)
-	}
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }
 
 func TestRegions_Get(t *testing.T) {
 	setup()
 	defer teardown()
 
-	region := &Region{
-		ID: regionID,
-	}
-	URL := fmt.Sprintf("/v1/regions/%d", regionID)
+	expectedResp := &Region{ID: regionID}
+	URL := path.Join(regionsBasePath, strconv.Itoa(regionID))
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
-		resp, _ := json.Marshal(region)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	resp, _, err := client.Regions.Get(ctx, strconv.Itoa(regionID), nil)
+	respActual, resp, err := client.Regions.Get(ctx, strconv.Itoa(regionID), nil)
 	require.NoError(t, err)
-
-	if !reflect.DeepEqual(resp, region) {
-		t.Errorf("Regions.Get\n returned %+v,\n expected %+v", resp, region)
-	}
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
 }

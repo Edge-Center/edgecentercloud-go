@@ -111,9 +111,9 @@ func (s *ServerGroupsServiceOp) Get(ctx context.Context, serverGroupID string) (
 }
 
 // Create a Server Group.
-func (s *ServerGroupsServiceOp) Create(ctx context.Context, createRequest *ServerGroupCreateRequest) (*ServerGroup, *Response, error) {
-	if createRequest == nil {
-		return nil, nil, NewArgError("createRequest", "cannot be nil")
+func (s *ServerGroupsServiceOp) Create(ctx context.Context, reqBody *ServerGroupCreateRequest) (*ServerGroup, *Response, error) {
+	if reqBody == nil {
+		return nil, nil, NewArgError("reqBody", "cannot be nil")
 	}
 
 	if resp, err := s.client.Validate(); err != nil {
@@ -122,7 +122,7 @@ func (s *ServerGroupsServiceOp) Create(ctx context.Context, createRequest *Serve
 
 	path := s.client.addProjectRegionPath(servergroupsBasePathV1)
 
-	req, err := s.client.NewRequest(ctx, http.MethodPost, path, createRequest)
+	req, err := s.client.NewRequest(ctx, http.MethodPost, path, reqBody)
 	if err != nil {
 		return nil, nil, err
 	}

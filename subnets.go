@@ -162,9 +162,9 @@ func (s *SubnetworksServiceOp) Get(ctx context.Context, subnetworkID string) (*S
 }
 
 // Create a Subnetwork.
-func (s *SubnetworksServiceOp) Create(ctx context.Context, createRequest *SubnetworkCreateRequest) (*TaskResponse, *Response, error) {
-	if createRequest == nil {
-		return nil, nil, NewArgError("createRequest", "cannot be nil")
+func (s *SubnetworksServiceOp) Create(ctx context.Context, reqBody *SubnetworkCreateRequest) (*TaskResponse, *Response, error) {
+	if reqBody == nil {
+		return nil, nil, NewArgError("reqBody", "cannot be nil")
 	}
 
 	if resp, err := s.client.Validate(); err != nil {
@@ -173,7 +173,7 @@ func (s *SubnetworksServiceOp) Create(ctx context.Context, createRequest *Subnet
 
 	path := s.client.addProjectRegionPath(subnetsBasePathV1)
 
-	req, err := s.client.NewRequest(ctx, http.MethodPost, path, createRequest)
+	req, err := s.client.NewRequest(ctx, http.MethodPost, path, reqBody)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -214,9 +214,9 @@ func (s *SubnetworksServiceOp) Delete(ctx context.Context, subnetworkID string) 
 }
 
 // Update the Subnetwork properties.
-func (s *SubnetworksServiceOp) Update(ctx context.Context, subnetworkID string, updateRequest *SubnetworkUpdateRequest) (*Subnetwork, *Response, error) {
-	if updateRequest == nil {
-		return nil, nil, NewArgError("updateRequest", "cannot be nil")
+func (s *SubnetworksServiceOp) Update(ctx context.Context, subnetworkID string, reqBody *SubnetworkUpdateRequest) (*Subnetwork, *Response, error) {
+	if reqBody == nil {
+		return nil, nil, NewArgError("reqBody", "cannot be nil")
 	}
 
 	if resp, err := s.client.Validate(); err != nil {
@@ -225,7 +225,7 @@ func (s *SubnetworksServiceOp) Update(ctx context.Context, subnetworkID string, 
 
 	path := fmt.Sprintf("%s/%s", s.client.addProjectRegionPath(subnetsBasePathV1), subnetworkID)
 
-	req, err := s.client.NewRequest(ctx, http.MethodPatch, path, updateRequest)
+	req, err := s.client.NewRequest(ctx, http.MethodPatch, path, reqBody)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -253,7 +253,7 @@ func (s *SubnetworksServiceOp) MetadataList(ctx context.Context, subnetworkID st
 }
 
 // MetadataCreate or update subnetwork metadata.
-func (s *SubnetworksServiceOp) MetadataCreate(ctx context.Context, subnetworkID string, metadata *MetadataCreateRequest) (*Response, error) {
+func (s *SubnetworksServiceOp) MetadataCreate(ctx context.Context, subnetworkID string, reqBody *MetadataCreateRequest) (*Response, error) {
 	if resp, err := isValidUUID(subnetworkID, "subnetworkID"); err != nil {
 		return resp, err
 	}
@@ -262,11 +262,11 @@ func (s *SubnetworksServiceOp) MetadataCreate(ctx context.Context, subnetworkID 
 		return resp, err
 	}
 
-	return metadataCreate(ctx, s.client, subnetworkID, subnetsBasePathV1, metadata)
+	return metadataCreate(ctx, s.client, subnetworkID, subnetsBasePathV1, reqBody)
 }
 
 // MetadataUpdate subnetwork metadata.
-func (s *SubnetworksServiceOp) MetadataUpdate(ctx context.Context, subnetworkID string, metadata *MetadataCreateRequest) (*Response, error) {
+func (s *SubnetworksServiceOp) MetadataUpdate(ctx context.Context, subnetworkID string, reqBody *MetadataCreateRequest) (*Response, error) {
 	if resp, err := isValidUUID(subnetworkID, "subnetworkID"); err != nil {
 		return resp, err
 	}
@@ -275,7 +275,7 @@ func (s *SubnetworksServiceOp) MetadataUpdate(ctx context.Context, subnetworkID 
 		return resp, err
 	}
 
-	return metadataUpdate(ctx, s.client, subnetworkID, subnetsBasePathV1, metadata)
+	return metadataUpdate(ctx, s.client, subnetworkID, subnetsBasePathV1, reqBody)
 }
 
 // MetadataDeleteItem a subnetwork metadata item by key.

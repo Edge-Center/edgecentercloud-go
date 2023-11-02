@@ -8,7 +8,10 @@ import (
 )
 
 const (
-	portsBasePathV1        = "/v1/ports"
+	portsBasePathV1 = "/v1/ports"
+)
+
+const (
 	portsAllowAddressPairs = "allow_address_pairs"
 	portsEnableSecurity    = "enable_port_security"
 	portsDisableSecurity   = "disable_port_security"
@@ -67,9 +70,9 @@ type PortIP struct {
 }
 
 // Assign allowed address pairs for an instance port.
-func (s *PortsServiceOp) Assign(ctx context.Context, portID string, allowedAddressPairsRequest *AllowedAddressPairsRequest) (*Port, *Response, error) {
-	if allowedAddressPairsRequest == nil {
-		return nil, nil, NewArgError("allowedAddressPairsRequest", "cannot be nil")
+func (s *PortsServiceOp) Assign(ctx context.Context, portID string, reqBody *AllowedAddressPairsRequest) (*Port, *Response, error) {
+	if reqBody == nil {
+		return nil, nil, NewArgError("reqBody", "cannot be nil")
 	}
 
 	if resp, err := s.client.Validate(); err != nil {
@@ -79,7 +82,7 @@ func (s *PortsServiceOp) Assign(ctx context.Context, portID string, allowedAddre
 	path := s.client.addProjectRegionPath(portsBasePathV1)
 	path = fmt.Sprintf("%s/%s/%s", path, portID, portsAllowAddressPairs)
 
-	req, err := s.client.NewRequest(ctx, http.MethodPut, path, allowedAddressPairsRequest)
+	req, err := s.client.NewRequest(ctx, http.MethodPut, path, reqBody)
 	if err != nil {
 		return nil, nil, err
 	}

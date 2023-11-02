@@ -8,11 +8,14 @@ import (
 )
 
 const (
-	instancesBasePathV1           = "/v1/instances"
-	instancesBasePathV2           = "/v2/instances"
-	instancesCheckLimitsPath      = "check_limits"
-	instancesChangeFlavorPath     = "changeflavor"
-	instancesAvailableFlavorsPath = "available_flavors"
+	instancesBasePathV1 = "/v1/instances"
+	instancesBasePathV2 = "/v2/instances"
+)
+
+const (
+	instancesCheckLimits      = "check_limits"
+	instancesChangeFlavor     = "changeflavor"
+	instancesAvailableFlavors = "available_flavors"
 )
 
 // InstancesService is an interface for creating and managing Instances with the EdgecenterCloud API.
@@ -22,9 +25,7 @@ type InstancesService interface {
 	Get(context.Context, string) (*Instance, *Response, error)
 	Create(context.Context, *InstanceCreateRequest) (*TaskResponse, *Response, error)
 	Delete(context.Context, string, *InstanceDeleteOptions) (*TaskResponse, *Response, error)
-
 	CheckLimits(context.Context, *InstanceCheckLimitsRequest) (*map[string]int, *Response, error)
-
 	UpdateFlavor(context.Context, string, *InstanceFlavorUpdateRequest) (*TaskResponse, *Response, error)
 	AvailableFlavors(context.Context, *InstanceCheckFlavorVolumeRequest, *FlavorsOptions) ([]Flavor, *Response, error)
 
@@ -268,9 +269,9 @@ func (s *InstancesServiceOp) Get(ctx context.Context, instanceID string) (*Insta
 }
 
 // Create an Instance.
-func (s *InstancesServiceOp) Create(ctx context.Context, createRequest *InstanceCreateRequest) (*TaskResponse, *Response, error) {
-	if createRequest == nil {
-		return nil, nil, NewArgError("createRequest", "cannot be nil")
+func (s *InstancesServiceOp) Create(ctx context.Context, reqBody *InstanceCreateRequest) (*TaskResponse, *Response, error) {
+	if reqBody == nil {
+		return nil, nil, NewArgError("reqBody", "cannot be nil")
 	}
 
 	if resp, err := s.client.Validate(); err != nil {
@@ -279,7 +280,7 @@ func (s *InstancesServiceOp) Create(ctx context.Context, createRequest *Instance
 
 	path := s.client.addProjectRegionPath(instancesBasePathV2)
 
-	req, err := s.client.NewRequest(ctx, http.MethodPost, path, createRequest)
+	req, err := s.client.NewRequest(ctx, http.MethodPost, path, reqBody)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -372,15 +373,15 @@ func (s *InstancesServiceOp) MetadataCreate(ctx context.Context, instanceID stri
 }
 
 // CheckLimits check a quota for instance creation.
-func (s *InstancesServiceOp) CheckLimits(ctx context.Context, checkLimitsRequest *InstanceCheckLimitsRequest) (*map[string]int, *Response, error) {
+func (s *InstancesServiceOp) CheckLimits(ctx context.Context, reqBody *InstanceCheckLimitsRequest) (*map[string]int, *Response, error) {
 	if resp, err := s.client.Validate(); err != nil {
 		return nil, resp, err
 	}
 
 	path := s.client.addProjectRegionPath(instancesBasePathV2)
-	path = fmt.Sprintf("%s/%s", path, instancesCheckLimitsPath)
+	path = fmt.Sprintf("%s/%s", path, instancesCheckLimits)
 
-	req, err := s.client.NewRequest(ctx, http.MethodPost, path, checkLimitsRequest)
+	req, err := s.client.NewRequest(ctx, http.MethodPost, path, reqBody)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -395,9 +396,9 @@ func (s *InstancesServiceOp) CheckLimits(ctx context.Context, checkLimitsRequest
 }
 
 // UpdateFlavor changes the flavor of the server instance.
-func (s *InstancesServiceOp) UpdateFlavor(ctx context.Context, instanceID string, instanceFlavorUpdateRequest *InstanceFlavorUpdateRequest) (*TaskResponse, *Response, error) {
-	if instanceFlavorUpdateRequest == nil {
-		return nil, nil, NewArgError("instanceFlavorUpdateRequest", "cannot be nil")
+func (s *InstancesServiceOp) UpdateFlavor(ctx context.Context, instanceID string, reqBody *InstanceFlavorUpdateRequest) (*TaskResponse, *Response, error) {
+	if reqBody == nil {
+		return nil, nil, NewArgError("reqBody", "cannot be nil")
 	}
 
 	if resp, err := isValidUUID(instanceID, "instanceID"); err != nil {
@@ -409,9 +410,9 @@ func (s *InstancesServiceOp) UpdateFlavor(ctx context.Context, instanceID string
 	}
 
 	path := s.client.addProjectRegionPath(instancesBasePathV1)
-	path = fmt.Sprintf("%s/%s/%s", path, instanceID, instancesChangeFlavorPath)
+	path = fmt.Sprintf("%s/%s/%s", path, instanceID, instancesChangeFlavor)
 
-	req, err := s.client.NewRequest(ctx, http.MethodPost, path, instanceFlavorUpdateRequest)
+	req, err := s.client.NewRequest(ctx, http.MethodPost, path, reqBody)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -426,9 +427,9 @@ func (s *InstancesServiceOp) UpdateFlavor(ctx context.Context, instanceID string
 }
 
 // AvailableFlavors get flavors for an instance by volume config.
-func (s *InstancesServiceOp) AvailableFlavors(ctx context.Context, checkFlavorVolumeRequest *InstanceCheckFlavorVolumeRequest, opts *FlavorsOptions) ([]Flavor, *Response, error) {
-	if checkFlavorVolumeRequest == nil {
-		return nil, nil, NewArgError("instanceCheckFlavorVolumeRequest", "cannot be nil")
+func (s *InstancesServiceOp) AvailableFlavors(ctx context.Context, reqBody *InstanceCheckFlavorVolumeRequest, opts *FlavorsOptions) ([]Flavor, *Response, error) {
+	if reqBody == nil {
+		return nil, nil, NewArgError("reqBody", "cannot be nil")
 	}
 
 	if resp, err := s.client.Validate(); err != nil {
@@ -440,9 +441,9 @@ func (s *InstancesServiceOp) AvailableFlavors(ctx context.Context, checkFlavorVo
 		return nil, nil, err
 	}
 
-	path = fmt.Sprintf("%s/%s", path, instancesAvailableFlavorsPath)
+	path = fmt.Sprintf("%s/%s", path, instancesAvailableFlavors)
 
-	req, err := s.client.NewRequest(ctx, http.MethodPost, path, checkFlavorVolumeRequest)
+	req, err := s.client.NewRequest(ctx, http.MethodPost, path, reqBody)
 	if err != nil {
 		return nil, nil, err
 	}
