@@ -51,25 +51,26 @@ type Client struct {
 	// ProjectID for client
 	Project int
 
-	Flavors        FlavorsService
-	Floatingips    FloatingIPsService
-	Images         ImagesService
-	Instances      InstancesService
-	KeyPairs       KeyPairsService
-	Loadbalancers  LoadbalancersService
-	Networks       NetworksService
-	Ports          PortsService
-	Projects       ProjectsService
-	Quotas         QuotasService
-	Regions        RegionsService
-	Routers        RoutersService
-	SecurityGroups SecurityGroupsService
-	Secrets        SecretsService
-	ServerGroups   ServerGroupsService
-	Subnetworks    SubnetworksService
-	Tasks          TasksService
-	Volumes        VolumesService
-	Users          UsersService
+	Flavors         FlavorsService
+	Floatingips     FloatingIPsService
+	Images          ImagesService
+	Instances       InstancesService
+	KeyPairs        KeyPairsService
+	Loadbalancers   LoadbalancersService
+	Networks        NetworksService
+	Ports           PortsService
+	Projects        ProjectsService
+	Quotas          QuotasService
+	Regions         RegionsService
+	ReservedFixedIP ReservedFixedIPsService
+	Routers         RoutersService
+	SecurityGroups  SecurityGroupsService
+	Secrets         SecretsService
+	ServerGroups    ServerGroupsService
+	Subnetworks     SubnetworksService
+	Tasks           TasksService
+	Volumes         VolumesService
+	Users           UsersService
 
 	// Optional function called after every successful request made to the DO APIs
 	onRequestCompleted RequestCompletionCallback
@@ -207,6 +208,7 @@ func NewClient(httpClient *http.Client) *Client {
 	c.Ports = &PortsServiceOp{client: c}
 	c.Projects = &ProjectsServiceOp{client: c}
 	c.Quotas = &QuotasServiceOp{client: c}
+	c.ReservedFixedIP = &ReservedFixedIPsServiceOp{client: c}
 	c.Regions = &RegionsServiceOp{client: c}
 	c.Routers = &RoutersServiceOp{client: c}
 	c.SecurityGroups = &SecurityGroupsServiceOp{client: c}
