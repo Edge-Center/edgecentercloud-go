@@ -117,13 +117,13 @@ func TestNetworks_UpdateName(t *testing.T) {
 		newName = "new-network-name"
 	)
 
-	request := &NetworkUpdateNameRequest{Name: newName}
+	request := &Name{Name: newName}
 	expectedResp := &Network{Name: newName}
 	URL := path.Join(networksBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPatch)
-		reqBody := new(NetworkUpdateNameRequest)
+		reqBody := new(Name)
 		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
 			t.Errorf("failed to decode request body: %v", err)
 		}

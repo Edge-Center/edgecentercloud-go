@@ -31,8 +31,8 @@ type LoadbalancersService interface {
 	Create(context.Context, *LoadbalancerCreateRequest) (*TaskResponse, *Response, error)
 	Delete(context.Context, string) (*TaskResponse, *Response, error)
 	CheckLimits(context.Context, *LoadbalancerCheckLimitsRequest) (*map[string]int, *Response, error)
-	Rename(context.Context, string, *LoadbalancerRenameRequest) (*Loadbalancer, *Response, error)
-	SecurityGroupList(context.Context, string) ([]LoadbalancerSecurityGroup, *Response, error)
+	Rename(context.Context, string, *Name) (*Loadbalancer, *Response, error)
+	SecurityGroupList(context.Context, string) ([]IDName, *Response, error)
 	SecurityGroupCreate(context.Context, string) (*Response, error)
 	MetricsList(context.Context, string, *LoadbalancerMetricsListRequest) ([]LoadbalancerMetrics, *Response, error)
 	FlavorList(context.Context, *FlavorsOptions) ([]Flavor, *Response, error)
@@ -49,7 +49,7 @@ type LoadbalancerListeners interface {
 	ListenerGet(context.Context, string) (*Listener, *Response, error)
 	ListenerCreate(context.Context, *ListenerCreateRequest) (*TaskResponse, *Response, error)
 	ListenerDelete(context.Context, string) (*TaskResponse, *Response, error)
-	ListenerRename(context.Context, string, *LoadbalancerRenameRequest) (*Listener, *Response, error)
+	ListenerRename(context.Context, string, *Name) (*Listener, *Response, error)
 	ListenerUpdate(context.Context, string, *ListenerUpdateRequest) (*TaskResponse, *Response, error)
 }
 
@@ -127,8 +127,8 @@ type Pool struct {
 	Name                  string                   `json:"name"`
 	LoadBalancerAlgorithm LoadBalancerAlgorithm    `json:"lb_algorithm"`
 	Protocol              LoadbalancerPoolProtocol `json:"protocol"`
-	LoadBalancers         []LoadbalancerID         `json:"loadbalancers"`
-	Listeners             []ListenersID            `json:"listeners"`
+	LoadBalancers         []ID                     `json:"loadbalancers"`
+	Listeners             []ID                     `json:"listeners"`
 	Members               []PoolMember             `json:"members"`
 	HealthMonitor         HealthMonitor            `json:"healthmonitor"`
 	SessionPersistence    SessionPersistence       `json:"session_persistence"`
@@ -151,27 +151,6 @@ type PoolMember struct {
 // HealthMonitor represents an EdgecenterCloud Loadbalancer Pool HealthMonitor.
 type HealthMonitor struct {
 	HealthMonitorCreateRequest
-}
-
-// LoadbalancerID represents a loadbalancer ID struct.
-type LoadbalancerID struct {
-	ID string `json:"id"`
-}
-
-// LoadbalancerRenameRequest represents a request to rename a Loadbalancer.
-type LoadbalancerRenameRequest struct {
-	Name string `json:"name" required:"true" validate:"required,name"`
-}
-
-// ListenersID represents a listener ID struct.
-type ListenersID struct {
-	ID string `json:"id"`
-}
-
-// LoadbalancerSecurityGroup represents an EdgecenterCloud Loadbalancer security group.
-type LoadbalancerSecurityGroup struct {
-	Name string `json:"name"`
-	ID   string `json:"id"`
 }
 
 // LoadbalancerMetricsListRequest represents a request to get a Loadbalancer Metrics list.
@@ -475,7 +454,7 @@ type loadbalancerFlavorRoot struct {
 // loadbalancerSecurityGroupRoot represents a Loadbalancer Security group root.
 type loadbalancerSecurityGroupRoot struct {
 	Count                     int
-	LoadbalancerSecurityGroup []LoadbalancerSecurityGroup `json:"results"`
+	LoadbalancerSecurityGroup []IDName `json:"results"`
 }
 
 // loadbalancerMetricsRoot represents a Loadbalancer Metrics root.
@@ -723,7 +702,7 @@ func (s *LoadbalancersServiceOp) ListenerUpdate(ctx context.Context, listenerID 
 }
 
 // ListenerRename a Loadbalancer Listener.
-func (s *LoadbalancersServiceOp) ListenerRename(ctx context.Context, listenerID string, reqBody *LoadbalancerRenameRequest) (*Listener, *Response, error) {
+func (s *LoadbalancersServiceOp) ListenerRename(ctx context.Context, listenerID string, reqBody *Name) (*Listener, *Response, error) {
 	if resp, err := isValidUUID(listenerID, "listenerID"); err != nil {
 		return nil, resp, err
 	}
@@ -1016,7 +995,7 @@ func (s *LoadbalancersServiceOp) CheckLimits(ctx context.Context, reqBody *Loadb
 }
 
 // Rename a load balancer.
-func (s *LoadbalancersServiceOp) Rename(ctx context.Context, loadbalancerID string, reqBody *LoadbalancerRenameRequest) (*Loadbalancer, *Response, error) {
+func (s *LoadbalancersServiceOp) Rename(ctx context.Context, loadbalancerID string, reqBody *Name) (*Loadbalancer, *Response, error) {
 	if resp, err := isValidUUID(loadbalancerID, "loadbalancerID"); err != nil {
 		return nil, resp, err
 	}
@@ -1042,7 +1021,7 @@ func (s *LoadbalancersServiceOp) Rename(ctx context.Context, loadbalancerID stri
 }
 
 // SecurityGroupList get a custom security group for a load balancer's ingress port.
-func (s *LoadbalancersServiceOp) SecurityGroupList(ctx context.Context, loadbalancerID string) ([]LoadbalancerSecurityGroup, *Response, error) {
+func (s *LoadbalancersServiceOp) SecurityGroupList(ctx context.Context, loadbalancerID string) ([]IDName, *Response, error) {
 	if resp, err := isValidUUID(loadbalancerID, "loadbalancerID"); err != nil {
 		return nil, resp, err
 	}

@@ -240,13 +240,13 @@ func TestLoadbalancers_ListenerRename(t *testing.T) {
 	setup()
 	defer teardown()
 
-	request := &LoadbalancerRenameRequest{Name: "test-listener"}
+	request := &Name{Name: "test-listener"}
 	expectedResp := &Listener{ID: testResourceID}
 	URL := path.Join(lblistenersBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPatch)
-		reqBody := new(LoadbalancerRenameRequest)
+		reqBody := new(Name)
 		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
 			t.Errorf("failed to decode request body: %v", err)
 		}
@@ -635,13 +635,13 @@ func TestLoadbalancers_Rename(t *testing.T) {
 	setup()
 	defer teardown()
 
-	request := &LoadbalancerRenameRequest{Name: "test-loadbalancer"}
+	request := &Name{Name: "test-loadbalancer"}
 	expectedResp := &Loadbalancer{ID: testResourceID}
 	URL := path.Join(loadbalancersBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPatch)
-		reqBody := new(LoadbalancerRenameRequest)
+		reqBody := new(Name)
 		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
 			t.Errorf("failed to decode request body: %v", err)
 		}
@@ -663,7 +663,7 @@ func TestLoadbalancers_SecurityGroupList(t *testing.T) {
 	setup()
 	defer teardown()
 
-	expectedResp := []LoadbalancerSecurityGroup{{ID: testResourceID}}
+	expectedResp := []IDName{{ID: testResourceID}}
 	URL := path.Join(loadbalancersBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, loadbalancersSecurityGroup)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
