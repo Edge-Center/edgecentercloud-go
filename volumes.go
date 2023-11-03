@@ -27,7 +27,7 @@ type VolumesService interface {
 	Delete(context.Context, string) (*TaskResponse, *Response, error)
 	ChangeType(context.Context, string, *VolumeChangeTypeRequest) (*Volume, *Response, error)
 	Extend(context.Context, string, *VolumeExtendSizeRequest) (*TaskResponse, *Response, error)
-	Rename(context.Context, string, *VolumeRenameRequest) (*Volume, *Response, error)
+	Rename(context.Context, string, *Name) (*Volume, *Response, error)
 	Attach(context.Context, string, *VolumeAttachRequest) (*Volume, *Response, error)
 	Detach(context.Context, string, *VolumeDetachRequest) (*Volume, *Response, error)
 	Revert(context.Context, string) (*TaskResponse, *Response, error)
@@ -150,11 +150,6 @@ type VolumeChangeTypeRequest struct {
 // VolumeExtendSizeRequest represents a request to extend a Volume size.
 type VolumeExtendSizeRequest struct {
 	Size int `json:"size" required:"true" validate:"required"`
-}
-
-// VolumeRenameRequest represents a request to rename a Volume.
-type VolumeRenameRequest struct {
-	Name string `json:"name" required:"true" validate:"required"`
 }
 
 // VolumeAttachRequest represents a request to attach a Volume to Instance.
@@ -339,7 +334,7 @@ func (s *VolumesServiceOp) Extend(ctx context.Context, volumeID string, reqBody 
 }
 
 // Rename the volume.
-func (s *VolumesServiceOp) Rename(ctx context.Context, volumeID string, reqBody *VolumeRenameRequest) (*Volume, *Response, error) {
+func (s *VolumesServiceOp) Rename(ctx context.Context, volumeID string, reqBody *Name) (*Volume, *Response, error) {
 	if resp, err := isValidUUID(volumeID, "volumeID"); err != nil {
 		return nil, resp, err
 	}

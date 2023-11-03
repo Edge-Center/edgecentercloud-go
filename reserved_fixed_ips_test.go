@@ -138,7 +138,7 @@ func TestReservedFixedIPs_ListInstancePorts(t *testing.T) {
 	setup()
 	defer teardown()
 
-	expectedResp := []InstancePort{{InstanceID: testResourceID}}
+	expectedResp := []ReservedFixedIPInstancePort{{InstanceID: testResourceID}}
 	URL := path.Join(reservedFixedIPsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, reservedFixedIPsConnectedDevices)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
@@ -161,7 +161,7 @@ func TestReservedFixedIPs_AddInstancePorts(t *testing.T) {
 	defer teardown()
 
 	request := &AddInstancePortsRequest{}
-	expectedResp := []InstancePort{{InstanceID: testResourceID}}
+	expectedResp := []ReservedFixedIPInstancePort{{InstanceID: testResourceID}}
 	URL := path.Join(reservedFixedIPsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, reservedFixedIPsConnectedDevices)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
@@ -189,7 +189,7 @@ func TestReservedFixedIPs_ReplaceInstancePorts(t *testing.T) {
 	defer teardown()
 
 	request := &AddInstancePortsRequest{}
-	expectedResp := []InstancePort{{InstanceID: testResourceID}}
+	expectedResp := []ReservedFixedIPInstancePort{{InstanceID: testResourceID}}
 	URL := path.Join(reservedFixedIPsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, reservedFixedIPsConnectedDevices)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
@@ -216,7 +216,7 @@ func TestReservedFixedIPs_ListInstancePortsAvailable(t *testing.T) {
 	setup()
 	defer teardown()
 
-	expectedResp := []InstancePort{{InstanceID: testResourceID}}
+	expectedResp := []ReservedFixedIPInstancePort{{InstanceID: testResourceID}}
 	URL := path.Join(reservedFixedIPsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, reservedFixedIPsAvailableDevices)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {

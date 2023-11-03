@@ -24,7 +24,7 @@ type FloatingIPsService interface {
 	Get(context.Context, string) (*FloatingIP, *Response, error)
 	Create(context.Context, *FloatingIPCreateRequest) (*TaskResponse, *Response, error)
 	Delete(context.Context, string) (*TaskResponse, *Response, error)
-	Assign(context.Context, string, *AssignRequest) (*FloatingIP, *Response, error)
+	Assign(context.Context, string, *AssignFloatingIPRequest) (*FloatingIP, *Response, error)
 	UnAssign(context.Context, string) (*FloatingIP, *Response, error)
 	ListAvailable(context.Context) ([]FloatingIP, *Response, error)
 
@@ -88,8 +88,8 @@ type FloatingIPCreateRequest struct {
 	Metadata       Metadata `json:"metadata,omitempty"`
 }
 
-// AssignRequest represents a request to assign a Floating IP to an instance or a load balancer.
-type AssignRequest struct {
+// AssignFloatingIPRequest represents a request to assign a Floating IP to an instance or a load balancer.
+type AssignFloatingIPRequest struct {
 	PortID         string   `json:"port_id" validate:"required"`
 	FixedIPAddress net.IP   `json:"fixed_ip_address,omitempty"`
 	Metadata       Metadata `json:"metadata,omitempty"`
@@ -202,7 +202,7 @@ func (s *FloatingipsServiceOp) Delete(ctx context.Context, fipID string) (*TaskR
 }
 
 // Assign a floating IP to an instance or a load balancer.
-func (s *FloatingipsServiceOp) Assign(ctx context.Context, fipID string, reqBody *AssignRequest) (*FloatingIP, *Response, error) {
+func (s *FloatingipsServiceOp) Assign(ctx context.Context, fipID string, reqBody *AssignFloatingIPRequest) (*FloatingIP, *Response, error) {
 	if resp, err := isValidUUID(fipID, "fipID"); err != nil {
 		return nil, resp, err
 	}

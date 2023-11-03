@@ -22,7 +22,7 @@ type NetworksService interface {
 	Get(context.Context, string) (*Network, *Response, error)
 	Create(context.Context, *NetworkCreateRequest) (*TaskResponse, *Response, error)
 	Delete(context.Context, string) (*TaskResponse, *Response, error)
-	UpdateName(context.Context, string, *NetworkUpdateNameRequest) (*Network, *Response, error)
+	UpdateName(context.Context, string, *Name) (*Network, *Response, error)
 	ListNetworksWithSubnets(context.Context, *NetworksWithSubnetsOptions) ([]NetworkSubnetwork, *Response, error)
 	PortList(context.Context, string) ([]PortsInstance, *Response, error)
 
@@ -91,11 +91,6 @@ type NetworkListOptions struct {
 type networksRoot struct {
 	Count    int
 	Networks []Network `json:"results"`
-}
-
-// NetworkUpdateNameRequest represents a request to update a Network name.
-type NetworkUpdateNameRequest struct {
-	Name string `json:"name" required:"true" validate:"required"`
 }
 
 // NetworkSubnetwork represents an EdgecenterCloud Network with info about Subnets.
@@ -253,7 +248,7 @@ func (s *NetworksServiceOp) Delete(ctx context.Context, networkID string) (*Task
 }
 
 // UpdateName of the network.
-func (s *NetworksServiceOp) UpdateName(ctx context.Context, networkID string, reqBody *NetworkUpdateNameRequest) (*Network, *Response, error) {
+func (s *NetworksServiceOp) UpdateName(ctx context.Context, networkID string, reqBody *Name) (*Network, *Response, error) {
 	if resp, err := isValidUUID(networkID, "networkID"); err != nil {
 		return nil, resp, err
 	}

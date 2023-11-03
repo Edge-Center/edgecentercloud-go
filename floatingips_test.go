@@ -110,7 +110,7 @@ func TestFloatingips_Assign(t *testing.T) {
 	setup()
 	defer teardown()
 
-	request := &AssignRequest{PortID: testResourceID}
+	request := &AssignFloatingIPRequest{PortID: testResourceID}
 	expectedResp := &FloatingIP{
 		ID:     testResourceID,
 		PortID: testResourceID,

@@ -24,7 +24,7 @@ type SecurityGroupsService interface {
 	Create(context.Context, *SecurityGroupCreateRequest) (*TaskResponse, *Response, error)
 	Delete(context.Context, string) (*TaskResponse, *Response, error)
 	Update(context.Context, string, *SecurityGroupUpdateRequest) (*SecurityGroup, *Response, error)
-	DeepCopy(context.Context, string, *SecurityGroupDeepCopyRequest) (*Response, error)
+	DeepCopy(context.Context, string, *Name) (*Response, error)
 
 	SecurityGroupsRules
 	SecurityGroupsMetadata
@@ -86,8 +86,8 @@ type SecurityGroupRule struct {
 
 // SecurityGroupCreateRequest represents a request to create a Security Group.
 type SecurityGroupCreateRequest struct {
-	SecurityGroup SecurityGroup                  `json:"security_group" required:"true"`
-	Instances     []InstanceSecurityGroupsCreate `json:"instances"`
+	SecurityGroup SecurityGroup `json:"security_group" required:"true"`
+	Instances     []ID          `json:"instances"`
 }
 
 // SecurityGroupRuleCreateRequest represents a request to create a Security Group Rule.
@@ -174,10 +174,6 @@ type ChangedRules struct {
 	RemoteGroupID       string                     `json:"remote_group_id,omitempty"`
 	Direction           SecurityGroupRuleDirection `json:"direction"`
 	Action              ChangedRuleAction          `json:"action"`
-}
-
-type SecurityGroupDeepCopyRequest struct {
-	Name string `json:"name"`
 }
 
 type RuleCreateRequest struct {
@@ -340,7 +336,7 @@ func (s *SecurityGroupsServiceOp) Update(ctx context.Context, securityGroupID st
 }
 
 // DeepCopy creates a deep copy of a security group.
-func (s *SecurityGroupsServiceOp) DeepCopy(ctx context.Context, securityGroupID string, reqBody *SecurityGroupDeepCopyRequest) (*Response, error) {
+func (s *SecurityGroupsServiceOp) DeepCopy(ctx context.Context, securityGroupID string, reqBody *Name) (*Response, error) {
 	if resp, err := isValidUUID(securityGroupID, "securityGroupID"); err != nil {
 		return resp, err
 	}

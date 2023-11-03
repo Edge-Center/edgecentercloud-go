@@ -24,10 +24,10 @@ type ReservedFixedIPsService interface {
 	Delete(context.Context, string) (*TaskResponse, *Response, error)
 	Get(context.Context, string) (*ReservedFixedIP, *Response, error)
 	SwitchVIPStatus(context.Context, string, *SwitchVIPStatusRequest) (*ReservedFixedIP, *Response, error)
-	ListInstancePorts(context.Context, string) ([]InstancePort, *Response, error)
-	AddInstancePorts(context.Context, string, *AddInstancePortsRequest) ([]InstancePort, *Response, error)
-	ReplaceInstancePorts(context.Context, string, *AddInstancePortsRequest) ([]InstancePort, *Response, error)
-	ListInstancePortsAvailable(context.Context, string) ([]InstancePort, *Response, error)
+	ListInstancePorts(context.Context, string) ([]ReservedFixedIPInstancePort, *Response, error)
+	AddInstancePorts(context.Context, string, *AddInstancePortsRequest) ([]ReservedFixedIPInstancePort, *Response, error)
+	ReplaceInstancePorts(context.Context, string, *AddInstancePortsRequest) ([]ReservedFixedIPInstancePort, *Response, error)
+	ListInstancePortsAvailable(context.Context, string) ([]ReservedFixedIPInstancePort, *Response, error)
 }
 
 // ReservedFixedIPsServiceOp handles communication with Reserved Fixed IPs methods of the EdgecenterCloud API.
@@ -86,7 +86,7 @@ type SwitchVIPStatusRequest struct {
 	IsVIP bool `json:"is_vip"`
 }
 
-type InstancePort struct {
+type ReservedFixedIPInstancePort struct {
 	PortID        string   `json:"port_id,omitempty"`
 	IPAssignments []PortIP `json:"ip_assignments"`
 	InstanceID    string   `json:"instance_id,omitempty"`
@@ -104,10 +104,10 @@ type reservedFixedIPRoot struct {
 	ReservedFixedIPs []ReservedFixedIP `json:"results"`
 }
 
-// instancePortRoot represents a InstancePort root.
+// instancePortRoot represents a ReservedFixedIPInstancePort root.
 type instancePortRoot struct {
 	Count         int
-	InstancePorts []InstancePort `json:"results"`
+	InstancePorts []ReservedFixedIPInstancePort `json:"results"`
 }
 
 // List get Reserved Fixed IPs.
@@ -245,7 +245,7 @@ func (s *ReservedFixedIPsServiceOp) SwitchVIPStatus(ctx context.Context, reserve
 }
 
 // ListInstancePorts that share a VIP.
-func (s *ReservedFixedIPsServiceOp) ListInstancePorts(ctx context.Context, reservedFixedIPID string) ([]InstancePort, *Response, error) {
+func (s *ReservedFixedIPsServiceOp) ListInstancePorts(ctx context.Context, reservedFixedIPID string) ([]ReservedFixedIPInstancePort, *Response, error) {
 	if resp, err := isValidUUID(reservedFixedIPID, "reservedFixedIPID"); err != nil {
 		return nil, resp, err
 	}
@@ -271,7 +271,7 @@ func (s *ReservedFixedIPsServiceOp) ListInstancePorts(ctx context.Context, reser
 }
 
 // AddInstancePorts that share a VIP.
-func (s *ReservedFixedIPsServiceOp) AddInstancePorts(ctx context.Context, reservedFixedIPID string, reqBody *AddInstancePortsRequest) ([]InstancePort, *Response, error) {
+func (s *ReservedFixedIPsServiceOp) AddInstancePorts(ctx context.Context, reservedFixedIPID string, reqBody *AddInstancePortsRequest) ([]ReservedFixedIPInstancePort, *Response, error) {
 	if resp, err := isValidUUID(reservedFixedIPID, "reservedFixedIPID"); err != nil {
 		return nil, resp, err
 	}
@@ -301,7 +301,7 @@ func (s *ReservedFixedIPsServiceOp) AddInstancePorts(ctx context.Context, reserv
 }
 
 // ReplaceInstancePorts that share a VIP.
-func (s *ReservedFixedIPsServiceOp) ReplaceInstancePorts(ctx context.Context, reservedFixedIPID string, reqBody *AddInstancePortsRequest) ([]InstancePort, *Response, error) {
+func (s *ReservedFixedIPsServiceOp) ReplaceInstancePorts(ctx context.Context, reservedFixedIPID string, reqBody *AddInstancePortsRequest) ([]ReservedFixedIPInstancePort, *Response, error) {
 	if resp, err := isValidUUID(reservedFixedIPID, "reservedFixedIPID"); err != nil {
 		return nil, resp, err
 	}
@@ -331,7 +331,7 @@ func (s *ReservedFixedIPsServiceOp) ReplaceInstancePorts(ctx context.Context, re
 }
 
 // ListInstancePortsAvailable for connecting to a VIP.
-func (s *ReservedFixedIPsServiceOp) ListInstancePortsAvailable(ctx context.Context, reservedFixedIPID string) ([]InstancePort, *Response, error) {
+func (s *ReservedFixedIPsServiceOp) ListInstancePortsAvailable(ctx context.Context, reservedFixedIPID string) ([]ReservedFixedIPInstancePort, *Response, error) {
 	if resp, err := isValidUUID(reservedFixedIPID, "reservedFixedIPID"); err != nil {
 		return nil, resp, err
 	}

@@ -138,12 +138,12 @@ func TestSecurityGroups_DeepCopy(t *testing.T) {
 	setup()
 	defer teardown()
 
-	request := &SecurityGroupDeepCopyRequest{}
+	request := &Name{}
 	URL := path.Join(securitygroupsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, securitygroupsCopy)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
-		reqBody := new(SecurityGroupDeepCopyRequest)
+		reqBody := new(Name)
 		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
 			t.Errorf("failed to decode request body: %v", err)
 		}
