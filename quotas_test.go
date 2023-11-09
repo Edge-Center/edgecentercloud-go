@@ -58,10 +58,10 @@ func TestQuotas_ListGlobal(t *testing.T) {
 	setup()
 	defer teardown()
 
-	options := &ListGlobalOptions{ClientID: 123}
 	expectedResp := &Quota{}
+	URL := path.Join(quotasGlobalBasePathV2, strconv.Itoa(clientID))
 
-	mux.HandleFunc(quotasGlobalBasePathV2, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
 		resp, err := json.Marshal(expectedResp)
 		if err != nil {
@@ -70,7 +70,7 @@ func TestQuotas_ListGlobal(t *testing.T) {
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	respActual, resp, err := client.Quotas.ListGlobal(ctx, options)
+	respActual, resp, err := client.Quotas.ListGlobal(ctx, clientID)
 	require.NoError(t, err)
 	require.Equal(t, resp.StatusCode, 200)
 	require.Equal(t, respActual, expectedResp)
@@ -80,13 +80,10 @@ func TestQuotas_ListRegional(t *testing.T) {
 	setup()
 	defer teardown()
 
-	options := &ListRegionalOptions{
-		ClientID: 123,
-		RegionID: regionID,
-	}
 	expectedResp := &Quota{}
+	URL := path.Join(quotasRegionalBasePathV2, strconv.Itoa(clientID), strconv.Itoa(regionID))
 
-	mux.HandleFunc(quotasRegionalBasePathV2, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
 		resp, err := json.Marshal(expectedResp)
 		if err != nil {
@@ -95,7 +92,7 @@ func TestQuotas_ListRegional(t *testing.T) {
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	respActual, resp, err := client.Quotas.ListRegional(ctx, options)
+	respActual, resp, err := client.Quotas.ListRegional(ctx, clientID, regionID)
 	require.NoError(t, err)
 	require.Equal(t, resp.StatusCode, 200)
 	require.Equal(t, respActual, expectedResp)

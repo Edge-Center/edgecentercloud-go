@@ -20,8 +20,8 @@ const (
 // See: https://apidocs.edgecenter.ru/cloud#tag/quotas
 type QuotasService interface {
 	ListCombined(context.Context, *ListCombinedOptions) (*CombinedQuota, *Response, error)
-	ListGlobal(context.Context, *ListGlobalOptions) (*Quota, *Response, error)
-	ListRegional(context.Context, *ListRegionalOptions) (*Quota, *Response, error)
+	ListGlobal(context.Context, int) (*Quota, *Response, error)
+	ListRegional(context.Context, int, int) (*Quota, *Response, error)
 	DeleteNotificationThreshold(context.Context, int) (*Response, error)
 	GetNotificationThreshold(context.Context, int) (*QuotaNotificationThreshold, *Response, error)
 	UpdateNotificationThreshold(context.Context, int, *NotificationThresholdUpdateRequest) (*QuotaNotificationThreshold, *Response, error)
@@ -59,17 +59,6 @@ type ListCombinedOptions struct {
 	ClientID int `url:"client_id,omitempty" validate:"omitempty"`
 }
 
-// ListGlobalOptions specifies the query parameters to ListGlobal method.
-type ListGlobalOptions struct {
-	ClientID int `url:"client_id"  required:"true" validate:"required"`
-}
-
-// ListRegionalOptions specifies the query parameters to ListRegional method.
-type ListRegionalOptions struct {
-	ClientID int `url:"client_id"  required:"true" validate:"required"`
-	RegionID int `url:"region_id"  required:"true" validate:"required"`
-}
-
 // ListCombined get combined client quotas, regional and global.
 func (s *QuotasServiceOp) ListCombined(ctx context.Context, opts *ListCombinedOptions) (*CombinedQuota, *Response, error) {
 	path, err := addOptions(quotasClientBasePathV2, opts)
@@ -92,11 +81,12 @@ func (s *QuotasServiceOp) ListCombined(ctx context.Context, opts *ListCombinedOp
 }
 
 // ListGlobal get a global quota.
-func (s *QuotasServiceOp) ListGlobal(ctx context.Context, opts *ListGlobalOptions) (*Quota, *Response, error) {
-	path, err := addOptions(quotasGlobalBasePathV2, opts)
-	if err != nil {
-		return nil, nil, err
+func (s *QuotasServiceOp) ListGlobal(ctx context.Context, clientID int) (*Quota, *Response, error) {
+	if clientID == 0 {
+		return nil, nil, NewArgError("clientID", "no value specified")
 	}
+
+	path := fmt.Sprintf("%s/%d", quotasGlobalBasePathV2, clientID)
 
 	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
 	if err != nil {
@@ -113,11 +103,16 @@ func (s *QuotasServiceOp) ListGlobal(ctx context.Context, opts *ListGlobalOption
 }
 
 // ListRegional get a quota by region.
-func (s *QuotasServiceOp) ListRegional(ctx context.Context, opts *ListRegionalOptions) (*Quota, *Response, error) {
-	path, err := addOptions(quotasRegionalBasePathV2, opts)
-	if err != nil {
-		return nil, nil, err
+func (s *QuotasServiceOp) ListRegional(ctx context.Context, clientID, regionID int) (*Quota, *Response, error) {
+	if clientID == 0 {
+		return nil, nil, NewArgError("clientID", "no value specified")
 	}
+
+	if regionID == 0 {
+		return nil, nil, NewArgError("regionID", "no value specified")
+	}
+
+	path := fmt.Sprintf("%s/%d/%d", quotasRegionalBasePathV2, clientID, regionID)
 
 	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
 	if err != nil {
