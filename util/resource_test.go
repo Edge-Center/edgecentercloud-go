@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"path"
+	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -14,11 +16,13 @@ import (
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 )
 
-func TestResourceIsDeleted(t *testing.T) {
-	resourceID := "f0d19cec-5c3f-4853-886e-304915960ff6"
-	projectID := 2750
-	regionID := 8
+const (
+	testResourceID = "f0d19cec-5c3f-4853-886e-304915960ff6"
+	projectID      = 2750
+	regionID       = 8
+)
 
+func TestResourceIsDeleted(t *testing.T) {
 	tests := []struct {
 		name       string
 		statusCode int
@@ -47,7 +51,7 @@ func TestResourceIsDeleted(t *testing.T) {
 			server := httptest.NewServer(mux)
 			defer server.Close()
 
-			URL := fmt.Sprintf("/v1/floatingips/%d/%d/%s", projectID, regionID, resourceID)
+			URL := path.Join("/v1/floatingips", strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID)
 			mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(tt.statusCode)
 				resp, _ := json.MarshalIndent(edgecloud.Response{}, "", "    ")
@@ -64,17 +68,13 @@ func TestResourceIsDeleted(t *testing.T) {
 				return client.Floatingips.Get(ctx, id)
 			}
 
-			err := ResourceIsDeleted(context.Background(), retrieveFunc, resourceID)
+			err := ResourceIsDeleted(context.Background(), retrieveFunc, testResourceID)
 			assert.Equal(t, tt.expected, err)
 		})
 	}
 }
 
 func TestResourceIsExist(t *testing.T) {
-	resourceID := "f0d19cec-5c3f-4853-886e-304915960ff6"
-	projectID := 2750
-	regionID := 8
-
 	tests := []struct {
 		name          string
 		statusCode    int
@@ -101,7 +101,7 @@ func TestResourceIsExist(t *testing.T) {
 			server := httptest.NewServer(mux)
 			defer server.Close()
 
-			URL := fmt.Sprintf("/v1/networks/%d/%d/%s", projectID, regionID, resourceID)
+			URL := path.Join("/v1/networks", strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID)
 			mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(tt.statusCode)
 				resp, _ := json.MarshalIndent(edgecloud.Response{}, "", "    ")
@@ -118,7 +118,7 @@ func TestResourceIsExist(t *testing.T) {
 				return client.Networks.Get(ctx, id)
 			}
 
-			exist, err := ResourceIsExist(context.Background(), getFunc, resourceID)
+			exist, err := ResourceIsExist(context.Background(), getFunc, testResourceID)
 			assert.Equal(t, tt.expectedError, err)
 			assert.Equal(t, tt.exist, exist)
 		})
