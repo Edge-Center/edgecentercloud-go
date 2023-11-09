@@ -11,7 +11,7 @@ const (
 )
 
 // SnapshotsService is an interface for creating and managing Snapshots with the EdgecenterCloud API.
-// See: https://apidocs.edgecenter.ru/cloud#tag/routers
+// See: https://apidocs.edgecenter.ru/cloud#tag/snapshots
 type SnapshotsService interface {
 	List(context.Context, *SnapshotListOptions) ([]Snapshot, *Response, error)
 	Create(context.Context, *SnapshotCreateRequest) (*TaskResponse, *Response, error)
@@ -172,7 +172,7 @@ func (s *SnapshotsServiceOp) Get(ctx context.Context, snapshotID string) (*Snaps
 	return router, resp, err
 }
 
-// MetadataUpdate load balancer metadata.
+// MetadataUpdate updates snapshot metadata.
 func (s *SnapshotsServiceOp) MetadataUpdate(ctx context.Context, snapshotID string, reqBody *MetadataCreateRequest) (*Snapshot, *Response, error) {
 	if resp, err := isValidUUID(snapshotID, "snapshotID"); err != nil {
 		return nil, resp, err
