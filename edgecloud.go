@@ -67,6 +67,7 @@ type Client struct {
 	SecurityGroups  SecurityGroupsService
 	Secrets         SecretsService
 	ServerGroups    ServerGroupsService
+	Snapshots       SnapshotsService
 	Subnetworks     SubnetworksService
 	Tasks           TasksService
 	Volumes         VolumesService
@@ -214,6 +215,7 @@ func NewClient(httpClient *http.Client) *Client {
 	c.SecurityGroups = &SecurityGroupsServiceOp{client: c}
 	c.Secrets = &SecretsServiceOp{client: c}
 	c.ServerGroups = &ServerGroupsServiceOp{client: c}
+	c.Snapshots = &SnapshotsServiceOp{client: c}
 	c.Subnetworks = &SubnetworksServiceOp{client: c}
 	c.Tasks = &TasksServiceOp{client: c}
 	c.Volumes = &VolumesServiceOp{client: c}
