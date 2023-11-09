@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"path"
+	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -19,17 +21,12 @@ func TestLoadbalancerFlavorIsExist(t *testing.T) {
 	server := httptest.NewServer(mux)
 	defer server.Close()
 
-	const (
-		projectID = 27520
-		regionID  = 8
-	)
-
 	flavor := "g1-gpu-1-2-1"
 	flavors := []edgecloud.Flavor{{
 		FlavorName: flavor,
 		FlavorID:   flavor,
 	}}
-	URL := fmt.Sprintf("/v1/lbflavors/%d/%d", projectID, regionID)
+	URL := path.Join("/v1/lbflavors", strconv.Itoa(projectID), strconv.Itoa(regionID))
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		resp, err := json.Marshal(flavors)
@@ -55,17 +52,12 @@ func TestFlavorIsExist(t *testing.T) {
 	server := httptest.NewServer(mux)
 	defer server.Close()
 
-	const (
-		projectID = 27520
-		regionID  = 8
-	)
-
 	flavor := "g1-gpu-1-2-1"
 	flavors := []edgecloud.Flavor{{
 		FlavorName: flavor,
 		FlavorID:   flavor,
 	}}
-	URL := fmt.Sprintf("/v1/flavors/%d/%d", projectID, regionID)
+	URL := path.Join("/v1/flavors", strconv.Itoa(projectID), strconv.Itoa(regionID))
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		resp, err := json.Marshal(flavors)
@@ -91,11 +83,6 @@ func TestFlavorIsAvailable(t *testing.T) {
 	server := httptest.NewServer(mux)
 	defer server.Close()
 
-	const (
-		projectID = 27520
-		regionID  = 8
-	)
-
 	flavor := "g1-standard-2-8"
 	flavors := []edgecloud.Flavor{{
 		FlavorName: flavor,
@@ -104,7 +91,7 @@ func TestFlavorIsAvailable(t *testing.T) {
 	instanceCheckFlavorVolumeRequest := &edgecloud.InstanceCheckFlavorVolumeRequest{
 		Volumes: []edgecloud.InstanceVolumeCreate{{Source: edgecloud.VolumeSourceExistingVolume}},
 	}
-	URL := fmt.Sprintf("/v1/instances/%d/%d/available_flavors", projectID, regionID)
+	URL := path.Join("/v1/instances", strconv.Itoa(projectID), strconv.Itoa(regionID), "available_flavors")
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		resp, err := json.Marshal(flavors)
