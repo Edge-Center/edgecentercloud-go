@@ -21,7 +21,7 @@ func TestL7PoliciesListByListenerID(t *testing.T) {
 	server := httptest.NewServer(mux)
 	defer server.Close()
 
-	flavors := []edgecloud.L7Policy{
+	l7Policies := []edgecloud.L7Policy{
 		{
 			ListenerID: testResourceID,
 		},
@@ -32,7 +32,7 @@ func TestL7PoliciesListByListenerID(t *testing.T) {
 	URL := path.Join("/v1/l7policies", strconv.Itoa(projectID), strconv.Itoa(regionID))
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
-		resp, err := json.Marshal(flavors)
+		resp, err := json.Marshal(l7Policies)
 		if err != nil {
 			t.Fatalf("failed to marshal JSON: %v", err)
 		}

@@ -16,23 +16,20 @@ import (
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 )
 
-func TestFloatingIPsListByPortID(t *testing.T) {
+func TestLoadbalancerGetByName(t *testing.T) {
 	mux := http.NewServeMux()
 	server := httptest.NewServer(mux)
 	defer server.Close()
 
-	floatingIPs := []edgecloud.FloatingIP{
+	lbs := []edgecloud.Loadbalancer{
 		{
-			PortID: testResourceID,
-		},
-		{
-			PortID: testResourceID,
+			Name: testResourceID,
 		},
 	}
-	URL := path.Join("/v1/floatingips", strconv.Itoa(projectID), strconv.Itoa(regionID))
+	URL := path.Join("/v1/loadbalancers", strconv.Itoa(projectID), strconv.Itoa(regionID))
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
-		resp, err := json.Marshal(floatingIPs)
+		resp, err := json.Marshal(lbs)
 		if err != nil {
 			t.Fatalf("failed to marshal JSON: %v", err)
 		}
@@ -45,7 +42,7 @@ func TestFloatingIPsListByPortID(t *testing.T) {
 	client.Project = projectID
 	client.Region = regionID
 
-	floatingIPs, err := FloatingIPsListByPortID(context.Background(), client, testResourceID)
+	lb, err := LoadbalancerGetByName(context.Background(), client, testResourceID)
 	assert.NoError(t, err)
-	assert.Len(t, floatingIPs, 2)
+	assert.Equal(t, testResourceID, lb.Name)
 }

@@ -16,6 +16,8 @@ import (
 
 	"github.com/google/go-querystring/query"
 	"github.com/hashicorp/go-retryablehttp"
+
+	"github.com/Edge-Center/edgecentercloud-go/retry"
 )
 
 const (
@@ -29,6 +31,10 @@ const (
 	defaultRetryMax     = 3
 	defaultRetryWaitMax = 30
 	defaultRetryWaitMin = 1
+
+	defaultNoClientRetryMax     = 10
+	defaultNoClientRetryWaitMin = 100 * time.Millisecond // nolint: revive
+	defaultNoClientRetryWaitMax = 60 * time.Second
 )
 
 // Client manages communication with EdgecenterCloud API.
@@ -84,6 +90,10 @@ type Client struct {
 	// Optional retry values. Setting the RetryConfig.RetryMax value enables automatically retrying requests
 	// that fail with 429 or 500-level response codes
 	RetryConfig RetryConfig
+
+	NoClientRetryConfig NoClientRetryConfig
+
+	Retryer retry.Retryer
 }
 
 // RetryConfig sets the values used for enabling retries and backoffs for
@@ -97,6 +107,12 @@ type RetryConfig struct {
 	RetryWaitMin *float64    // Minimum time to wait
 	RetryWaitMax *float64    // Maximum time to wait
 	Logger       interface{} // Customer logger instance. Must implement either go-retryablehttp.Logger or go-retryablehttp.LeveledLogger
+}
+
+type NoClientRetryConfig struct {
+	RetryMax     int
+	RetryWaitMin time.Duration
+	RetryWaitMax time.Duration
 }
 
 // RequestCompletionCallback defines the type of the request callback function.
@@ -184,6 +200,14 @@ func NewWithRetries(httpClient *http.Client, opts ...ClientOpt) (*Client, error)
 			RetryMax:     defaultRetryMax,
 			RetryWaitMin: PtrTo(float64(defaultRetryWaitMin)),
 			RetryWaitMax: PtrTo(float64(defaultRetryWaitMax)),
+		},
+	))
+
+	opts = append(opts, WithNoClientRetryer(
+		NoClientRetryConfig{
+			RetryMax:     defaultNoClientRetryMax,
+			RetryWaitMin: defaultNoClientRetryWaitMin,
+			RetryWaitMax: defaultNoClientRetryWaitMax,
 		},
 	))
 
@@ -276,6 +300,15 @@ func New(httpClient *http.Client, opts ...ClientOpt) (*Client, error) {
 		c.HTTPClient = retryableClient.StandardClient()
 	}
 
+	if c.NoClientRetryConfig.RetryMax > 0 {
+		backoff := retry.NewBackoff(
+			c.NoClientRetryConfig.RetryWaitMin,
+			c.NoClientRetryConfig.RetryWaitMax,
+			c.NoClientRetryConfig.RetryMax,
+		)
+		c.Retryer = retry.NewRetryer(backoff, nil)
+	}
+
 	return c, nil
 }
 
@@ -335,6 +368,15 @@ func WithRetryAndBackoffs(retryConfig RetryConfig) ClientOpt {
 		c.RetryConfig.RetryWaitMax = retryConfig.RetryWaitMax
 		c.RetryConfig.RetryWaitMin = retryConfig.RetryWaitMin
 		c.RetryConfig.Logger = retryConfig.Logger
+		return nil
+	}
+}
+
+func WithNoClientRetryer(retryConfig NoClientRetryConfig) ClientOpt {
+	return func(c *Client) error {
+		c.NoClientRetryConfig.RetryMax = retryConfig.RetryMax
+		c.NoClientRetryConfig.RetryWaitMax = retryConfig.RetryWaitMax
+		c.NoClientRetryConfig.RetryWaitMin = retryConfig.RetryWaitMin
 		return nil
 	}
 }

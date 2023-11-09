@@ -9,6 +9,10 @@ issues:
     - path: (.+)_test.go
       linters:
         - funlen
+    - path: retry
+      linters:
+        - gosec
+        - goerr113
 
 linters:
   enable-all: true
