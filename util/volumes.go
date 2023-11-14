@@ -45,7 +45,7 @@ func WaitDiskAttachedToInstance(ctx context.Context, client *edgecloud.Client, v
 				return nil
 			}
 		}
-		
+
 		return ErrVolumesNotAttached
 	})
 }
