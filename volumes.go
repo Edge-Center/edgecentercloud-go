@@ -97,11 +97,11 @@ type Attachment struct {
 type VolumeType string
 
 const (
-	Standard  VolumeType = "standard"
-	SsdHiIops VolumeType = "ssd_hiiops"
-	SsdLocal  VolumeType = "ssd_local"
-	Cold      VolumeType = "cold"
-	Ultra     VolumeType = "ultra"
+	VolumeTypeStandard  VolumeType = "standard"
+	VolumeTypeSsdHiIops VolumeType = "ssd_hiiops"
+	VolumeTypeSsdLocal  VolumeType = "ssd_local"
+	VolumeTypeCold      VolumeType = "cold"
+	VolumeTypeUltra     VolumeType = "ultra"
 )
 
 type VolumeSource string
