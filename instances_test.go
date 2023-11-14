@@ -66,7 +66,7 @@ func TestInstances_Create(t *testing.T) {
 		SecurityGroups: []ID{{ID: "f0d19cec-5c3f-4853-886e-304915960ff6"}},
 		Volumes: []InstanceVolumeCreate{
 			{
-				TypeName:  SsdHiIops,
+				TypeName:  VolumeTypeSsdHiIops,
 				Size:      5,
 				BootIndex: 0,
 				Source:    VolumeSourceImage,
