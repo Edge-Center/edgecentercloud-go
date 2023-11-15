@@ -33,7 +33,7 @@ func LoadbalancerGetByName(ctx context.Context, client *edgecloud.Client, name s
 
 	switch len(matchedLBs) {
 	case 1:
-		return &matchedLBs[0], err
+		return &matchedLBs[0], nil
 	case 0:
 		return nil, ErrLoadbalancersNotFound
 	default:
@@ -63,7 +63,7 @@ func LBPoolGetByName(ctx context.Context, client *edgecloud.Client, name, loadBa
 
 	switch len(matchedLBPools) {
 	case 1:
-		return &matchedLBPools[0], err
+		return &matchedLBPools[0], nil
 	case 0:
 		return nil, ErrLoadbalancerPoolsNotFound
 	default:
@@ -72,21 +72,22 @@ func LBPoolGetByName(ctx context.Context, client *edgecloud.Client, name, loadBa
 }
 
 func WaitLoadBalancerProvisioningStatusActive(ctx context.Context, client *edgecloud.Client, loadBalancerID string) error {
-	return client.Retryer.Run(ctx, func(ctx context.Context) error {
-		loadBalancer, _, err := client.Loadbalancers.Get(ctx, loadBalancerID)
-		if err != nil {
-			return err
-		}
+	return WithRetry(
+		func() error {
+			loadBalancer, _, err := client.Loadbalancers.Get(ctx, loadBalancerID)
+			if err != nil {
+				return err
+			}
 
-		switch loadBalancer.ProvisioningStatus { // nolint: exhaustive
-		case edgecloud.ProvisioningStatusActive:
-			return nil
-		case edgecloud.ProvisioningStatusError:
-			return ErrErrorState
-		default:
-			return ErrNotActiveStatus
-		}
-	})
+			switch loadBalancer.ProvisioningStatus { // nolint: exhaustive
+			case edgecloud.ProvisioningStatusActive:
+				return err
+			case edgecloud.ProvisioningStatusError:
+				return ErrErrorState
+			default:
+				return ErrNotActiveStatus
+			}
+		})
 }
 
 func FindPoolMemberByAddressPortAndSubnetID(pool edgecloud.Pool, addr string, protocolPort int, subnetID string) (found bool) {
