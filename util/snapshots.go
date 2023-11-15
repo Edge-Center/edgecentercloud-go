@@ -57,16 +57,17 @@ func SnapshotsListByNameAndVolumeID(ctx context.Context, client *edgecloud.Clien
 }
 
 func WaitSnapshotStatusReady(ctx context.Context, client *edgecloud.Client, snapshotID string) error {
-	return client.Retryer.Run(ctx, func(ctx context.Context) error {
-		snapshot, _, err := client.Snapshots.Get(ctx, snapshotID)
-		if err != nil {
-			return err
-		}
+	return WithRetry(
+		func() error {
+			snapshot, _, err := client.Snapshots.Get(ctx, snapshotID)
+			if err != nil {
+				return err
+			}
 
-		if snapshot.Status == SnapshotReadyStatus {
-			return nil
-		}
+			if snapshot.Status == SnapshotReadyStatus {
+				return nil
+			}
 
-		return ErrSnapshotNotReady
-	})
+			return ErrSnapshotNotReady
+		})
 }

@@ -35,24 +35,25 @@ func VolumesListByName(ctx context.Context, client *edgecloud.Client, name strin
 }
 
 func WaitVolumeAttachedToInstance(ctx context.Context, client *edgecloud.Client, volumeID, instanceID string) error {
-	return client.Retryer.Run(ctx, func(ctx context.Context) error {
-		volume, _, err := client.Volumes.Get(ctx, volumeID)
-		if err != nil {
-			return err
-		}
-
-		for _, attachment := range volume.Attachments {
-			if instanceID == attachment.ServerID {
-				return nil
+	return WithRetry(
+		func() error {
+			volume, _, err := client.Volumes.Get(ctx, volumeID)
+			if err != nil {
+				return err
 			}
-		}
 
-		return ErrVolumesNotAttached
-	})
+			for _, attachment := range volume.Attachments {
+				if instanceID == attachment.ServerID {
+					return nil
+				}
+			}
+
+			return ErrVolumesNotAttached
+		})
 }
 
 func WaitVolumeDetachedFromInstance(ctx context.Context, client *edgecloud.Client, volumeID, instanceID string) error {
-	return client.Retryer.Run(ctx, func(ctx context.Context) error {
+	return WithRetry(func() error {
 		volume, _, err := client.Volumes.Get(ctx, volumeID)
 		if err != nil {
 			return err

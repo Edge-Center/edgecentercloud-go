@@ -18,6 +18,7 @@ import (
 
 const (
 	testResourceID = "f0d19cec-5c3f-4853-886e-304915960ff6"
+	testName       = "test-name"
 	projectID      = 2750
 	regionID       = 8
 )
