@@ -100,7 +100,7 @@ type Loadbalancer struct {
 	UpdatedAt          string             `json:"updated_at"`
 	CreatorTaskID      string             `json:"creator_task_id"`
 	TaskID             string             `json:"task_id"`
-	Metadata           Metadata           `json:"metadata,omitempty"`
+	Metadata           []Metadata         `json:"metadata,omitempty"`
 	Stats              LoadbalancerStats  `json:"stats"`
 	Listeners          []Listener         `json:"listeners"`
 	FloatingIPs        []FloatingIP       `json:"floating_ips"`
