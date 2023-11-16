@@ -108,6 +108,23 @@ func FindPoolMemberByAddressPortAndSubnetID(pool edgecloud.Pool, addr net.IP, pr
 	return found
 }
 
+func DeletePoolByNameIfExist(ctx context.Context, client *edgecloud.Client, name, loadBalancerID string) error {
+	pool, err := LBPoolGetByName(ctx, client, name, loadBalancerID)
+	if err != nil {
+		if errors.Is(err, ErrLoadbalancerPoolsNotFound) {
+			return nil
+		}
+		return err
+	}
+
+	task, _, err := client.Loadbalancers.PoolDelete(ctx, pool.ID)
+	if err != nil {
+		return err
+	}
+
+	return WaitForTaskComplete(ctx, client, task.Tasks[0])
+}
+
 func DeleteUnusedPools(ctx context.Context, client *edgecloud.Client, oldPools []edgecloud.Pool, newPools []string, attempts *uint) error {
 	for _, oldPool := range oldPools {
 		lbID := oldPool.LoadBalancers[0].ID
