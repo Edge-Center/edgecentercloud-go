@@ -34,7 +34,7 @@ func VolumesListByName(ctx context.Context, client *edgecloud.Client, name strin
 	return volumes, nil
 }
 
-func WaitVolumeAttachedToInstance(ctx context.Context, client *edgecloud.Client, volumeID, instanceID string) error {
+func WaitVolumeAttachedToInstance(ctx context.Context, client *edgecloud.Client, volumeID, instanceID string, attempts *uint) error {
 	return WithRetry(
 		func() error {
 			volume, _, err := client.Volumes.Get(ctx, volumeID)
@@ -49,32 +49,37 @@ func WaitVolumeAttachedToInstance(ctx context.Context, client *edgecloud.Client,
 			}
 
 			return ErrVolumesNotAttached
-		})
+		},
+		attempts,
+	)
 }
 
-func WaitVolumeDetachedFromInstance(ctx context.Context, client *edgecloud.Client, volumeID, instanceID string) error {
-	return WithRetry(func() error {
-		volume, _, err := client.Volumes.Get(ctx, volumeID)
-		if err != nil {
-			return err
-		}
-
-		if len(volume.Attachments) == 0 {
-			return nil
-		}
-
-		var attached bool
-		for _, attachment := range volume.Attachments {
-			if instanceID == attachment.ServerID {
-				attached = true
-				break
+func WaitVolumeDetachedFromInstance(ctx context.Context, client *edgecloud.Client, volumeID, instanceID string, attempts *uint) error {
+	return WithRetry(
+		func() error {
+			volume, _, err := client.Volumes.Get(ctx, volumeID)
+			if err != nil {
+				return err
 			}
-		}
 
-		if !attached {
-			return nil
-		}
+			if len(volume.Attachments) == 0 {
+				return nil
+			}
 
-		return ErrVolumesNotDetached
-	})
+			var attached bool
+			for _, attachment := range volume.Attachments {
+				if instanceID == attachment.ServerID {
+					attached = true
+					break
+				}
+			}
+
+			if !attached {
+				return nil
+			}
+
+			return ErrVolumesNotDetached
+		},
+		attempts,
+	)
 }

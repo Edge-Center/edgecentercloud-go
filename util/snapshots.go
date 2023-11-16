@@ -56,7 +56,7 @@ func SnapshotsListByNameAndVolumeID(ctx context.Context, client *edgecloud.Clien
 	return snapshots, nil
 }
 
-func WaitSnapshotStatusReady(ctx context.Context, client *edgecloud.Client, snapshotID string) error {
+func WaitSnapshotStatusReady(ctx context.Context, client *edgecloud.Client, snapshotID string, attempts *uint) error {
 	return WithRetry(
 		func() error {
 			snapshot, _, err := client.Snapshots.Get(ctx, snapshotID)
@@ -69,5 +69,7 @@ func WaitSnapshotStatusReady(ctx context.Context, client *edgecloud.Client, snap
 			}
 
 			return ErrSnapshotNotReady
-		})
+		},
+		attempts,
+	)
 }

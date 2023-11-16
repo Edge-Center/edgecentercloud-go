@@ -3,6 +3,7 @@ package util
 import (
 	"context"
 	"errors"
+	"net"
 
 	edgecloud "github.com/Edge-Center/edgecentercloud-go"
 )
@@ -71,7 +72,7 @@ func LBPoolGetByName(ctx context.Context, client *edgecloud.Client, name, loadBa
 	}
 }
 
-func WaitLoadBalancerProvisioningStatusActive(ctx context.Context, client *edgecloud.Client, loadBalancerID string) error {
+func WaitLoadBalancerProvisioningStatusActive(ctx context.Context, client *edgecloud.Client, loadBalancerID string, attempts *uint) error {
 	return WithRetry(
 		func() error {
 			loadBalancer, _, err := client.Loadbalancers.Get(ctx, loadBalancerID)
@@ -87,16 +88,18 @@ func WaitLoadBalancerProvisioningStatusActive(ctx context.Context, client *edgec
 			default:
 				return ErrNotActiveStatus
 			}
-		})
+		},
+		attempts,
+	)
 }
 
-func FindPoolMemberByAddressPortAndSubnetID(pool edgecloud.Pool, addr string, protocolPort int, subnetID string) (found bool) {
+func FindPoolMemberByAddressPortAndSubnetID(pool edgecloud.Pool, addr net.IP, protocolPort int, subnetID string) (found bool) {
 	for _, member := range pool.Members {
 		if member.Address == nil {
 			continue
 		}
 
-		if member.Address.String() == addr && member.ProtocolPort == protocolPort && member.SubnetID == subnetID {
+		if net.IP.Equal(member.Address, addr) && member.ProtocolPort == protocolPort && member.SubnetID == subnetID {
 			found = true
 			break
 		}
@@ -105,7 +108,7 @@ func FindPoolMemberByAddressPortAndSubnetID(pool edgecloud.Pool, addr string, pr
 	return found
 }
 
-func DeleteUnusedPools(ctx context.Context, client *edgecloud.Client, oldPools []edgecloud.Pool, newPools []string) error {
+func DeleteUnusedPools(ctx context.Context, client *edgecloud.Client, oldPools []edgecloud.Pool, newPools []string, attempts *uint) error {
 	for _, oldPool := range oldPools {
 		lbID := oldPool.LoadBalancers[0].ID
 
@@ -126,7 +129,7 @@ func DeleteUnusedPools(ctx context.Context, client *edgecloud.Client, oldPools [
 				return err
 			}
 
-			if err = WaitLoadBalancerProvisioningStatusActive(ctx, client, lbID); err != nil {
+			if err = WaitLoadBalancerProvisioningStatusActive(ctx, client, lbID, attempts); err != nil {
 				return err
 			}
 		}
