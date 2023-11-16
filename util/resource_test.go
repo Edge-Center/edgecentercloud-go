@@ -65,11 +65,11 @@ func TestResourceIsDeleted(t *testing.T) {
 			client.Project = projectID
 			client.Region = regionID
 
-			retrieveFunc := func(ctx context.Context, id string) (*edgecloud.FloatingIP, *edgecloud.Response, error) {
+			GetResourceFunc := func(ctx context.Context, id string) (*edgecloud.FloatingIP, *edgecloud.Response, error) {
 				return client.Floatingips.Get(ctx, id)
 			}
 
-			err := ResourceIsDeleted(context.Background(), retrieveFunc, testResourceID)
+			err := ResourceIsDeleted(context.Background(), GetResourceFunc, testResourceID)
 			assert.Equal(t, tt.expected, err)
 		})
 	}
