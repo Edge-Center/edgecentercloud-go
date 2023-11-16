@@ -99,6 +99,16 @@ type RetryConfig struct {
 	Logger       interface{} // Customer logger instance. Must implement either go-retryablehttp.Logger or go-retryablehttp.LeveledLogger
 }
 
+// CloudConfig used only for import.
+type CloudConfig struct {
+	APIUrl       string `yaml:"apiURL"`
+	APIToken     string `yaml:"apiToken"`
+	AccessToken  string `yaml:"accessToken"`
+	RefreshToken string `yaml:"refreshToken"`
+	ProjectID    int    `yaml:"projectID"`
+	RegionID     int    `yaml:"regionID"`
+}
+
 // RequestCompletionCallback defines the type of the request callback function.
 type RequestCompletionCallback func(*http.Request, *http.Response)
 
