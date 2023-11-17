@@ -72,6 +72,26 @@ func LBPoolGetByName(ctx context.Context, client *edgecloud.Client, name, loadBa
 	}
 }
 
+func LBSharedPoolList(ctx context.Context, client *edgecloud.Client, loadBalancerID string) ([]edgecloud.Pool, error) {
+	var sharedPools []edgecloud.Pool
+
+	poolListOptions := edgecloud.PoolListOptions{
+		LoadBalancerID: loadBalancerID,
+	}
+	lbPools, _, err := client.Loadbalancers.PoolList(ctx, &poolListOptions)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, pool := range lbPools {
+		if len(pool.Listeners) > 0 {
+			sharedPools = append(sharedPools, pool)
+		}
+	}
+
+	return sharedPools, nil
+}
+
 func WaitLoadBalancerProvisioningStatusActive(ctx context.Context, client *edgecloud.Client, loadBalancerID string, attempts *uint) error {
 	return WithRetry(
 		func() error {
