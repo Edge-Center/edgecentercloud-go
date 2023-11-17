@@ -391,3 +391,360 @@ func TestFindPoolMemberByAddressPortAndSubnetID_MemberAddressIsNil(t *testing.T)
 	found := FindPoolMemberByAddressPortAndSubnetID(testPool, net.IP("192.168.1.2"), testProtocolPort, testName)
 	assert.False(t, found)
 }
+
+func TestLBSharedPoolList(t *testing.T) {
+	mux := http.NewServeMux()
+	server := httptest.NewServer(mux)
+	defer server.Close()
+
+	pools := []edgecloud.Pool{
+		{
+			Listeners: []edgecloud.ID{{ID: testResourceID}},
+		},
+		{
+			Listeners: []edgecloud.ID{{ID: testResourceID}},
+		},
+	}
+	URL := path.Join("/v1/lbpools", strconv.Itoa(projectID), strconv.Itoa(regionID))
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		resp, err := json.Marshal(pools)
+		if err != nil {
+			t.Fatalf("failed to marshal JSON: %v", err)
+		}
+		_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))
+	})
+
+	client := edgecloud.NewClient(nil)
+	baseURL, _ := url.Parse(server.URL)
+	client.BaseURL = baseURL
+	client.Project = projectID
+	client.Region = regionID
+
+	sharedPools, err := LBSharedPoolList(context.Background(), client, testResourceID)
+	assert.NoError(t, err)
+	assert.Len(t, sharedPools, 2)
+}
+
+func TestLBSharedPoolList_Error(t *testing.T) {
+	mux := http.NewServeMux()
+	server := httptest.NewServer(mux)
+	defer server.Close()
+
+	URL := path.Join("/v1/lbpools", strconv.Itoa(projectID), strconv.Itoa(regionID))
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusInternalServerError)
+	})
+
+	client := edgecloud.NewClient(nil)
+	baseURL, _ := url.Parse(server.URL)
+	client.BaseURL = baseURL
+	client.Project = projectID
+	client.Region = regionID
+
+	sharedPools, err := LBSharedPoolList(context.Background(), client, testResourceID)
+	assert.Error(t, err)
+	assert.Nil(t, sharedPools)
+}
+
+func TestDeletePoolByNameIfExist(t *testing.T) {
+	mux := http.NewServeMux()
+	server := httptest.NewServer(mux)
+	defer server.Close()
+
+	pools := []edgecloud.Pool{{ID: testResourceID, Name: testName}}
+	URLLBPoolsGet := path.Join("/v1/lbpools", strconv.Itoa(projectID), strconv.Itoa(regionID))
+
+	mux.HandleFunc(URLLBPoolsGet, func(w http.ResponseWriter, r *http.Request) {
+		resp, err := json.Marshal(pools)
+		if err != nil {
+			t.Fatalf("failed to marshal JSON: %v", err)
+		}
+		_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))
+	})
+
+	taskDelete := &edgecloud.TaskResponse{Tasks: []string{testResourceID}}
+	URLLBPoolsDelete := path.Join("/v1/lbpools", strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID)
+
+	mux.HandleFunc(URLLBPoolsDelete, func(w http.ResponseWriter, r *http.Request) {
+		resp, err := json.Marshal(taskDelete)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
+		_, _ = fmt.Fprint(w, string(resp))
+	})
+
+	task := &edgecloud.Task{ID: testResourceID, State: edgecloud.TaskStateFinished}
+	URLTasks := path.Join("/v1/tasks", testResourceID)
+
+	mux.HandleFunc(URLTasks, func(w http.ResponseWriter, r *http.Request) {
+		resp, err := json.Marshal(task)
+		if err != nil {
+			t.Fatalf("failed to marshal JSON: %v", err)
+		}
+		_, _ = fmt.Fprint(w, string(resp))
+	})
+
+	client := edgecloud.NewClient(nil)
+	baseURL, _ := url.Parse(server.URL)
+	client.BaseURL = baseURL
+	client.Project = projectID
+	client.Region = regionID
+
+	err := DeletePoolByNameIfExist(context.Background(), client, testName, testResourceID)
+	assert.NoError(t, err)
+}
+
+func TestDeletePoolByNameIfExist_LBPoolGetByName_Error(t *testing.T) {
+	mux := http.NewServeMux()
+	server := httptest.NewServer(mux)
+	defer server.Close()
+
+	URLLBPoolsGet := path.Join("/v1/lbpools", strconv.Itoa(projectID), strconv.Itoa(regionID))
+
+	mux.HandleFunc(URLLBPoolsGet, func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusInternalServerError)
+	})
+
+	client := edgecloud.NewClient(nil)
+	baseURL, _ := url.Parse(server.URL)
+	client.BaseURL = baseURL
+	client.Project = projectID
+	client.Region = regionID
+
+	err := DeletePoolByNameIfExist(context.Background(), client, testName, testResourceID)
+	assert.Error(t, err)
+}
+
+func TestDeletePoolByNameIfExist_LBPoolGetByName_ErrLoadbalancerPoolsNotFound(t *testing.T) {
+	mux := http.NewServeMux()
+	server := httptest.NewServer(mux)
+	defer server.Close()
+
+	URL := path.Join("/v1/lbpools", strconv.Itoa(projectID), strconv.Itoa(regionID))
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		resp, err := json.Marshal(nil)
+		if err != nil {
+			t.Fatalf("failed to marshal JSON: %v", err)
+		}
+		_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))
+	})
+
+	client := edgecloud.NewClient(nil)
+	baseURL, _ := url.Parse(server.URL)
+	client.BaseURL = baseURL
+	client.Project = projectID
+	client.Region = regionID
+
+	err := DeletePoolByNameIfExist(context.Background(), client, testName, testResourceID)
+	assert.NoError(t, err)
+}
+
+func TestDeletePoolByNameIfExist_PoolDelete_Error(t *testing.T) {
+	mux := http.NewServeMux()
+	server := httptest.NewServer(mux)
+	defer server.Close()
+
+	pools := []edgecloud.Pool{{ID: testResourceID, Name: testName}}
+	URLLBPoolsGet := path.Join("/v1/lbpools", strconv.Itoa(projectID), strconv.Itoa(regionID))
+
+	mux.HandleFunc(URLLBPoolsGet, func(w http.ResponseWriter, r *http.Request) {
+		resp, err := json.Marshal(pools)
+		if err != nil {
+			t.Fatalf("failed to marshal JSON: %v", err)
+		}
+		_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))
+	})
+
+	URLLBPoolsDelete := path.Join("/v1/lbpools", strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID)
+
+	mux.HandleFunc(URLLBPoolsDelete, func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusInternalServerError)
+	})
+
+	client := edgecloud.NewClient(nil)
+	baseURL, _ := url.Parse(server.URL)
+	client.BaseURL = baseURL
+	client.Project = projectID
+	client.Region = regionID
+
+	err := DeletePoolByNameIfExist(context.Background(), client, testName, testResourceID)
+	assert.Error(t, err)
+}
+
+func TestDeleteUnusedPools(t *testing.T) {
+	oldPools := []edgecloud.Pool{{ID: testResourceID, LoadBalancers: []edgecloud.ID{{ID: testResourceID}}}}
+
+	err := DeleteUnusedPools(context.Background(), nil, oldPools, []string{testResourceID}, nil)
+	assert.NoError(t, err)
+}
+
+func TestDeleteUnusedPools_NotExist(t *testing.T) {
+	mux := http.NewServeMux()
+	server := httptest.NewServer(mux)
+	defer server.Close()
+
+	oldPools := []edgecloud.Pool{{ID: testResourceID, LoadBalancers: []edgecloud.ID{{ID: testResourceID}}}}
+
+	taskDelete := &edgecloud.TaskResponse{Tasks: []string{testResourceID}}
+	URLLBPoolsDelete := path.Join("/v1/lbpools", strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID)
+
+	mux.HandleFunc(URLLBPoolsDelete, func(w http.ResponseWriter, r *http.Request) {
+		resp, err := json.Marshal(taskDelete)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
+		_, _ = fmt.Fprint(w, string(resp))
+	})
+
+	task := &edgecloud.Task{ID: testResourceID, State: edgecloud.TaskStateFinished}
+	URLTasks := path.Join("/v1/tasks", testResourceID)
+
+	mux.HandleFunc(URLTasks, func(w http.ResponseWriter, r *http.Request) {
+		resp, err := json.Marshal(task)
+		if err != nil {
+			t.Fatalf("failed to marshal JSON: %v", err)
+		}
+		_, _ = fmt.Fprint(w, string(resp))
+	})
+
+	expectedResp := edgecloud.Loadbalancer{
+		Name:               testResourceID,
+		ProvisioningStatus: edgecloud.ProvisioningStatusActive,
+	}
+	URL := path.Join("/v1/loadbalancers", strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID)
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
+		_, _ = fmt.Fprint(w, string(resp))
+	})
+
+	client := edgecloud.NewClient(nil)
+	baseURL, _ := url.Parse(server.URL)
+	client.BaseURL = baseURL
+	client.Project = projectID
+	client.Region = regionID
+
+	err := DeleteUnusedPools(context.Background(), client, oldPools, []string{}, nil)
+	assert.NoError(t, err)
+}
+
+func TestDeleteUnusedPools_NotExist_PoolDelete_Error(t *testing.T) {
+	mux := http.NewServeMux()
+	server := httptest.NewServer(mux)
+	defer server.Close()
+
+	oldPools := []edgecloud.Pool{{ID: testResourceID, LoadBalancers: []edgecloud.ID{{ID: testResourceID}}}}
+
+	URLLBPoolsDelete := path.Join("/v1/lbpools", strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID)
+
+	mux.HandleFunc(URLLBPoolsDelete, func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusInternalServerError)
+	})
+
+	client := edgecloud.NewClient(nil)
+	baseURL, _ := url.Parse(server.URL)
+	client.BaseURL = baseURL
+	client.Project = projectID
+	client.Region = regionID
+
+	err := DeleteUnusedPools(context.Background(), client, oldPools, []string{}, nil)
+	assert.Error(t, err)
+}
+
+func TestDeleteUnusedPools_NotExist_WaitForTaskComplete_Error(t *testing.T) {
+	mux := http.NewServeMux()
+	server := httptest.NewServer(mux)
+	defer server.Close()
+
+	oldPools := []edgecloud.Pool{{ID: testResourceID, LoadBalancers: []edgecloud.ID{{ID: testResourceID}}}}
+
+	taskDelete := &edgecloud.TaskResponse{Tasks: []string{testResourceID}}
+	URLLBPoolsDelete := path.Join("/v1/lbpools", strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID)
+
+	mux.HandleFunc(URLLBPoolsDelete, func(w http.ResponseWriter, r *http.Request) {
+		resp, err := json.Marshal(taskDelete)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
+		_, _ = fmt.Fprint(w, string(resp))
+	})
+
+	URLTasks := path.Join("/v1/tasks", testResourceID)
+
+	mux.HandleFunc(URLTasks, func(w http.ResponseWriter, r *http.Request) {
+		resp, err := json.Marshal(&edgecloud.Task{ID: testResourceID, State: edgecloud.TaskStateError})
+		if err != nil {
+			t.Fatalf("failed to marshal JSON: %v", err)
+		}
+		_, _ = fmt.Fprint(w, string(resp))
+	})
+
+	client := edgecloud.NewClient(nil)
+	baseURL, _ := url.Parse(server.URL)
+	client.BaseURL = baseURL
+	client.Project = projectID
+	client.Region = regionID
+
+	err := DeleteUnusedPools(context.Background(), client, oldPools, []string{}, nil)
+	assert.Error(t, err)
+}
+
+func TestDeleteUnusedPools_WaitLoadBalancerProvisioningStatusActive_Error(t *testing.T) {
+	mux := http.NewServeMux()
+	server := httptest.NewServer(mux)
+	defer server.Close()
+
+	oldPools := []edgecloud.Pool{{ID: testResourceID, LoadBalancers: []edgecloud.ID{{ID: testResourceID}}}}
+
+	taskDelete := &edgecloud.TaskResponse{Tasks: []string{testResourceID}}
+	URLLBPoolsDelete := path.Join("/v1/lbpools", strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID)
+
+	mux.HandleFunc(URLLBPoolsDelete, func(w http.ResponseWriter, r *http.Request) {
+		resp, err := json.Marshal(taskDelete)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
+		_, _ = fmt.Fprint(w, string(resp))
+	})
+
+	task := &edgecloud.Task{ID: testResourceID, State: edgecloud.TaskStateFinished}
+	URLTasks := path.Join("/v1/tasks", testResourceID)
+
+	mux.HandleFunc(URLTasks, func(w http.ResponseWriter, r *http.Request) {
+		resp, err := json.Marshal(task)
+		if err != nil {
+			t.Fatalf("failed to marshal JSON: %v", err)
+		}
+		_, _ = fmt.Fprint(w, string(resp))
+	})
+
+	expectedResp := edgecloud.Loadbalancer{
+		Name:               testResourceID,
+		ProvisioningStatus: edgecloud.ProvisioningStatusError,
+	}
+	URL := path.Join("/v1/loadbalancers", strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID)
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
+		_, _ = fmt.Fprint(w, string(resp))
+	})
+
+	client := edgecloud.NewClient(nil)
+	baseURL, _ := url.Parse(server.URL)
+	client.BaseURL = baseURL
+	client.Project = projectID
+	client.Region = regionID
+
+	var attempts uint = 2
+	err := DeleteUnusedPools(context.Background(), client, oldPools, []string{}, &attempts)
+	assert.Error(t, err)
+}
