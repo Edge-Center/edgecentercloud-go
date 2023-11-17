@@ -145,12 +145,12 @@ func DeletePoolByNameIfExist(ctx context.Context, client *edgecloud.Client, name
 	return WaitForTaskComplete(ctx, client, task.Tasks[0])
 }
 
-func DeleteUnusedPools(ctx context.Context, client *edgecloud.Client, oldPools []edgecloud.Pool, newPools []string, attempts *uint) error {
+func DeleteUnusedPools(ctx context.Context, client *edgecloud.Client, oldPools []edgecloud.Pool, newPoolsIDs []string, attempts *uint) error {
 	for _, oldPool := range oldPools {
 		lbID := oldPool.LoadBalancers[0].ID
 
 		var exist bool
-		for _, newPool := range newPools {
+		for _, newPool := range newPoolsIDs {
 			if oldPool.ID == newPool {
 				exist = true
 				break
