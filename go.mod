@@ -1,6 +1,6 @@
 module github.com/Edge-Center/edgecentercloud-go
 
-go 1.21.3
+go 1.21
 
 require (
 	github.com/avast/retry-go/v4 v4.5.1

@@ -139,7 +139,7 @@ func (c *Client) Validate() (*Response, error) {
 		return badResponse, NewArgError("Client.Region", "is not set")
 	}
 
-	return nil, nil // nolint
+	return nil, nil //nolint
 }
 
 // Response is a EdgecenterCloud response. This wraps the standard http.Response returned from EdgecenterCloud.

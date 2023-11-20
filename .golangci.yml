@@ -9,10 +9,6 @@ issues:
     - path: (.+)_test.go
       linters:
         - funlen
-    - path: retry
-      linters:
-        - gosec
-        - goerr113
 
 linters:
   enable-all: true
@@ -45,9 +41,7 @@ linters:
     - depguard         # Checks if package imports are in a list of acceptable packages
     - musttag          # Enforce field tags in (un)marshaled structs.
     - dupl             # Tool for code clone detection.
-    - nolintlint
     - interfacebloat
-    # complexity
     - cyclop           # Checks function and package cyclomatic complexity.
     # tests
     - testpackage      # Makes you use a separate _test package.

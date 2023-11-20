@@ -100,7 +100,7 @@ func WaitLoadBalancerProvisioningStatusActive(ctx context.Context, client *edgec
 				return err
 			}
 
-			switch loadBalancer.ProvisioningStatus { // nolint: exhaustive
+			switch loadBalancer.ProvisioningStatus { //nolint: exhaustive
 			case edgecloud.ProvisioningStatusActive:
 				return err
 			case edgecloud.ProvisioningStatusError:
