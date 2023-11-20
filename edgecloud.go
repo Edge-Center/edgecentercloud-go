@@ -57,6 +57,8 @@ type Client struct {
 	Instances       InstancesService
 	KeyPairs        KeyPairsService
 	Loadbalancers   LoadbalancersService
+	L7Policies      L7PoliciesService
+	L7Rules         L7RulesService
 	Networks        NetworksService
 	Ports           PortsService
 	Projects        ProjectsService
@@ -67,6 +69,7 @@ type Client struct {
 	SecurityGroups  SecurityGroupsService
 	Secrets         SecretsService
 	ServerGroups    ServerGroupsService
+	Snapshots       SnapshotsService
 	Subnetworks     SubnetworksService
 	Tasks           TasksService
 	Volumes         VolumesService
@@ -94,6 +97,16 @@ type RetryConfig struct {
 	RetryWaitMin *float64    // Minimum time to wait
 	RetryWaitMax *float64    // Maximum time to wait
 	Logger       interface{} // Customer logger instance. Must implement either go-retryablehttp.Logger or go-retryablehttp.LeveledLogger
+}
+
+// CloudConfig used only for import.
+type CloudConfig struct {
+	APIUrl       string `yaml:"apiURL"`
+	APIToken     string `yaml:"apiToken"`
+	AccessToken  string `yaml:"accessToken"`
+	RefreshToken string `yaml:"refreshToken"`
+	ProjectID    int    `yaml:"projectID"`
+	RegionID     int    `yaml:"regionID"`
 }
 
 // RequestCompletionCallback defines the type of the request callback function.
@@ -126,7 +139,7 @@ func (c *Client) Validate() (*Response, error) {
 		return badResponse, NewArgError("Client.Region", "is not set")
 	}
 
-	return nil, nil // nolint
+	return nil, nil //nolint
 }
 
 // Response is a EdgecenterCloud response. This wraps the standard http.Response returned from EdgecenterCloud.
@@ -204,6 +217,8 @@ func NewClient(httpClient *http.Client) *Client {
 	c.Instances = &InstancesServiceOp{client: c}
 	c.KeyPairs = &KeyPairsServiceOp{client: c}
 	c.Loadbalancers = &LoadbalancersServiceOp{client: c}
+	c.L7Policies = &L7PoliciesServiceOp{client: c}
+	c.L7Rules = &L7RulesServiceOp{client: c}
 	c.Networks = &NetworksServiceOp{client: c}
 	c.Ports = &PortsServiceOp{client: c}
 	c.Projects = &ProjectsServiceOp{client: c}
@@ -214,6 +229,7 @@ func NewClient(httpClient *http.Client) *Client {
 	c.SecurityGroups = &SecurityGroupsServiceOp{client: c}
 	c.Secrets = &SecretsServiceOp{client: c}
 	c.ServerGroups = &ServerGroupsServiceOp{client: c}
+	c.Snapshots = &SnapshotsServiceOp{client: c}
 	c.Subnetworks = &SubnetworksServiceOp{client: c}
 	c.Tasks = &TasksServiceOp{client: c}
 	c.Volumes = &VolumesServiceOp{client: c}

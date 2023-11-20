@@ -1,0 +1,13 @@
+profile: cover.out
+
+local-prefix: "github.com/org/project"
+
+threshold:
+  # The minimum coverage that each file should have
+  file: 60
+
+  # The minimum coverage that each package should have
+  package: 60
+
+  # The minimum total coverage project should have
+  total: 70

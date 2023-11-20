@@ -1,8 +1,9 @@
 module github.com/Edge-Center/edgecentercloud-go
 
-go 1.21.3
+go 1.21
 
 require (
+	github.com/avast/retry-go/v4 v4.5.1
 	github.com/google/go-querystring v1.1.0
 	github.com/google/uuid v1.3.1
 	github.com/hashicorp/go-retryablehttp v0.7.4

@@ -31,14 +31,18 @@ type TaskResult struct {
 	HealthMonitors []string `json:"healthmonitors"`
 	Images         []string `json:"images"`
 	Instances      []string `json:"instances"`
+	L7Polices      []string `json:"l7polices"`
+	L7Rules        []string `json:"l7rules"`
 	Listeners      []string `json:"listeners"`
 	LoadBalancers  []string `json:"loadbalancers"`
 	Members        []string `json:"members"`
 	Networks       []string `json:"networks"`
 	Pools          []string `json:"pools"`
 	Ports          []string `json:"ports"`
+	Projects       []string `json:"projects"`
 	Routers        []string `json:"routers"`
 	Secrets        []string `json:"secrets"`
+	ServerGroups   []string `json:"servergroups"`
 	Snapshots      []string `json:"snapshots"`
 	Subnets        []string `json:"subnets"`
 	Volumes        []string `json:"volumes"`

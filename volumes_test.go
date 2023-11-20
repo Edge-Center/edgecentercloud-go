@@ -63,7 +63,7 @@ func TestVolumes_Create(t *testing.T) {
 	request := &VolumeCreateRequest{
 		Name:     "test-volume",
 		Size:     20,
-		TypeName: Standard,
+		TypeName: VolumeTypeStandard,
 		Source:   VolumeSourceNewVolume,
 	}
 	expectedResp := &TaskResponse{Tasks: []string{testResourceID}}
@@ -115,8 +115,8 @@ func TestVolumes_ChangeType(t *testing.T) {
 	setup()
 	defer teardown()
 
-	request := &VolumeChangeTypeRequest{VolumeType: SsdHiIops}
-	expectedResp := &Volume{ID: testResourceID, VolumeType: SsdHiIops}
+	request := &VolumeChangeTypeRequest{VolumeType: VolumeTypeSsdHiIops}
+	expectedResp := &Volume{ID: testResourceID, VolumeType: VolumeTypeSsdHiIops}
 	URL := path.Join(volumesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, volumesRetype)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
