@@ -10,8 +10,9 @@ import (
 )
 
 var (
-	errResourceNotDeleted = errors.New("could not delete the resource")
-	errGetResourceInfo    = errors.New("error when retrieving resource information")
+	errResourceNotDeleted                  = errors.New("could not delete the resource")
+	errGetResourceInfo                     = errors.New("error when retrieving resource information")
+	errDeleteResourceIfExistIsNotSupported = errors.New("method DeleteResourceIfExist isn't supported")
 )
 
 type GetResourceFunc[T any] func(ctx context.Context, id string) (*T, *edgecloud.Response, error)
@@ -59,11 +60,6 @@ func DeleteResourceIfExist(ctx context.Context, client *edgecloud.Client, resour
 			return err
 		}
 		return ResourceIsDeleted(ctx, v.Get, resourceID)
-	case edgecloud.LoadbalancerPools:
-		if err := deleteAndWait(v.PoolDelete); err != nil {
-			return err
-		}
-		return ResourceIsDeleted(ctx, v.PoolGet, resourceID)
 	case edgecloud.FloatingIPsService:
 		if err := deleteAndWait(v.Delete); err != nil {
 			return err
@@ -85,6 +81,6 @@ func DeleteResourceIfExist(ctx context.Context, client *edgecloud.Client, resour
 		}
 		return ResourceIsDeleted(ctx, v.Get, resourceID)
 	default:
-		return fmt.Errorf("method DeleteResourceIfExist isn't supported for resource: %v", v) // nolint: goerr113
+		return errDeleteResourceIfExistIsNotSupported
 	}
 }
