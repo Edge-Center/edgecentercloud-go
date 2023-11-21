@@ -21,8 +21,8 @@ const (
 type SecurityGroupsService interface {
 	List(context.Context, *SecurityGroupListOptions) ([]SecurityGroup, *Response, error)
 	Get(context.Context, string) (*SecurityGroup, *Response, error)
-	Create(context.Context, *SecurityGroupCreateRequest) (*TaskResponse, *Response, error)
-	Delete(context.Context, string) (*TaskResponse, *Response, error)
+	Create(context.Context, *SecurityGroupCreateRequest) (*SecurityGroup, *Response, error)
+	Delete(context.Context, string) (*Response, error)
 	Update(context.Context, string, *SecurityGroupUpdateRequest) (*SecurityGroup, *Response, error)
 	DeepCopy(context.Context, string, *Name) (*Response, error)
 
@@ -254,7 +254,7 @@ func (s *SecurityGroupsServiceOp) Get(ctx context.Context, securityGroupID strin
 }
 
 // Create a Security Group.
-func (s *SecurityGroupsServiceOp) Create(ctx context.Context, reqBody *SecurityGroupCreateRequest) (*TaskResponse, *Response, error) {
+func (s *SecurityGroupsServiceOp) Create(ctx context.Context, reqBody *SecurityGroupCreateRequest) (*SecurityGroup, *Response, error) {
 	if reqBody == nil {
 		return nil, nil, NewArgError("reqBody", "cannot be nil")
 	}
@@ -270,39 +270,33 @@ func (s *SecurityGroupsServiceOp) Create(ctx context.Context, reqBody *SecurityG
 		return nil, nil, err
 	}
 
-	tasks := new(TaskResponse)
-	resp, err := s.client.Do(ctx, req, tasks)
+	securityGroup := new(SecurityGroup)
+	resp, err := s.client.Do(ctx, req, securityGroup)
 	if err != nil {
 		return nil, resp, err
 	}
 
-	return tasks, resp, err
+	return securityGroup, resp, err
 }
 
 // Delete the Security Group.
-func (s *SecurityGroupsServiceOp) Delete(ctx context.Context, securityGroupID string) (*TaskResponse, *Response, error) {
+func (s *SecurityGroupsServiceOp) Delete(ctx context.Context, securityGroupID string) (*Response, error) {
 	if resp, err := isValidUUID(securityGroupID, "securityGroupID"); err != nil {
-		return nil, resp, err
+		return resp, err
 	}
 
 	if resp, err := s.client.Validate(); err != nil {
-		return nil, resp, err
+		return resp, err
 	}
 
 	path := fmt.Sprintf("%s/%s", s.client.addProjectRegionPath(securitygroupsBasePathV1), securityGroupID)
 
 	req, err := s.client.NewRequest(ctx, http.MethodDelete, path, nil)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
-	tasks := new(TaskResponse)
-	resp, err := s.client.Do(ctx, req, tasks)
-	if err != nil {
-		return nil, resp, err
-	}
-
-	return tasks, resp, err
+	return s.client.Do(ctx, req, nil)
 }
 
 // Update a Security Group.
