@@ -318,6 +318,24 @@ func SetAPIKey(apiKey string) ClientOpt {
 	}
 }
 
+// SetRegion is a client option for setting the Region.
+func SetRegion(region int) ClientOpt {
+	return func(c *Client) error {
+		c.Region = region
+
+		return nil
+	}
+}
+
+// SetProject is a client option for setting the Project.
+func SetProject(project int) ClientOpt {
+	return func(c *Client) error {
+		c.Project = project
+
+		return nil
+	}
+}
+
 // SetUserAgent is a client option for setting the user agent.
 func SetUserAgent(ua string) ClientOpt {
 	return func(c *Client) error {
@@ -353,7 +371,13 @@ func WithRetryAndBackoffs(retryConfig RetryConfig) ClientOpt {
 // BaseURL of the Client. Relative URLS should always be specified without a preceding slash. If specified, the
 // value pointed to by body is JSON encoded and included in as the request body.
 func (c *Client) NewRequest(_ context.Context, method, urlStr string, body interface{}) (*http.Request, error) {
-	u, err := c.BaseURL.Parse(urlStr)
+	// check urlStr is valid path
+	if _, err := url.Parse(urlStr); err != nil {
+		return nil, err
+	}
+
+	urlPath := path.Join(c.BaseURL.Path, urlStr)
+	u, err := c.BaseURL.Parse(urlPath)
 	if err != nil {
 		return nil, err
 	}
