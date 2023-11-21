@@ -274,3 +274,108 @@ func TestFloatingips_MetadataGetItem(t *testing.T) {
 	require.Equal(t, resp.StatusCode, 200)
 	require.Equal(t, respActual, expectedResp)
 }
+
+func TestFloatingips_isValidUUID_Error(t *testing.T) {
+	setup()
+	defer teardown()
+
+	tests := []struct {
+		name     string
+		testFunc func() (*FloatingIP, *Response, error)
+	}{
+		{
+			name: "Get",
+			testFunc: func() (*FloatingIP, *Response, error) {
+				return client.Floatingips.Get(ctx, testResourceIDNotValidUUID)
+			},
+		},
+		{
+			name: "Assign",
+			testFunc: func() (*FloatingIP, *Response, error) {
+				return client.Floatingips.Assign(ctx, testResourceIDNotValidUUID, nil)
+			},
+		},
+		{
+			name: "UnAssign",
+			testFunc: func() (*FloatingIP, *Response, error) {
+				return client.Floatingips.UnAssign(ctx, testResourceIDNotValidUUID)
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			respActual, resp, err := tt.testFunc()
+			require.Nil(t, respActual)
+			require.Equal(t, 400, resp.StatusCode)
+			require.EqualError(t, err, NewArgError("fipID", NotCorrectUUID).Error())
+		})
+	}
+}
+
+func TestFloatingips_Delete_isValidUUID_Error(t *testing.T) {
+	setup()
+	defer teardown()
+
+	respActual, resp, err := client.Floatingips.Delete(ctx, testResourceIDNotValidUUID)
+	require.Nil(t, respActual)
+	require.Equal(t, 400, resp.StatusCode)
+	require.EqualError(t, err, NewArgError("fipID", NotCorrectUUID).Error())
+}
+
+func TestFloatingips_Metadata_isValidUUID_Error(t *testing.T) {
+	setup()
+	defer teardown()
+
+	tests := []struct {
+		name     string
+		testFunc func() (*Response, error)
+	}{
+		{
+			name: "MetadataCreate",
+			testFunc: func() (*Response, error) {
+				return client.Floatingips.MetadataCreate(ctx, testResourceIDNotValidUUID, nil)
+			},
+		},
+		{
+			name: "MetadataUpdate",
+			testFunc: func() (*Response, error) {
+				return client.Floatingips.MetadataUpdate(ctx, testResourceIDNotValidUUID, nil)
+			},
+		},
+		{
+			name: "MetadataDeleteItem",
+			testFunc: func() (*Response, error) {
+				return client.Floatingips.MetadataDeleteItem(ctx, testResourceIDNotValidUUID, nil)
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			resp, err := tt.testFunc()
+			require.Equal(t, 400, resp.StatusCode)
+			require.EqualError(t, err, NewArgError("fipID", NotCorrectUUID).Error())
+		})
+	}
+}
+
+func TestFloatingips_MetadataList_isValidUUID_Error(t *testing.T) {
+	setup()
+	defer teardown()
+
+	respActual, resp, err := client.Floatingips.MetadataList(ctx, testResourceIDNotValidUUID)
+	require.Nil(t, respActual)
+	require.Equal(t, 400, resp.StatusCode)
+	require.EqualError(t, err, NewArgError("fipID", NotCorrectUUID).Error())
+}
+
+func TestFloatingips_MetadataGetItem_isValidUUID_Error(t *testing.T) {
+	setup()
+	defer teardown()
+
+	respActual, resp, err := client.Floatingips.MetadataGetItem(ctx, testResourceIDNotValidUUID, nil)
+	require.Nil(t, respActual)
+	require.Equal(t, 400, resp.StatusCode)
+	require.EqualError(t, err, NewArgError("fipID", NotCorrectUUID).Error())
+}
