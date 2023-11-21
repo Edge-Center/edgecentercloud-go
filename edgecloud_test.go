@@ -264,6 +264,30 @@ func TestCustomBaseURL(t *testing.T) {
 	}
 }
 
+func TestSetProject(t *testing.T) {
+	c, err := New(nil, SetProject(projectID))
+	if err != nil {
+		t.Fatalf("New() unexpected error: %v", err)
+	}
+
+	expected := projectID
+	if got := c.Project; got != expected {
+		t.Errorf("New() Project = %d; expected %d", got, expected)
+	}
+}
+
+func TestSetRegion(t *testing.T) {
+	c, err := New(nil, SetRegion(regionID))
+	if err != nil {
+		t.Fatalf("New() unexpected error: %v", err)
+	}
+
+	expected := regionID
+	if got := c.Region; got != expected {
+		t.Errorf("New() Region = %d; expected %d", got, expected)
+	}
+}
+
 func TestCustomBaseURL_badURL(t *testing.T) {
 	baseURL := ":"
 	_, err := New(nil, SetBaseURL(baseURL))
