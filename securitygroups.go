@@ -86,21 +86,29 @@ type SecurityGroupRule struct {
 
 // SecurityGroupCreateRequest represents a request to create a Security Group.
 type SecurityGroupCreateRequest struct {
-	SecurityGroup SecurityGroup `json:"security_group" required:"true"`
-	Instances     []ID          `json:"instances"`
+	SecurityGroup SecurityGroupCreateRequestInner `json:"security_group" required:"true"`
+	Instances     []ID                            `json:"instances,omitempty"`
+}
+
+type SecurityGroupCreateRequestInner struct {
+	Name               string                           `json:"name" required:"true"`
+	Description        string                           `json:"description,omitempty"`
+	Metadata           Metadata                         `json:"metadata,omitempty"`
+	Tags               []string                         `json:"tags,omitempty"`
+	SecurityGroupRules []SecurityGroupRuleCreateRequest `json:"security_group_rules,omitempty"`
 }
 
 // SecurityGroupRuleCreateRequest represents a request to create a Security Group Rule.
 type SecurityGroupRuleCreateRequest struct {
-	EtherType       EtherType                  `json:"ethertype,omitempty" required:"true"`
-	Description     string                     `json:"description,omitempty"`
+	RemoteIPPrefix  string                     `json:"remote_ip_prefix,omitempty"`
 	RemoteGroupID   string                     `json:"remote_group_id,omitempty"`
+	Description     string                     `json:"description,omitempty"`
+	Direction       SecurityGroupRuleDirection `json:"direction" required:"true"`
+	Protocol        SecurityGroupRuleProtocol  `json:"protocol,omitempty"`
 	PortRangeMin    int                        `json:"port_range_min,omitempty"`
 	PortRangeMax    int                        `json:"port_range_max,omitempty"`
-	RemoteIPPrefix  string                     `json:"remote_ip_prefix,omitempty"`
-	Protocol        SecurityGroupRuleProtocol  `json:"protocol,omitempty" required:"true"`
-	Direction       SecurityGroupRuleDirection `json:"direction" required:"true"`
-	SecurityGroupID *string                    `json:"security_group_id,omitempty"`
+	SecurityGroupID string                     `json:"security_group_id,omitempty"`
+	EtherType       EtherType                  `json:"ethertype,omitempty"`
 }
 
 type EtherType string
