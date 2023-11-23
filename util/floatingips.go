@@ -33,7 +33,7 @@ func FloatingIPsListByPortID(ctx context.Context, client *edgecloud.Client, port
 	return FloatingIPs, nil
 }
 
-func FloatingIPByIPAddress(ctx context.Context, client *edgecloud.Client, floatingIPAddress string) (*edgecloud.FloatingIP, error) {
+func FloatingIPDetailedByIPAddress(ctx context.Context, client *edgecloud.Client, floatingIPAddress string) (*edgecloud.FloatingIP, error) {
 	fips, _, err := client.Floatingips.List(ctx)
 	if err != nil {
 		return nil, err
@@ -43,6 +43,29 @@ func FloatingIPByIPAddress(ctx context.Context, client *edgecloud.Client, floati
 	var found bool
 	for _, fip := range fips {
 		if fip.FloatingIPAddress == floatingIPAddress {
+			floatingIP = fip
+			found = true
+			break
+		}
+	}
+
+	if !found {
+		return nil, ErrFloatingIPNotFound
+	}
+
+	return &floatingIP, nil
+}
+
+func FloatingIPDetailedByID(ctx context.Context, client *edgecloud.Client, id string) (*edgecloud.FloatingIP, error) {
+	fips, _, err := client.Floatingips.List(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	var floatingIP edgecloud.FloatingIP
+	var found bool
+	for _, fip := range fips {
+		if fip.ID == id {
 			floatingIP = fip
 			found = true
 			break
