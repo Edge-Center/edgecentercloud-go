@@ -17,7 +17,7 @@ type MetadataDetailed struct {
 	ReadOnly bool   `json:"read_only"`
 }
 
-type Metadata map[string]interface{}
+type Metadata map[string]string
 
 // MetadataCreateRequest represent a metadata create struct.
 type MetadataCreateRequest struct {
@@ -53,7 +53,7 @@ func metadataList(ctx context.Context, client *Client, id, resourcePath string) 
 }
 
 // metadataCreate helper for same logic methods.
-func metadataCreate(ctx context.Context, client *Client, id, resourcePath string, metadata *MetadataCreateRequest) (*Response, error) {
+func metadataCreate(ctx context.Context, client *Client, id, resourcePath string, metadata *Metadata) (*Response, error) {
 	path := fmt.Sprintf("%s/%s/%s", client.addProjectRegionPath(resourcePath), id, metadataPath)
 
 	req, err := client.NewRequest(ctx, http.MethodPost, path, metadata)
@@ -65,7 +65,7 @@ func metadataCreate(ctx context.Context, client *Client, id, resourcePath string
 }
 
 // metadataUpdate helper for same logic methods.
-func metadataUpdate(ctx context.Context, client *Client, id, resourcePath string, metadata *MetadataCreateRequest) (*Response, error) {
+func metadataUpdate(ctx context.Context, client *Client, id, resourcePath string, metadata *Metadata) (*Response, error) {
 	path := fmt.Sprintf("%s/%s/%s", client.addProjectRegionPath(resourcePath), id, metadataPath)
 
 	req, err := client.NewRequest(ctx, http.MethodPut, path, metadata)

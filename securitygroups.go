@@ -38,8 +38,8 @@ type SecurityGroupsRules interface {
 
 type SecurityGroupsMetadata interface {
 	MetadataList(context.Context, string) ([]MetadataDetailed, *Response, error)
-	MetadataCreate(context.Context, string, *MetadataCreateRequest) (*Response, error)
-	MetadataUpdate(context.Context, string, *MetadataCreateRequest) (*Response, error)
+	MetadataCreate(context.Context, string, *Metadata) (*Response, error)
+	MetadataUpdate(context.Context, string, *Metadata) (*Response, error)
 	MetadataDeleteItem(context.Context, string, *MetadataItemOptions) (*Response, error)
 	MetadataGetItem(context.Context, string, *MetadataItemOptions) (*MetadataDetailed, *Response, error)
 }
@@ -463,7 +463,7 @@ func (s *SecurityGroupsServiceOp) MetadataList(ctx context.Context, securityGrou
 }
 
 // MetadataCreate or update security group metadata.
-func (s *SecurityGroupsServiceOp) MetadataCreate(ctx context.Context, securityGroupID string, reqBody *MetadataCreateRequest) (*Response, error) {
+func (s *SecurityGroupsServiceOp) MetadataCreate(ctx context.Context, securityGroupID string, reqBody *Metadata) (*Response, error) {
 	if resp, err := isValidUUID(securityGroupID, "securityGroupID"); err != nil {
 		return resp, err
 	}
@@ -476,7 +476,7 @@ func (s *SecurityGroupsServiceOp) MetadataCreate(ctx context.Context, securityGr
 }
 
 // MetadataUpdate security group metadata.
-func (s *SecurityGroupsServiceOp) MetadataUpdate(ctx context.Context, securityGroupID string, reqBody *MetadataCreateRequest) (*Response, error) {
+func (s *SecurityGroupsServiceOp) MetadataUpdate(ctx context.Context, securityGroupID string, reqBody *Metadata) (*Response, error) {
 	if resp, err := isValidUUID(securityGroupID, "securityGroupID"); err != nil {
 		return resp, err
 	}
