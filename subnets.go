@@ -25,8 +25,8 @@ type SubnetworksService interface {
 
 type SubnetworksMetadata interface {
 	MetadataList(context.Context, string) ([]MetadataDetailed, *Response, error)
-	MetadataCreate(context.Context, string, *MetadataCreateRequest) (*Response, error)
-	MetadataUpdate(context.Context, string, *MetadataCreateRequest) (*Response, error)
+	MetadataCreate(context.Context, string, *Metadata) (*Response, error)
+	MetadataUpdate(context.Context, string, *Metadata) (*Response, error)
 	MetadataDeleteItem(context.Context, string, *MetadataItemOptions) (*Response, error)
 	MetadataGetItem(context.Context, string, *MetadataItemOptions) (*MetadataDetailed, *Response, error)
 }
@@ -253,7 +253,7 @@ func (s *SubnetworksServiceOp) MetadataList(ctx context.Context, subnetworkID st
 }
 
 // MetadataCreate or update subnetwork metadata.
-func (s *SubnetworksServiceOp) MetadataCreate(ctx context.Context, subnetworkID string, reqBody *MetadataCreateRequest) (*Response, error) {
+func (s *SubnetworksServiceOp) MetadataCreate(ctx context.Context, subnetworkID string, reqBody *Metadata) (*Response, error) {
 	if resp, err := isValidUUID(subnetworkID, "subnetworkID"); err != nil {
 		return resp, err
 	}
@@ -266,7 +266,7 @@ func (s *SubnetworksServiceOp) MetadataCreate(ctx context.Context, subnetworkID 
 }
 
 // MetadataUpdate subnetwork metadata.
-func (s *SubnetworksServiceOp) MetadataUpdate(ctx context.Context, subnetworkID string, reqBody *MetadataCreateRequest) (*Response, error) {
+func (s *SubnetworksServiceOp) MetadataUpdate(ctx context.Context, subnetworkID string, reqBody *Metadata) (*Response, error) {
 	if resp, err := isValidUUID(subnetworkID, "subnetworkID"); err != nil {
 		return resp, err
 	}

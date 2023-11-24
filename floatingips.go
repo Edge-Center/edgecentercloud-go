@@ -33,8 +33,8 @@ type FloatingIPsService interface {
 
 type FloatingIPMetadata interface {
 	MetadataList(context.Context, string) ([]MetadataDetailed, *Response, error)
-	MetadataCreate(context.Context, string, *MetadataCreateRequest) (*Response, error)
-	MetadataUpdate(context.Context, string, *MetadataCreateRequest) (*Response, error)
+	MetadataCreate(context.Context, string, *Metadata) (*Response, error)
+	MetadataUpdate(context.Context, string, *Metadata) (*Response, error)
 	MetadataDeleteItem(context.Context, string, *MetadataItemOptions) (*Response, error)
 	MetadataGetItem(context.Context, string, *MetadataItemOptions) (*MetadataDetailed, *Response, error)
 }
@@ -293,7 +293,7 @@ func (s *FloatingipsServiceOp) MetadataList(ctx context.Context, fipID string) (
 }
 
 // MetadataCreate or update floating IP metadata.
-func (s *FloatingipsServiceOp) MetadataCreate(ctx context.Context, fipID string, reqBody *MetadataCreateRequest) (*Response, error) {
+func (s *FloatingipsServiceOp) MetadataCreate(ctx context.Context, fipID string, reqBody *Metadata) (*Response, error) {
 	if resp, err := isValidUUID(fipID, "fipID"); err != nil {
 		return resp, err
 	}
@@ -306,7 +306,7 @@ func (s *FloatingipsServiceOp) MetadataCreate(ctx context.Context, fipID string,
 }
 
 // MetadataUpdate floating IP metadata.
-func (s *FloatingipsServiceOp) MetadataUpdate(ctx context.Context, fipID string, reqBody *MetadataCreateRequest) (*Response, error) {
+func (s *FloatingipsServiceOp) MetadataUpdate(ctx context.Context, fipID string, reqBody *Metadata) (*Response, error) {
 	if resp, err := isValidUUID(fipID, "fipID"); err != nil {
 		return resp, err
 	}

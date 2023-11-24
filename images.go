@@ -39,8 +39,8 @@ type ImagesProject interface {
 
 type ImagesMetadata interface {
 	MetadataList(context.Context, string) ([]MetadataDetailed, *Response, error)
-	MetadataCreate(context.Context, string, *MetadataCreateRequest) (*Response, error)
-	MetadataUpdate(context.Context, string, *MetadataCreateRequest) (*Response, error)
+	MetadataCreate(context.Context, string, *Metadata) (*Response, error)
+	MetadataUpdate(context.Context, string, *Metadata) (*Response, error)
 	MetadataDeleteItem(context.Context, string, *MetadataItemOptions) (*Response, error)
 	MetadataGetItem(context.Context, string, *MetadataItemOptions) (*MetadataDetailed, *Response, error)
 }
@@ -400,7 +400,7 @@ func (s *ImagesServiceOp) MetadataList(ctx context.Context, imageID string) ([]M
 }
 
 // MetadataCreate or update security group metadata.
-func (s *ImagesServiceOp) MetadataCreate(ctx context.Context, imageID string, reqBody *MetadataCreateRequest) (*Response, error) {
+func (s *ImagesServiceOp) MetadataCreate(ctx context.Context, imageID string, reqBody *Metadata) (*Response, error) {
 	if resp, err := isValidUUID(imageID, "imageID"); err != nil {
 		return resp, err
 	}
@@ -413,7 +413,7 @@ func (s *ImagesServiceOp) MetadataCreate(ctx context.Context, imageID string, re
 }
 
 // MetadataUpdate security group metadata.
-func (s *ImagesServiceOp) MetadataUpdate(ctx context.Context, imageID string, reqBody *MetadataCreateRequest) (*Response, error) {
+func (s *ImagesServiceOp) MetadataUpdate(ctx context.Context, imageID string, reqBody *Metadata) (*Response, error) {
 	if resp, err := isValidUUID(imageID, "imageID"); err != nil {
 		return resp, err
 	}
