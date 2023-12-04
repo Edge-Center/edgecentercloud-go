@@ -37,8 +37,8 @@ type VolumesService interface {
 
 type VolumeMetadata interface {
 	MetadataList(context.Context, string) ([]MetadataDetailed, *Response, error)
-	MetadataCreate(context.Context, string, *MetadataCreateRequest) (*Response, error)
-	MetadataUpdate(context.Context, string, *MetadataCreateRequest) (*Response, error)
+	MetadataCreate(context.Context, string, *Metadata) (*Response, error)
+	MetadataUpdate(context.Context, string, *Metadata) (*Response, error)
 	MetadataDeleteItem(context.Context, string, *MetadataItemOptions) (*Response, error)
 	MetadataGetItem(context.Context, string, *MetadataItemOptions) (*MetadataDetailed, *Response, error)
 }
@@ -463,7 +463,7 @@ func (s *VolumesServiceOp) MetadataList(ctx context.Context, volumeID string) ([
 }
 
 // MetadataCreate or update volume metadata.
-func (s *VolumesServiceOp) MetadataCreate(ctx context.Context, volumeID string, reqBody *MetadataCreateRequest) (*Response, error) {
+func (s *VolumesServiceOp) MetadataCreate(ctx context.Context, volumeID string, reqBody *Metadata) (*Response, error) {
 	if resp, err := isValidUUID(volumeID, "volumeID"); err != nil {
 		return resp, err
 	}
@@ -476,7 +476,7 @@ func (s *VolumesServiceOp) MetadataCreate(ctx context.Context, volumeID string, 
 }
 
 // MetadataUpdate volume metadata.
-func (s *VolumesServiceOp) MetadataUpdate(ctx context.Context, volumeID string, reqBody *MetadataCreateRequest) (*Response, error) {
+func (s *VolumesServiceOp) MetadataUpdate(ctx context.Context, volumeID string, reqBody *Metadata) (*Response, error) {
 	if resp, err := isValidUUID(volumeID, "volumeID"); err != nil {
 		return resp, err
 	}

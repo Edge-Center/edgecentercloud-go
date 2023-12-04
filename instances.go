@@ -87,8 +87,8 @@ type InstanceSecurityGroup interface {
 type InstanceMetadata interface {
 	MetadataGet(context.Context, string) (*MetadataDetailed, *Response, error)
 	MetadataList(context.Context, string) ([]MetadataDetailed, *Response, error)
-	MetadataCreate(context.Context, string, *MetadataCreateRequest) (*Response, error)
-	MetadataUpdate(context.Context, string, *MetadataCreateRequest) (*Response, error)
+	MetadataCreate(context.Context, string, *Metadata) (*Response, error)
+	MetadataUpdate(context.Context, string, *Metadata) (*Response, error)
 	MetadataDeleteItem(context.Context, string, *MetadataItemOptions) (*Response, error)
 	MetadataGetItem(context.Context, string, *MetadataItemOptions) (*MetadataDetailed, *Response, error)
 }
@@ -506,7 +506,7 @@ func (s *InstancesServiceOp) MetadataList(ctx context.Context, instanceID string
 }
 
 // MetadataUpdate load balancer metadata.
-func (s *InstancesServiceOp) MetadataUpdate(ctx context.Context, instanceID string, reqBody *MetadataCreateRequest) (*Response, error) {
+func (s *InstancesServiceOp) MetadataUpdate(ctx context.Context, instanceID string, reqBody *Metadata) (*Response, error) {
 	if resp, err := isValidUUID(instanceID, "instanceID"); err != nil {
 		return resp, err
 	}
@@ -545,7 +545,7 @@ func (s *InstancesServiceOp) MetadataGetItem(ctx context.Context, instanceID str
 }
 
 // MetadataCreate instance metadata (tags).
-func (s *InstancesServiceOp) MetadataCreate(ctx context.Context, instanceID string, metadata *MetadataCreateRequest) (*Response, error) {
+func (s *InstancesServiceOp) MetadataCreate(ctx context.Context, instanceID string, metadata *Metadata) (*Response, error) {
 	if resp, err := isValidUUID(instanceID, "instanceID"); err != nil {
 		return resp, err
 	}

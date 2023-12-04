@@ -73,8 +73,8 @@ type LoadbalancerHealthMonitor interface {
 
 type LoadbalancerMetadata interface {
 	MetadataList(context.Context, string) ([]MetadataDetailed, *Response, error)
-	MetadataCreate(context.Context, string, *MetadataCreateRequest) (*Response, error)
-	MetadataUpdate(context.Context, string, *MetadataCreateRequest) (*Response, error)
+	MetadataCreate(context.Context, string, *Metadata) (*Response, error)
+	MetadataUpdate(context.Context, string, *Metadata) (*Response, error)
 	MetadataDeleteItem(context.Context, string, *MetadataItemOptions) (*Response, error)
 	MetadataGetItem(context.Context, string, *MetadataItemOptions) (*MetadataDetailed, *Response, error)
 }
@@ -1132,7 +1132,7 @@ func (s *LoadbalancersServiceOp) MetadataList(ctx context.Context, loadbalancerI
 }
 
 // MetadataCreate or update load balancer metadata.
-func (s *LoadbalancersServiceOp) MetadataCreate(ctx context.Context, loadbalancerID string, reqBody *MetadataCreateRequest) (*Response, error) {
+func (s *LoadbalancersServiceOp) MetadataCreate(ctx context.Context, loadbalancerID string, reqBody *Metadata) (*Response, error) {
 	if resp, err := isValidUUID(loadbalancerID, "loadbalancerID"); err != nil {
 		return resp, err
 	}
@@ -1145,7 +1145,7 @@ func (s *LoadbalancersServiceOp) MetadataCreate(ctx context.Context, loadbalance
 }
 
 // MetadataUpdate load balancer metadata.
-func (s *LoadbalancersServiceOp) MetadataUpdate(ctx context.Context, loadbalancerID string, reqBody *MetadataCreateRequest) (*Response, error) {
+func (s *LoadbalancersServiceOp) MetadataUpdate(ctx context.Context, loadbalancerID string, reqBody *Metadata) (*Response, error) {
 	if resp, err := isValidUUID(loadbalancerID, "loadbalancerID"); err != nil {
 		return resp, err
 	}

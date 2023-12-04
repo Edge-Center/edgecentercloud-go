@@ -31,8 +31,8 @@ type NetworksService interface {
 
 type NetworksMetadata interface {
 	MetadataList(context.Context, string) ([]MetadataDetailed, *Response, error)
-	MetadataCreate(context.Context, string, *MetadataCreateRequest) (*Response, error)
-	MetadataUpdate(context.Context, string, *MetadataCreateRequest) (*Response, error)
+	MetadataCreate(context.Context, string, *Metadata) (*Response, error)
+	MetadataUpdate(context.Context, string, *Metadata) (*Response, error)
 	MetadataDeleteItem(context.Context, string, *MetadataItemOptions) (*Response, error)
 	MetadataGetItem(context.Context, string, *MetadataItemOptions) (*MetadataDetailed, *Response, error)
 }
@@ -336,7 +336,7 @@ func (s *NetworksServiceOp) MetadataList(ctx context.Context, networkID string) 
 }
 
 // MetadataCreate or update network metadata.
-func (s *NetworksServiceOp) MetadataCreate(ctx context.Context, networkID string, reqBody *MetadataCreateRequest) (*Response, error) {
+func (s *NetworksServiceOp) MetadataCreate(ctx context.Context, networkID string, reqBody *Metadata) (*Response, error) {
 	if resp, err := isValidUUID(networkID, "networkID"); err != nil {
 		return resp, err
 	}
@@ -349,7 +349,7 @@ func (s *NetworksServiceOp) MetadataCreate(ctx context.Context, networkID string
 }
 
 // MetadataUpdate network metadata.
-func (s *NetworksServiceOp) MetadataUpdate(ctx context.Context, networkID string, reqBody *MetadataCreateRequest) (*Response, error) {
+func (s *NetworksServiceOp) MetadataUpdate(ctx context.Context, networkID string, reqBody *Metadata) (*Response, error) {
 	if resp, err := isValidUUID(networkID, "networkID"); err != nil {
 		return resp, err
 	}

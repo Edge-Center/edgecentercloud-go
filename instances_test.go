@@ -201,7 +201,7 @@ func TestInstances_MetadataUpdate(t *testing.T) {
 	setup()
 	defer teardown()
 
-	request := &MetadataCreateRequest{Metadata: map[string]interface{}{"key": "value"}}
+	request := &Metadata{"key": "value"}
 	URL := path.Join(instancesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, metadataPath)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
@@ -258,7 +258,7 @@ func TestInstances_MetadataCreate(t *testing.T) {
 	setup()
 	defer teardown()
 
-	request := &MetadataCreateRequest{Metadata: map[string]interface{}{"key": "value"}}
+	request := &Metadata{"key": "value"}
 	URL := path.Join(instancesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, metadataPath)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {

@@ -61,7 +61,7 @@ func TestSecurityGroups_Create(t *testing.T) {
 	defer teardown()
 
 	request := &SecurityGroupCreateRequest{}
-	expectedResp := &TaskResponse{Tasks: []string{taskID}}
+	expectedResp := &SecurityGroup{ID: testResourceID}
 	URL := path.Join(securitygroupsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID))
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
@@ -100,10 +100,9 @@ func TestSecurityGroups_Delete(t *testing.T) {
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	respActual, resp, err := client.SecurityGroups.Delete(ctx, testResourceID)
+	resp, err := client.SecurityGroups.Delete(ctx, testResourceID)
 	require.NoError(t, err)
 	require.Equal(t, resp.StatusCode, 200)
-	require.Equal(t, respActual, expectedResp)
 }
 
 func TestSecurityGroups_Update(t *testing.T) {
@@ -263,7 +262,7 @@ func TestSecurityGroups_MetadataCreate(t *testing.T) {
 	setup()
 	defer teardown()
 
-	request := &MetadataCreateRequest{Metadata: map[string]interface{}{"key": "value"}}
+	request := &Metadata{"key": "value"}
 	URL := path.Join(securitygroupsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, metadataPath)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
@@ -279,7 +278,7 @@ func TestSecurityGroups_MetadataUpdate(t *testing.T) {
 	setup()
 	defer teardown()
 
-	request := &MetadataCreateRequest{Metadata: map[string]interface{}{"key": "value"}}
+	request := &Metadata{"key": "value"}
 	URL := path.Join(securitygroupsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, metadataPath)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {

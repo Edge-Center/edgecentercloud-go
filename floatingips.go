@@ -33,8 +33,8 @@ type FloatingIPsService interface {
 
 type FloatingIPMetadata interface {
 	MetadataList(context.Context, string) ([]MetadataDetailed, *Response, error)
-	MetadataCreate(context.Context, string, *MetadataCreateRequest) (*Response, error)
-	MetadataUpdate(context.Context, string, *MetadataCreateRequest) (*Response, error)
+	MetadataCreate(context.Context, string, *Metadata) (*Response, error)
+	MetadataUpdate(context.Context, string, *Metadata) (*Response, error)
 	MetadataDeleteItem(context.Context, string, *MetadataItemOptions) (*Response, error)
 	MetadataGetItem(context.Context, string, *MetadataItemOptions) (*MetadataDetailed, *Response, error)
 }
@@ -48,25 +48,25 @@ var _ FloatingIPsService = &FloatingipsServiceOp{}
 
 // FloatingIP represents an EdgecenterCloud FloatingIP.
 type FloatingIP struct {
-	ID                string       `json:"id"`
-	CreatedAt         string       `json:"created_at"`
-	UpdatedAt         string       `json:"updated_at"`
-	Status            string       `json:"status"`
-	FixedIPAddress    net.IP       `json:"fixed_ip_address,omitempty"`
-	FloatingIPAddress string       `json:"floating_ip_address,omitempty"`
-	DNSDomain         string       `json:"dns_domain"`
-	DNSName           string       `json:"dns_name"`
-	RouterID          string       `json:"router_id"`
-	SubnetID          string       `json:"subnet_id"`
-	CreatorTaskID     string       `json:"creator_task_id"`
-	Metadata          []Metadata   `json:"metadata,omitempty"`
-	TaskID            string       `json:"task_id"`
-	PortID            string       `json:"port_id,omitempty"`
-	ProjectID         int          `json:"project_id"`
-	RegionID          int          `json:"region_id"`
-	Region            string       `json:"region"`
-	Instance          Instance     `json:"instance,omitempty"`
-	Loadbalancer      Loadbalancer `json:"loadbalancer,omitempty"`
+	ID                string             `json:"id"`
+	CreatedAt         string             `json:"created_at"`
+	UpdatedAt         string             `json:"updated_at"`
+	Status            string             `json:"status"`
+	FixedIPAddress    net.IP             `json:"fixed_ip_address,omitempty"`
+	FloatingIPAddress string             `json:"floating_ip_address,omitempty"`
+	DNSDomain         string             `json:"dns_domain"`
+	DNSName           string             `json:"dns_name"`
+	RouterID          string             `json:"router_id"`
+	SubnetID          string             `json:"subnet_id"`
+	CreatorTaskID     string             `json:"creator_task_id"`
+	Metadata          []MetadataDetailed `json:"metadata,omitempty"`
+	TaskID            string             `json:"task_id"`
+	PortID            string             `json:"port_id,omitempty"`
+	ProjectID         int                `json:"project_id"`
+	RegionID          int                `json:"region_id"`
+	Region            string             `json:"region"`
+	Instance          Instance           `json:"instance,omitempty"`
+	Loadbalancer      Loadbalancer       `json:"loadbalancer,omitempty"`
 }
 
 type FloatingIPSource string
@@ -293,7 +293,7 @@ func (s *FloatingipsServiceOp) MetadataList(ctx context.Context, fipID string) (
 }
 
 // MetadataCreate or update floating IP metadata.
-func (s *FloatingipsServiceOp) MetadataCreate(ctx context.Context, fipID string, reqBody *MetadataCreateRequest) (*Response, error) {
+func (s *FloatingipsServiceOp) MetadataCreate(ctx context.Context, fipID string, reqBody *Metadata) (*Response, error) {
 	if resp, err := isValidUUID(fipID, "fipID"); err != nil {
 		return resp, err
 	}
@@ -306,7 +306,7 @@ func (s *FloatingipsServiceOp) MetadataCreate(ctx context.Context, fipID string,
 }
 
 // MetadataUpdate floating IP metadata.
-func (s *FloatingipsServiceOp) MetadataUpdate(ctx context.Context, fipID string, reqBody *MetadataCreateRequest) (*Response, error) {
+func (s *FloatingipsServiceOp) MetadataUpdate(ctx context.Context, fipID string, reqBody *Metadata) (*Response, error) {
 	if resp, err := isValidUUID(fipID, "fipID"); err != nil {
 		return resp, err
 	}

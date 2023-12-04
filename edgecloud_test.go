@@ -23,12 +23,15 @@ var (
 )
 
 const (
-	projectID      = 27520
-	regionID       = 8
-	clientID       = 88888
-	testResourceID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	taskID         = "f0d19cec-5c3f-4853-886e-304915960ff6"
+	projectID                  = 27520
+	regionID                   = 8
+	clientID                   = 88888
+	testResourceID             = "f0d19cec-5c3f-4853-886e-304915960ff6"
+	taskID                     = "f0d19cec-5c3f-4853-886e-304915960ff6"
+	testResourceIDNotValidUUID = "123"
 )
+
+var NotCorrectUUID = fmt.Sprintf("should be the correct UUID. current value is: %s", testResourceIDNotValidUUID)
 
 func setup() {
 	mux = http.NewServeMux()
@@ -258,6 +261,30 @@ func TestCustomBaseURL(t *testing.T) {
 	expected := baseURL
 	if got := c.BaseURL.String(); got != expected {
 		t.Errorf("New() BaseURL = %s; expected %s", got, expected)
+	}
+}
+
+func TestSetProject(t *testing.T) {
+	c, err := New(nil, SetProject(projectID))
+	if err != nil {
+		t.Fatalf("New() unexpected error: %v", err)
+	}
+
+	expected := projectID
+	if got := c.Project; got != expected {
+		t.Errorf("New() Project = %d; expected %d", got, expected)
+	}
+}
+
+func TestSetRegion(t *testing.T) {
+	c, err := New(nil, SetRegion(regionID))
+	if err != nil {
+		t.Fatalf("New() unexpected error: %v", err)
+	}
+
+	expected := regionID
+	if got := c.Region; got != expected {
+		t.Errorf("New() Region = %d; expected %d", got, expected)
 	}
 }
 

@@ -21,8 +21,8 @@ const (
 type SecurityGroupsService interface {
 	List(context.Context, *SecurityGroupListOptions) ([]SecurityGroup, *Response, error)
 	Get(context.Context, string) (*SecurityGroup, *Response, error)
-	Create(context.Context, *SecurityGroupCreateRequest) (*TaskResponse, *Response, error)
-	Delete(context.Context, string) (*TaskResponse, *Response, error)
+	Create(context.Context, *SecurityGroupCreateRequest) (*SecurityGroup, *Response, error)
+	Delete(context.Context, string) (*Response, error)
 	Update(context.Context, string, *SecurityGroupUpdateRequest) (*SecurityGroup, *Response, error)
 	DeepCopy(context.Context, string, *Name) (*Response, error)
 
@@ -38,8 +38,8 @@ type SecurityGroupsRules interface {
 
 type SecurityGroupsMetadata interface {
 	MetadataList(context.Context, string) ([]MetadataDetailed, *Response, error)
-	MetadataCreate(context.Context, string, *MetadataCreateRequest) (*Response, error)
-	MetadataUpdate(context.Context, string, *MetadataCreateRequest) (*Response, error)
+	MetadataCreate(context.Context, string, *Metadata) (*Response, error)
+	MetadataUpdate(context.Context, string, *Metadata) (*Response, error)
 	MetadataDeleteItem(context.Context, string, *MetadataItemOptions) (*Response, error)
 	MetadataGetItem(context.Context, string, *MetadataItemOptions) (*MetadataDetailed, *Response, error)
 }
@@ -86,21 +86,29 @@ type SecurityGroupRule struct {
 
 // SecurityGroupCreateRequest represents a request to create a Security Group.
 type SecurityGroupCreateRequest struct {
-	SecurityGroup SecurityGroup `json:"security_group" required:"true"`
-	Instances     []ID          `json:"instances"`
+	SecurityGroup SecurityGroupCreateRequestInner `json:"security_group" required:"true"`
+	Instances     []ID                            `json:"instances,omitempty"`
+}
+
+type SecurityGroupCreateRequestInner struct {
+	Name               string                           `json:"name" required:"true"`
+	Description        string                           `json:"description,omitempty"`
+	Metadata           Metadata                         `json:"metadata,omitempty"`
+	Tags               []string                         `json:"tags,omitempty"`
+	SecurityGroupRules []SecurityGroupRuleCreateRequest `json:"security_group_rules,omitempty"`
 }
 
 // SecurityGroupRuleCreateRequest represents a request to create a Security Group Rule.
 type SecurityGroupRuleCreateRequest struct {
-	EtherType       EtherType                  `json:"ethertype,omitempty" required:"true"`
-	Description     string                     `json:"description,omitempty"`
+	RemoteIPPrefix  string                     `json:"remote_ip_prefix,omitempty"`
 	RemoteGroupID   string                     `json:"remote_group_id,omitempty"`
+	Description     string                     `json:"description,omitempty"`
+	Direction       SecurityGroupRuleDirection `json:"direction" required:"true"`
+	Protocol        SecurityGroupRuleProtocol  `json:"protocol,omitempty"`
 	PortRangeMin    int                        `json:"port_range_min,omitempty"`
 	PortRangeMax    int                        `json:"port_range_max,omitempty"`
-	RemoteIPPrefix  string                     `json:"remote_ip_prefix,omitempty"`
-	Protocol        SecurityGroupRuleProtocol  `json:"protocol,omitempty" required:"true"`
-	Direction       SecurityGroupRuleDirection `json:"direction" required:"true"`
-	SecurityGroupID *string                    `json:"security_group_id,omitempty"`
+	SecurityGroupID string                     `json:"security_group_id,omitempty"`
+	EtherType       EtherType                  `json:"ethertype,omitempty"`
 }
 
 type EtherType string
@@ -254,7 +262,7 @@ func (s *SecurityGroupsServiceOp) Get(ctx context.Context, securityGroupID strin
 }
 
 // Create a Security Group.
-func (s *SecurityGroupsServiceOp) Create(ctx context.Context, reqBody *SecurityGroupCreateRequest) (*TaskResponse, *Response, error) {
+func (s *SecurityGroupsServiceOp) Create(ctx context.Context, reqBody *SecurityGroupCreateRequest) (*SecurityGroup, *Response, error) {
 	if reqBody == nil {
 		return nil, nil, NewArgError("reqBody", "cannot be nil")
 	}
@@ -270,39 +278,33 @@ func (s *SecurityGroupsServiceOp) Create(ctx context.Context, reqBody *SecurityG
 		return nil, nil, err
 	}
 
-	tasks := new(TaskResponse)
-	resp, err := s.client.Do(ctx, req, tasks)
+	securityGroup := new(SecurityGroup)
+	resp, err := s.client.Do(ctx, req, securityGroup)
 	if err != nil {
 		return nil, resp, err
 	}
 
-	return tasks, resp, err
+	return securityGroup, resp, err
 }
 
 // Delete the Security Group.
-func (s *SecurityGroupsServiceOp) Delete(ctx context.Context, securityGroupID string) (*TaskResponse, *Response, error) {
+func (s *SecurityGroupsServiceOp) Delete(ctx context.Context, securityGroupID string) (*Response, error) {
 	if resp, err := isValidUUID(securityGroupID, "securityGroupID"); err != nil {
-		return nil, resp, err
+		return resp, err
 	}
 
 	if resp, err := s.client.Validate(); err != nil {
-		return nil, resp, err
+		return resp, err
 	}
 
 	path := fmt.Sprintf("%s/%s", s.client.addProjectRegionPath(securitygroupsBasePathV1), securityGroupID)
 
 	req, err := s.client.NewRequest(ctx, http.MethodDelete, path, nil)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
-	tasks := new(TaskResponse)
-	resp, err := s.client.Do(ctx, req, tasks)
-	if err != nil {
-		return nil, resp, err
-	}
-
-	return tasks, resp, err
+	return s.client.Do(ctx, req, nil)
 }
 
 // Update a Security Group.
@@ -461,7 +463,7 @@ func (s *SecurityGroupsServiceOp) MetadataList(ctx context.Context, securityGrou
 }
 
 // MetadataCreate or update security group metadata.
-func (s *SecurityGroupsServiceOp) MetadataCreate(ctx context.Context, securityGroupID string, reqBody *MetadataCreateRequest) (*Response, error) {
+func (s *SecurityGroupsServiceOp) MetadataCreate(ctx context.Context, securityGroupID string, reqBody *Metadata) (*Response, error) {
 	if resp, err := isValidUUID(securityGroupID, "securityGroupID"); err != nil {
 		return resp, err
 	}
@@ -474,7 +476,7 @@ func (s *SecurityGroupsServiceOp) MetadataCreate(ctx context.Context, securityGr
 }
 
 // MetadataUpdate security group metadata.
-func (s *SecurityGroupsServiceOp) MetadataUpdate(ctx context.Context, securityGroupID string, reqBody *MetadataCreateRequest) (*Response, error) {
+func (s *SecurityGroupsServiceOp) MetadataUpdate(ctx context.Context, securityGroupID string, reqBody *Metadata) (*Response, error) {
 	if resp, err := isValidUUID(securityGroupID, "securityGroupID"); err != nil {
 		return resp, err
 	}
