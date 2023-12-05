@@ -54,13 +54,13 @@ type AllowedAddressPairsRequest struct {
 
 // InstancePortInterface represents an instance port interface.
 type InstancePortInterface struct {
-	FloatingIPDetails   []FloatingIP `json:"floatingip_details"`
-	NetworkDetails      Network      `json:"network_details"`
-	PortSecurityEnabled bool         `json:"port_security_enabled"`
-	PortID              string       `json:"port_id"`
-	MacAddress          string       `json:"mac_address"`
-	NetworkID           string       `json:"network_id"`
-	IPAssignments       []PortIP     `json:"ip_assignments"`
+	FloatingIPDetails   []FloatingIP      `json:"floatingip_details"`
+	NetworkDetails      NetworkSubnetwork `json:"network_details"`
+	PortSecurityEnabled bool              `json:"port_security_enabled"`
+	PortID              string            `json:"port_id"`
+	MacAddress          string            `json:"mac_address"`
+	NetworkID           string            `json:"network_id"`
+	IPAssignments       []PortIP          `json:"ip_assignments"`
 }
 
 // PortIP represents an IPAddress and a SubnetID.

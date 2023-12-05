@@ -763,7 +763,7 @@ func TestInstances_InterfaceList(t *testing.T) {
 	setup()
 	defer teardown()
 
-	expectedResp := []RouterInterface{{}}
+	expectedResp := []InstancePortInterface{{}}
 	URL := path.Join(instancesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, instancesInterfaces)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
