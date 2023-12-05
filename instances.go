@@ -52,7 +52,7 @@ type InstancesService interface {
 	GetConsole(context.Context, string) (*RemoteConsole, *Response, error)
 	AttachInterface(context.Context, string, *InstanceAttachInterfaceRequest) (*TaskResponse, *Response, error)
 	DetachInterface(context.Context, string, *InstanceDetachInterfaceRequest) (*TaskResponse, *Response, error)
-	InterfaceList(context.Context, string) ([]RouterInterface, *Response, error)
+	InterfaceList(context.Context, string) ([]InstancePortInterface, *Response, error)
 	PutIntoServerGroup(context.Context, string, *InstancePutIntoServerGroupRequest) (*TaskResponse, *Response, error)
 	RemoveFromServerGroup(context.Context, string) (*TaskResponse, *Response, error)
 
@@ -354,7 +354,7 @@ type instanceMetricsRoot struct {
 // instanceRouterInterfaceRoot represents an Instance RouterInterface root.
 type instanceRouterInterfaceRoot struct {
 	Count            int
-	RouterInterfaces []RouterInterface `json:"results"`
+	RouterInterfaces []InstancePortInterface `json:"results"`
 }
 
 // List get instances.
@@ -1129,7 +1129,7 @@ func (s *InstancesServiceOp) DetachInterface(ctx context.Context, instanceID str
 }
 
 // InterfaceList returns a list of network interfaces attached to the Instance.
-func (s *InstancesServiceOp) InterfaceList(ctx context.Context, instanceID string) ([]RouterInterface, *Response, error) {
+func (s *InstancesServiceOp) InterfaceList(ctx context.Context, instanceID string) ([]InstancePortInterface, *Response, error) {
 	if resp, err := isValidUUID(instanceID, "instanceID"); err != nil {
 		return nil, resp, err
 	}
