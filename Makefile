@@ -1,68 +1,20 @@
-# ENVS
 PROJECT_DIR = $(shell pwd)
 BIN_DIR = $(PROJECT_DIR)/bin
-ENV_TESTS_FILE = .env
-OS := $(shell uname | tr '[:upper:]' '[:lower:]')
-ARCH := $(shell uname -m)
 
-# BUILD
-GOOS		?= $(shell go env GOOS)
-VERSION		?= $(shell git describe --tags 2> /dev/null || \
-			   git describe --match=$(git rev-parse --short=8 HEAD) --always --dirty --abbrev=8)
-GOARCH		?= $(shell go env GOARCH)
-LDFLAGS		:= "-w -s -X 'main.AppVersion=${VERSION}'"
-CMD_PACKAGE := ./cmd/ec_client
-BINARY 		:= $(BIN_DIR)/ec_client
+.PHONY: lint
+lint:
+	test -f $(BIN_DIR)/golangci-lint || curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v1.54.2
+	$(BIN_DIR)/golangci-lint run
 
-build:
-	CGO_ENABLED=0 GOOS=$(GOOS) GOARCH=$(GOARCH) go build -ldflags $(LDFLAGS) -o $(BINARY) $(CMD_PACKAGE)
+.PHONY: test
+test:
+	go test -v -timeout=2m
 
-# TESTS
-TESTS_LIST = $(shell go list ./... | grep -v ./client)
+.PHONY: install-go-test-coverage
+install-go-test-coverage:
+	go install github.com/vladopajic/go-test-coverage/v2@latest
 
-envs_reader:
-	go install github.com/joho/godotenv/cmd/godotenv@latest
-
-tests:
-	go test -count=1 -timeout=2m $(TESTS_LIST) | { grep -v 'no test files'; true; }
-
-# local test run (need to export VAULT_TOKEN env)
-install_jq:
-	if test "$(OS)" = "linux"; then \
-		curl -L -o $(BIN_DIR)/jq https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64; \
-	else \
-		curl -L -o $(BIN_DIR)/jq https://github.com/stedolan/jq/releases/download/jq-1.6/jq-osx-amd64; \
-	fi
-	chmod +x $(BIN_DIR)/jq
-
-install_vault:
-	curl -L -o vault.zip https://releases.hashicorp.com/vault/1.12.3/vault_1.12.3_$(OS)_$(ARCH).zip
-	unzip vault.zip && rm -f vault.zip && chmod +x vault
-	mv vault $(BIN_DIR)/
-
-download_env_file: envs_reader
-	echo "VAULT_ADDR=https://vault.p.ecnl.ru/" > $(ENV_TESTS_FILE)
-	godotenv -f $(ENV_TESTS_FILE) $(BIN_DIR)/vault login -method=token $(VAULT_TOKEN)
-	godotenv -f $(ENV_TESTS_FILE) $(BIN_DIR)/vault kv get -format=json --field data /CLOUD/edgecentercloud-go | $(BIN_DIR)/jq -r 'to_entries|map("\(.key)=\(.value)")|.[]' >> $(ENV_TESTS_FILE)
-
-run_local_tests: envs_reader
-	godotenv -f $(ENV_TESTS_FILE) go test -count=1 $(TESTS_LIST) | { grep -v 'no test files'; true; }
-
-# CHECKS
-vet:
-	go vet ./...
-
-fmt:
-	go fmt ./...
-
-gofumpt:
-	go install mvdan.cc/gofumpt@v0.4.0
-	gofumpt -l -w .
-
-checks: vet fmt gofumpt
-
-linters:
-	@test -f $(BIN_DIR)/golangci-lint || curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v1.53.3
-	@$(BIN_DIR)/golangci-lint run
-
-.PHONY: vet fmt gofumpt linters run_local_tests download_env_file install_vault install_jq tests envs_reader build
+.PHONY: check-coverage
+check-coverage: install-go-test-coverage
+	go test ./... -coverprofile=cover.out -covermode=atomic
+	@go-test-coverage --config=coverage.yml

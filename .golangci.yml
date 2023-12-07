@@ -1,21 +1,14 @@
 run:
   timeout: 10m
-  go: "1.20"
+  go: "1.21.3"
 
 issues:
   max-per-linter: 0
   max-same-issues: 0
-  exclude:
-    # gosec
-    - G101
-    - G306
   exclude-rules:
-    - path: utils.go
+    - path: (.+)_test.go
       linters:
-        - errcheck
-    - text: missing cases in switch of type
-      linters:
-        - exhaustive
+        - funlen
 
 linters:
   enable-all: true
@@ -36,38 +29,27 @@ linters:
     - wastedassign
     # skip: dubious benefit
     - gochecknoglobals # Checks that no global variables exist.
-    - nilnil           # Checks that there is no simultaneous return of nil error and an invalid value.
-    - gomnd            # An analyzer to detect magic numbers.
-    - goerr113         # Golang linter to check the errors handling expressions.
     - exhaustruct      # Checks if all structure fields are initialized.
     - lll              # Reports long lines.
     - godox            # Tool for detection of FIXME, TODO and other comment keywords
     - wsl              # Whitespace Linter - Forces you to use empty lines!
-    - forcetypeassert  # Finds forced type assertions.
     - tagliatelle      # Checks the struct tags.
     - nonamedreturns   # Reports all named returns.
-    - bodyclose        # Checks whether HTTP response body is closed successfully.
     - wrapcheck        # Checks that errors returned from external packages are wrapped.
-    - unparam          # Reports unused function parameters.
     - ireturn          # Accept Interfaces, Return Concrete Types.
-    - gochecknoinits   # Checks that no init functions are present in Go code.
-    - errchkjson       # Reports unsupported types and optionally reports occasions, where the check for the returned error can be omitted.
     - tagalign         # Checks that struct tags are well aligned
     - depguard         # Checks if package imports are in a list of acceptable packages
-    # complexity: need to refactor
-    - cyclop           # Checks function and package cyclomatic complexity.
-    - funlen           # Tool for detection of long functions.
-    - gocognit         # Computes and checks the cognitive complexity of functions.
-    - gocyclo          # Computes and checks the cyclomatic complexity of functions.
-    - nestif           # Reports deeply nested if statements.
+    - musttag          # Enforce field tags in (un)marshaled structs.
     - dupl             # Tool for code clone detection.
+    - interfacebloat
+    - cyclop           # Checks function and package cyclomatic complexity.
     # tests
     - testpackage      # Makes you use a separate _test package.
     - paralleltest     # Detects missing usage of t.Parallel() method in your Go test.
 
 linters-settings:
   nlreturn:
-    block-size: 10
+    block-size: 5
   gci:
     sections:
       - standard # Standard section: captures all standard packages.

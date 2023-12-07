@@ -2,23 +2,32 @@ name: build
 
 on:
   push:
-    branches: [ master, main ]
+    branches: [ master ]
   pull_request:
-    branches: [ master, main ]
+    branches: [ master ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Set up Go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v4
         with:
-          go-version: 1.20.2
+          go-version: 1.21.3
 
       - name: Linters
-        run: make linters
+        run: make lint
 
-      - name: Tests
-        run: make tests
+      - name: Generate test coverage
+        run: go test ./... -coverprofile=./cover.out -covermode=atomic
+
+      - name: Check test coverage
+        uses: vladopajic/go-test-coverage@v2
+        with:
+          config: ./coverage.yml
+          profile: cover.out
+          threshold-file: 60
+          threshold-package: 60
+          threshold-total: 70

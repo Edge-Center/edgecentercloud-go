@@ -1,111 +1,167 @@
-EdgeCenter cloud API client
-====================================
+# Edgecloud
 
-Command line client to EdgeCenter cloud API.
+Edgecloud is a Go client library for accessing the Edgecenter Cloud API.
 
-Building the binary locally
-------------------------------------
-To build the binary locally, run the following command:
-```bash
-make build
-```
-This will create a binary called `ec_client` in the `bin` directory.
+You can view Edgecenter Cloud API docs here: [https://apidocs.edgecenter.ru/cloud](https://docs.digitalocean.com/reference/api/api-reference/)
 
-Getting started
-------------------------------------
-### Downloading and using the environment file from Vault
-To download the environment file from Vault, first, install Vault and jq by running:
-```bash
-make install_vault
-make install_jq
-```
-Next, set your Vault token to terminal for `install_vault` command
-
-Then, download the environment file by running:
-```bash
-make download_env_file
-```
-This will download the environment file and save it as .env :
-* **EC_CLOUD_USERNAME** - username
-* **EC_CLOUD_PASSWORD** - user's password
-* **EC_CLOUD_PROJECT** - project id
-* **EC_CLOUD_REGION** - region id
-* **EC_CLOUD_AUTH_URL** - authentication url, you could use the same as in example above
-* **EC_CLOUD_API_URL** - api url, you could use the same as in example above
-* **EC_CLOUD_CLIENT_TYPE** - client type, you could use the same as in example above
-
-### Running the client:
-After setting the env, use `-h` key to retrieve all available commands:
-```bash
-./bin/ec_client -h
-
-   NAME:
-   ec_client - EdgeCloud API client
-
-   Environment variables example:
-
-   EC_CLOUD_AUTH_URL=
-   EC_CLOUD_API_URL=
-   EC_CLOUD_API_VERSION=v1
-   EC_CLOUD_USERNAME=
-   EC_CLOUD_PASSWORD=
-   EC_CLOUD_REGION=
-   EC_CLOUD_PROJECT=
-
-USAGE:
-   ./bin/ec_client [global options] command [command options] [arguments...]
-
-VERSION:
-   v0.3.00
-
-COMMANDS:
-   network        EdgeCloud networks API
-   task           EdgeCloud tasks API
-   keypair        EdgeCloud keypairs V2 API
-   volume         EdgeCloud volumes API
-   subnet         EdgeCloud subnets API
-   flavor         EdgeCloud flavors API
-   loadbalancer   EdgeCloud loadbalancers API
-   instance       EdgeCloud instances API
-   heat           EdgeCloud Heat API
-   securitygroup  EdgeCloud security groups API
-   floatingip     EdgeCloud floating ips API
-   port           EdgeCloud ports API
-   snapshot       EdgeCloud snapshots API
-   image          EdgeCloud images API
-   region         EdgeCloud regions API
-   project        EdgeCloud projects API
-   keystone       EdgeCloud keystones API
-   quota          EdgeCloud quotas API
-   limit          EdgeCloud limits API
-   cluster        EdgeCloud k8s cluster commands
-   pool           EdgeCloud K8s pool commands
-   l7policy       EdgeCloud l7policy API
-   router         EdgeCloud router API
-   fixed_ip       EdgeCloud reserved fixed ip API
-   help, h        Shows a list of commands or help for one command
-
+## Install
+```sh
+go get github.com/Edge-Center/edgecentercloud-go@vX.Y.Z
 ```
 
-Running tests locally
-------------------------------------
-To run the tests locally using the following command:
-```bash
-make run_local_tests
-```
-This command will run the tests and display the output, excluding lines with 'no test files'.
+where X.Y.Z is the [version](https://github.com/Edge-Center/edgecentercloud-go/releases) you need.
 
-Running linters locally
-------------------------------------
-To run linters locally, you will need to run a series of checks, including go vet, go fmt, gofumpt, and golangci-lint. 
-First, run the following commands to check the code for errors and format it:
-```bash
-make checks
+or
+```sh
+go get github.com/Edge-Center/edgecentercloud-go
 ```
-Next, run the linters using the following command:
-```bash
-make linters
-```
-This will run the golangci-lint tool and display any issues found in the code.
+for non Go modules usage or latest version.
 
-Note: If you don't have golangci-lint installed, the make linters command will automatically download and install it for you.
+## Usage
+
+```go
+import edgecloud "github.com/Edge-Center/edgecentercloud-go"
+```
+
+Create a new EdgeCloud client, then use the exposed services to
+access different parts of the Edgecenter Cloud API.
+
+### Authentication
+
+Currently, permanent api-key is the only method of authenticating with the API.
+You can find more information about api-key in the [knowledge base](https://support.edgecenter.ru/knowledge_base/item/257788).
+
+You can then use your api-key to create a new client. 
+Additionally, you need to set the base URL for the API, Region and Project 
+
+```go
+package main
+
+import (
+	edgecloud "github.com/Edge-Center/edgecentercloud-go"
+)
+
+func main() {
+	cloud, err := edgecloud.NewWithRetries(nil,
+		edgecloud.SetAPIKey("<api-key>"),
+		edgecloud.SetBaseURL("<base-url>"),  // e.g. "https://api.edgecenter.online/cloud" (string)
+		edgecloud.SetRegion(10),             // e.g. 10 (int)
+		edgecloud.SetProject(12345),         // e.g. 12345 (int)
+	)
+	if err != nil {
+		// error processing 
+    }
+}
+```
+
+## Examples
+
+To create a new Security group:
+
+```go
+securityGroupCreateRequest := &edgecloud.SecurityGroupCreateRequest{
+    SecurityGroup: edgecloud.SecurityGroupCreateRequestInner{
+        Name: "secgroup",
+        SecurityGroupRules: []edgecloud.SecurityGroupRuleCreateRequest{
+            {
+                Direction:    edgecloud.SGRuleDirectionIngress,
+                EtherType:    edgecloud.EtherTypeIPv4,
+                Protocol:     edgecloud.SGRuleProtocolTCP,
+                PortRangeMin: 10250,
+                PortRangeMax: 10259,
+            },
+        },
+    },
+}
+
+ctx := context.TODO()
+
+securityGroup, _, err := cloud.SecurityGroups.Create(ctx, securityGroupCreateRequest)
+if err != nil {
+    // error processing 
+}
+```
+
+### Create with task response
+
+The creation of some resources does not occur immediately; 
+first, a task is launched that needs to be processed.
+
+example 1, when you only need to wait for the task to complete
+```go
+import "github.com/Edge-Center/edgecentercloud-go/util"
+
+task, _, err := cloud.Floatingips.Create(ctx, &edgecloud.FloatingIPCreateRequest{})
+if err != nil {
+    // error processing 
+}
+
+if err = util.WaitForTaskComplete(ctx, cloud, task.Tasks[0]); err != nil {
+    // error processing 
+}
+```
+
+example 2, when you need to get the id of the created resource
+```go
+import "github.com/Edge-Center/edgecentercloud-go/util"
+
+task, _, err := cloud.Floatingips.Create(ctx, &edgecloud.FloatingIPCreateRequest{})
+if err != nil {
+    // error processing 
+}
+
+taskInfo, err := util.WaitAndGetTaskInfo(ctx, cloud, task.Tasks[0])
+if err != nil {
+    // error processing 
+}
+
+taskResult, err := util.ExtractTaskResultFromTask(taskInfo)
+if err != nil {
+    // error processing 
+}
+
+fipID := taskResult.FloatingIPs[0]
+```
+
+example 3, when you need to get the id of the created resource but using helper method (for some resources)
+```go
+import "github.com/Edge-Center/edgecentercloud-go/util"
+
+opts := &edgecloud.FloatingIPCreateRequest{}
+taskResult, err := util.ExecuteAndExtractTaskResult(ctx, client.Floatingips.Create, opts, cloud)
+if err != nil {
+    // error processing 
+}
+
+fipID := taskResult.FloatingIPs[0]
+```
+
+### Helpers
+You can find other helpers that extend the api using `util` package
+
+for example, wait for LoadBalancer provisioning status is ACTIVE
+```go
+loadBalancerID := "..."
+attempts := uint(8)
+
+if err := util.WaitLoadBalancerProvisioningStatusActive(ctx, cloud, loadBalancerID, &attempts); err != nil {
+    // error processing 
+}
+```
+
+or, get volumes list by name
+```go
+volumeName := "my-awesome-volume"
+
+listVolumes, _ := util.VolumesListByName(ctx, cloud, volumeName)
+```
+
+or, check that the resource has been deleted
+```go
+loadBalancerID := "..."
+if err := util.ResourceIsDeleted(ctx, cloud.Loadbalancers.Get, loadBalancerID); err != nil {
+    // error processing 
+}
+```
+and others helpers
+
