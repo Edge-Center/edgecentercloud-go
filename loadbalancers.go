@@ -17,7 +17,6 @@ const (
 
 const (
 	loadbalancersCheckLimits   = "check_limits"
-	loadbalancersSecurityGroup = "securitygroup"
 	loadbalancersMetrics       = "metrics"
 	loadbalancersMember        = "member"
 	loadbalancersHealthMonitor = "healthmonitor"
@@ -32,8 +31,6 @@ type LoadbalancersService interface {
 	Delete(context.Context, string) (*TaskResponse, *Response, error)
 	CheckLimits(context.Context, *LoadbalancerCheckLimitsRequest) (*map[string]int, *Response, error)
 	Rename(context.Context, string, *Name) (*Loadbalancer, *Response, error)
-	SecurityGroupList(context.Context, string) ([]IDName, *Response, error)
-	SecurityGroupCreate(context.Context, string) (*Response, error)
 	MetricsList(context.Context, string, *LoadbalancerMetricsListRequest) ([]LoadbalancerMetrics, *Response, error)
 	FlavorList(context.Context, *FlavorsOptions) ([]Flavor, *Response, error)
 
@@ -119,6 +116,7 @@ type Listener struct {
 	ProtocolPort       int                `json:"protocol_port"`
 	OperatingStatus    string             `json:"operating_status"`
 	ProvisioningStatus ProvisioningStatus `json:"provisioning_status"`
+	AllowedCIDRs       []string           `json:"allowed_cidrs"`
 }
 
 // Pool represents an EdgecenterCloud Loadbalancer Pool.
@@ -336,13 +334,15 @@ type LoadbalancerListenerCreateRequest struct {
 	InsertXForwarded bool                            `json:"insert_x_forwarded"`
 	SNISecretID      []string                        `json:"sni_secret_id,omitempty"`
 	Pools            []LoadbalancerPoolCreateRequest `json:"pools,omitempty" validate:"omitempty,dive"`
+	AllowedCIDRs     []string                        `json:"allowed_cidrs,omitempty"`
 }
 
 // ListenerUpdateRequest represents a request to update a Loadbalancer Listener.
 type ListenerUpdateRequest struct {
-	Name        string   `json:"name,omitempty"`
-	SecretID    string   `json:"secret_id,omitempty"`
-	SNISecretID []string `json:"sni_secret_id,omitempty"`
+	Name         string   `json:"name,omitempty"`
+	SecretID     string   `json:"secret_id,omitempty"`
+	SNISecretID  []string `json:"sni_secret_id,omitempty"`
+	AllowedCIDRs []string `json:"allowed_cidrs,omitempty"`
 }
 
 type LoadbalancerListenerProtocol string
@@ -413,6 +413,7 @@ type ListenerCreateRequest struct {
 	InsertXForwarded bool                         `json:"insert_x_forwarded"`
 	SecretID         string                       `json:"secret_id,omitempty"`
 	SNISecretID      []string                     `json:"sni_secret_id,omitempty"`
+	AllowedCIDRs     []string                     `json:"allowed_cidrs,omitempty"`
 }
 
 // PoolCreateRequest represents a request to create a Loadbalancer Listener Pool.
@@ -449,12 +450,6 @@ type LoadbalancerCheckLimitsRequest struct {
 type loadbalancerFlavorRoot struct {
 	Count   int
 	Flavors []Flavor `json:"results"`
-}
-
-// loadbalancerSecurityGroupRoot represents a Loadbalancer Security group root.
-type loadbalancerSecurityGroupRoot struct {
-	Count                     int
-	LoadbalancerSecurityGroup []IDName `json:"results"`
 }
 
 // loadbalancerMetricsRoot represents a Loadbalancer Metrics root.
@@ -1018,52 +1013,6 @@ func (s *LoadbalancersServiceOp) Rename(ctx context.Context, loadbalancerID stri
 	}
 
 	return loadbalancer, resp, nil
-}
-
-// SecurityGroupList get a custom security group for a load balancer's ingress port.
-func (s *LoadbalancersServiceOp) SecurityGroupList(ctx context.Context, loadbalancerID string) ([]IDName, *Response, error) {
-	if resp, err := isValidUUID(loadbalancerID, "loadbalancerID"); err != nil {
-		return nil, resp, err
-	}
-
-	if resp, err := s.client.Validate(); err != nil {
-		return nil, resp, err
-	}
-
-	path := fmt.Sprintf("%s/%s/%s", s.client.addProjectRegionPath(loadbalancersBasePathV1), loadbalancerID, loadbalancersSecurityGroup)
-
-	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	root := new(loadbalancerSecurityGroupRoot)
-	resp, err := s.client.Do(ctx, req, root)
-	if err != nil {
-		return nil, resp, err
-	}
-
-	return root.LoadbalancerSecurityGroup, resp, err
-}
-
-// SecurityGroupCreate a custom security group for load balancer's ingress port.
-func (s *LoadbalancersServiceOp) SecurityGroupCreate(ctx context.Context, loadbalancerID string) (*Response, error) {
-	if resp, err := isValidUUID(loadbalancerID, "loadbalancerID"); err != nil {
-		return resp, err
-	}
-
-	if resp, err := s.client.Validate(); err != nil {
-		return resp, err
-	}
-
-	path := fmt.Sprintf("%s/%s/%s", s.client.addProjectRegionPath(loadbalancersBasePathV1), loadbalancerID, loadbalancersSecurityGroup)
-
-	req, err := s.client.NewRequest(ctx, http.MethodPost, path, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return s.client.Do(ctx, req, nil)
 }
 
 // MetricsList get load balancer metrics.

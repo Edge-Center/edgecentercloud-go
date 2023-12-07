@@ -659,43 +659,6 @@ func TestLoadbalancers_Rename(t *testing.T) {
 	require.Equal(t, respActual, expectedResp)
 }
 
-func TestLoadbalancers_SecurityGroupList(t *testing.T) {
-	setup()
-	defer teardown()
-
-	expectedResp := []IDName{{ID: testResourceID}}
-	URL := path.Join(loadbalancersBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, loadbalancersSecurityGroup)
-
-	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
-		testMethod(t, r, http.MethodGet)
-		resp, err := json.Marshal(expectedResp)
-		if err != nil {
-			t.Errorf("failed to marshal response: %v", err)
-		}
-		_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))
-	})
-
-	respActual, resp, err := client.Loadbalancers.SecurityGroupList(ctx, testResourceID)
-	require.NoError(t, err)
-	require.Equal(t, resp.StatusCode, 200)
-	require.Equal(t, respActual, expectedResp)
-}
-
-func TestLoadbalancers_SecurityGroupCreate(t *testing.T) {
-	setup()
-	defer teardown()
-
-	URL := path.Join(loadbalancersBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, loadbalancersSecurityGroup)
-
-	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
-		testMethod(t, r, http.MethodPost)
-	})
-
-	resp, err := client.Loadbalancers.SecurityGroupCreate(ctx, testResourceID)
-	require.NoError(t, err)
-	require.Equal(t, resp.StatusCode, 200)
-}
-
 func TestLoadbalancers_MetricsList(t *testing.T) {
 	setup()
 	defer teardown()
