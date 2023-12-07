@@ -117,6 +117,7 @@ type CreateListenerOpts struct {
 	SecretID         string             `json:"secret_id,omitempty"`
 	SNISecretID      []string           `json:"sni_secret_id,omitempty"`
 	InsertXForwarded bool               `json:"insert_x_forwarded"`
+	AllowedCIDRs     []string           `json:"allowed_cidrs,omitempty"`
 }
 
 // CreateOpts represents options used to create a loadbalancer.

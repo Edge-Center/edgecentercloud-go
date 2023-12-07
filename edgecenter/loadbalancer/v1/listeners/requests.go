@@ -62,6 +62,7 @@ type CreateOpts struct {
 	InsertXForwarded bool               `json:"insert_x_forwarded"`
 	SecretID         string             `json:"secret_id,omitempty"`
 	SNISecretID      []string           `json:"sni_secret_id,omitempty"`
+	AllowedCIDRs     []string           `json:"allowed_cidrs,omitempty"`
 }
 
 // ToListenerCreateMap builds a request body from CreateOpts.
@@ -90,9 +91,10 @@ type UpdateOptsBuilder interface {
 
 // UpdateOpts represents options used to update a listener.
 type UpdateOpts struct {
-	Name        string   `json:"name" required:"true" validate:"required,name"`
-	SecretID    string   `json:"secret_id,omitempty"`
-	SNISecretID []string `json:"sni_secret_id,omitempty"`
+	Name         string   `json:"name" required:"true" validate:"required,name"`
+	SecretID     string   `json:"secret_id,omitempty"`
+	SNISecretID  []string `json:"sni_secret_id,omitempty"`
+	AllowedCIDRs []string `json:"allowed_cidrs,omitempty"`
 }
 
 // ToListenerUpdateMap builds a request body from UpdateOpts.

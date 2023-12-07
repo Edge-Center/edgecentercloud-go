@@ -86,6 +86,10 @@ var listenerCreateSubCommand = cli.Command{
 			Name:  "sni-secret-id",
 			Usage: "List of secret's ID containing PKCS12 format certificate/key bundles for TERMINATED_HTTPS listeners",
 		},
+		&cli.StringSliceFlag{
+			Name:  "allowed-cidrs",
+			Usage: "The allowed CIDRs for listener",
+		},
 		&cli.GenericFlag{
 			Name:    "protocol-type",
 			Aliases: []string{"pt"},
@@ -115,6 +119,7 @@ var listenerCreateSubCommand = cli.Command{
 			LoadBalancerID: c.String("loadbalancer-id"),
 			SecretID:       c.String("secret-id"),
 			SNISecretID:    c.StringSlice("sni-secret-id"),
+			AllowedCIDRs:   c.StringSlice("allowed-cidrs"),
 		}
 
 		results, err := listeners.Create(client, opts).Extract()
