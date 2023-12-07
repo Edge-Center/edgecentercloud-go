@@ -29,7 +29,3 @@ func updateURL(c *edgecloud.ServiceClient, id string) string {
 func deleteURL(c *edgecloud.ServiceClient, id string) string {
 	return resourceURL(c, id)
 }
-
-func createCustomSecurityGroupURL(c *edgecloud.ServiceClient, id string) string {
-	return c.ServiceURL(id, "securitygroup")
-}

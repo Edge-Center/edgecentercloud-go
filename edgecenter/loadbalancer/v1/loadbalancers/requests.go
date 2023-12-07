@@ -197,17 +197,3 @@ func ListAll(c *edgecloud.ServiceClient, opts ListOptsBuilder) ([]LoadBalancer, 
 	}
 	return ExtractLoadBalancers(page)
 }
-
-// CreateCustomSecurityGroup accepts a unique ID and create a custom security group for the load balancer's ingress port.
-func CreateCustomSecurityGroup(c *edgecloud.ServiceClient, loadbalancerID string) (r CustomSecurityGroupCreateResult) {
-	_, r.Err = c.Post(createCustomSecurityGroupURL(c, loadbalancerID), nil, nil, &edgecloud.RequestOpts{
-		OkCodes: []int{http.StatusNoContent},
-	})
-	return
-}
-
-// ListCustomSecurityGroup accepts a unique ID and returns a custom security group for the load balancer's ingress port.
-func ListCustomSecurityGroup(c *edgecloud.ServiceClient, loadbalancerID string) (r CustomSecurityGroupGetResult) {
-	_, r.Err = c.Get(createCustomSecurityGroupURL(c, loadbalancerID), &r.Body, nil)
-	return
-}
