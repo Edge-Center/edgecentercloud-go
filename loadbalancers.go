@@ -92,12 +92,12 @@ type Loadbalancer struct {
 	VipPortID          string             `json:"vip_port_id"`
 	VipNetworkID       string             `json:"vip_network_id"`
 	ProvisioningStatus ProvisioningStatus `json:"provisioning_status"`
-	OperationStatus    OperatingStatus    `json:"operating_status"`
+	OperatingStatus    OperatingStatus    `json:"operating_status"`
 	CreatedAt          string             `json:"created_at"`
 	UpdatedAt          string             `json:"updated_at"`
 	CreatorTaskID      string             `json:"creator_task_id"`
 	TaskID             string             `json:"task_id"`
-	Metadata           []Metadata         `json:"metadata,omitempty"`
+	MetadataDetailed   []MetadataDetailed `json:"metadata,omitempty"`
 	Stats              LoadbalancerStats  `json:"stats"`
 	Listeners          []Listener         `json:"listeners"`
 	FloatingIPs        []FloatingIP       `json:"floating_ips"`
