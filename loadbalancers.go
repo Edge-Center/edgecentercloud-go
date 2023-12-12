@@ -43,7 +43,7 @@ type LoadbalancersService interface {
 
 type LoadbalancerListeners interface {
 	ListenerList(context.Context, *ListenerListOptions) ([]Listener, *Response, error)
-	ListenerGet(context.Context, string, *ListenerGetOptions) (*Listener, *Response, error)
+	ListenerGet(context.Context, string) (*Listener, *Response, error)
 	ListenerCreate(context.Context, *ListenerCreateRequest) (*TaskResponse, *Response, error)
 	ListenerDelete(context.Context, string) (*TaskResponse, *Response, error)
 	ListenerRename(context.Context, string, *Name) (*Listener, *Response, error)
@@ -123,9 +123,9 @@ type Listener struct {
 type Pool struct {
 	ID                    string                   `json:"id"`
 	Name                  string                   `json:"name"`
-	LoadBalancerAlgorithm LoadBalancerAlgorithm    `json:"lb_algorithm"`
+	LoadbalancerAlgorithm LoadbalancerAlgorithm    `json:"lb_algorithm"`
 	Protocol              LoadbalancerPoolProtocol `json:"protocol"`
-	LoadBalancers         []ID                     `json:"loadbalancers"`
+	Loadbalancers         []ID                     `json:"loadbalancers"`
 	Listeners             []ID                     `json:"listeners"`
 	Members               []PoolMember             `json:"members"`
 	HealthMonitor         HealthMonitor            `json:"healthmonitor"`
@@ -224,13 +224,13 @@ type LoadbalancerCreateRequest struct {
 	FloatingIP   *InterfaceFloatingIP                `json:"floating_ip,omitempty" validate:"omitempty,dive"`
 }
 
-type LoadBalancerAlgorithm string
+type LoadbalancerAlgorithm string
 
 const (
-	LoadBalancerAlgorithmRoundRobin       LoadBalancerAlgorithm = "ROUND_ROBIN"
-	LoadBalancerAlgorithmLeastConnections LoadBalancerAlgorithm = "LEAST_CONNECTIONS"
-	LoadBalancerAlgorithmSourceIP         LoadBalancerAlgorithm = "SOURCE_IP"
-	LoadBalancerAlgorithmSourceIPPort     LoadBalancerAlgorithm = "SOURCE_IP_PORT"
+	LoadbalancerAlgorithmRoundRobin       LoadbalancerAlgorithm = "ROUND_ROBIN"
+	LoadbalancerAlgorithmLeastConnections LoadbalancerAlgorithm = "LEAST_CONNECTIONS"
+	LoadbalancerAlgorithmSourceIP         LoadbalancerAlgorithm = "SOURCE_IP"
+	LoadbalancerAlgorithmSourceIPPort     LoadbalancerAlgorithm = "SOURCE_IP_PORT"
 )
 
 type LoadbalancerPoolProtocol string
@@ -247,7 +247,7 @@ const (
 // Used as part of a request to create a Loadbalancer.
 type LoadbalancerPoolCreateRequest struct {
 	Name                  string                          `json:"name" required:"true" validate:"required,name"`
-	LoadBalancerAlgorithm LoadBalancerAlgorithm           `json:"lb_algorithm,omitempty"`
+	LoadbalancerAlgorithm LoadbalancerAlgorithm           `json:"lb_algorithm,omitempty"`
 	Protocol              LoadbalancerPoolProtocol        `json:"protocol" required:"true"`
 	LoadbalancerID        string                          `json:"loadbalancer_id,omitempty"`
 	ListenerID            string                          `json:"listener_id,omitempty"`
@@ -403,19 +403,13 @@ type loadbalancerListenersRoot struct {
 	Listener []Listener `json:"results"`
 }
 
-// ListenerGetOptions specifies the optional query parameters to Get method.
-type ListenerGetOptions struct {
-	LoadBalancerID string `url:"loadbalancer_id,omitempty"  validate:"omitempty"`
-	ShowStats      bool   `url:"show_stats,omitempty"  validate:"omitempty"`
-}
-
 // ListenerCreateRequest represents a request to create a Loadbalancer Listener.
 // Used as a separate request to create Listener.
 type ListenerCreateRequest struct {
 	Name             string                       `json:"name" required:"true" validate:"required,name"`
 	Protocol         LoadbalancerListenerProtocol `json:"protocol" required:"true"`
 	ProtocolPort     int                          `json:"protocol_port" required:"true"`
-	LoadBalancerID   string                       `json:"loadbalancer_id" required:"true"`
+	LoadbalancerID   string                       `json:"loadbalancer_id" required:"true"`
 	InsertXForwarded bool                         `json:"insert_x_forwarded"`
 	SecretID         string                       `json:"secret_id,omitempty"`
 	SNISecretID      []string                     `json:"sni_secret_id,omitempty"`
@@ -432,7 +426,7 @@ type PoolCreateRequest struct {
 type PoolUpdateRequest struct {
 	ID                    string                          `json:"id,omitempty"`
 	Name                  string                          `json:"name,omitempty"`
-	LoadBalancerAlgorithm LoadBalancerAlgorithm           `json:"lb_algorithm,omitempty"`
+	LoadbalancerAlgorithm LoadbalancerAlgorithm           `json:"lb_algorithm,omitempty"`
 	SessionPersistence    *LoadbalancerSessionPersistence `json:"session_persistence,omitempty"`
 	Members               []PoolMember                    `json:"members,omitempty"`
 	HealthMonitor         *HealthMonitorUpdateRequest     `json:"healthmonitor,omitempty"`
@@ -442,7 +436,7 @@ type PoolUpdateRequest struct {
 }
 
 type PoolListOptions struct {
-	LoadBalancerID string `url:"loadbalancer_id,omitempty"`
+	LoadbalancerID string `url:"loadbalancer_id,omitempty"`
 	ListenerID     string `url:"listener_id,omitempty"`
 	Details        bool   `url:"details,omitempty"` // if true Details show the member and healthmonitor details
 }
@@ -595,7 +589,7 @@ func (s *LoadbalancersServiceOp) ListenerList(ctx context.Context, opts *Listene
 }
 
 // ListenerGet a Loadbalancer Listener.
-func (s *LoadbalancersServiceOp) ListenerGet(ctx context.Context, listenerID string, opts *ListenerGetOptions) (*Listener, *Response, error) {
+func (s *LoadbalancersServiceOp) ListenerGet(ctx context.Context, listenerID string) (*Listener, *Response, error) {
 	if resp, err := isValidUUID(listenerID, "listenerID"); err != nil {
 		return nil, resp, err
 	}
@@ -605,10 +599,6 @@ func (s *LoadbalancersServiceOp) ListenerGet(ctx context.Context, listenerID str
 	}
 
 	path := fmt.Sprintf("%s/%s", s.client.addProjectRegionPath(lblistenersBasePathV1), listenerID)
-	path, err := addOptions(path, opts)
-	if err != nil {
-		return nil, nil, err
-	}
 
 	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
 	if err != nil {

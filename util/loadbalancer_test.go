@@ -124,6 +124,116 @@ func TestLoadbalancerGetByName_CustomErrors(t *testing.T) {
 	}
 }
 
+func TestLBListenerGetByName(t *testing.T) {
+	mux := http.NewServeMux()
+	server := httptest.NewServer(mux)
+	defer server.Close()
+
+	listeners := []edgecloud.Listener{
+		{
+			ID:   testResourceID,
+			Name: testName,
+		},
+	}
+	URL := path.Join("/v1/lblisteners", strconv.Itoa(projectID), strconv.Itoa(regionID))
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		resp, err := json.Marshal(listeners)
+		if err != nil {
+			t.Fatalf("failed to marshal JSON: %v", err)
+		}
+		_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))
+	})
+
+	client := edgecloud.NewClient(nil)
+	baseURL, _ := url.Parse(server.URL)
+	client.BaseURL = baseURL
+	client.Project = projectID
+	client.Region = regionID
+
+	lis, err := LBListenerGetByName(context.Background(), client, testName, testResourceID)
+	assert.NoError(t, err)
+	assert.Equal(t, testName, lis.Name)
+}
+
+func TestLBListenerGetByName_Error(t *testing.T) {
+	mux := http.NewServeMux()
+	server := httptest.NewServer(mux)
+	defer server.Close()
+
+	URL := path.Join("/v1/lblisteners", strconv.Itoa(projectID), strconv.Itoa(regionID))
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusInternalServerError)
+	})
+
+	client := edgecloud.NewClient(nil)
+	baseURL, _ := url.Parse(server.URL)
+	client.BaseURL = baseURL
+	client.Project = projectID
+	client.Region = regionID
+
+	lis, err := LBListenerGetByName(context.Background(), client, testName, testResourceID)
+	assert.Error(t, err)
+	assert.Nil(t, lis)
+}
+
+func TestLBListenerGetByName_CustomErrors(t *testing.T) {
+	tests := []struct {
+		name      string
+		listeners []edgecloud.Listener
+		expectErr error
+	}{
+		{
+			name:      "ErrLoadbalancerListenerNotFound",
+			listeners: nil,
+			expectErr: ErrLoadbalancerListenerNotFound,
+		},
+		{
+			name: "ErrMultipleResults",
+			listeners: []edgecloud.Listener{
+				{
+					ID:   testResourceID,
+					Name: testName,
+				},
+				{
+					ID:   testResourceID,
+					Name: testName,
+				},
+			},
+			expectErr: ErrMultipleResults,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			mux := http.NewServeMux()
+			server := httptest.NewServer(mux)
+			defer server.Close()
+
+			URL := path.Join("/v1/lblisteners", strconv.Itoa(projectID), strconv.Itoa(regionID))
+
+			mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+				resp, err := json.Marshal(tc.listeners)
+				if err != nil {
+					t.Fatalf("failed to marshal JSON: %v", err)
+				}
+				_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))
+			})
+
+			client := edgecloud.NewClient(nil)
+			baseURL, _ := url.Parse(server.URL)
+			client.BaseURL = baseURL
+			client.Project = projectID
+			client.Region = regionID
+
+			listeners, err := LBListenerGetByName(context.Background(), client, testName, testResourceID)
+			assert.ErrorIs(t, err, tc.expectErr)
+			assert.Nil(t, listeners)
+		})
+	}
+}
+
 func TestLBPoolGetByName(t *testing.T) {
 	mux := http.NewServeMux()
 	server := httptest.NewServer(mux)
@@ -173,9 +283,9 @@ func TestLBPoolGetByName_Error(t *testing.T) {
 	client.Project = projectID
 	client.Region = regionID
 
-	lb, err := LBPoolGetByName(context.Background(), client, testName, testResourceID)
+	pool, err := LBPoolGetByName(context.Background(), client, testName, testResourceID)
 	assert.Error(t, err)
-	assert.Nil(t, lb)
+	assert.Nil(t, pool)
 }
 
 func TestLBPoolGetByName_CustomErrors(t *testing.T) {
@@ -234,7 +344,7 @@ func TestLBPoolGetByName_CustomErrors(t *testing.T) {
 	}
 }
 
-func TestWaitLoadBalancerProvisioningStatusActive(t *testing.T) {
+func TestWaitLoadbalancerProvisioningStatusActive(t *testing.T) {
 	mux := http.NewServeMux()
 	server := httptest.NewServer(mux)
 	defer server.Close()
@@ -259,11 +369,11 @@ func TestWaitLoadBalancerProvisioningStatusActive(t *testing.T) {
 	client.Project = projectID
 	client.Region = regionID
 
-	err := WaitLoadBalancerProvisioningStatusActive(context.Background(), client, testResourceID, nil)
+	err := WaitLoadbalancerProvisioningStatusActive(context.Background(), client, testResourceID, nil)
 	assert.NoError(t, err)
 }
 
-func TestWaitLoadBalancerProvisioningStatusActive_Error(t *testing.T) {
+func TestWaitLoadbalancerProvisioningStatusActive_Error(t *testing.T) {
 	mux := http.NewServeMux()
 	server := httptest.NewServer(mux)
 	defer server.Close()
@@ -281,11 +391,11 @@ func TestWaitLoadBalancerProvisioningStatusActive_Error(t *testing.T) {
 	client.Region = regionID
 
 	var attempts uint = 2
-	err := WaitLoadBalancerProvisioningStatusActive(context.Background(), client, testResourceID, &attempts)
+	err := WaitLoadbalancerProvisioningStatusActive(context.Background(), client, testResourceID, &attempts)
 	assert.Error(t, err)
 }
 
-func TestWaitLoadBalancerProvisioningStatusActive_CustomErrors(t *testing.T) {
+func TestWaitLoadbalancerProvisioningStatusActive_CustomErrors(t *testing.T) {
 	tests := []struct {
 		name               string
 		provisioningStatus edgecloud.ProvisioningStatus
@@ -330,7 +440,7 @@ func TestWaitLoadBalancerProvisioningStatusActive_CustomErrors(t *testing.T) {
 			client.Region = regionID
 
 			var attempts uint = 2
-			err := WaitLoadBalancerProvisioningStatusActive(context.Background(), client, testResourceID, &attempts)
+			err := WaitLoadbalancerProvisioningStatusActive(context.Background(), client, testResourceID, &attempts)
 			assert.Error(t, err)
 		})
 	}
@@ -575,7 +685,7 @@ func TestDeletePoolByNameIfExist_PoolDelete_Error(t *testing.T) {
 }
 
 func TestDeleteUnusedPools(t *testing.T) {
-	oldPools := []edgecloud.Pool{{ID: testResourceID, LoadBalancers: []edgecloud.ID{{ID: testResourceID}}}}
+	oldPools := []edgecloud.Pool{{ID: testResourceID, Loadbalancers: []edgecloud.ID{{ID: testResourceID}}}}
 
 	err := DeleteUnusedPools(context.Background(), nil, oldPools, []string{testResourceID}, nil)
 	assert.NoError(t, err)
@@ -586,7 +696,7 @@ func TestDeleteUnusedPools_NotExist(t *testing.T) {
 	server := httptest.NewServer(mux)
 	defer server.Close()
 
-	oldPools := []edgecloud.Pool{{ID: testResourceID, LoadBalancers: []edgecloud.ID{{ID: testResourceID}}}}
+	oldPools := []edgecloud.Pool{{ID: testResourceID, Loadbalancers: []edgecloud.ID{{ID: testResourceID}}}}
 
 	taskDelete := &edgecloud.TaskResponse{Tasks: []string{testResourceID}}
 	URLLBPoolsDelete := path.Join("/v1/lbpools", strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID)
@@ -639,7 +749,7 @@ func TestDeleteUnusedPools_NotExist_PoolDelete_Error(t *testing.T) {
 	server := httptest.NewServer(mux)
 	defer server.Close()
 
-	oldPools := []edgecloud.Pool{{ID: testResourceID, LoadBalancers: []edgecloud.ID{{ID: testResourceID}}}}
+	oldPools := []edgecloud.Pool{{ID: testResourceID, Loadbalancers: []edgecloud.ID{{ID: testResourceID}}}}
 
 	URLLBPoolsDelete := path.Join("/v1/lbpools", strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID)
 
@@ -662,7 +772,7 @@ func TestDeleteUnusedPools_NotExist_WaitForTaskComplete_Error(t *testing.T) {
 	server := httptest.NewServer(mux)
 	defer server.Close()
 
-	oldPools := []edgecloud.Pool{{ID: testResourceID, LoadBalancers: []edgecloud.ID{{ID: testResourceID}}}}
+	oldPools := []edgecloud.Pool{{ID: testResourceID, Loadbalancers: []edgecloud.ID{{ID: testResourceID}}}}
 
 	taskDelete := &edgecloud.TaskResponse{Tasks: []string{testResourceID}}
 	URLLBPoolsDelete := path.Join("/v1/lbpools", strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID)
@@ -695,12 +805,12 @@ func TestDeleteUnusedPools_NotExist_WaitForTaskComplete_Error(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestDeleteUnusedPools_WaitLoadBalancerProvisioningStatusActive_Error(t *testing.T) {
+func TestDeleteUnusedPools_WaitLoadbalancerProvisioningStatusActive_Error(t *testing.T) {
 	mux := http.NewServeMux()
 	server := httptest.NewServer(mux)
 	defer server.Close()
 
-	oldPools := []edgecloud.Pool{{ID: testResourceID, LoadBalancers: []edgecloud.ID{{ID: testResourceID}}}}
+	oldPools := []edgecloud.Pool{{ID: testResourceID, Loadbalancers: []edgecloud.ID{{ID: testResourceID}}}}
 
 	taskDelete := &edgecloud.TaskResponse{Tasks: []string{testResourceID}}
 	URLLBPoolsDelete := path.Join("/v1/lbpools", strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID)

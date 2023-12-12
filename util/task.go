@@ -34,7 +34,7 @@ type TaskResult struct {
 	L7Polices      []string `json:"l7polices"`
 	L7Rules        []string `json:"l7rules"`
 	Listeners      []string `json:"listeners"`
-	LoadBalancers  []string `json:"loadbalancers"`
+	Loadbalancers  []string `json:"loadbalancers"`
 	Members        []string `json:"members"`
 	Networks       []string `json:"networks"`
 	Pools          []string `json:"pools"`

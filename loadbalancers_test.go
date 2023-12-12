@@ -135,7 +135,6 @@ func TestLoadbalancers_ListenerGet(t *testing.T) {
 	setup()
 	defer teardown()
 
-	options := ListenerGetOptions{LoadBalancerID: testResourceID}
 	expectedResp := &Listener{ID: testResourceID}
 	URL := path.Join(lblistenersBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID)
 
@@ -148,7 +147,7 @@ func TestLoadbalancers_ListenerGet(t *testing.T) {
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	respActual, resp, err := client.Loadbalancers.ListenerGet(ctx, testResourceID, &options)
+	respActual, resp, err := client.Loadbalancers.ListenerGet(ctx, testResourceID)
 	require.NoError(t, err)
 	require.Equal(t, resp.StatusCode, 200)
 	require.Equal(t, respActual, expectedResp)
@@ -162,7 +161,7 @@ func TestLoadbalancers_ListenerCreate(t *testing.T) {
 		Name:           "test-loadbalancer",
 		Protocol:       ListenerProtocolTCP,
 		ProtocolPort:   80,
-		LoadBalancerID: testResourceID,
+		LoadbalancerID: testResourceID,
 	}
 	expectedResp := &TaskResponse{Tasks: []string{taskID}}
 	URL := path.Join(lblistenersBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID))
@@ -377,7 +376,7 @@ func TestLoadbalancers_PoolList(t *testing.T) {
 	setup()
 	defer teardown()
 
-	options := PoolListOptions{LoadBalancerID: testResourceID}
+	options := PoolListOptions{LoadbalancerID: testResourceID}
 	expectedResp := []Pool{{ID: testResourceID}}
 	URL := path.Join(lbpoolsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID))
 

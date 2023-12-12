@@ -139,12 +139,12 @@ fipID := taskResult.FloatingIPs[0]
 ### Helpers
 You can find other helpers that extend the api using `util` package
 
-for example, wait for LoadBalancer provisioning status is ACTIVE
+for example, wait for Loadbalancer provisioning status is ACTIVE
 ```go
 loadBalancerID := "..."
 attempts := uint(8)
 
-if err := util.WaitLoadBalancerProvisioningStatusActive(ctx, cloud, loadBalancerID, &attempts); err != nil {
+if err := util.WaitLoadbalancerProvisioningStatusActive(ctx, cloud, loadBalancerID, &attempts); err != nil {
     // error processing 
 }
 ```
