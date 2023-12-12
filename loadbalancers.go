@@ -109,15 +109,29 @@ type Loadbalancer struct {
 
 // Listener represents an EdgecenterCloud Loadbalancer Listener.
 type Listener struct {
-	ID                 string             `json:"id"`
-	Name               string             `json:"name"`
-	Description        string             `json:"description"`
-	Protocol           string             `json:"protocol"`
-	ProtocolPort       int                `json:"protocol_port"`
-	OperatingStatus    string             `json:"operating_status"`
-	ProvisioningStatus ProvisioningStatus `json:"provisioning_status"`
-	AllowedCIDRs       []string           `json:"allowed_cidrs"`
+	ID                 string                       `json:"id"`
+	LoadbalancerID     string                       `json:"loadbalancer_id"`
+	CreatorTaskID      string                       `json:"creator_task_id"`
+	TaskID             string                       `json:"task_id"`
+	Name               string                       `json:"name"`
+	Protocol           LoadbalancerListenerProtocol `json:"protocol"`
+	ProtocolPort       int                          `json:"protocol_port"`
+	PoolCount          int                          `json:"pool_count"`
+	OperatingStatus    OperatingStatus              `json:"operating_status"`
+	ProvisioningStatus ProvisioningStatus           `json:"provisioning_status"`
+	AllowedCIDRs       []string                     `json:"allowed_cidrs"`
+	SNISecretID        []string                     `json:"sni_secret_id"`
+	SecretID           string                       `json:"secret_id"`
+	InsertHeaders      map[string]string            `json:"insert_headers"`
+	Stats              LoadbalancerStats            `json:"stats"`
 }
+
+/*
+insert_headers
+object
+The dictionary of additional header insertion into the HTTP headers. Only used with the HTTP and TERMINATED_HTTPS protocols
+
+*/
 
 // Pool represents an EdgecenterCloud Loadbalancer Pool.
 type Pool struct {
