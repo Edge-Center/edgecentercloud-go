@@ -43,7 +43,7 @@ type LoadbalancersService interface {
 
 type LoadbalancerListeners interface {
 	ListenerList(context.Context, *ListenerListOptions) ([]Listener, *Response, error)
-	ListenerGet(context.Context, string) (*Listener, *Response, error)
+	ListenerGet(context.Context, string, *ListenerGetOptions) (*Listener, *Response, error)
 	ListenerCreate(context.Context, *ListenerCreateRequest) (*TaskResponse, *Response, error)
 	ListenerDelete(context.Context, string) (*TaskResponse, *Response, error)
 	ListenerRename(context.Context, string, *Name) (*Listener, *Response, error)
@@ -403,6 +403,12 @@ type loadbalancerListenersRoot struct {
 	Listener []Listener `json:"results"`
 }
 
+// ListenerGetOptions specifies the optional query parameters to Get method.
+type ListenerGetOptions struct {
+	LoadBalancerID string `url:"loadbalancer_id,omitempty"  validate:"omitempty"`
+	ShowStats      bool   `url:"show_stats,omitempty"  validate:"omitempty"`
+}
+
 // ListenerCreateRequest represents a request to create a Loadbalancer Listener.
 // Used as a separate request to create Listener.
 type ListenerCreateRequest struct {
@@ -589,7 +595,7 @@ func (s *LoadbalancersServiceOp) ListenerList(ctx context.Context, opts *Listene
 }
 
 // ListenerGet a Loadbalancer Listener.
-func (s *LoadbalancersServiceOp) ListenerGet(ctx context.Context, listenerID string) (*Listener, *Response, error) {
+func (s *LoadbalancersServiceOp) ListenerGet(ctx context.Context, listenerID string, opts *ListenerGetOptions) (*Listener, *Response, error) {
 	if resp, err := isValidUUID(listenerID, "listenerID"); err != nil {
 		return nil, resp, err
 	}
@@ -599,6 +605,10 @@ func (s *LoadbalancersServiceOp) ListenerGet(ctx context.Context, listenerID str
 	}
 
 	path := fmt.Sprintf("%s/%s", s.client.addProjectRegionPath(lblistenersBasePathV1), listenerID)
+	path, err := addOptions(path, opts)
+	if err != nil {
+		return nil, nil, err
+	}
 
 	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
 	if err != nil {

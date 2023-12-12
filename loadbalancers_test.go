@@ -135,6 +135,7 @@ func TestLoadbalancers_ListenerGet(t *testing.T) {
 	setup()
 	defer teardown()
 
+	options := ListenerGetOptions{LoadBalancerID: testResourceID}
 	expectedResp := &Listener{ID: testResourceID}
 	URL := path.Join(lblistenersBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID)
 
@@ -147,7 +148,7 @@ func TestLoadbalancers_ListenerGet(t *testing.T) {
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	respActual, resp, err := client.Loadbalancers.ListenerGet(ctx, testResourceID)
+	respActual, resp, err := client.Loadbalancers.ListenerGet(ctx, testResourceID, &options)
 	require.NoError(t, err)
 	require.Equal(t, resp.StatusCode, 200)
 	require.Equal(t, respActual, expectedResp)
