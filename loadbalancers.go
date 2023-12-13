@@ -126,31 +126,24 @@ type Listener struct {
 	Stats              LoadbalancerStats            `json:"stats"`
 }
 
-/*
-insert_headers
-object
-The dictionary of additional header insertion into the HTTP headers. Only used with the HTTP and TERMINATED_HTTPS protocols
-
-*/
-
 // Pool represents an EdgecenterCloud Loadbalancer Pool.
 type Pool struct {
-	ID                    string                   `json:"id"`
-	Name                  string                   `json:"name"`
-	LoadbalancerAlgorithm LoadbalancerAlgorithm    `json:"lb_algorithm"`
-	Protocol              LoadbalancerPoolProtocol `json:"protocol"`
-	Loadbalancers         []ID                     `json:"loadbalancers"`
-	Listeners             []ID                     `json:"listeners"`
-	Members               []PoolMember             `json:"members"`
-	HealthMonitor         HealthMonitor            `json:"healthmonitor"`
-	SessionPersistence    SessionPersistence       `json:"session_persistence"`
-	ProvisioningStatus    ProvisioningStatus       `json:"provisioning_status"`
-	OperatingStatus       OperatingStatus          `json:"operating_status"`
-	CreatorTaskID         string                   `json:"creator_task_id"`
-	TaskID                string                   `json:"task_id"`
-	TimeoutClientData     int                      `json:"timeout_client_data"`
-	TimeoutMemberData     int                      `json:"timeout_member_data"`
-	TimeoutMemberConnect  int                      `json:"timeout_member_connect"`
+	ID                    string                         `json:"id"`
+	Name                  string                         `json:"name"`
+	LoadbalancerAlgorithm LoadbalancerAlgorithm          `json:"lb_algorithm"`
+	Protocol              LoadbalancerPoolProtocol       `json:"protocol"`
+	Loadbalancers         []ID                           `json:"loadbalancers"`
+	Listeners             []ID                           `json:"listeners"`
+	Members               []PoolMember                   `json:"members"`
+	HealthMonitor         HealthMonitor                  `json:"healthmonitor"`
+	SessionPersistence    LoadbalancerSessionPersistence `json:"session_persistence"`
+	ProvisioningStatus    ProvisioningStatus             `json:"provisioning_status"`
+	OperatingStatus       OperatingStatus                `json:"operating_status"`
+	CreatorTaskID         string                         `json:"creator_task_id"`
+	TaskID                string                         `json:"task_id"`
+	TimeoutClientData     int                            `json:"timeout_client_data"`
+	TimeoutMemberData     int                            `json:"timeout_member_data"`
+	TimeoutMemberConnect  int                            `json:"timeout_member_connect"`
 }
 
 // PoolMember represents an EdgecenterCloud Loadbalancer Pool PoolMember.
@@ -311,28 +304,15 @@ const (
 
 // HealthMonitorCreateRequest represents a request to create a Loadbalancer Pool Health Monitor.
 type HealthMonitorCreateRequest struct {
-	URLPath        *string           `json:"url_path,omitempty"`
-	HTTPMethod     *HTTPMethod       `json:"http_method,omitempty"`
 	MaxRetries     int               `json:"max_retries" required:"true"`
-	MaxRetriesDown int               `json:"max_retries_down,omitempty"`
-	ExpectedCodes  *string           `json:"expected_codes,omitempty"`
 	Type           HealthMonitorType `json:"type" required:"true"`
 	Delay          int               `json:"delay" required:"true"`
 	Timeout        int               `json:"timeout" required:"true"`
-	ID             string            `json:"id,omitempty"`
-}
-
-// HealthMonitorUpdateRequest represents a request to update a Loadbalancer Pool Health Monitor.
-type HealthMonitorUpdateRequest struct {
-	ID             string            `json:"id,omitempty"`
-	Type           HealthMonitorType `json:"type,omitempty"`
-	Delay          int               `json:"delay" required:"true"`
-	MaxRetries     int               `json:"max_retries" required:"true"`
-	Timeout        int               `json:"timeout" required:"true"`
+	URLPath        string            `json:"url_path,omitempty"`
+	HTTPMethod     HTTPMethod        `json:"http_method,omitempty"`
 	MaxRetriesDown int               `json:"max_retries_down,omitempty"`
-	HTTPMethod     *HTTPMethod       `json:"http_method,omitempty"`
-	URLPath        *string           `json:"url_path,omitempty"`
-	ExpectedCodes  *string           `json:"expected_codes,omitempty"`
+	ExpectedCodes  string            `json:"expected_codes,omitempty"`
+	ID             string            `json:"id,omitempty"`
 }
 
 // LoadbalancerListenerCreateRequest represents a request to create a Loadbalancer Listener.
@@ -442,8 +422,8 @@ type PoolUpdateRequest struct {
 	Name                  string                          `json:"name,omitempty"`
 	LoadbalancerAlgorithm LoadbalancerAlgorithm           `json:"lb_algorithm,omitempty"`
 	SessionPersistence    *LoadbalancerSessionPersistence `json:"session_persistence,omitempty"`
-	Members               []PoolMember                    `json:"members,omitempty"`
-	HealthMonitor         *HealthMonitorUpdateRequest     `json:"healthmonitor,omitempty"`
+	Members               []PoolMemberCreateRequest       `json:"members,omitempty"`
+	HealthMonitor         HealthMonitorCreateRequest      `json:"healthmonitor,omitempty"`
 	TimeoutClientData     int                             `json:"timeout_client_data,omitempty"`
 	TimeoutMemberData     int                             `json:"timeout_member_data,omitempty"`
 	TimeoutMemberConnect  int                             `json:"timeout_member_connect,omitempty"`
