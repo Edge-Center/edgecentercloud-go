@@ -62,7 +62,7 @@ func TestInstances_Create(t *testing.T) {
 	request := &InstanceCreateRequest{
 		Names:          []string{"test-instance"},
 		Flavor:         "g1-standard-1-2",
-		Interfaces:     []InstanceInterface{{Type: ExternalInterfaceType}},
+		Interfaces:     []InstanceInterface{{Type: InterfaceTypeExternal}},
 		SecurityGroups: []ID{{ID: "f0d19cec-5c3f-4853-886e-304915960ff6"}},
 		Volumes: []InstanceVolumeCreate{
 			{

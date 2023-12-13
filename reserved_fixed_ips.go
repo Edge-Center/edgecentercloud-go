@@ -78,9 +78,21 @@ type ReservedFixedIPListOptions struct {
 }
 
 type ReservedFixedIPCreateRequest struct {
-	IsVIP bool   `json:"is_vip"`
-	Type  string `json:"type"`
+	IsVIP     bool                `json:"is_vip"`
+	Type      ReservedFixedIPType `json:"type" required:"true" validate:"required,enum"`
+	NetworkID string              `json:"network_id,omitempty" validate:"rfe=Type:ip_address;any_subnet,omitempty,uuid4"`
+	SubnetID  string              `json:"subnet_id,omitempty" validate:"rfe=Type:subnet,omitempty,uuid4"`
+	IPAddress string              `json:"ip_address,omitempty" validate:"rfe=Type:ip_address,omitempty"`
 }
+
+type ReservedFixedIPType string
+
+const (
+	ReservedFixedIPTypeExternal  = "external"
+	ReservedFixedIPTypeSubnet    = "subnet"
+	ReservedFixedIPTypeAnySubnet = "any_subnet"
+	ReservedFixedIPTypeIPAddress = "ip_address"
+)
 
 type SwitchVIPStatusRequest struct {
 	IsVIP bool `json:"is_vip"`
