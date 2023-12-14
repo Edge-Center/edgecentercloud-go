@@ -10,6 +10,8 @@ import (
 	"net/url"
 	"reflect"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 var (
@@ -285,6 +287,53 @@ func TestSetRegion(t *testing.T) {
 	expected := regionID
 	if got := c.Region; got != expected {
 		t.Errorf("New() Region = %d; expected %d", got, expected)
+	}
+}
+
+func TestClient_Validate(t *testing.T) {
+	setup()
+	defer teardown()
+
+	tests := []struct {
+		name          string
+		setFunc       func()
+		expectedError *ArgError
+		badResponse   *Response
+	}{
+		{
+			name: "RegionNotSet",
+			setFunc: func() {
+				client.Region = 0
+			},
+			expectedError: NewArgError("Client.Region", "is not set"),
+			badResponse: &Response{
+				Response: &http.Response{
+					Status:     http.StatusText(http.StatusBadRequest),
+					StatusCode: http.StatusBadRequest,
+				},
+			},
+		},
+		{
+			name: "ProjectNotSet",
+			setFunc: func() {
+				client.Project = 0
+			},
+			expectedError: NewArgError("Client.Project", "is not set"),
+			badResponse: &Response{
+				Response: &http.Response{
+					Status:     http.StatusText(http.StatusBadRequest),
+					StatusCode: http.StatusBadRequest,
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tt.setFunc()
+			response, err := client.Validate()
+			reflect.DeepEqual(response, tt.badResponse)
+			assert.EqualError(t, err, tt.expectedError.Error())
+		})
 	}
 }
 

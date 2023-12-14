@@ -215,6 +215,10 @@ func (s *SubnetworksServiceOp) Delete(ctx context.Context, subnetworkID string) 
 
 // Update the Subnetwork properties.
 func (s *SubnetworksServiceOp) Update(ctx context.Context, subnetworkID string, reqBody *SubnetworkUpdateRequest) (*Subnetwork, *Response, error) {
+	if resp, err := isValidUUID(subnetworkID, "subnetworkID"); err != nil {
+		return nil, resp, err
+	}
+
 	if reqBody == nil {
 		return nil, nil, NewArgError("reqBody", "cannot be nil")
 	}
