@@ -261,7 +261,7 @@ type LoadbalancerPoolCreateRequest struct {
 	TimeoutClientData     int                             `json:"timeout_client_data,omitempty"`
 	TimeoutMemberData     int                             `json:"timeout_member_data,omitempty"`
 	TimeoutMemberConnect  int                             `json:"timeout_member_connect,omitempty"`
-	Members               []PoolMemberCreateRequest       `json:"members"`
+	Members               []PoolMemberCreateRequest       `json:"members,omitempty"`
 	HealthMonitor         HealthMonitorCreateRequest      `json:"healthmonitor,omitempty"`
 	SessionPersistence    *LoadbalancerSessionPersistence `json:"session_persistence,omitempty"`
 }
