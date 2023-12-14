@@ -34,6 +34,24 @@ func TestVolumes_List(t *testing.T) {
 	require.Equal(t, respActual, expectedResp)
 }
 
+func TestVolumes_List_ResponseError(t *testing.T) {
+	setup()
+	defer teardown()
+
+	URL := path.Join(volumesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID))
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodGet)
+		w.WriteHeader(http.StatusBadRequest)
+		_, _ = fmt.Fprint(w, "Bad request")
+	})
+
+	respActual, resp, err := client.Volumes.List(ctx, nil)
+	assert.Nil(t, respActual)
+	assert.Error(t, err)
+	assert.Equal(t, resp.StatusCode, 400)
+}
+
 func TestVolumes_Get(t *testing.T) {
 	setup()
 	defer teardown()
@@ -54,6 +72,24 @@ func TestVolumes_Get(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, resp.StatusCode, 200)
 	require.Equal(t, respActual, expectedResp)
+}
+
+func TestVolumes_Get_ResponseError(t *testing.T) {
+	setup()
+	defer teardown()
+
+	URL := path.Join(volumesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID)
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodGet)
+		w.WriteHeader(http.StatusBadRequest)
+		_, _ = fmt.Fprint(w, "Bad request")
+	})
+
+	respActual, resp, err := client.Volumes.Get(ctx, testResourceID)
+	assert.Nil(t, respActual)
+	assert.Error(t, err)
+	assert.Equal(t, resp.StatusCode, 400)
 }
 
 func TestVolumes_Create(t *testing.T) {
@@ -89,6 +125,35 @@ func TestVolumes_Create(t *testing.T) {
 	require.Equal(t, respActual, expectedResp)
 }
 
+func TestVolumes_Create_ResponseError(t *testing.T) {
+	setup()
+	defer teardown()
+
+	request := &VolumeCreateRequest{}
+	URL := path.Join(volumesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID))
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodPost)
+		w.WriteHeader(http.StatusBadRequest)
+		_, _ = fmt.Fprint(w, "Bad request")
+	})
+
+	respActual, resp, err := client.Volumes.Create(ctx, request)
+	assert.Nil(t, respActual)
+	assert.Error(t, err)
+	assert.Equal(t, resp.StatusCode, 400)
+}
+
+func TestVolumes_Create_reqBodyNil(t *testing.T) {
+	setup()
+	defer teardown()
+
+	respActual, resp, err := client.Volumes.Create(ctx, nil)
+	assert.Nil(t, respActual)
+	assert.Nil(t, resp)
+	assert.EqualError(t, err, NewArgError("reqBody", "cannot be nil").Error())
+}
+
 func TestVolumes_Delete(t *testing.T) {
 	setup()
 	defer teardown()
@@ -109,6 +174,24 @@ func TestVolumes_Delete(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, resp.StatusCode, 200)
 	require.Equal(t, respActual, expectedResp)
+}
+
+func TestVolumes_Delete_ResponseError(t *testing.T) {
+	setup()
+	defer teardown()
+
+	URL := path.Join(volumesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID)
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodDelete)
+		w.WriteHeader(http.StatusBadRequest)
+		_, _ = fmt.Fprint(w, "Bad request")
+	})
+
+	respActual, resp, err := client.Volumes.Delete(ctx, testResourceID)
+	assert.Nil(t, respActual)
+	assert.Error(t, err)
+	assert.Equal(t, resp.StatusCode, 400)
 }
 
 func TestVolumes_ChangeType(t *testing.T) {
@@ -139,6 +222,35 @@ func TestVolumes_ChangeType(t *testing.T) {
 	require.Equal(t, respActual, expectedResp)
 }
 
+func TestVolumes_ChangeType_ResponseError(t *testing.T) {
+	setup()
+	defer teardown()
+
+	request := &VolumeChangeTypeRequest{}
+	URL := path.Join(volumesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, volumesRetype)
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodPost)
+		w.WriteHeader(http.StatusBadRequest)
+		_, _ = fmt.Fprint(w, "Bad request")
+	})
+
+	respActual, resp, err := client.Volumes.ChangeType(ctx, testResourceID, request)
+	assert.Nil(t, respActual)
+	assert.Error(t, err)
+	assert.Equal(t, resp.StatusCode, 400)
+}
+
+func TestVolumes_ChangeType_reqBodyNil(t *testing.T) {
+	setup()
+	defer teardown()
+
+	respActual, resp, err := client.Volumes.ChangeType(ctx, testResourceID, nil)
+	assert.Nil(t, respActual)
+	assert.Nil(t, resp)
+	assert.EqualError(t, err, NewArgError("reqBody", "cannot be nil").Error())
+}
+
 func TestVolumes_ExtendSize(t *testing.T) {
 	setup()
 	defer teardown()
@@ -165,6 +277,35 @@ func TestVolumes_ExtendSize(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, resp.StatusCode, 200)
 	require.Equal(t, respActual, expectedResp)
+}
+
+func TestVolumes_ExtendSize_ResponseError(t *testing.T) {
+	setup()
+	defer teardown()
+
+	request := &VolumeExtendSizeRequest{}
+	URL := path.Join(volumesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, volumesExtend)
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodPost)
+		w.WriteHeader(http.StatusBadRequest)
+		_, _ = fmt.Fprint(w, "Bad request")
+	})
+
+	respActual, resp, err := client.Volumes.Extend(ctx, testResourceID, request)
+	assert.Nil(t, respActual)
+	assert.Error(t, err)
+	assert.Equal(t, resp.StatusCode, 400)
+}
+
+func TestVolumes_ExtendSize_reqBodyNil(t *testing.T) {
+	setup()
+	defer teardown()
+
+	respActual, resp, err := client.Volumes.Extend(ctx, testResourceID, nil)
+	assert.Nil(t, respActual)
+	assert.Nil(t, resp)
+	assert.EqualError(t, err, NewArgError("reqBody", "cannot be nil").Error())
 }
 
 func TestVolumes_Rename(t *testing.T) {
@@ -199,6 +340,35 @@ func TestVolumes_Rename(t *testing.T) {
 	require.Equal(t, respActual, expectedResp)
 }
 
+func TestVolumes_Rename_ResponseError(t *testing.T) {
+	setup()
+	defer teardown()
+
+	request := &Name{}
+	URL := path.Join(volumesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID)
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodPatch)
+		w.WriteHeader(http.StatusBadRequest)
+		_, _ = fmt.Fprint(w, "Bad request")
+	})
+
+	respActual, resp, err := client.Volumes.Rename(ctx, testResourceID, request)
+	assert.Nil(t, respActual)
+	assert.Error(t, err)
+	assert.Equal(t, resp.StatusCode, 400)
+}
+
+func TestVolumes_Rename_reqBodyNil(t *testing.T) {
+	setup()
+	defer teardown()
+
+	respActual, resp, err := client.Volumes.Rename(ctx, testResourceID, nil)
+	assert.Nil(t, respActual)
+	assert.Nil(t, resp)
+	assert.EqualError(t, err, NewArgError("reqBody", "cannot be nil").Error())
+}
+
 func TestVolumes_Attach(t *testing.T) {
 	setup()
 	defer teardown()
@@ -225,6 +395,35 @@ func TestVolumes_Attach(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, resp.StatusCode, 200)
 	require.Equal(t, respActual, expectedResp)
+}
+
+func TestVolumes_Attach_ResponseError(t *testing.T) {
+	setup()
+	defer teardown()
+
+	request := &VolumeAttachRequest{}
+	URL := path.Join(volumesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, volumesAttach)
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodPost)
+		w.WriteHeader(http.StatusBadRequest)
+		_, _ = fmt.Fprint(w, "Bad request")
+	})
+
+	respActual, resp, err := client.Volumes.Attach(ctx, testResourceID, request)
+	assert.Nil(t, respActual)
+	assert.Error(t, err)
+	assert.Equal(t, resp.StatusCode, 400)
+}
+
+func TestVolumes_Attach_reqBodyNil(t *testing.T) {
+	setup()
+	defer teardown()
+
+	respActual, resp, err := client.Volumes.Attach(ctx, testResourceID, nil)
+	assert.Nil(t, respActual)
+	assert.Nil(t, resp)
+	assert.EqualError(t, err, NewArgError("reqBody", "cannot be nil").Error())
 }
 
 func TestVolumes_Detach(t *testing.T) {
@@ -255,6 +454,35 @@ func TestVolumes_Detach(t *testing.T) {
 	require.Equal(t, respActual, expectedResp)
 }
 
+func TestVolumes_Detach_ResponseError(t *testing.T) {
+	setup()
+	defer teardown()
+
+	request := &VolumeDetachRequest{}
+	URL := path.Join(volumesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, volumesDetach)
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodPost)
+		w.WriteHeader(http.StatusBadRequest)
+		_, _ = fmt.Fprint(w, "Bad request")
+	})
+
+	respActual, resp, err := client.Volumes.Detach(ctx, testResourceID, request)
+	assert.Nil(t, respActual)
+	assert.Error(t, err)
+	assert.Equal(t, resp.StatusCode, 400)
+}
+
+func TestVolumes_Detach_reqBodyNil(t *testing.T) {
+	setup()
+	defer teardown()
+
+	respActual, resp, err := client.Volumes.Detach(ctx, testResourceID, nil)
+	assert.Nil(t, respActual)
+	assert.Nil(t, resp)
+	assert.EqualError(t, err, NewArgError("reqBody", "cannot be nil").Error())
+}
+
 func TestVolumes_Revert(t *testing.T) {
 	setup()
 	defer teardown()
@@ -275,6 +503,24 @@ func TestVolumes_Revert(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, resp.StatusCode, 200)
 	require.Equal(t, respActual, expectedResp)
+}
+
+func TestVolumes_Revert_ResponseError(t *testing.T) {
+	setup()
+	defer teardown()
+
+	URL := path.Join(volumesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, volumesRevert)
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodPost)
+		w.WriteHeader(http.StatusBadRequest)
+		_, _ = fmt.Fprint(w, "Bad request")
+	})
+
+	respActual, resp, err := client.Volumes.Revert(ctx, testResourceID)
+	assert.Nil(t, respActual)
+	assert.Error(t, err)
+	assert.Equal(t, resp.StatusCode, 400)
 }
 
 func TestVolumes_MetadataList(t *testing.T) {
@@ -374,4 +620,149 @@ func TestVolumes_MetadataGetItem(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, resp.StatusCode, 200)
 	require.Equal(t, respActual, expectedResp)
+}
+
+func TestVolumes_isValidUUID_Error_Return_Volume(t *testing.T) {
+	setup()
+	defer teardown()
+
+	tests := []struct {
+		name     string
+		testFunc func() (*Volume, *Response, error)
+	}{
+		{
+			name: "Get",
+			testFunc: func() (*Volume, *Response, error) {
+				return client.Volumes.Get(ctx, testResourceIDNotValidUUID)
+			},
+		},
+		{
+			name: "ChangeType",
+			testFunc: func() (*Volume, *Response, error) {
+				return client.Volumes.ChangeType(ctx, testResourceIDNotValidUUID, nil)
+			},
+		},
+		{
+			name: "Rename",
+			testFunc: func() (*Volume, *Response, error) {
+				return client.Volumes.Rename(ctx, testResourceIDNotValidUUID, nil)
+			},
+		},
+		{
+			name: "Attach",
+			testFunc: func() (*Volume, *Response, error) {
+				return client.Volumes.Attach(ctx, testResourceIDNotValidUUID, nil)
+			},
+		},
+		{
+			name: "Detach",
+			testFunc: func() (*Volume, *Response, error) {
+				return client.Volumes.Detach(ctx, testResourceIDNotValidUUID, nil)
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			respActual, resp, err := tt.testFunc()
+			require.Nil(t, respActual)
+			require.Equal(t, 400, resp.StatusCode)
+			require.EqualError(t, err, NewArgError("volumeID", NotCorrectUUID).Error())
+		})
+	}
+}
+
+func TestVolumes_isValidUUID_Error_Return_TaskResponse(t *testing.T) {
+	setup()
+	defer teardown()
+
+	tests := []struct {
+		name     string
+		testFunc func() (*TaskResponse, *Response, error)
+	}{
+		{
+			name: "Delete",
+			testFunc: func() (*TaskResponse, *Response, error) {
+				return client.Volumes.Delete(ctx, testResourceIDNotValidUUID)
+			},
+		},
+		{
+			name: "Revert",
+			testFunc: func() (*TaskResponse, *Response, error) {
+				return client.Volumes.Revert(ctx, testResourceIDNotValidUUID)
+			},
+		},
+		{
+			name: "Extend",
+			testFunc: func() (*TaskResponse, *Response, error) {
+				return client.Volumes.Extend(ctx, testResourceIDNotValidUUID, nil)
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			respActual, resp, err := tt.testFunc()
+			require.Nil(t, respActual)
+			require.Equal(t, 400, resp.StatusCode)
+			require.EqualError(t, err, NewArgError("volumeID", NotCorrectUUID).Error())
+		})
+	}
+}
+
+func TestVolumes_Metadata_isValidUUID_Error_Return_Response(t *testing.T) {
+	setup()
+	defer teardown()
+
+	tests := []struct {
+		name     string
+		testFunc func() (*Response, error)
+	}{
+		{
+			name: "MetadataCreate",
+			testFunc: func() (*Response, error) {
+				return client.Volumes.MetadataCreate(ctx, testResourceIDNotValidUUID, nil)
+			},
+		},
+		{
+			name: "MetadataUpdate",
+			testFunc: func() (*Response, error) {
+				return client.Volumes.MetadataUpdate(ctx, testResourceIDNotValidUUID, nil)
+			},
+		},
+		{
+			name: "MetadataDeleteItem",
+			testFunc: func() (*Response, error) {
+				return client.Volumes.MetadataDeleteItem(ctx, testResourceIDNotValidUUID, nil)
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			resp, err := tt.testFunc()
+			require.Equal(t, 400, resp.StatusCode)
+			require.EqualError(t, err, NewArgError("volumeID", NotCorrectUUID).Error())
+		})
+	}
+}
+
+func TestVolumes_MetadataList_isValidUUID_Error(t *testing.T) {
+	setup()
+	defer teardown()
+
+	respActual, resp, err := client.Volumes.MetadataList(ctx, testResourceIDNotValidUUID)
+	require.Nil(t, respActual)
+	require.Equal(t, 400, resp.StatusCode)
+	require.EqualError(t, err, NewArgError("volumeID", NotCorrectUUID).Error())
+}
+
+func TestVolumes_MetadataGetItem_isValidUUID_Error(t *testing.T) {
+	setup()
+	defer teardown()
+
+	respActual, resp, err := client.Volumes.MetadataGetItem(ctx, testResourceIDNotValidUUID, nil)
+	require.Nil(t, respActual)
+	require.Equal(t, 400, resp.StatusCode)
+	require.EqualError(t, err, NewArgError("volumeID", NotCorrectUUID).Error())
 }

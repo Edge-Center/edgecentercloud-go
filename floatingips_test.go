@@ -34,6 +34,24 @@ func TestFloatingips_List(t *testing.T) {
 	require.Equal(t, respActual, expectedResp)
 }
 
+func TestFloatingips_List_ResponseError(t *testing.T) {
+	setup()
+	defer teardown()
+
+	URL := path.Join(floatingipsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID))
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodGet)
+		w.WriteHeader(http.StatusBadRequest)
+		_, _ = fmt.Fprint(w, "Bad request")
+	})
+
+	respActual, resp, err := client.Floatingips.List(ctx)
+	assert.Nil(t, respActual)
+	assert.Error(t, err)
+	assert.Equal(t, resp.StatusCode, 400)
+}
+
 func TestFloatingips_Get(t *testing.T) {
 	setup()
 	defer teardown()
@@ -54,6 +72,24 @@ func TestFloatingips_Get(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, resp.StatusCode, 200)
 	require.Equal(t, respActual, expectedResp)
+}
+
+func TestFloatingips_Get_ResponseError(t *testing.T) {
+	setup()
+	defer teardown()
+
+	URL := path.Join(floatingipsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID)
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodGet)
+		w.WriteHeader(http.StatusBadRequest)
+		_, _ = fmt.Fprint(w, "Bad request")
+	})
+
+	respActual, resp, err := client.Floatingips.Get(ctx, testResourceID)
+	assert.Nil(t, respActual)
+	assert.Error(t, err)
+	assert.Equal(t, resp.StatusCode, 400)
 }
 
 func TestFloatingips_Create(t *testing.T) {
@@ -84,6 +120,25 @@ func TestFloatingips_Create(t *testing.T) {
 	require.Equal(t, respActual, expectedResp)
 }
 
+func TestFloatingips_Create_ResponseError(t *testing.T) {
+	setup()
+	defer teardown()
+
+	request := &FloatingIPCreateRequest{}
+	URL := path.Join(floatingipsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID))
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodPost)
+		w.WriteHeader(http.StatusBadRequest)
+		_, _ = fmt.Fprint(w, "Bad request")
+	})
+
+	respActual, resp, err := client.Floatingips.Create(ctx, request)
+	assert.Nil(t, respActual)
+	assert.Error(t, err)
+	assert.Equal(t, resp.StatusCode, 400)
+}
+
 func TestFloatingips_Delete(t *testing.T) {
 	setup()
 	defer teardown()
@@ -104,6 +159,24 @@ func TestFloatingips_Delete(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, resp.StatusCode, 200)
 	require.Equal(t, respActual, expectedResp)
+}
+
+func TestFloatingips_Delete_ResponseError(t *testing.T) {
+	setup()
+	defer teardown()
+
+	URL := path.Join(floatingipsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID)
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodDelete)
+		w.WriteHeader(http.StatusBadRequest)
+		_, _ = fmt.Fprint(w, "Bad request")
+	})
+
+	respActual, resp, err := client.Floatingips.Delete(ctx, testResourceID)
+	assert.Nil(t, respActual)
+	assert.Error(t, err)
+	assert.Equal(t, resp.StatusCode, 400)
 }
 
 func TestFloatingips_Assign(t *testing.T) {
@@ -132,6 +205,35 @@ func TestFloatingips_Assign(t *testing.T) {
 	require.Equal(t, respActual, expectedResp)
 }
 
+func TestFloatingips_Assign_ResponseError(t *testing.T) {
+	setup()
+	defer teardown()
+
+	request := &AssignFloatingIPRequest{}
+	URL := path.Join(floatingipsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, floatingipsAssign)
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodPost)
+		w.WriteHeader(http.StatusBadRequest)
+		_, _ = fmt.Fprint(w, "Bad request")
+	})
+
+	respActual, resp, err := client.Floatingips.Assign(ctx, testResourceID, request)
+	assert.Nil(t, respActual)
+	assert.Error(t, err)
+	assert.Equal(t, resp.StatusCode, 400)
+}
+
+func TestFloatingips_Assign_reqBodyNil(t *testing.T) {
+	setup()
+	defer teardown()
+
+	respActual, resp, err := client.Floatingips.Assign(ctx, testResourceID, nil)
+	assert.Nil(t, respActual)
+	assert.Nil(t, resp)
+	assert.EqualError(t, err, NewArgError("reqBody", "cannot be nil").Error())
+}
+
 func TestFloatingips_UnAssign(t *testing.T) {
 	setup()
 	defer teardown()
@@ -154,6 +256,24 @@ func TestFloatingips_UnAssign(t *testing.T) {
 	require.Equal(t, respActual, expectedResp)
 }
 
+func TestFloatingips_UnAssign_ResponseError(t *testing.T) {
+	setup()
+	defer teardown()
+
+	URL := path.Join(floatingipsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, floatingipsUnAssign)
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodPost)
+		w.WriteHeader(http.StatusBadRequest)
+		_, _ = fmt.Fprint(w, "Bad request")
+	})
+
+	respActual, resp, err := client.Floatingips.UnAssign(ctx, testResourceID)
+	assert.Nil(t, respActual)
+	assert.Error(t, err)
+	assert.Equal(t, resp.StatusCode, 400)
+}
+
 func TestFloatingips_ListAvailable(t *testing.T) {
 	setup()
 	defer teardown()
@@ -174,6 +294,24 @@ func TestFloatingips_ListAvailable(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, resp.StatusCode, 200)
 	require.Equal(t, respActual, expectedResp)
+}
+
+func TestFloatingips_ListAvailable_ResponseError(t *testing.T) {
+	setup()
+	defer teardown()
+
+	URL := path.Join(availableFloatingipsPathV1, strconv.Itoa(projectID), strconv.Itoa(regionID))
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodGet)
+		w.WriteHeader(http.StatusBadRequest)
+		_, _ = fmt.Fprint(w, "Bad request")
+	})
+
+	respActual, resp, err := client.Floatingips.ListAvailable(ctx)
+	assert.Nil(t, respActual)
+	assert.Error(t, err)
+	assert.Equal(t, resp.StatusCode, 400)
 }
 
 func TestFloatingips_MetadataList(t *testing.T) {
