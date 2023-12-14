@@ -344,6 +344,98 @@ func TestLBPoolGetByName_CustomErrors(t *testing.T) {
 	}
 }
 
+func TestPoolMemberGetByID(t *testing.T) {
+	mux := http.NewServeMux()
+	server := httptest.NewServer(mux)
+	defer server.Close()
+
+	pool := edgecloud.Pool{
+		ID: testResourceID,
+		Members: []edgecloud.PoolMember{
+			{
+				ID: testResourceID,
+			},
+		},
+	}
+
+	URL := path.Join("/v1/lbpools", strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID)
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		resp, err := json.Marshal(pool)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
+		_, _ = fmt.Fprint(w, string(resp))
+	})
+
+	client := edgecloud.NewClient(nil)
+	baseURL, _ := url.Parse(server.URL)
+	client.BaseURL = baseURL
+	client.Project = projectID
+	client.Region = regionID
+
+	member, err := PoolMemberGetByID(context.Background(), client, testResourceID, testResourceID)
+	assert.NoError(t, err)
+	assert.Equal(t, testResourceID, member.ID)
+}
+
+func TestPoolMemberGetByID_Error_PoolGet(t *testing.T) {
+	mux := http.NewServeMux()
+	server := httptest.NewServer(mux)
+	defer server.Close()
+
+	URL := path.Join("/v1/lbpools", strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID)
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusInternalServerError)
+	})
+
+	client := edgecloud.NewClient(nil)
+	baseURL, _ := url.Parse(server.URL)
+	client.BaseURL = baseURL
+	client.Project = projectID
+	client.Region = regionID
+
+	member, err := PoolMemberGetByID(context.Background(), client, testResourceID, testResourceID)
+	assert.Error(t, err)
+	assert.Nil(t, member)
+}
+
+func TestPoolMemberGetByID_Error_ErrLoadbalancerPoolsMemberNotFound(t *testing.T) {
+	mux := http.NewServeMux()
+	server := httptest.NewServer(mux)
+	defer server.Close()
+
+	pool := edgecloud.Pool{
+		ID: testResourceID,
+		Members: []edgecloud.PoolMember{
+			{
+				ID: "123",
+			},
+		},
+	}
+
+	URL := path.Join("/v1/lbpools", strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID)
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		resp, err := json.Marshal(pool)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
+		_, _ = fmt.Fprint(w, string(resp))
+	})
+
+	client := edgecloud.NewClient(nil)
+	baseURL, _ := url.Parse(server.URL)
+	client.BaseURL = baseURL
+	client.Project = projectID
+	client.Region = regionID
+
+	member, err := PoolMemberGetByID(context.Background(), client, testResourceID, testResourceID)
+	assert.ErrorIs(t, err, ErrLoadbalancerPoolsMemberNotFound)
+	assert.Nil(t, member)
+}
+
 func TestWaitLoadbalancerProvisioningStatusActive(t *testing.T) {
 	mux := http.NewServeMux()
 	server := httptest.NewServer(mux)

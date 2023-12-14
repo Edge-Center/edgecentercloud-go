@@ -9,12 +9,13 @@ import (
 )
 
 var (
-	ErrLoadbalancersNotFound        = errors.New("no Loadbalancers were found for the specified search criteria")
-	ErrLoadbalancerPoolsNotFound    = errors.New("no Loadbalancer pools were found for the specified search criteria")
-	ErrLoadbalancerListenerNotFound = errors.New("no Loadbalancer listener were found for the specified search criteria")
-	ErrMultipleResults              = errors.New("multiple results where only one expected")
-	ErrErrorState                   = errors.New("loadbalancer in Error state")
-	ErrNotActiveStatus              = errors.New("waiting for Active status")
+	ErrLoadbalancersNotFound           = errors.New("no Loadbalancers were found for the specified search criteria")
+	ErrLoadbalancerPoolsNotFound       = errors.New("no Loadbalancer pools were found for the specified search criteria")
+	ErrLoadbalancerPoolsMemberNotFound = errors.New("no Loadbalancer pool member were found for the specified search criteria")
+	ErrLoadbalancerListenerNotFound    = errors.New("no Loadbalancer listener were found for the specified search criteria")
+	ErrMultipleResults                 = errors.New("multiple results where only one expected")
+	ErrErrorState                      = errors.New("loadbalancer in Error state")
+	ErrNotActiveStatus                 = errors.New("waiting for Active status")
 )
 
 func LoadbalancerGetByName(ctx context.Context, client *edgecloud.Client, name string) (*edgecloud.Loadbalancer, error) {
@@ -100,6 +101,21 @@ func LBPoolGetByName(ctx context.Context, client *edgecloud.Client, name, loadBa
 	default:
 		return nil, ErrMultipleResults
 	}
+}
+
+func PoolMemberGetByID(ctx context.Context, client *edgecloud.Client, poolID, memberID string) (*edgecloud.PoolMember, error) {
+	lbPool, _, err := client.Loadbalancers.PoolGet(ctx, poolID)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, member := range lbPool.Members {
+		if member.ID == memberID {
+			return &member, nil
+		}
+	}
+
+	return nil, ErrLoadbalancerPoolsMemberNotFound
 }
 
 func LBSharedPoolList(ctx context.Context, client *edgecloud.Client, loadBalancerID string) ([]edgecloud.Pool, error) {
