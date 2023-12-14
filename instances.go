@@ -147,10 +147,10 @@ type InstanceAddress struct {
 type InterfaceType string
 
 const (
-	AnySubnetInterfaceType InterfaceType = "any_subnet"
-	ExternalInterfaceType  InterfaceType = "external"
-	ReservedFixedIPType    InterfaceType = "reserved_fixed_ip"
-	SubnetInterfaceType    InterfaceType = "subnet"
+	InterfaceTypeAnySubnet       InterfaceType = "any_subnet"
+	InterfaceTypeExternal        InterfaceType = "external"
+	InterfaceTypeReservedFixedIP InterfaceType = "reserved_fixed_ip"
+	InterfaceTypeSubnet          InterfaceType = "subnet"
 )
 
 type InstanceInterface struct {

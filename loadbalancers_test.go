@@ -161,7 +161,7 @@ func TestLoadbalancers_ListenerCreate(t *testing.T) {
 		Name:           "test-loadbalancer",
 		Protocol:       ListenerProtocolTCP,
 		ProtocolPort:   80,
-		LoadBalancerID: testResourceID,
+		LoadbalancerID: testResourceID,
 	}
 	expectedResp := &TaskResponse{Tasks: []string{taskID}}
 	URL := path.Join(lblistenersBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID))
@@ -376,7 +376,7 @@ func TestLoadbalancers_PoolList(t *testing.T) {
 	setup()
 	defer teardown()
 
-	options := PoolListOptions{LoadBalancerID: testResourceID}
+	options := PoolListOptions{LoadbalancerID: testResourceID}
 	expectedResp := []Pool{{ID: testResourceID}}
 	URL := path.Join(lbpoolsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID))
 

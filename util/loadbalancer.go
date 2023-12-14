@@ -9,11 +9,13 @@ import (
 )
 
 var (
-	ErrLoadbalancersNotFound     = errors.New("no Loadbalancers were found for the specified search criteria")
-	ErrLoadbalancerPoolsNotFound = errors.New("no Loadbalancer pools were found for the specified search criteria")
-	ErrMultipleResults           = errors.New("multiple results where only one expected")
-	ErrErrorState                = errors.New("loadbalancer in Error state")
-	ErrNotActiveStatus           = errors.New("waiting for Active status")
+	ErrLoadbalancersNotFound           = errors.New("no Loadbalancers were found for the specified search criteria")
+	ErrLoadbalancerPoolsNotFound       = errors.New("no Loadbalancer pools were found for the specified search criteria")
+	ErrLoadbalancerPoolsMemberNotFound = errors.New("no Loadbalancer pool member were found for the specified search criteria")
+	ErrLoadbalancerListenerNotFound    = errors.New("no Loadbalancer listener were found for the specified search criteria")
+	ErrMultipleResults                 = errors.New("multiple results where only one expected")
+	ErrErrorState                      = errors.New("loadbalancer in Error state")
+	ErrNotActiveStatus                 = errors.New("waiting for Active status")
 )
 
 func LoadbalancerGetByName(ctx context.Context, client *edgecloud.Client, name string) (*edgecloud.Loadbalancer, error) {
@@ -42,11 +44,40 @@ func LoadbalancerGetByName(ctx context.Context, client *edgecloud.Client, name s
 	}
 }
 
+func LBListenerGetByName(ctx context.Context, client *edgecloud.Client, name, loadBalancerID string) (*edgecloud.Listener, error) {
+	var matchedLBListeners []edgecloud.Listener
+
+	listenerListOptions := edgecloud.ListenerListOptions{
+		LoadbalancerID: loadBalancerID,
+	}
+	lbListeners, _, err := client.Loadbalancers.ListenerList(ctx, &listenerListOptions)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, lis := range lbListeners {
+		if lis.Name == name &&
+			lis.ProvisioningStatus != edgecloud.ProvisioningStatusDeleted &&
+			lis.ProvisioningStatus != edgecloud.ProvisioningStatusPendingDelete {
+			matchedLBListeners = append(matchedLBListeners, lis)
+		}
+	}
+
+	switch len(matchedLBListeners) {
+	case 1:
+		return &matchedLBListeners[0], nil
+	case 0:
+		return nil, ErrLoadbalancerListenerNotFound
+	default:
+		return nil, ErrMultipleResults
+	}
+}
+
 func LBPoolGetByName(ctx context.Context, client *edgecloud.Client, name, loadBalancerID string) (*edgecloud.Pool, error) {
 	var matchedLBPools []edgecloud.Pool
 
 	poolListOptions := edgecloud.PoolListOptions{
-		LoadBalancerID: loadBalancerID,
+		LoadbalancerID: loadBalancerID,
 		Details:        true,
 	}
 	lbPools, _, err := client.Loadbalancers.PoolList(ctx, &poolListOptions)
@@ -72,11 +103,26 @@ func LBPoolGetByName(ctx context.Context, client *edgecloud.Client, name, loadBa
 	}
 }
 
+func PoolMemberGetByID(ctx context.Context, client *edgecloud.Client, poolID, memberID string) (*edgecloud.PoolMember, error) {
+	lbPool, _, err := client.Loadbalancers.PoolGet(ctx, poolID)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, member := range lbPool.Members {
+		if member.ID == memberID {
+			return &member, nil
+		}
+	}
+
+	return nil, ErrLoadbalancerPoolsMemberNotFound
+}
+
 func LBSharedPoolList(ctx context.Context, client *edgecloud.Client, loadBalancerID string) ([]edgecloud.Pool, error) {
 	var sharedPools []edgecloud.Pool
 
 	poolListOptions := edgecloud.PoolListOptions{
-		LoadBalancerID: loadBalancerID,
+		LoadbalancerID: loadBalancerID,
 	}
 	lbPools, _, err := client.Loadbalancers.PoolList(ctx, &poolListOptions)
 	if err != nil {
@@ -92,7 +138,7 @@ func LBSharedPoolList(ctx context.Context, client *edgecloud.Client, loadBalance
 	return sharedPools, nil
 }
 
-func WaitLoadBalancerProvisioningStatusActive(ctx context.Context, client *edgecloud.Client, loadBalancerID string, attempts *uint) error {
+func WaitLoadbalancerProvisioningStatusActive(ctx context.Context, client *edgecloud.Client, loadBalancerID string, attempts *uint) error {
 	return WithRetry(
 		func() error {
 			loadBalancer, _, err := client.Loadbalancers.Get(ctx, loadBalancerID)
@@ -147,7 +193,7 @@ func DeletePoolByNameIfExist(ctx context.Context, client *edgecloud.Client, name
 
 func DeleteUnusedPools(ctx context.Context, client *edgecloud.Client, oldPools []edgecloud.Pool, newPoolsIDs []string, attempts *uint) error {
 	for _, oldPool := range oldPools {
-		lbID := oldPool.LoadBalancers[0].ID
+		lbID := oldPool.Loadbalancers[0].ID
 
 		var exist bool
 		for _, newPool := range newPoolsIDs {
@@ -166,7 +212,7 @@ func DeleteUnusedPools(ctx context.Context, client *edgecloud.Client, oldPools [
 				return err
 			}
 
-			if err = WaitLoadBalancerProvisioningStatusActive(ctx, client, lbID, attempts); err != nil {
+			if err = WaitLoadbalancerProvisioningStatusActive(ctx, client, lbID, attempts); err != nil {
 				return err
 			}
 		}

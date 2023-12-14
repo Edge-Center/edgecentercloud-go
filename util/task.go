@@ -26,26 +26,27 @@ var (
 )
 
 type TaskResult struct {
-	DdosProfiles   []int    `json:"ddos_profiles"`
-	FloatingIPs    []string `json:"floatingips"`
-	HealthMonitors []string `json:"healthmonitors"`
-	Images         []string `json:"images"`
-	Instances      []string `json:"instances"`
-	L7Polices      []string `json:"l7polices"`
-	L7Rules        []string `json:"l7rules"`
-	Listeners      []string `json:"listeners"`
-	LoadBalancers  []string `json:"loadbalancers"`
-	Members        []string `json:"members"`
-	Networks       []string `json:"networks"`
-	Pools          []string `json:"pools"`
-	Ports          []string `json:"ports"`
-	Projects       []string `json:"projects"`
-	Routers        []string `json:"routers"`
-	Secrets        []string `json:"secrets"`
-	ServerGroups   []string `json:"servergroups"`
-	Snapshots      []string `json:"snapshots"`
-	Subnets        []string `json:"subnets"`
-	Volumes        []string `json:"volumes"`
+	DdosProfiles     []int    `json:"ddos_profiles"`
+	FloatingIPs      []string `json:"floatingips"`
+	HealthMonitors   []string `json:"healthmonitors"`
+	Images           []string `json:"images"`
+	Instances        []string `json:"instances"`
+	L7Polices        []string `json:"l7polices"`
+	L7Rules          []string `json:"l7rules"`
+	Listeners        []string `json:"listeners"`
+	Loadbalancers    []string `json:"loadbalancers"`
+	Members          []string `json:"members"`
+	Networks         []string `json:"networks"`
+	Pools            []string `json:"pools"`
+	Ports            []string `json:"ports"`
+	Projects         []string `json:"projects"`
+	ReservedFixedIPs []string `json:"reserved_fixed_ips"`
+	Routers          []string `json:"routers"`
+	Secrets          []string `json:"secrets"`
+	ServerGroups     []string `json:"servergroups"`
+	Snapshots        []string `json:"snapshots"`
+	Subnets          []string `json:"subnets"`
+	Volumes          []string `json:"volumes"`
 }
 
 type TaskAPIFunc[T any] func(ctx context.Context, opt T) (*edgecloud.TaskResponse, *edgecloud.Response, error)
