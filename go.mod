@@ -1,4 +1,4 @@
-module github.com/Edge-Center/edgecentercloud-go
+module github.com/Edge-Center/edgecentercloud-go/v2
 
 go 1.21
 

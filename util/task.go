@@ -8,7 +8,7 @@ import (
 
 	"github.com/mitchellh/mapstructure"
 
-	edgecloud "github.com/Edge-Center/edgecentercloud-go"
+	edgecloud "github.com/Edge-Center/edgecentercloud-go/v2"
 )
 
 const (

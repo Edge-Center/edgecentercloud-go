@@ -20,7 +20,7 @@ for non Go modules usage or latest version.
 ## Usage
 
 ```go
-import edgecloud "github.com/Edge-Center/edgecentercloud-go"
+import edgecloud "github.com/Edge-Center/edgecentercloud-go/v2"
 ```
 
 Create a new EdgeCloud client, then use the exposed services to
@@ -38,7 +38,7 @@ Additionally, you need to set the base URL for the API, Region and Project
 package main
 
 import (
-	edgecloud "github.com/Edge-Center/edgecentercloud-go"
+	edgecloud "github.com/Edge-Center/edgecentercloud-go/v2"
 )
 
 func main() {

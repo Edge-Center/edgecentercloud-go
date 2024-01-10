@@ -3,7 +3,7 @@ package util
 import (
 	"context"
 
-	edgecloud "github.com/Edge-Center/edgecentercloud-go"
+	edgecloud "github.com/Edge-Center/edgecentercloud-go/v2"
 )
 
 func LoadbalancerFlavorIsExist(ctx context.Context, client *edgecloud.Client, flavorName string) (bool, error) {

@@ -13,7 +13,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	edgecloud "github.com/Edge-Center/edgecentercloud-go"
+	edgecloud "github.com/Edge-Center/edgecentercloud-go/v2"
 )
 
 func TestWaitForInstanceShutoff(t *testing.T) {

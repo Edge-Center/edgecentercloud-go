@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	edgecloud "github.com/Edge-Center/edgecentercloud-go"
+	edgecloud "github.com/Edge-Center/edgecentercloud-go/v2"
 )
 
 var ErrServerGroupNotFound = errors.New("no server group was found for the specified search criteria")

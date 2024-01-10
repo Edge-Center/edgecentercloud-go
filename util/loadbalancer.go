@@ -5,7 +5,7 @@ import (
 	"errors"
 	"net"
 
-	edgecloud "github.com/Edge-Center/edgecentercloud-go"
+	edgecloud "github.com/Edge-Center/edgecentercloud-go/v2"
 )
 
 var (
@@ -146,7 +146,7 @@ func WaitLoadbalancerProvisioningStatusActive(ctx context.Context, client *edgec
 				return err
 			}
 
-			switch loadBalancer.ProvisioningStatus { //nolint: exhaustive
+			switch loadBalancer.ProvisioningStatus { //nolint:exhaustive
 			case edgecloud.ProvisioningStatusActive:
 				return err
 			case edgecloud.ProvisioningStatusError:

@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	edgecloud "github.com/Edge-Center/edgecentercloud-go"
+	edgecloud "github.com/Edge-Center/edgecentercloud-go/v2"
 )
 
 var ErrL7PoliciesNotFound = errors.New("no l7Policies were found for the specified search criteria")

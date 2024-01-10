@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	edgecloud "github.com/Edge-Center/edgecentercloud-go"
+	edgecloud "github.com/Edge-Center/edgecentercloud-go/v2"
 )
 
 const SnapshotReadyStatus = "available"
