@@ -1,8 +1,9 @@
-module github.com/Edge-Center/edgecentercloud-go
+module github.com/Edge-Center/edgecentercloud-go/v2
 
 go 1.21
 
 require (
+	github.com/Edge-Center/edgecentercloud-go v1.0.1
 	github.com/avast/retry-go/v4 v4.5.1
 	github.com/google/go-querystring v1.1.0
 	github.com/google/uuid v1.3.1
@@ -12,6 +13,7 @@ require (
 )
 
 require (
+	github.com/avast/retry-go/v3 v3.1.1 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
