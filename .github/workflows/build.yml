@@ -23,6 +23,9 @@ jobs:
       - name: Generate test coverage
         run: go test ./... -coverprofile=./cover.out -covermode=atomic
 
+      - name: Get updated edgecentercloud-go package
+        run: go get -u github.com/Edge-Center/edgecentercloud-go/v2
+
       - name: Check test coverage
         uses: vladopajic/go-test-coverage@v2
         with:
