@@ -26,38 +26,30 @@ var _ RegionsService = &RegionsServiceOp{}
 
 // Region represents a EdgecenterCloud Region configuration.
 type Region struct {
-	HasKVM                             bool               `json:"has_kvm"`
-	HasAI                              bool               `json:"has_ai"`
-	HasK8S                             bool               `json:"has_k8s"`
-	DisplayName                        string             `json:"display_name"`
-	HasBaremetal                       bool               `json:"has_baremetal"`
-	VLANPhysicalNetwork                string             `json:"vlan_physical_network"`
-	EndpointType                       RegionEndpointType `json:"endpoint_type"`
-	Zone                               Zone               `json:"zone"`
-	FaaSEndpoint                       ServiceEndpoint    `json:"faas_endpoint"`
-	SpiceProxyURL                      string             `json:"spice_proxy_url"`
-	KeystoneID                         int                `json:"keystone_id"`
-	KeystoneName                       string             `json:"keystone_name"`
-	HasDDOSProtection                  bool               `json:"has_ddos_protection"`
-	Keystone                           Keystone           `json:"keystone"`
-	MetricsDatabaseID                  int                `json:"metrics_database_id"`
-	SerialProxyURL                     string             `json:"serial_proxy_url"`
-	ID                                 int                `json:"id"`
-	TaskID                             *string            `json:"task_id"`
-	LaaSEndpointID                     int                `json:"laas_endpoint_id"`
-	ExternalNetworkID                  string             `json:"external_network_id"`
-	AccessLevel                        string             `json:"access_level"`
-	VIPUControllerManagerAPIEndpointID int                `json:"vipu_controller_manager_api_endpoint_id"`
-	CreatedOn                          string             `json:"created_on"`
-	LaaSEndpoint                       ServiceEndpoint    `json:"laas_endpoint"`
-	AvailableVolumeTypes               []string           `json:"available_volume_types"`
-	Country                            string             `json:"country"`
-	NoVNSProxyURL                      string             `json:"novnc_proxy_url"`
-	K8SMasterFlavorID                  string             `json:"k8s_master_flavor_id"`
-	FaaSEndpointID                     string             `json:"faas_endpoint_id"`
-	State                              RegionState        `json:"state"`
-	MetricsDatabase                    MetricsDatabase    `json:"metrics_database"`
-	VIPUControllerManagerAPIEndpoint   ServiceEndpoint    `json:"vipu_controller_manager_api_endpoint"`
+	HasKVM               bool               `json:"has_kvm"`
+	HasK8S               bool               `json:"has_k8s"`
+	DisplayName          string             `json:"display_name"`
+	HasBaremetal         bool               `json:"has_baremetal"`
+	VLANPhysicalNetwork  string             `json:"vlan_physical_network"`
+	EndpointType         RegionEndpointType `json:"endpoint_type"`
+	Zone                 Zone               `json:"zone"`
+	SpiceProxyURL        string             `json:"spice_proxy_url"`
+	KeystoneID           int                `json:"keystone_id"`
+	KeystoneName         string             `json:"keystone_name"`
+	Keystone             Keystone           `json:"keystone"`
+	MetricsDatabaseID    int                `json:"metrics_database_id"`
+	SerialProxyURL       string             `json:"serial_proxy_url"`
+	ID                   int                `json:"id"`
+	TaskID               *string            `json:"task_id"`
+	ExternalNetworkID    string             `json:"external_network_id"`
+	AccessLevel          string             `json:"access_level"`
+	CreatedOn            string             `json:"created_on"`
+	AvailableVolumeTypes []string           `json:"available_volume_types"`
+	Country              string             `json:"country"`
+	NoVNSProxyURL        string             `json:"novnc_proxy_url"`
+	K8SMasterFlavorID    string             `json:"k8s_master_flavor_id"`
+	State                RegionState        `json:"state"`
+	MetricsDatabase      MetricsDatabase    `json:"metrics_database"`
 }
 
 type Zone string
@@ -76,26 +68,6 @@ const (
 	RegionEndpointTypeInternal RegionEndpointType = "internal"
 	RegionEndpointTypeAdmin    RegionEndpointType = "admin"
 )
-
-type FaaSEndpoint struct {
-	ID            int    `json:"id"`
-	Service       string `json:"service"`
-	URL           string `json:"url"`
-	AdminUsername string `json:"admin_username"`
-	AdminPassword string `json:"admin_password"`
-	CreatedOn     string `json:"created_on"`
-	UpdatedAt     string `json:"updated_at"`
-}
-
-type ServiceEndpoint struct {
-	ID            int    `json:"id"`
-	Service       string `json:"service"`
-	URL           string `json:"url"`
-	AdminUsername string `json:"admin_username"`
-	AdminPassword string `json:"admin_password"`
-	CreatedOn     string `json:"created_on"`
-	UpdatedAt     string `json:"updated_at"`
-}
 
 type Keystone struct {
 	ID                        int           `json:"id"`
