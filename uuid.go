@@ -17,5 +17,5 @@ func isValidUUID(id, name string) (*Response, error) {
 		}, NewArgError(name, fmt.Sprintf("should be the correct UUID. current value is: %s", id))
 	}
 
-	return nil, nil //nolint
+	return nil, nil // nolint
 }
