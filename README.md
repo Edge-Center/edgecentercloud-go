@@ -2,18 +2,25 @@
 
 Edgecloud is a Go client library for accessing the Edgecenter Cloud API.
 
-You can view Edgecenter Cloud API docs here: [https://apidocs.edgecenter.ru/cloud](https://docs.digitalocean.com/reference/api/api-reference/)
+You can view Edgecenter Cloud API docs here: [https://apidocs.edgecenter.ru/cloud](https://apidocs.edgecenter.ru/cloud)
+
+# Versions
+| Version | Supported? | Support expiration | Edgecloud CLI (ec_client) | How to use                                                                                                                                               | Notes                                                   |
+|---------|------------|--------------------|---------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------|
+| master  | ✅          | _                  | :x:                       | `import "github.com/Edge-Center/edgecentercloud-go/v2"`  and choose version at go.mod file as commit sha like `b193c6019f9a196442db420ac20644772c064c65` | New features and bug fixes arrive here first            |
+| v2      | ✅          | _                  | :x:                       | `import "github.com/Edge-Center/edgecentercloud-go/v2"`  and choose version at go.mod file as release version like `v2.X.Y`                              | Used for stable releases                                |                         
+| v1      | ✅          | 15.02.2024         | ✅                         | `import "github.com/Edge-Center/edgecentercloud-go"`     and choose version at go.mod file as release version like `v1.X.Y`                              | Not recommended. Use only for edgecloud ec_client usage |   
 
 ## Install
 ```sh
-go get github.com/Edge-Center/edgecentercloud-go@vX.Y.Z
+go get github.com/Edge-Center/edgecentercloud-go/v2@vX.Y.Z
 ```
 
 where X.Y.Z is the [version](https://github.com/Edge-Center/edgecentercloud-go/releases) you need.
 
 or
 ```sh
-go get github.com/Edge-Center/edgecentercloud-go
+go get github.com/Edge-Center/edgecentercloud-go/v2
 ```
 for non Go modules usage or latest version.
 
