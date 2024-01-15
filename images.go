@@ -54,32 +54,32 @@ var _ ImagesService = &ImagesServiceOp{}
 
 // Image represents an EdgecenterCloud Image.
 type Image struct {
-	DiskFormat       string           `json:"disk_format"`
-	MetadataDetailed MetadataDetailed `json:"metadata_detailed"`
-	Metadata         Metadata         `json:"metadata"`
-	MinRAM           int              `json:"min_ram"`
-	MinDisk          int              `json:"min_disk"`
-	OSVersion        string           `json:"os_version"`
-	CreatedAt        string           `json:"created_at"`
-	UpdatedAt        string           `json:"updated_at"`
-	TaskID           string           `json:"task_id"`
-	ProjectID        int              `json:"project_id"`
-	RegionID         int              `json:"region_id"`
-	Region           string           `json:"region"`
-	CreatorTaskID    string           `json:"creator_task_id"`
-	Status           string           `json:"status"`
-	OSType           OSType           `json:"os_type"`
-	SSHKey           SSHKey           `json:"ssh_key"`
-	OSDistro         string           `json:"os_distro"`
-	Visibility       string           `json:"visibility"`
-	DisplayOrder     int              `json:"display_order"`
-	HWFirmwareType   HWFirmwareType   `json:"hw_firmware_type"`
-	Name             string           `json:"name"`
-	Size             int              `json:"size"`
-	IsBaremetal      bool             `json:"is_baremetal"`
-	HWMachineType    HWMachineType    `json:"hw_machine_type"`
-	Description      string           `json:"description"`
-	ID               string           `json:"id"`
+	DiskFormat       string             `json:"disk_format"`
+	MetadataDetailed []MetadataDetailed `json:"metadata_detailed,omitempty"`
+	Metadata         Metadata           `json:"metadata"`
+	MinRAM           int                `json:"min_ram"`
+	MinDisk          int                `json:"min_disk"`
+	OSVersion        string             `json:"os_version"`
+	CreatedAt        string             `json:"created_at"`
+	UpdatedAt        string             `json:"updated_at"`
+	TaskID           string             `json:"task_id"`
+	ProjectID        int                `json:"project_id"`
+	RegionID         int                `json:"region_id"`
+	Region           string             `json:"region"`
+	CreatorTaskID    string             `json:"creator_task_id"`
+	Status           string             `json:"status"`
+	OSType           OSType             `json:"os_type"`
+	SSHKey           SSHKey             `json:"ssh_key"`
+	OSDistro         string             `json:"os_distro"`
+	Visibility       string             `json:"visibility"`
+	DisplayOrder     int                `json:"display_order"`
+	HWFirmwareType   HWFirmwareType     `json:"hw_firmware_type"`
+	Name             string             `json:"name"`
+	Size             int                `json:"size"`
+	IsBaremetal      bool               `json:"is_baremetal"`
+	HWMachineType    HWMachineType      `json:"hw_machine_type"`
+	Description      string             `json:"description"`
+	ID               string             `json:"id"`
 }
 
 type OSType string
