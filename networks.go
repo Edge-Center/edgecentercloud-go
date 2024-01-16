@@ -46,23 +46,23 @@ var _ NetworksService = &NetworksServiceOp{}
 
 // Network represents an EdgecenterCloud Network.
 type Network struct {
-	ID             string     `json:"id"`
-	Name           string     `json:"name"`
-	CreatedAt      string     `json:"created_at"`
-	CreatorTaskID  string     `json:"creator_task_id"`
-	Default        bool       `json:"default"`
-	External       bool       `json:"external"`
-	MTU            int        `json:"mtu"`
-	Metadata       []Metadata `json:"metadata,omitempty"`
-	ProjectID      int        `json:"project_id"`
-	Region         string     `json:"region"`
-	RegionID       int        `json:"region_id"`
-	SegmentationID int        `json:"segmentation_id"`
-	Shared         bool       `json:"shared"`
-	Subnets        []string   `json:"subnets"`
-	TaskID         string     `json:"task_id"`
-	Type           string     `json:"type"`
-	UpdatedAt      string     `json:"updated_at"`
+	ID             string             `json:"id"`
+	Name           string             `json:"name"`
+	CreatedAt      string             `json:"created_at"`
+	CreatorTaskID  string             `json:"creator_task_id"`
+	Default        bool               `json:"default"`
+	External       bool               `json:"external"`
+	MTU            int                `json:"mtu"`
+	Metadata       []MetadataDetailed `json:"metadata,omitempty"`
+	ProjectID      int                `json:"project_id"`
+	Region         string             `json:"region"`
+	RegionID       int                `json:"region_id"`
+	SegmentationID int                `json:"segmentation_id"`
+	Shared         bool               `json:"shared"`
+	Subnets        []string           `json:"subnets"`
+	TaskID         string             `json:"task_id"`
+	Type           string             `json:"type"`
+	UpdatedAt      string             `json:"updated_at"`
 }
 
 // NetworkCreateRequest represents a request to create a Network.
@@ -95,23 +95,23 @@ type networksRoot struct {
 
 // NetworkSubnetwork represents an EdgecenterCloud Network with info about Subnets.
 type NetworkSubnetwork struct {
-	Metadata       []Metadata   `json:"metadata,omitempty"`
-	UpdatedAt      string       `json:"updated_at"`
-	Name           string       `json:"name"`
-	CreatedAt      string       `json:"created_at"`
-	Type           string       `json:"type"`
-	External       bool         `json:"external"`
-	TaskID         string       `json:"task_id"`
-	Default        bool         `json:"default"`
-	RegionID       int          `json:"region_id"`
-	Shared         bool         `json:"shared"`
-	Region         string       `json:"region"`
-	MTU            int          `json:"mtu"`
-	SegmentationID int          `json:"segmentation_id"`
-	CreatorTaskID  string       `json:"creator_task_id"`
-	ID             string       `json:"id"`
-	ProjectID      int          `json:"project_id"`
-	Subnets        []Subnetwork `json:"subnets"`
+	Metadata       []MetadataDetailed `json:"metadata,omitempty"`
+	UpdatedAt      string             `json:"updated_at"`
+	Name           string             `json:"name"`
+	CreatedAt      string             `json:"created_at"`
+	Type           string             `json:"type"`
+	External       bool               `json:"external"`
+	TaskID         string             `json:"task_id"`
+	Default        bool               `json:"default"`
+	RegionID       int                `json:"region_id"`
+	Shared         bool               `json:"shared"`
+	Region         string             `json:"region"`
+	MTU            int                `json:"mtu"`
+	SegmentationID int                `json:"segmentation_id"`
+	CreatorTaskID  string             `json:"creator_task_id"`
+	ID             string             `json:"id"`
+	ProjectID      int                `json:"project_id"`
+	Subnets        []Subnetwork       `json:"subnets"`
 }
 
 // PortsInstance represent instances ports.
