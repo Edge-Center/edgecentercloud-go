@@ -128,22 +128,22 @@ type Listener struct {
 
 // Pool represents an EdgecenterCloud Loadbalancer Pool.
 type Pool struct {
-	ID                    string                         `json:"id"`
-	Name                  string                         `json:"name"`
-	LoadbalancerAlgorithm LoadbalancerAlgorithm          `json:"lb_algorithm"`
-	Protocol              LoadbalancerPoolProtocol       `json:"protocol"`
-	Loadbalancers         []ID                           `json:"loadbalancers"`
-	Listeners             []ID                           `json:"listeners"`
-	Members               []PoolMember                   `json:"members"`
-	HealthMonitor         HealthMonitor                  `json:"healthmonitor"`
-	SessionPersistence    LoadbalancerSessionPersistence `json:"session_persistence"`
-	ProvisioningStatus    ProvisioningStatus             `json:"provisioning_status"`
-	OperatingStatus       OperatingStatus                `json:"operating_status"`
-	CreatorTaskID         string                         `json:"creator_task_id"`
-	TaskID                string                         `json:"task_id"`
-	TimeoutClientData     int                            `json:"timeout_client_data"`
-	TimeoutMemberData     int                            `json:"timeout_member_data"`
-	TimeoutMemberConnect  int                            `json:"timeout_member_connect"`
+	ID                    string                          `json:"id"`
+	Name                  string                          `json:"name"`
+	LoadbalancerAlgorithm LoadbalancerAlgorithm           `json:"lb_algorithm"`
+	Protocol              LoadbalancerPoolProtocol        `json:"protocol"`
+	Loadbalancers         []ID                            `json:"loadbalancers"`
+	Listeners             []ID                            `json:"listeners"`
+	Members               []PoolMember                    `json:"members"`
+	HealthMonitor         *HealthMonitor                  `json:"healthmonitor,omitempty"`
+	SessionPersistence    *LoadbalancerSessionPersistence `json:"session_persistence,omitempty"`
+	ProvisioningStatus    ProvisioningStatus              `json:"provisioning_status"`
+	OperatingStatus       OperatingStatus                 `json:"operating_status"`
+	CreatorTaskID         string                          `json:"creator_task_id"`
+	TaskID                string                          `json:"task_id"`
+	TimeoutClientData     int                             `json:"timeout_client_data"`
+	TimeoutMemberData     int                             `json:"timeout_member_data"`
+	TimeoutMemberConnect  int                             `json:"timeout_member_connect"`
 }
 
 // PoolMember represents an EdgecenterCloud Loadbalancer Pool PoolMember.
@@ -151,11 +151,6 @@ type PoolMember struct {
 	ID              string          `json:"id"`
 	OperatingStatus OperatingStatus `json:"operating_status,omitempty"`
 	PoolMemberCreateRequest
-}
-
-// HealthMonitor represents an EdgecenterCloud Loadbalancer Pool HealthMonitor.
-type HealthMonitor struct {
-	HealthMonitorCreateRequest
 }
 
 // LoadbalancerMetricsListRequest represents a request to get a Loadbalancer Metrics list.
@@ -310,6 +305,19 @@ type HealthMonitorCreateRequest struct {
 	Timeout        int               `json:"timeout" required:"true"`
 	URLPath        string            `json:"url_path,omitempty"`
 	HTTPMethod     HTTPMethod        `json:"http_method,omitempty"`
+	MaxRetriesDown int               `json:"max_retries_down,omitempty"`
+	ExpectedCodes  string            `json:"expected_codes,omitempty"`
+	ID             string            `json:"id,omitempty"`
+}
+
+// HealthMonitor represents an EdgecenterCloud Loadbalancer Pool HealthMonitor.
+type HealthMonitor struct {
+	MaxRetries     int               `json:"max_retries,omitempty"`
+	Type           HealthMonitorType `json:"type,omitempty"`
+	Delay          int               `json:"delay,omitempty"`
+	Timeout        int               `json:"timeout,omitempty"`
+	URLPath        string            `json:"url_path,omitempty"`
+	HTTPMethod     *HTTPMethod       `json:"http_method,omitempty"`
 	MaxRetriesDown int               `json:"max_retries_down,omitempty"`
 	ExpectedCodes  string            `json:"expected_codes,omitempty"`
 	ID             string            `json:"id,omitempty"`
