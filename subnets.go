@@ -2,6 +2,7 @@ package edgecloud
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net"
 	"net/http"
@@ -89,11 +90,44 @@ type CIDR struct {
 	net.IPNet
 }
 
+// UnmarshalJSON - implements Unmarshaler interface for CIDR.
+func (c *CIDR) UnmarshalJSON(data []byte) error {
+	var s string
+	if err := json.Unmarshal(data, &s); err != nil {
+		return err
+	}
+	cd, err := ParseCIDRString(s)
+	if err != nil {
+		return err
+	}
+	*c = *cd
+
+	return nil
+}
+
+// MarshalJSON - implements Marshaler interface for CIDR.
+func (c CIDR) MarshalJSON() ([]byte, error) {
+	return json.Marshal(c.String())
+}
+
+// String - implements Stringer.
+func (c CIDR) String() string {
+	return c.IPNet.String()
+}
+
+func ParseCIDRString(s string) (*CIDR, error) {
+	_, nt, err := net.ParseCIDR(s)
+	if err != nil {
+		return nil, err
+	}
+	return &CIDR{IPNet: *nt}, nil
+}
+
 // HostRoute represents a route that should be used by devices with IPs from
 // a subnet (not including local subnet route).
 type HostRoute struct {
-	Destination net.IPNet `json:"destination"`
-	NextHop     net.IP    `json:"nexthop"`
+	Destination CIDR   `json:"destination"`
+	NextHop     net.IP `json:"nexthop"`
 }
 
 // SubnetworkListOptions specifies the optional query parameters to List method.
