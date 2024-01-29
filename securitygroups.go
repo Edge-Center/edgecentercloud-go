@@ -73,12 +73,12 @@ type SecurityGroupRule struct {
 	SecurityGroupID string                     `json:"security_group_id"`
 	RemoteGroupID   string                     `json:"remote_group_id"`
 	Direction       SecurityGroupRuleDirection `json:"direction"`
-	EtherType       EtherType                  `json:"ethertype"`
-	Protocol        SecurityGroupRuleProtocol  `json:"protocol"`
-	PortRangeMax    int                        `json:"port_range_max"`
-	PortRangeMin    int                        `json:"port_range_min"`
-	Description     string                     `json:"description"`
-	RemoteIPPrefix  string                     `json:"remote_ip_prefix"`
+	EtherType       *EtherType                 `json:"ethertype"`
+	Protocol        *SecurityGroupRuleProtocol `json:"protocol"`
+	PortRangeMax    *int                       `json:"port_range_max"`
+	PortRangeMin    *int                       `json:"port_range_min"`
+	Description     *string                    `json:"description"`
+	RemoteIPPrefix  *string                    `json:"remote_ip_prefix"`
 	CreatedAt       string                     `json:"created_at"`
 	UpdatedAt       string                     `json:"updated_at"`
 	RevisionNumber  int                        `json:"revision_number"`

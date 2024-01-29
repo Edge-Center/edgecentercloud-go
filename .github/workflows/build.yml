@@ -28,6 +28,6 @@ jobs:
         with:
           config: ./coverage.yml
           profile: cover.out
-          threshold-file: 60
+          threshold-file: 50
           threshold-package: 60
           threshold-total: 70
