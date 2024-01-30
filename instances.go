@@ -492,7 +492,7 @@ func (s *InstancesServiceOp) MetadataGet(ctx context.Context, instanceID string)
 	return metadata, resp, err
 }
 
-// MetadataList load balancer detailed metadata items.
+// MetadataList instance detailed metadata items.
 func (s *InstancesServiceOp) MetadataList(ctx context.Context, instanceID string) ([]MetadataDetailed, *Response, error) {
 	if resp, err := isValidUUID(instanceID, "instanceID"); err != nil {
 		return nil, resp, err
@@ -505,7 +505,7 @@ func (s *InstancesServiceOp) MetadataList(ctx context.Context, instanceID string
 	return metadataList(ctx, s.client, instanceID, instancesBasePathV1)
 }
 
-// MetadataUpdate load balancer metadata.
+// MetadataUpdate instance metadata.
 func (s *InstancesServiceOp) MetadataUpdate(ctx context.Context, instanceID string, reqBody *Metadata) (*Response, error) {
 	if resp, err := isValidUUID(instanceID, "instanceID"); err != nil {
 		return resp, err

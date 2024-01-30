@@ -95,12 +95,14 @@ func metadataDeleteItem(ctx context.Context, client *Client, id, resourcePath st
 
 // metadataGetItem helper for same logic methods.
 func metadataGetItem(ctx context.Context, client *Client, id, resourcePath string, opts *MetadataItemOptions) (*MetadataDetailed, *Response, error) {
-	path, err := addOptions(client.addProjectRegionPath(resourcePath), opts)
+	path := client.addProjectRegionPath(resourcePath)
+
+	path = fmt.Sprintf("%s/%s/%s", path, id, metadataItemPath)
+
+	path, err := addOptions(path, opts)
 	if err != nil {
 		return nil, nil, err
 	}
-
-	path = fmt.Sprintf("%s/%s/%s", path, id, metadataItemPath)
 
 	req, err := client.NewRequest(ctx, http.MethodGet, path, nil)
 	if err != nil {
