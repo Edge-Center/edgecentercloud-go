@@ -78,13 +78,14 @@ func metadataUpdate(ctx context.Context, client *Client, id, resourcePath string
 
 // metadataDeleteItem helper for same logic methods.
 func metadataDeleteItem(ctx context.Context, client *Client, id, resourcePath string, opts *MetadataItemOptions) (*Response, error) {
-	path, err := addOptions(client.addProjectRegionPath(resourcePath), opts)
-	if err != nil {
-		return nil, err
-	}
+	path := client.addProjectRegionPath(resourcePath)
 
 	path = fmt.Sprintf("%s/%s/%s", path, id, metadataItemPath)
 
+	path, err := addOptions(path, opts)
+	if err != nil {
+		return nil, err
+	}
 	req, err := client.NewRequest(ctx, http.MethodDelete, path, nil)
 	if err != nil {
 		return nil, err
