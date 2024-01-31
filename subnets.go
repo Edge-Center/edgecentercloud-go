@@ -41,27 +41,27 @@ var _ SubnetworksService = &SubnetworksServiceOp{}
 
 // Subnetwork represents an EdgecenterCloud Subnetwork.
 type Subnetwork struct {
-	ID                     string      `json:"id"`
-	Name                   string      `json:"name"`
-	NetworkID              string      `json:"network_id"`
-	IPVersion              int         `json:"ip_version"`
-	EnableDHCP             bool        `json:"enable_dhcp"`
-	ConnectToNetworkRouter bool        `json:"connect_to_network_router"`
-	CIDR                   string      `json:"cidr"` // TODO add cidr parsing.
-	CreatedAt              string      `json:"created_at"`
-	UpdatedAt              string      `json:"updated_at"`
-	CreatorTaskID          string      `json:"creator_task_id"`
-	TaskID                 string      `json:"task_id"`
-	AvailableIps           int         `json:"available_ips"`
-	TotalIps               int         `json:"total_ips"`
-	HasRouter              bool        `json:"has_router"`
-	DNSNameservers         []net.IP    `json:"dns_nameservers"`
-	HostRoutes             []HostRoute `json:"host_routes"`
-	GatewayIP              net.IP      `json:"gateway_ip"`
-	Metadata               []Metadata  `json:"metadata,omitempty"`
-	Region                 string      `json:"region"`
-	ProjectID              int         `json:"project_id"`
-	RegionID               int         `json:"region_id"`
+	ID                     string             `json:"id"`
+	Name                   string             `json:"name"`
+	NetworkID              string             `json:"network_id"`
+	IPVersion              int                `json:"ip_version"`
+	EnableDHCP             bool               `json:"enable_dhcp"`
+	ConnectToNetworkRouter bool               `json:"connect_to_network_router"`
+	CIDR                   string             `json:"cidr"` // TODO add cidr parsing.
+	CreatedAt              string             `json:"created_at"`
+	UpdatedAt              string             `json:"updated_at"`
+	CreatorTaskID          string             `json:"creator_task_id"`
+	TaskID                 string             `json:"task_id"`
+	AvailableIps           int                `json:"available_ips"`
+	TotalIps               int                `json:"total_ips"`
+	HasRouter              bool               `json:"has_router"`
+	DNSNameservers         []net.IP           `json:"dns_nameservers"`
+	HostRoutes             []HostRoute        `json:"host_routes"`
+	GatewayIP              net.IP             `json:"gateway_ip"`
+	Metadata               []MetadataDetailed `json:"metadata,omitempty"`
+	Region                 string             `json:"region"`
+	ProjectID              int                `json:"project_id"`
+	RegionID               int                `json:"region_id"`
 }
 
 // SubnetworkCreateRequest represents a request to create a Subnetwork.
@@ -132,7 +132,7 @@ type HostRoute struct {
 
 // SubnetworkListOptions specifies the optional query parameters to List method.
 type SubnetworkListOptions struct {
-	NetworkID  bool   `url:"network_id,omitempty"  validate:"omitempty"`
+	NetworkID  string `url:"network_id,omitempty"  validate:"omitempty"`
 	MetadataKV string `url:"metadata_kv,omitempty"  validate:"omitempty"`
 	MetadataK  string `url:"metadata_k,omitempty"  validate:"omitempty"`
 }
