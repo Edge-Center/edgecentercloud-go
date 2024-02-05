@@ -10,7 +10,7 @@ func (s SecurityGroupRuleProtocol) List() []edgecloud.SecurityGroupRuleProtocol 
 	return []edgecloud.SecurityGroupRuleProtocol{
 		edgecloud.SGRuleProtocolANY,
 		edgecloud.SGRuleProtocolAH,
-		edgecloud.SGRuleProtocolACCP,
+		edgecloud.SGRuleProtocolDCCP,
 		edgecloud.SGRuleProtocolEGP,
 		edgecloud.SGRuleProtocolESP,
 		edgecloud.SGRuleProtocolGRE,

@@ -2,6 +2,7 @@ package edgecloud
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 )
@@ -14,6 +15,12 @@ const (
 const (
 	securitygroupsCopy  = "copy"
 	securitygroupsRules = "rules"
+)
+
+var (
+	ErrSGEtherTypeNotAllowed     = fmt.Errorf("invalid EtherType, allowed only %s or %s", EtherTypeIPv4, EtherTypeIPv6)
+	ErrSGInvalidProtocol         = fmt.Errorf("invalid Protocol")
+	ErrSGRuleDirectionNotAllowed = fmt.Errorf("invalid RuleDirection type, allowed only %s or %s", SGRuleDirectionIngress, SGRuleDirectionEgress)
 )
 
 // SecurityGroupsService is an interface for creating and managing Security Groups (Firewalls) with the EdgecenterCloud API.
@@ -91,24 +98,11 @@ type SecurityGroupCreateRequest struct {
 }
 
 type SecurityGroupCreateRequestInner struct {
-	Name               string                           `json:"name" required:"true"`
-	Description        string                           `json:"description,omitempty"`
-	Metadata           Metadata                         `json:"metadata,omitempty"`
-	Tags               []string                         `json:"tags,omitempty"`
-	SecurityGroupRules []SecurityGroupRuleCreateRequest `json:"security_group_rules,omitempty"`
-}
-
-// SecurityGroupRuleCreateRequest represents a request to create a Security Group Rule.
-type SecurityGroupRuleCreateRequest struct {
-	RemoteIPPrefix  string                     `json:"remote_ip_prefix,omitempty"`
-	RemoteGroupID   string                     `json:"remote_group_id,omitempty"`
-	Description     string                     `json:"description,omitempty"`
-	Direction       SecurityGroupRuleDirection `json:"direction" required:"true"`
-	Protocol        SecurityGroupRuleProtocol  `json:"protocol,omitempty"`
-	PortRangeMin    int                        `json:"port_range_min,omitempty"`
-	PortRangeMax    int                        `json:"port_range_max,omitempty"`
-	SecurityGroupID string                     `json:"security_group_id,omitempty"`
-	EtherType       EtherType                  `json:"ethertype,omitempty"`
+	Name               string              `json:"name" required:"true"`
+	Description        *string             `json:"description,omitempty"`
+	Metadata           Metadata            `json:"metadata,omitempty"`
+	Tags               []string            `json:"tags,omitempty"`
+	SecurityGroupRules []RuleCreateRequest `json:"security_group_rules,omitempty"`
 }
 
 type EtherType string
@@ -123,7 +117,7 @@ type SecurityGroupRuleProtocol string
 const (
 	SGRuleProtocolANY     SecurityGroupRuleProtocol = "any"
 	SGRuleProtocolAH      SecurityGroupRuleProtocol = "ah"
-	SGRuleProtocolACCP    SecurityGroupRuleProtocol = "dccp"
+	SGRuleProtocolDCCP    SecurityGroupRuleProtocol = "dccp"
 	SGRuleProtocolEGP     SecurityGroupRuleProtocol = "egp"
 	SGRuleProtocolESP     SecurityGroupRuleProtocol = "esp"
 	SGRuleProtocolGRE     SecurityGroupRuleProtocol = "gre"
@@ -138,6 +132,7 @@ const (
 	SGRuleProtocolUDP     SecurityGroupRuleProtocol = "udp"
 	SGRuleProtocolUDPLITE SecurityGroupRuleProtocol = "udplite"
 	SGRuleProtocolVRRP    SecurityGroupRuleProtocol = "vrrp"
+	SGRuleProtocolIPEncap SecurityGroupRuleProtocol = "ipencap"
 )
 
 type SecurityGroupRuleDirection string
@@ -146,6 +141,228 @@ const (
 	SGRuleDirectionEgress  SecurityGroupRuleDirection = "egress"
 	SGRuleDirectionIngress SecurityGroupRuleDirection = "ingress"
 )
+
+func (rd SecurityGroupRuleDirection) IsValid() error {
+	switch rd {
+	case SGRuleDirectionEgress,
+		SGRuleDirectionIngress:
+		return nil
+	}
+
+	return ErrSGRuleDirectionNotAllowed
+}
+
+func (rd SecurityGroupRuleDirection) ValidOrNil() (*SecurityGroupRuleDirection, error) {
+	if rd.String() == "" {
+		return nil, nil //nolint:nilnil
+	}
+	err := rd.IsValid()
+	if err != nil {
+		return &rd, err
+	}
+
+	return &rd, nil
+}
+
+func (rd SecurityGroupRuleDirection) String() string {
+	return string(rd)
+}
+
+func (rd SecurityGroupRuleDirection) List() []SecurityGroupRuleDirection {
+	return []SecurityGroupRuleDirection{
+		SGRuleDirectionIngress,
+		SGRuleDirectionEgress,
+	}
+}
+
+func (rd SecurityGroupRuleDirection) StringList() []string {
+	lst := rd.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
+	}
+
+	return strings
+}
+
+// UnmarshalJSON - implements Unmarshaler interface.
+func (rd *SecurityGroupRuleDirection) UnmarshalJSON(data []byte) error {
+	var s string
+	if err := json.Unmarshal(data, &s); err != nil {
+		return err
+	}
+	v := SecurityGroupRuleDirection(s)
+	err := v.IsValid()
+	if err != nil {
+		return err
+	}
+	*rd = v
+
+	return nil
+}
+
+// MarshalJSON - implements Marshaler interface.
+func (rd *SecurityGroupRuleDirection) MarshalJSON() ([]byte, error) {
+	return json.Marshal(rd.String())
+}
+
+func (et EtherType) IsValid() error {
+	switch et {
+	case EtherTypeIPv4, EtherTypeIPv6:
+		return nil
+	}
+	return ErrSGEtherTypeNotAllowed
+}
+
+func (et EtherType) ValidOrNil() (*EtherType, error) {
+	if et.String() == "" {
+		return nil, nil //nolint:nilnil
+	}
+	err := et.IsValid()
+	if err != nil {
+		return &et, err
+	}
+
+	return &et, nil
+}
+
+func (et EtherType) String() string {
+	return string(et)
+}
+
+func (et EtherType) List() []EtherType {
+	return []EtherType{
+		EtherTypeIPv4,
+		EtherTypeIPv6,
+	}
+}
+
+func (et EtherType) StringList() []string {
+	lst := et.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
+	}
+
+	return strings
+}
+
+// UnmarshalJSON - implements Unmarshaler interface.
+func (et *EtherType) UnmarshalJSON(data []byte) error {
+	var s string
+	if err := json.Unmarshal(data, &s); err != nil {
+		return err
+	}
+	v := EtherType(s)
+	err := v.IsValid()
+	if err != nil {
+		return err
+	}
+	*et = v
+
+	return nil
+}
+
+// MarshalJSON - implements Marshaler interface.
+func (et *EtherType) MarshalJSON() ([]byte, error) {
+	return json.Marshal(et.String())
+}
+
+func (p SecurityGroupRuleProtocol) IsValid() error {
+	switch p {
+	case SGRuleProtocolUDP,
+		SGRuleProtocolTCP,
+		SGRuleProtocolANY,
+		SGRuleProtocolICMP,
+		SGRuleProtocolAH,
+		SGRuleProtocolDCCP,
+		SGRuleProtocolEGP,
+		SGRuleProtocolESP,
+		SGRuleProtocolGRE,
+		SGRuleProtocolIGMP,
+		SGRuleProtocolOSPF,
+		SGRuleProtocolPGM,
+		SGRuleProtocolRSVP,
+		SGRuleProtocolSCTP,
+		SGRuleProtocolUDPLITE,
+		SGRuleProtocolVRRP,
+		SGRuleProtocolIPIP,
+		SGRuleProtocolIPEncap:
+		return nil
+	}
+
+	return ErrSGInvalidProtocol
+}
+
+func (p SecurityGroupRuleProtocol) ValidOrNil() (*SecurityGroupRuleProtocol, error) {
+	if p.String() == "" {
+		return nil, nil //nolint:nilnil
+	}
+	err := p.IsValid()
+	if err != nil {
+		return &p, err
+	}
+
+	return &p, nil
+}
+
+func (p SecurityGroupRuleProtocol) String() string {
+	return string(p)
+}
+
+func (p SecurityGroupRuleProtocol) List() []SecurityGroupRuleProtocol {
+	return []SecurityGroupRuleProtocol{
+		SGRuleProtocolUDP,
+		SGRuleProtocolTCP,
+		SGRuleProtocolANY,
+		SGRuleProtocolICMP,
+		SGRuleProtocolAH,
+		SGRuleProtocolDCCP,
+		SGRuleProtocolEGP,
+		SGRuleProtocolESP,
+		SGRuleProtocolGRE,
+		SGRuleProtocolIGMP,
+		SGRuleProtocolOSPF,
+		SGRuleProtocolPGM,
+		SGRuleProtocolRSVP,
+		SGRuleProtocolSCTP,
+		SGRuleProtocolUDPLITE,
+		SGRuleProtocolVRRP,
+		SGRuleProtocolIPIP,
+		SGRuleProtocolIPEncap,
+	}
+}
+
+func (p SecurityGroupRuleProtocol) StringList() []string {
+	lst := p.List()
+	strings := make([]string, 0, len(lst))
+	for _, x := range lst {
+		strings = append(strings, x.String())
+	}
+
+	return strings
+}
+
+// UnmarshalJSON - implements Unmarshaler interface.
+func (p *SecurityGroupRuleProtocol) UnmarshalJSON(data []byte) error {
+	var s string
+	if err := json.Unmarshal(data, &s); err != nil {
+		return err
+	}
+	v := SecurityGroupRuleProtocol(s)
+	err := v.IsValid()
+	if err != nil {
+		return err
+	}
+	*p = v
+
+	return nil
+}
+
+// MarshalJSON - implements Marshaler interface.
+func (p *SecurityGroupRuleProtocol) MarshalJSON() ([]byte, error) {
+	return json.Marshal(p.String())
+}
 
 // SecurityGroupListOptions specifies the optional query parameters to List method.
 type SecurityGroupListOptions struct {
@@ -185,28 +402,28 @@ type ChangedRules struct {
 }
 
 type RuleCreateRequest struct {
-	Description         string                     `json:"description"`
-	RemoteIPPrefix      string                     `json:"remote_ip_prefix,omitempty"`
-	SecurityGroupRuleID string                     `json:"security_group_rule_id,omitempty"`
-	PortRangeMax        int                        `json:"port_range_max,omitempty"`
-	Protocol            SecurityGroupRuleProtocol  `json:"protocol,omitempty"`
-	PortRangeMin        int                        `json:"port_range_min,omitempty"`
-	EtherType           EtherType                  `json:"ethertype,omitempty" required:"true"`
-	RemoteGroupID       string                     `json:"remote_group_id,omitempty"`
-	Direction           SecurityGroupRuleDirection `json:"direction"`
+	Description     *string                    `json:"description"`
+	RemoteIPPrefix  *string                    `json:"remote_ip_prefix,omitempty"`
+	SecurityGroupID *string                    `json:"security_group_id,omitempty"`
+	PortRangeMax    *int                       `json:"port_range_max,omitempty"`
+	Protocol        SecurityGroupRuleProtocol  `json:"protocol,omitempty"`
+	PortRangeMin    *int                       `json:"port_range_min,omitempty"`
+	EtherType       EtherType                  `json:"ethertype,omitempty" required:"true"`
+	RemoteGroupID   *string                    `json:"remote_group_id,omitempty"`
+	Direction       SecurityGroupRuleDirection `json:"direction"`
 }
 
 type RuleUpdateRequest struct {
-	ID                  string                     `json:"id"`
-	Description         string                     `json:"description"`
-	RemoteIPPrefix      string                     `json:"remote_ip_prefix,omitempty"`
-	SecurityGroupRuleID string                     `json:"security_group_rule_id,omitempty"`
-	PortRangeMax        int                        `json:"port_range_max,omitempty"`
-	Protocol            SecurityGroupRuleProtocol  `json:"protocol,omitempty"`
-	PortRangeMin        int                        `json:"port_range_min,omitempty"`
-	EtherType           EtherType                  `json:"ethertype,omitempty" required:"true"`
-	RemoteGroupID       string                     `json:"remote_group_id,omitempty"`
-	Direction           SecurityGroupRuleDirection `json:"direction"`
+	ID              string                     `json:"id"`
+	Description     string                     `json:"description"`
+	RemoteIPPrefix  string                     `json:"remote_ip_prefix,omitempty"`
+	SecurityGroupID string                     `json:"security_group_id,omitempty"`
+	PortRangeMax    int                        `json:"port_range_max,omitempty"`
+	Protocol        SecurityGroupRuleProtocol  `json:"protocol,omitempty"`
+	PortRangeMin    int                        `json:"port_range_min,omitempty"`
+	EtherType       EtherType                  `json:"ethertype,omitempty" required:"true"`
+	RemoteGroupID   string                     `json:"remote_group_id,omitempty"`
+	Direction       SecurityGroupRuleDirection `json:"direction"`
 }
 
 // List get security groups.
@@ -394,6 +611,7 @@ func (s *SecurityGroupsServiceOp) RuleCreate(ctx context.Context, securityGroupI
 }
 
 // RuleDelete a security group rule.
+// todo cloud-api deletes rule without tash.
 func (s *SecurityGroupsServiceOp) RuleDelete(ctx context.Context, securityGroupID string) (*TaskResponse, *Response, error) {
 	if resp, err := isValidUUID(securityGroupID, "securityGroupID"); err != nil {
 		return nil, resp, err

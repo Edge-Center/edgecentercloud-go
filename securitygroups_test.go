@@ -12,6 +12,20 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func TestEtherType_List(t *testing.T) {
+	require.Equal(t, len(EtherTypeIPv4.List()), 2)
+}
+
+func TestSecurityGroupRuleProtocol_List(t *testing.T) {
+	require.Equal(t, len(SGRuleProtocolVRRP.List()), 18)
+}
+
+func TestSecurityGroupRuleDirection_IsValid(t *testing.T) {
+	sgRule := SGRuleProtocolIPEncap
+	err := sgRule.IsValid()
+	require.NoError(t, err)
+}
+
 func TestSecurityGroups_List(t *testing.T) {
 	setup()
 	defer teardown()
@@ -296,8 +310,8 @@ func TestSecurityGroups_RuleCreate(t *testing.T) {
 	setup()
 	defer teardown()
 
-	request := &RuleCreateRequest{}
-	expectedResp := &SecurityGroupRule{ID: testResourceID}
+	request := &RuleCreateRequest{Direction: SGRuleDirectionEgress}
+	expectedResp := &SecurityGroupRule{ID: testResourceID, Direction: SGRuleDirectionEgress}
 	URL := path.Join(securitygroupsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, securitygroupsRules)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
@@ -393,8 +407,8 @@ func TestSecurityGroups_RuleUpdate(t *testing.T) {
 	setup()
 	defer teardown()
 
-	request := &RuleUpdateRequest{}
-	expectedResp := &SecurityGroupRule{ID: testResourceID}
+	request := &RuleUpdateRequest{Direction: SGRuleDirectionEgress}
+	expectedResp := &SecurityGroupRule{ID: testResourceID, Direction: SGRuleDirectionEgress}
 	URL := path.Join(securitygroupsRulesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {

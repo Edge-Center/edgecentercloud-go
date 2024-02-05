@@ -12,7 +12,7 @@ func TestSecurityGroupsList(t *testing.T) {
 	result := []edgecloud.SecurityGroupRuleProtocol{
 		edgecloud.SGRuleProtocolANY,
 		edgecloud.SGRuleProtocolAH,
-		edgecloud.SGRuleProtocolACCP,
+		edgecloud.SGRuleProtocolDCCP,
 		edgecloud.SGRuleProtocolEGP,
 		edgecloud.SGRuleProtocolESP,
 		edgecloud.SGRuleProtocolGRE,
