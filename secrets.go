@@ -55,9 +55,9 @@ type SecretCreateRequest struct {
 }
 
 type SecretCreateRequestV2 struct {
-	Expiration string `json:"expiration,omitempty"`
-	Name       string `json:"name" required:"true" validate:"required"`
-	Payload    string `json:"payload" required:"true" validate:"required"`
+	Expiration *string `json:"expiration,omitempty"`
+	Name       string  `json:"name" required:"true" validate:"required"`
+	Payload    Payload `json:"payload" required:"true" validate:"required"`
 }
 
 type Payload struct {
