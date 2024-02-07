@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"time"
 )
 
 const (
@@ -30,20 +29,20 @@ var _ SnapshotsService = &SnapshotsServiceOp{}
 
 // Snapshot represents an EdgecenterCloud Snapshot.
 type Snapshot struct {
-	Region        string     `json:"region"`
-	UpdatedAt     *time.Time `json:"updated_at"`
-	CreatedAt     time.Time  `json:"created_at"`
-	Name          string     `json:"name"`
-	ID            string     `json:"id"`
-	RegionID      int        `json:"region_id"`
-	ProjectID     int        `json:"project_id"`
-	TaskID        string     `json:"task_id"`
-	Status        string     `json:"status"`
-	CreatorTaskID string     `json:"creator_task_id"`
-	Size          int        `json:"size"`
-	VolumeID      string     `json:"volume_id"`
-	Description   string     `json:"description"`
-	Metadata      Metadata   `json:"metadata"`
+	Region        string   `json:"region"`
+	UpdatedAt     *string  `json:"updated_at"`
+	CreatedAt     string   `json:"created_at"`
+	Name          string   `json:"name"`
+	ID            string   `json:"id"`
+	RegionID      int      `json:"region_id"`
+	ProjectID     int      `json:"project_id"`
+	TaskID        *string  `json:"task_id"`
+	Status        string   `json:"status"`
+	CreatorTaskID *string  `json:"creator_task_id"`
+	Size          int      `json:"size"`
+	VolumeID      string   `json:"volume_id"`
+	Description   string   `json:"description"`
+	Metadata      Metadata `json:"metadata"`
 }
 
 // SnapshotListOptions specifies the optional query parameters to List method.
@@ -185,7 +184,7 @@ func (s *SnapshotsServiceOp) MetadataUpdate(ctx context.Context, snapshotID stri
 
 	path := fmt.Sprintf("%s/%s/%s", s.client.addProjectRegionPath(snapshotsBasePathV1), snapshotID, metadataPath)
 
-	req, err := s.client.NewRequest(ctx, http.MethodPut, path, reqBody)
+	req, err := s.client.NewRequest(ctx, http.MethodPut, path, reqBody.Metadata)
 	if err != nil {
 		return nil, nil, err
 	}
