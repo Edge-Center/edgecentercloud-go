@@ -7,7 +7,9 @@ require (
 	github.com/google/go-querystring v1.1.0
 	github.com/google/uuid v1.3.1
 	github.com/hashicorp/go-retryablehttp v0.7.4
+	github.com/ladydascalie/currency v1.6.0
 	github.com/mitchellh/mapstructure v1.5.0
+	github.com/shopspring/decimal v1.3.1
 	github.com/stretchr/testify v1.8.4
 )
 

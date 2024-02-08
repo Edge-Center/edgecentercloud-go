@@ -29,6 +29,7 @@ const (
 	regionID                   = 8
 	clientID                   = 88888
 	testResourceID             = "f0d19cec-5c3f-4853-886e-304915960ff6"
+	testResourceIntID          = 999
 	taskID                     = "f0d19cec-5c3f-4853-886e-304915960ff6"
 	testResourceIDNotValidUUID = "123"
 )

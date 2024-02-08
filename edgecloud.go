@@ -51,29 +51,30 @@ type Client struct {
 	// ProjectID for client
 	Project int
 
-	Flavors         FlavorsService
-	Floatingips     FloatingIPsService
-	Images          ImagesService
-	Instances       InstancesService
-	KeyPairs        KeyPairsService
-	Loadbalancers   LoadbalancersService
-	L7Policies      L7PoliciesService
-	L7Rules         L7RulesService
-	Networks        NetworksService
-	Ports           PortsService
-	Projects        ProjectsService
-	Quotas          QuotasService
-	Regions         RegionsService
-	ReservedFixedIP ReservedFixedIPsService
-	Routers         RoutersService
-	SecurityGroups  SecurityGroupsService
-	Secrets         SecretsService
-	ServerGroups    ServerGroupsService
-	Snapshots       SnapshotsService
-	Subnetworks     SubnetworksService
-	Tasks           TasksService
-	Volumes         VolumesService
-	Users           UsersService
+	Flavors           FlavorsService
+	Floatingips       FloatingIPsService
+	Images            ImagesService
+	Instances         InstancesService
+	KeyPairs          KeyPairsService
+	Loadbalancers     LoadbalancersService
+	L7Policies        L7PoliciesService
+	L7Rules           L7RulesService
+	Networks          NetworksService
+	Ports             PortsService
+	Projects          ProjectsService
+	Quotas            QuotasService
+	Regions           RegionsService
+	ReservedFixedIP   ReservedFixedIPsService
+	Routers           RoutersService
+	SecurityGroups    SecurityGroupsService
+	Secrets           SecretsService
+	ServerGroups      ServerGroupsService
+	Snapshots         SnapshotsService
+	Subnetworks       SubnetworksService
+	Tasks             TasksService
+	Volumes           VolumesService
+	Users             UsersService
+	LifeCyclePolicies LifeCyclePoliciesService
 
 	// Optional function called after every successful request made to the DO APIs
 	onRequestCompleted RequestCompletionCallback
@@ -234,6 +235,7 @@ func NewClient(httpClient *http.Client) *Client {
 	c.Tasks = &TasksServiceOp{client: c}
 	c.Volumes = &VolumesServiceOp{client: c}
 	c.Users = &UsersServiceOp{client: c}
+	c.LifeCyclePolicies = &LifeCyclePoliciesServiceOp{client: c}
 
 	c.headers = make(map[string]string)
 
