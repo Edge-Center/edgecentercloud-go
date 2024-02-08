@@ -72,7 +72,7 @@ type SubnetworkCreateRequest struct {
 	CIDR                   string      `json:"cidr" required:"true"`
 	ConnectToNetworkRouter bool        `json:"connect_to_network_router"`
 	DNSNameservers         []net.IP    `json:"dns_nameservers,omitempty"`
-	GatewayIP              *net.IP     `json:"gateway_ip"`
+	GatewayIP              *net.IP     `json:"gateway_ip,omitempty"`
 	Metadata               Metadata    `json:"metadata"`
 	HostRoutes             []HostRoute `json:"host_routes,omitempty"`
 }
@@ -80,9 +80,9 @@ type SubnetworkCreateRequest struct {
 // SubnetworkUpdateRequest represents a request to update a Subnetwork properties.
 type SubnetworkUpdateRequest struct {
 	Name           string      `json:"name" required:"true"`
-	DNSNameservers []net.IP    `json:"dns_nameservers,omitempty"`
-	EnableDHCP     bool        `json:"enable_dhcp,omitempty"`
-	HostRoutes     []HostRoute `json:"host_routes,omitempty"`
+	DNSNameservers []net.IP    `json:"dns_nameservers"`
+	EnableDHCP     bool        `json:"enable_dhcp"`
+	HostRoutes     []HostRoute `json:"host_routes"`
 	GatewayIP      *net.IP     `json:"gateway_ip"`
 }
 
