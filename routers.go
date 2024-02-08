@@ -89,9 +89,9 @@ type RouterInterfaceCreate struct {
 }
 
 type ExternalGatewayInfoCreate struct {
-	EnableSnat bool   `json:"enable_snat"`
-	Type       string `json:"type"`
-	NetworkID  string `json:"network_id"`
+	EnableSnat *bool  `json:"enable_snat"`
+	Type       string `json:"type,omitempty" validate:"omitempty,enum"`
+	NetworkID  string `json:"network_id,omitempty" validate:"rfe=Type:manual,omitempty,uuid4"`
 }
 
 type RouterAttachRequest struct {
