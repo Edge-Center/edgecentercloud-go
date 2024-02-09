@@ -8,6 +8,7 @@ import (
 
 const (
 	keypairsBasePathV1 = "/v1/keypairs"
+	keypairsBasePathV2 = "/v2/keypairs"
 )
 
 const (
@@ -18,9 +19,13 @@ const (
 // See: https://apidocs.edgecenter.ru/cloud#tag/keypairs
 type KeyPairsService interface {
 	List(context.Context) ([]KeyPair, *Response, error)
+	ListV2(context.Context) ([]KeyPairV2, *Response, error)
 	Get(context.Context, string) (*KeyPair, *Response, error)
+	GetV2(context.Context, string) (*KeyPairV2, *Response, error)
 	Create(context.Context, *KeyPairCreateRequest) (*TaskResponse, *Response, error)
+	CreateV2(context.Context, *KeyPairCreateRequestV2) (*KeyPairV2, *Response, error)
 	Delete(context.Context, string) (*TaskResponse, *Response, error)
+	DeleteV2(context.Context, string) (*Response, error)
 	Share(context.Context, string, *KeyPairShareRequest) (*KeyPair, *Response, error)
 }
 
@@ -44,11 +49,28 @@ type KeyPair struct {
 	ProjectID       int    `json:"project_id"`
 }
 
+// KeyPairV2 represents an EdgecenterCloud Key Pair.
+type KeyPairV2 struct {
+	Fingerprint     string `json:"fingerprint"`
+	PublicKey       string `json:"public_key"`
+	SSHKeyID        string `json:"sshkey_id"`
+	SSHKeyName      string `json:"sshkey_name"`
+	SharedInProject bool   `json:"shared_in_project"`
+}
+
 // KeyPairCreateRequest represents a request to create a Key Pair.
 type KeyPairCreateRequest struct {
 	SSHKeyName      string `json:"sshkey_name" required:"true"`
 	PublicKey       string `json:"public_key"`
 	SharedInProject bool   `json:"shared_in_project"`
+}
+
+// KeyPairCreateRequestV2 represents a request to create a Key Pair.
+type KeyPairCreateRequestV2 struct {
+	ProjectID       int    `json:"project_id" required:"true"`
+	SSHKeyName      string `json:"sshkey_name" required:"true"`
+	PublicKey       string `json:"public_key,omitempty"`
+	SharedInProject bool   `json:"shared_in_project,omitempty"`
 }
 
 // KeyPairShareRequest represents a request to share a Key Pair.
@@ -60,6 +82,18 @@ type KeyPairShareRequest struct {
 type keyPairsRoot struct {
 	Count   int
 	KeyPair []KeyPair `json:"results"`
+}
+
+// keyPairsRoot represents a KeyPair root.
+type keyPairsRootV2 struct {
+	Count   int
+	KeyPair []KeyPairV2 `json:"results"`
+}
+
+// KeyPairsListOptionsV2 specifies the optional query parameters to List method.
+type KeyPairsListOptionsV2 struct {
+	ProjectID int `url:"project_id,omitempty"  validate:"omitempty"`
+	UserID    int `url:"user_id,omitempty"  validate:"omitempty"`
 }
 
 // List get KeyPairs.
@@ -76,6 +110,35 @@ func (s *KeyPairsServiceOp) List(ctx context.Context) ([]KeyPair, *Response, err
 	}
 
 	root := new(keyPairsRoot)
+
+	resp, err := s.client.Do(ctx, req, root)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return root.KeyPair, resp, err
+}
+
+// ListV2 get KeyPairs.
+func (s *KeyPairsServiceOp) ListV2(ctx context.Context) ([]KeyPairV2, *Response, error) {
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	opts := KeyPairsListOptionsV2{ProjectID: s.client.Project}
+
+	path, err := addOptions(keypairsBasePathV2, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	root := new(keyPairsRootV2)
+
 	resp, err := s.client.Do(ctx, req, root)
 	if err != nil {
 		return nil, resp, err
@@ -110,6 +173,33 @@ func (s *KeyPairsServiceOp) Get(ctx context.Context, keypairID string) (*KeyPair
 	return keyPair, resp, err
 }
 
+// GetV2 individual Key Pair.
+func (s *KeyPairsServiceOp) GetV2(ctx context.Context, keypairID string) (*KeyPairV2, *Response, error) {
+	if resp, err := isValidUUID(keypairID, "keypairID"); err != nil {
+		return nil, resp, err
+	}
+
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	path := fmt.Sprintf("%s/%s", keypairsBasePathV2, keypairID)
+
+	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	keyPair := new(KeyPairV2)
+
+	resp, err := s.client.Do(ctx, req, keyPair)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return keyPair, resp, err
+}
+
 // Create a Key Pair.
 func (s *KeyPairsServiceOp) Create(ctx context.Context, reqBody *KeyPairCreateRequest) (*TaskResponse, *Response, error) {
 	if reqBody == nil {
@@ -136,6 +226,30 @@ func (s *KeyPairsServiceOp) Create(ctx context.Context, reqBody *KeyPairCreateRe
 	return tasks, resp, err
 }
 
+func (s *KeyPairsServiceOp) CreateV2(ctx context.Context, reqBody *KeyPairCreateRequestV2) (*KeyPairV2, *Response, error) {
+	if reqBody == nil {
+		return nil, nil, NewArgError("reqBody", "cannot be nil")
+	}
+
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	req, err := s.client.NewRequest(ctx, http.MethodPost, keypairsBasePathV2, reqBody)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	keyPair := new(KeyPairV2)
+
+	resp, err := s.client.Do(ctx, req, keyPair)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return keyPair, resp, err
+}
+
 // Delete the Key Pair.
 func (s *KeyPairsServiceOp) Delete(ctx context.Context, keypairID string) (*TaskResponse, *Response, error) {
 	if resp, err := isValidUUID(keypairID, "keypairID"); err != nil {
@@ -160,6 +274,26 @@ func (s *KeyPairsServiceOp) Delete(ctx context.Context, keypairID string) (*Task
 	}
 
 	return tasks, resp, err
+}
+
+// DeleteV2 the Key Pair.
+func (s *KeyPairsServiceOp) DeleteV2(ctx context.Context, keypairID string) (*Response, error) {
+	if resp, err := isValidUUID(keypairID, "keypairID"); err != nil {
+		return resp, err
+	}
+
+	if resp, err := s.client.Validate(); err != nil {
+		return resp, err
+	}
+
+	path := fmt.Sprintf("%s/%s", keypairsBasePathV2, keypairID)
+
+	req, err := s.client.NewRequest(ctx, http.MethodDelete, path, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return s.client.Do(ctx, req, nil)
 }
 
 // Share a Key Pair to view for all users in project.
