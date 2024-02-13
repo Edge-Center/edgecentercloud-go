@@ -35,6 +35,20 @@ type VolumesService interface {
 	VolumeMetadata
 }
 
+type VolumeImageMetadata struct {
+	ContainerFormat               string `json:"container_format"`
+	MinRAM                        string `json:"min_ram"`
+	OwnerSpecifiedOpenstackSHA256 string `json:"owner_specified.openstack.sha256"`
+	DiskFormat                    string `json:"disk_format"`
+	ImageName                     string `json:"image_name"`
+	ImageID                       string `json:"image_id"`
+	OwnerSpecifiedOpenstackObject string `json:"owner_specified.openstack.object"`
+	OwnerSpecifiedOpenstackMD5    string `json:"owner_specified.openstack.md5"`
+	MinDisk                       string `json:"min_disk"`
+	Checksum                      string `json:"checksum"`
+	Size                          string `json:"size"`
+}
+
 type VolumeMetadata interface {
 	MetadataList(context.Context, string) ([]MetadataDetailed, *Response, error)
 	MetadataCreate(context.Context, string, *Metadata) (*Response, error)
@@ -52,28 +66,28 @@ var _ VolumesService = &VolumesServiceOp{}
 
 // Volume represents an EdgecenterCloud Volume.
 type Volume struct {
-	ID                  string             `json:"id"`
-	Name                string             `json:"name"`
-	Status              string             `json:"status"` // todo: need to implement volume status type
-	Size                int                `json:"size"`
-	CreatedAt           string             `json:"created_at"`
-	UpdatedAt           string             `json:"updated_at"`
-	VolumeType          VolumeType         `json:"volume_type"`
-	Device              string             `json:"device"`
-	InstanceID          string             `json:"instance_id"`
-	Bootable            bool               `json:"bootable"`
-	CreatorTaskID       string             `json:"creator_task_id"`
-	TaskID              string             `json:"task_id"`
-	Metadata            Metadata           `json:"metadata"`
-	MetadataDetailed    []MetadataDetailed `json:"metadata_detailed,omitempty"`
-	SnapshotIDs         []string           `json:"snapshot_ids"`
-	Region              string             `json:"region"`
-	RegionID            int                `json:"region_id"`
-	ProjectID           int                `json:"project_id"`
-	Attachments         []Attachment       `json:"attachments"`
-	VolumeImageMetadata Metadata           `json:"volume_image_metadata"`
-	LimiterStats        LimiterStats       `json:"limiter_stats"`
-	AvailabilityZone    string             `json:"availability_zone"`
+	ID                  string              `json:"id"`
+	Name                string              `json:"name"`
+	Status              string              `json:"status"` // todo: need to implement volume status type
+	Size                int                 `json:"size"`
+	CreatedAt           string              `json:"created_at"`
+	UpdatedAt           string              `json:"updated_at"`
+	VolumeType          VolumeType          `json:"volume_type"`
+	Device              string              `json:"device"`
+	InstanceID          string              `json:"instance_id"`
+	Bootable            bool                `json:"bootable"`
+	CreatorTaskID       string              `json:"creator_task_id"`
+	TaskID              string              `json:"task_id"`
+	Metadata            Metadata            `json:"metadata"`
+	MetadataDetailed    []MetadataDetailed  `json:"metadata_detailed,omitempty"`
+	SnapshotIDs         []string            `json:"snapshot_ids"`
+	Region              string              `json:"region"`
+	RegionID            int                 `json:"region_id"`
+	ProjectID           int                 `json:"project_id"`
+	Attachments         []Attachment        `json:"attachments"`
+	VolumeImageMetadata VolumeImageMetadata `json:"volume_image_metadata"`
+	LimiterStats        LimiterStats        `json:"limiter_stats"`
+	AvailabilityZone    string              `json:"availability_zone"`
 }
 
 // LimiterStats represents a limiter_stats structure.
