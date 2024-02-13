@@ -118,6 +118,8 @@ const (
 	VolumeTypeUltra     VolumeType = "ultra"
 )
 
+var ErrVolumeTypeStatus = fmt.Errorf("invalid VolumeType type")
+
 type VolumeSource string
 
 const (
@@ -233,6 +235,32 @@ func (s *VolumesServiceOp) Get(ctx context.Context, volumeID string) (*Volume, *
 	}
 
 	return volume, resp, err
+}
+
+// Check volume type
+
+func (vt VolumeType) String() string {
+	return string(vt)
+}
+
+func (vt VolumeType) IsValid() error {
+	switch vt {
+	case VolumeTypeStandard, VolumeTypeCold, VolumeTypeSsdHiIops, VolumeTypeUltra, VolumeTypeSsdLocal:
+		return nil
+	}
+	return fmt.Errorf("%w: %v", ErrVolumeTypeStatus, vt)
+}
+
+func (vt VolumeType) ValidOrNil() (*VolumeType, error) {
+	if vt.String() == "" {
+		return nil, nil //nolint:nilnil
+	}
+	err := vt.IsValid()
+	if err != nil {
+		return &vt, err
+	}
+
+	return &vt, nil
 }
 
 // Create a Volume.
