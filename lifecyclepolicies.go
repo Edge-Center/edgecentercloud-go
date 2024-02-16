@@ -11,23 +11,23 @@ import (
 )
 
 type (
-	ScheduleType string
-	PolicyStatus string
-	PolicyAction string
+	LifeCyclePolicyScheduleType string
+	LifeCyclePolicyStatus       string
+	LifeCyclePolicyAction       string
 )
 
 const (
-	lifecyclePoliciesBasePathV1                = "/v1/lifecycle_policies/"
-	addSchedulesSubPath                        = "add_schedules"
-	addVolumesSubPath                          = "add_volumes_to_policy"
-	removeSchedulesSubPath                     = "remove_schedules"
-	removeVolumesSubPath                       = "remove_volumes_from_policy"
-	estimateMaxPolicyUsageSubPath              = "estimate_max_policy_usage"
-	ScheduleTypeCron              ScheduleType = "cron"
-	ScheduleTypeInterval          ScheduleType = "interval"
-	PolicyStatusActive            PolicyStatus = "active"
-	PolicyStatusPaused            PolicyStatus = "paused"
-	PolicyActionVolumeSnapshot    PolicyAction = "volume_snapshot"
+	lifecyclePoliciesBasePathV1                                     = "/v1/lifecycle_policies/"
+	addSchedulesSubPath                                             = "add_schedules"
+	addVolumesSubPath                                               = "add_volumes_to_policy"
+	removeSchedulesSubPath                                          = "remove_schedules"
+	removeVolumesSubPath                                            = "remove_volumes_from_policy"
+	estimateMaxPolicyUsageSubPath                                   = "estimate_max_policy_usage"
+	LifeCyclePolicyScheduleTypeCron     LifeCyclePolicyScheduleType = "cron"
+	LifeCyclePolicyScheduleTypeInterval LifeCyclePolicyScheduleType = "interval"
+	LifeCyclePolicyStatusActive         LifeCyclePolicyStatus       = "active"
+	LifeCyclePolicyStatusPaused         LifeCyclePolicyStatus       = "paused"
+	LifeCyclePolicyActionVolumeSnapshot LifeCyclePolicyAction       = "volume_snapshot"
 )
 
 var (
@@ -36,15 +36,15 @@ var (
 	ErrLifeCyclePolicyInvalidAction       = fmt.Errorf("invalid lifecycle policy action")
 )
 
-func (t ScheduleType) List() []ScheduleType {
-	return []ScheduleType{ScheduleTypeInterval, ScheduleTypeCron}
+func (t LifeCyclePolicyScheduleType) List() []LifeCyclePolicyScheduleType {
+	return []LifeCyclePolicyScheduleType{LifeCyclePolicyScheduleTypeInterval, LifeCyclePolicyScheduleTypeCron}
 }
 
-func (t ScheduleType) String() string {
+func (t LifeCyclePolicyScheduleType) String() string {
 	return string(t)
 }
 
-func (t ScheduleType) StringList() []string {
+func (t LifeCyclePolicyScheduleType) StringList() []string {
 	lst := t.List()
 	strings := make([]string, 0, len(lst))
 	for _, x := range lst {
@@ -54,7 +54,7 @@ func (t ScheduleType) StringList() []string {
 	return strings
 }
 
-func (t ScheduleType) IsValid() error {
+func (t LifeCyclePolicyScheduleType) IsValid() error {
 	for _, x := range t.List() {
 		if t == x {
 			return nil
@@ -64,15 +64,15 @@ func (t ScheduleType) IsValid() error {
 	return fmt.Errorf("%w: %v", ErrLifeCyclePolicyInvalidScheduleType, t)
 }
 
-func (s PolicyStatus) List() []PolicyStatus {
-	return []PolicyStatus{PolicyStatusPaused, PolicyStatusActive}
+func (s LifeCyclePolicyStatus) List() []LifeCyclePolicyStatus {
+	return []LifeCyclePolicyStatus{LifeCyclePolicyStatusPaused, LifeCyclePolicyStatusActive}
 }
 
-func (s PolicyStatus) String() string {
+func (s LifeCyclePolicyStatus) String() string {
 	return string(s)
 }
 
-func (s PolicyStatus) StringList() []string {
+func (s LifeCyclePolicyStatus) StringList() []string {
 	lst := s.List()
 	strings := make([]string, 0, len(lst))
 	for _, x := range lst {
@@ -82,7 +82,7 @@ func (s PolicyStatus) StringList() []string {
 	return strings
 }
 
-func (s PolicyStatus) IsValid() error {
+func (s LifeCyclePolicyStatus) IsValid() error {
 	for _, x := range s.List() {
 		if s == x {
 			return nil
@@ -92,15 +92,15 @@ func (s PolicyStatus) IsValid() error {
 	return fmt.Errorf("%w: %v", ErrLifeCyclePolicyInvalidStatus, s)
 }
 
-func (a PolicyAction) List() []PolicyAction {
-	return []PolicyAction{PolicyActionVolumeSnapshot}
+func (a LifeCyclePolicyAction) List() []LifeCyclePolicyAction {
+	return []LifeCyclePolicyAction{LifeCyclePolicyActionVolumeSnapshot}
 }
 
-func (a PolicyAction) String() string {
+func (a LifeCyclePolicyAction) String() string {
 	return string(a)
 }
 
-func (a PolicyAction) StringList() []string {
+func (a LifeCyclePolicyAction) StringList() []string {
 	lst := a.List()
 	s := make([]string, 0, len(lst))
 	for _, x := range lst {
@@ -110,7 +110,7 @@ func (a PolicyAction) StringList() []string {
 	return s
 }
 
-func (a PolicyAction) IsValid() error {
+func (a LifeCyclePolicyAction) IsValid() error {
 	for _, x := range a.List() {
 		if a == x {
 			return nil
@@ -120,39 +120,39 @@ func (a PolicyAction) IsValid() error {
 	return fmt.Errorf("%w: %v", ErrLifeCyclePolicyInvalidAction, a)
 }
 
-type RetentionTimer struct {
+type LifeCyclePolicyRetentionTimer struct {
 	Weeks   int `json:"weeks,omitempty"`
 	Days    int `json:"days,omitempty"`
 	Hours   int `json:"hours,omitempty"`
 	Minutes int `json:"minutes,omitempty"`
 }
 
-// Schedule represents a schedule resource.
-type Schedule interface {
-	GetCommonSchedule() CommonSchedule
+// LifeCyclePolicySchedule represents a schedule resource.
+type LifeCyclePolicySchedule interface {
+	GetCommonSchedule() LifeCyclePolicyCommonSchedule
 }
 
-type CommonSchedule struct {
-	Type                 ScheduleType    `json:"type"`
-	ID                   string          `json:"id"`
-	Owner                string          `json:"owner"`
-	OwnerID              int             `json:"owner_id"`
-	MaxQuantity          int             `json:"max_quantity"`
-	UserID               int             `json:"user_id"`
-	ResourceNameTemplate string          `json:"resource_name_template"`
-	RetentionTime        *RetentionTimer `json:"retention_time"`
+type LifeCyclePolicyCommonSchedule struct {
+	Type                 LifeCyclePolicyScheduleType    `json:"type"`
+	ID                   string                         `json:"id"`
+	Owner                string                         `json:"owner"`
+	OwnerID              int                            `json:"owner_id"`
+	MaxQuantity          int                            `json:"max_quantity"`
+	UserID               int                            `json:"user_id"`
+	ResourceNameTemplate string                         `json:"resource_name_template"`
+	RetentionTime        *LifeCyclePolicyRetentionTimer `json:"retention_time"`
 }
 
-type IntervalSchedule struct {
-	CommonSchedule
+type LifeCyclePolicyIntervalSchedule struct {
+	LifeCyclePolicyCommonSchedule
 	Weeks   int `json:"weeks"`
 	Days    int `json:"days"`
 	Hours   int `json:"hours"`
 	Minutes int `json:"minutes"`
 }
 
-type CronSchedule struct {
-	CommonSchedule
+type LifeCyclePolicyCronSchedule struct {
+	LifeCyclePolicyCommonSchedule
 	Timezone  string `json:"timezone"`
 	Week      string `json:"week"`
 	DayOfWeek string `json:"day_of_week"`
@@ -162,39 +162,39 @@ type CronSchedule struct {
 	Minute    string `json:"minute"`
 }
 
-func (s CronSchedule) GetCommonSchedule() CommonSchedule {
-	return s.CommonSchedule
+func (s LifeCyclePolicyCronSchedule) GetCommonSchedule() LifeCyclePolicyCommonSchedule {
+	return s.LifeCyclePolicyCommonSchedule
 }
 
-func (s IntervalSchedule) GetCommonSchedule() CommonSchedule {
-	return s.CommonSchedule
+func (s LifeCyclePolicyIntervalSchedule) GetCommonSchedule() LifeCyclePolicyCommonSchedule {
+	return s.LifeCyclePolicyCommonSchedule
 }
 
-// RawSchedule is internal struct for unmarshalling into Schedule.
-type RawSchedule struct {
+// LifeCyclePolicyRawSchedule is internal struct for unmarshalling into LifeCyclePolicySchedule.
+type LifeCyclePolicyRawSchedule struct {
 	json.RawMessage
 }
 
-// Cook is method for unmarshalling RawSchedule into Schedule.
-func (r RawSchedule) Cook() (Schedule, error) {
+// Cook is method for unmarshalling LifeCyclePolicyRawSchedule into LifeCyclePolicySchedule.
+func (r LifeCyclePolicyRawSchedule) Cook() (LifeCyclePolicySchedule, error) {
 	var typeStruct struct {
-		ScheduleType `json:"type"`
+		LifeCyclePolicyScheduleType `json:"type"`
 	}
 	//nolint:staticcheck
 	if err := json.Unmarshal(r.RawMessage, &typeStruct); err != nil {
 		return nil, err
 	}
-	switch typeStruct.ScheduleType {
+	switch typeStruct.LifeCyclePolicyScheduleType {
 	default:
-		return nil, fmt.Errorf("%w: %s", ErrLifeCyclePolicyInvalidScheduleType, typeStruct.ScheduleType)
-	case ScheduleTypeCron:
-		var cronSchedule CronSchedule
+		return nil, fmt.Errorf("%w: %s", ErrLifeCyclePolicyInvalidScheduleType, typeStruct.LifeCyclePolicyScheduleType)
+	case LifeCyclePolicyScheduleTypeCron:
+		var cronSchedule LifeCyclePolicyCronSchedule
 		if err := json.Unmarshal(r.RawMessage, &cronSchedule); err != nil {
 			return nil, err
 		}
 		return cronSchedule, nil
-	case ScheduleTypeInterval:
-		var intervalSchedule IntervalSchedule
+	case LifeCyclePolicyScheduleTypeInterval:
+		var intervalSchedule LifeCyclePolicyIntervalSchedule
 		if err := json.Unmarshal(r.RawMessage, &intervalSchedule); err != nil {
 			return nil, err
 		}
@@ -202,41 +202,41 @@ func (r RawSchedule) Cook() (Schedule, error) {
 	}
 }
 
-// LifecyclePolicyVolume represents a volume resource.
-type LifecyclePolicyVolume struct {
+// LifeCyclePolicyVolume represents a volume resource.
+type LifeCyclePolicyVolume struct {
 	ID   string `json:"volume_id"`
 	Name string `json:"volume_name"`
 }
 
-// LifecyclePolicy represents a lifecycle policy resource.
-type LifecyclePolicy struct {
-	Name      string                  `json:"name"`
-	ID        int                     `json:"id"`
-	Action    PolicyAction            `json:"action"`
-	ProjectID int                     `json:"project_id"`
-	Status    PolicyStatus            `json:"status"`
-	UserID    int                     `json:"user_id"`
-	RegionID  int                     `json:"region_id"`
-	Volumes   []LifecyclePolicyVolume `json:"volumes"`
-	Schedules []Schedule              `json:"schedules"`
+// LifeCyclePolicy represents a lifecycle policy resource.
+type LifeCyclePolicy struct {
+	Name      string                    `json:"name"`
+	ID        int                       `json:"id"`
+	Action    LifeCyclePolicyAction     `json:"action"`
+	ProjectID int                       `json:"project_id"`
+	Status    LifeCyclePolicyStatus     `json:"status"`
+	UserID    int                       `json:"user_id"`
+	RegionID  int                       `json:"region_id"`
+	Volumes   []LifeCyclePolicyVolume   `json:"volumes"`
+	Schedules []LifeCyclePolicySchedule `json:"schedules"`
 }
 
 type rawLifeCyclePolicyRoot struct {
 	Count        int
-	LifePolicies []rawLifecyclePolicy `json:"results"`
+	LifePolicies []rawLifeCyclePolicy `json:"results"`
 }
 
-// rawLifecyclePolicy is internal struct for unmarshalling into LifecyclePolicy.
-type rawLifecyclePolicy struct {
-	Name      string                  `json:"name"`
-	ID        int                     `json:"id"`
-	Action    PolicyAction            `json:"action"`
-	ProjectID int                     `json:"project_id"`
-	Status    PolicyStatus            `json:"status"`
-	UserID    int                     `json:"user_id"`
-	RegionID  int                     `json:"region_id"`
-	Volumes   []LifecyclePolicyVolume `json:"volumes"`
-	Schedules []RawSchedule           `json:"schedules"`
+// rawLifeCyclePolicy is internal struct for unmarshalling into LifeCyclePolicy.
+type rawLifeCyclePolicy struct {
+	Name      string                       `json:"name"`
+	ID        int                          `json:"id"`
+	Action    LifeCyclePolicyAction        `json:"action"`
+	ProjectID int                          `json:"project_id"`
+	Status    LifeCyclePolicyStatus        `json:"status"`
+	UserID    int                          `json:"user_id"`
+	RegionID  int                          `json:"region_id"`
+	Volumes   []LifeCyclePolicyVolume      `json:"volumes"`
+	Schedules []LifeCyclePolicyRawSchedule `json:"schedules"`
 }
 
 //
@@ -248,15 +248,15 @@ type rawLifecyclePolicy struct {
 // }
 //
 // type PolicyUsageCost struct {
-// 	CurrencyCode  edgecloud.Currency `json:"currency_code"`
+// 	CurrencyCode  edgecloud.LifeCyclePolicyCurrency `json:"currency_code"`
 // 	PricePerHour  decimal.Decimal    `json:"price_per_hour"`
 // 	PricePerMonth decimal.Decimal    `json:"price_per_month"`
 // 	PriceStatus   string             `json:"price_status"`
 // }
 
-// cook is internal method for unmarshalling rawLifecyclePolicy into LifecyclePolicy.
-func (rawPolicy rawLifecyclePolicy) cook() (*LifecyclePolicy, error) {
-	schedules := make([]Schedule, len(rawPolicy.Schedules))
+// cook is internal method for unmarshalling rawLifeCyclePolicy into LifeCyclePolicy.
+func (rawPolicy rawLifeCyclePolicy) cook() (*LifeCyclePolicy, error) {
+	schedules := make([]LifeCyclePolicySchedule, len(rawPolicy.Schedules))
 	for i, b := range rawPolicy.Schedules {
 		s, err := b.Cook()
 		if err != nil {
@@ -269,7 +269,7 @@ func (rawPolicy rawLifecyclePolicy) cook() (*LifecyclePolicy, error) {
 	if err != nil {
 		return nil, err
 	}
-	var policy LifecyclePolicy
+	var policy LifeCyclePolicy
 	if err := json.Unmarshal(b, &policy); err != nil {
 		return nil, err
 	}
@@ -286,8 +286,8 @@ type LifeCyclePolicyListOptions LifeCyclePolicyGetOptions
 
 type LifeCyclePolicyCreateRequest struct {
 	Name      string                                 `json:"name" validate:"required,name"`
-	Status    PolicyStatus                           `json:"status,omitempty" validate:"omitempty,enum"`
-	Action    PolicyAction                           `json:"action" validate:"required,enum"`
+	Status    LifeCyclePolicyStatus                  `json:"status,omitempty" validate:"omitempty,enum"`
+	Action    LifeCyclePolicyAction                  `json:"action" validate:"required,enum"`
 	Schedules []LifeCyclePolicyCreateScheduleRequest `json:"schedules,omitempty" validate:"dive"`
 	VolumeIds []string                               `json:"volume_ids,omitempty"`
 }
@@ -315,15 +315,15 @@ type LifeCyclePolicyRemoveVolumesRequest struct {
 }
 
 type LifeCyclePolicyUpdateRequest struct {
-	Name   string       `json:"name" validate:"required,name"`
-	Status PolicyStatus `json:"status,omitempty" validate:"omitempty,enum"`
+	Name   string                `json:"name" validate:"required,name"`
+	Status LifeCyclePolicyStatus `json:"status,omitempty" validate:"omitempty,enum"`
 }
 
 type LifeCyclePolicyEstimateOpts struct {
-	Name      string       `json:"name" required:"true" validate:"required"`
-	VolumeIds []string     `json:"volume_ids"`
-	Status    PolicyStatus `json:"status,omitempty" validate:"omitempty,enum"`
-	Action    PolicyAction `json:"action" validate:"required,enum"`
+	Name      string                `json:"name" required:"true" validate:"required"`
+	VolumeIds []string              `json:"volume_ids"`
+	Status    LifeCyclePolicyStatus `json:"status,omitempty" validate:"omitempty,enum"`
+	Action    LifeCyclePolicyAction `json:"action" validate:"required,enum"`
 }
 
 // LifeCyclePolicyEstimateCronRequest represent options for EstimateCronMaxPolicyUsage.
@@ -340,28 +340,28 @@ type LifeCyclePolicyEstimateIntervalRequest struct {
 
 // LifeCyclePolicyCreateScheduleRequest represents options used to create a single schedule.
 type LifeCyclePolicyCreateScheduleRequest interface {
-	SetCommonCreateScheduleOpts(opts CommonCreateScheduleOpts)
+	SetCommonCreateScheduleOpts(opts LifeCyclePolicyCommonCreateScheduleRequest)
 }
 
-type Currency struct {
+type LifeCyclePolicyCurrency struct {
 	*currency.Currency
 }
 
-func ParseCurrency(s string) (*Currency, error) {
+func ParseCurrency(s string) (*LifeCyclePolicyCurrency, error) {
 	c, err := currency.Get(s)
 	if err != nil {
 		return nil, err
 	}
-	return &Currency{Currency: c}, nil
+	return &LifeCyclePolicyCurrency{Currency: c}, nil
 }
 
 // String - implements Stringer.
-func (c Currency) String() string {
+func (c LifeCyclePolicyCurrency) String() string {
 	return c.Currency.Code()
 }
 
-// UnmarshalJSON - implements Unmarshaler interface for Currency.
-func (c *Currency) UnmarshalJSON(data []byte) error {
+// UnmarshalJSON - implements Unmarshaler interface for LifeCyclePolicyCurrency.
+func (c *LifeCyclePolicyCurrency) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
 		return err
@@ -375,21 +375,21 @@ func (c *Currency) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalJSON - implements Marshaler interface for Currency.
-func (c Currency) MarshalJSON() ([]byte, error) {
+// MarshalJSON - implements Marshaler interface for LifeCyclePolicyCurrency.
+func (c LifeCyclePolicyCurrency) MarshalJSON() ([]byte, error) {
 	return json.Marshal(c.String())
 }
 
-type CommonCreateScheduleOpts struct {
-	Type                 ScheduleType    `json:"type" validate:"required,enum"`
-	ResourceNameTemplate string          `json:"resource_name_template,omitempty"`
-	MaxQuantity          int             `json:"max_quantity" validate:"required,gt=0,lt=10001"`
-	RetentionTime        *RetentionTimer `json:"retention_time,omitempty"`
+type LifeCyclePolicyCommonCreateScheduleRequest struct {
+	Type                 LifeCyclePolicyScheduleType    `json:"type" validate:"required,enum"`
+	ResourceNameTemplate string                         `json:"resource_name_template,omitempty"`
+	MaxQuantity          int                            `json:"max_quantity" validate:"required,gt=0,lt=10001"`
+	RetentionTime        *LifeCyclePolicyRetentionTimer `json:"retention_time,omitempty"`
 }
 
-// LifeCyclePolicyCreateCronScheduleOpts represents options used to create a single cron schedule.
-type LifeCyclePolicyCreateCronScheduleOpts struct { // TODO: validate?
-	CommonCreateScheduleOpts
+// LifeCyclePolicyCreateCronScheduleRequest represents options used to create a single cron schedule.
+type LifeCyclePolicyCreateCronScheduleRequest struct { // TODO: validate?
+	LifeCyclePolicyCommonCreateScheduleRequest
 	Timezone  string `json:"timezone,omitempty"`
 	Week      string `json:"week,omitempty"`
 	DayOfWeek string `json:"day_of_week,omitempty"`
@@ -401,7 +401,7 @@ type LifeCyclePolicyCreateCronScheduleOpts struct { // TODO: validate?
 
 // LifeCyclePolicyCreateIntervalScheduleRequest represents options used to create a single interval schedule.
 type LifeCyclePolicyCreateIntervalScheduleRequest struct {
-	CommonCreateScheduleOpts
+	LifeCyclePolicyCommonCreateScheduleRequest
 	Weeks   int `json:"weeks,omitempty" validate:"required_without_all=Days Hours Minutes"`
 	Days    int `json:"days,omitempty" validate:"required_without_all=Weeks Hours Minutes"`
 	Hours   int `json:"hours,omitempty" validate:"required_without_all=Weeks Days Minutes"`
@@ -416,32 +416,32 @@ type LifeCyclePolicyMaxPolicyUsage struct {
 }
 
 type LifeCyclePolicyPolicyUsageCost struct {
-	CurrencyCode  Currency        `json:"currency_code"`
-	PricePerHour  decimal.Decimal `json:"price_per_hour"`
-	PricePerMonth decimal.Decimal `json:"price_per_month"`
-	PriceStatus   string          `json:"price_status"`
+	CurrencyCode  LifeCyclePolicyCurrency `json:"currency_code"`
+	PricePerHour  decimal.Decimal         `json:"price_per_hour"`
+	PricePerMonth decimal.Decimal         `json:"price_per_month"`
+	PriceStatus   string                  `json:"price_status"`
 }
 
-func (opts *LifeCyclePolicyCreateCronScheduleOpts) SetCommonCreateScheduleOpts(common CommonCreateScheduleOpts) {
-	opts.CommonCreateScheduleOpts = common
+func (opts *LifeCyclePolicyCreateCronScheduleRequest) SetCommonCreateScheduleOpts(common LifeCyclePolicyCommonCreateScheduleRequest) {
+	opts.LifeCyclePolicyCommonCreateScheduleRequest = common
 }
 
-func (opts *LifeCyclePolicyCreateIntervalScheduleRequest) SetCommonCreateScheduleOpts(common CommonCreateScheduleOpts) {
-	opts.CommonCreateScheduleOpts = common
+func (opts *LifeCyclePolicyCreateIntervalScheduleRequest) SetCommonCreateScheduleOpts(common LifeCyclePolicyCommonCreateScheduleRequest) {
+	opts.LifeCyclePolicyCommonCreateScheduleRequest = common
 }
 
 // LifeCyclePoliciesService is an interface for creating and managing lifecycle policies with the EdgecenterCloud API.
 // See: https://apidocs.edgecenter.ru/cloud#tag/Lifecycle-policy
 type LifeCyclePoliciesService interface {
-	List(context.Context, *LifeCyclePolicyListOptions) ([]LifecyclePolicy, *Response, error)
-	Get(context.Context, int, *LifeCyclePolicyGetOptions) (*LifecyclePolicy, *Response, error)
-	Create(context.Context, *LifeCyclePolicyCreateRequest) (*LifecyclePolicy, *Response, error)
+	List(context.Context, *LifeCyclePolicyListOptions) ([]LifeCyclePolicy, *Response, error)
+	Get(context.Context, int, *LifeCyclePolicyGetOptions) (*LifeCyclePolicy, *Response, error)
+	Create(context.Context, *LifeCyclePolicyCreateRequest) (*LifeCyclePolicy, *Response, error)
 	Delete(context.Context, int) (*Response, error)
-	Update(context.Context, int, *LifeCyclePolicyUpdateRequest) (*LifecyclePolicy, *Response, error)
-	AddSchedules(context.Context, int, *LifeCyclePolicyAddSchedulesRequest) (*LifecyclePolicy, *Response, error)
-	RemoveSchedules(context.Context, int, *LifeCyclePolicyRemoveSchedulesRequest) (*LifecyclePolicy, *Response, error)
-	AddVolumes(context.Context, int, *LifeCyclePolicyAddVolumesRequest) (*LifecyclePolicy, *Response, error)
-	RemoveVolumes(context.Context, int, *LifeCyclePolicyRemoveVolumesRequest) (*LifecyclePolicy, *Response, error)
+	Update(context.Context, int, *LifeCyclePolicyUpdateRequest) (*LifeCyclePolicy, *Response, error)
+	AddSchedules(context.Context, int, *LifeCyclePolicyAddSchedulesRequest) (*LifeCyclePolicy, *Response, error)
+	RemoveSchedules(context.Context, int, *LifeCyclePolicyRemoveSchedulesRequest) (*LifeCyclePolicy, *Response, error)
+	AddVolumes(context.Context, int, *LifeCyclePolicyAddVolumesRequest) (*LifeCyclePolicy, *Response, error)
+	RemoveVolumes(context.Context, int, *LifeCyclePolicyRemoveVolumesRequest) (*LifeCyclePolicy, *Response, error)
 	EstimateCronMaxPolicyUsage(context.Context, *LifeCyclePolicyEstimateCronRequest) (*LifeCyclePolicyMaxPolicyUsage, *Response, error)
 	EstimateIntervalMaxPolicyUsage(context.Context, *LifeCyclePolicyEstimateIntervalRequest) (*LifeCyclePolicyMaxPolicyUsage, *Response, error)
 
@@ -454,7 +454,7 @@ type LifeCyclePoliciesServiceOp struct {
 }
 
 // List returns a list of lifecycle policies.
-func (s LifeCyclePoliciesServiceOp) List(ctx context.Context, listOpts *LifeCyclePolicyListOptions) ([]LifecyclePolicy, *Response, error) {
+func (s LifeCyclePoliciesServiceOp) List(ctx context.Context, listOpts *LifeCyclePolicyListOptions) ([]LifeCyclePolicy, *Response, error) {
 	if resp, err := s.client.Validate(); err != nil {
 		return nil, resp, err
 	}
@@ -475,7 +475,7 @@ func (s LifeCyclePoliciesServiceOp) List(ctx context.Context, listOpts *LifeCycl
 	if err != nil {
 		return nil, resp, err
 	}
-	lifeCeyclePolicies := make([]LifecyclePolicy, 0, len(rawRoot.LifePolicies))
+	lifeCeyclePolicies := make([]LifeCyclePolicy, 0, len(rawRoot.LifePolicies))
 	for _, rawPolicy := range rawRoot.LifePolicies {
 		lifeCeyclePolicy, err := rawPolicy.cook()
 		if err != nil {
@@ -488,7 +488,7 @@ func (s LifeCyclePoliciesServiceOp) List(ctx context.Context, listOpts *LifeCycl
 }
 
 // Get returns a lifecycle policy with specified unique id.
-func (s LifeCyclePoliciesServiceOp) Get(ctx context.Context, lifecyclePolicyID int, getOpts *LifeCyclePolicyGetOptions) (*LifecyclePolicy, *Response, error) {
+func (s LifeCyclePoliciesServiceOp) Get(ctx context.Context, lifecyclePolicyID int, getOpts *LifeCyclePolicyGetOptions) (*LifeCyclePolicy, *Response, error) {
 	if resp, err := s.client.Validate(); err != nil {
 		return nil, resp, err
 	}
@@ -504,7 +504,7 @@ func (s LifeCyclePoliciesServiceOp) Get(ctx context.Context, lifecyclePolicyID i
 		return nil, nil, err
 	}
 
-	rawLifeCyclePolicy := new(rawLifecyclePolicy)
+	rawLifeCyclePolicy := new(rawLifeCyclePolicy)
 
 	resp, err := s.client.Do(ctx, req, rawLifeCyclePolicy)
 	if err != nil {
@@ -519,7 +519,7 @@ func (s LifeCyclePoliciesServiceOp) Get(ctx context.Context, lifecyclePolicyID i
 }
 
 // Create is create new lifecycle policy.
-func (s LifeCyclePoliciesServiceOp) Create(ctx context.Context, reqBody *LifeCyclePolicyCreateRequest) (*LifecyclePolicy, *Response, error) {
+func (s LifeCyclePoliciesServiceOp) Create(ctx context.Context, reqBody *LifeCyclePolicyCreateRequest) (*LifeCyclePolicy, *Response, error) {
 	if reqBody == nil {
 		return nil, nil, NewArgError("reqBody", "cannot be nil")
 	}
@@ -534,7 +534,7 @@ func (s LifeCyclePoliciesServiceOp) Create(ctx context.Context, reqBody *LifeCyc
 		return nil, nil, err
 	}
 
-	rawLifeCyclePolicy := new(rawLifecyclePolicy)
+	rawLifeCyclePolicy := new(rawLifeCyclePolicy)
 
 	resp, err := s.client.Do(ctx, req, rawLifeCyclePolicy)
 	if err != nil {
@@ -550,7 +550,7 @@ func (s LifeCyclePoliciesServiceOp) Create(ctx context.Context, reqBody *LifeCyc
 
 // Update updates a lifecycle policy with specified unique id.
 // reqBody are used to construct request body.
-func (s LifeCyclePoliciesServiceOp) Update(ctx context.Context, lifeCyclePolicyID int, reqBody *LifeCyclePolicyUpdateRequest) (*LifecyclePolicy, *Response, error) {
+func (s LifeCyclePoliciesServiceOp) Update(ctx context.Context, lifeCyclePolicyID int, reqBody *LifeCyclePolicyUpdateRequest) (*LifeCyclePolicy, *Response, error) {
 	if resp, err := s.client.Validate(); err != nil {
 		return nil, resp, err
 	}
@@ -566,7 +566,7 @@ func (s LifeCyclePoliciesServiceOp) Update(ctx context.Context, lifeCyclePolicyI
 		return nil, nil, err
 	}
 
-	rawLifeCyclePolicy := new(rawLifecyclePolicy)
+	rawLifeCyclePolicy := new(rawLifeCyclePolicy)
 
 	resp, err := s.client.Do(ctx, req, rawLifeCyclePolicy)
 	if err != nil {
@@ -597,7 +597,7 @@ func (s LifeCyclePoliciesServiceOp) Delete(ctx context.Context, lifeCyclePolicyI
 }
 
 // AddSchedules adds a schedules to lifecycle policy with specified unique id.
-func (s LifeCyclePoliciesServiceOp) AddSchedules(ctx context.Context, lifeCyclePolicyID int, reqBody *LifeCyclePolicyAddSchedulesRequest) (*LifecyclePolicy, *Response, error) {
+func (s LifeCyclePoliciesServiceOp) AddSchedules(ctx context.Context, lifeCyclePolicyID int, reqBody *LifeCyclePolicyAddSchedulesRequest) (*LifeCyclePolicy, *Response, error) {
 	if resp, err := s.client.Validate(); err != nil {
 		return nil, resp, err
 	}
@@ -613,7 +613,7 @@ func (s LifeCyclePoliciesServiceOp) AddSchedules(ctx context.Context, lifeCycleP
 		return nil, nil, err
 	}
 
-	rawLifeCyclePolicy := new(rawLifecyclePolicy)
+	rawLifeCyclePolicy := new(rawLifeCyclePolicy)
 
 	resp, err := s.client.Do(ctx, req, rawLifeCyclePolicy)
 	if err != nil {
@@ -628,7 +628,7 @@ func (s LifeCyclePoliciesServiceOp) AddSchedules(ctx context.Context, lifeCycleP
 }
 
 // RemoveSchedules removes a schedules from lifecycle policy with specified unique id.
-func (s LifeCyclePoliciesServiceOp) RemoveSchedules(ctx context.Context, lifeCyclePolicyID int, reqBody *LifeCyclePolicyRemoveSchedulesRequest) (*LifecyclePolicy, *Response, error) {
+func (s LifeCyclePoliciesServiceOp) RemoveSchedules(ctx context.Context, lifeCyclePolicyID int, reqBody *LifeCyclePolicyRemoveSchedulesRequest) (*LifeCyclePolicy, *Response, error) {
 	if resp, err := s.client.Validate(); err != nil {
 		return nil, resp, err
 	}
@@ -644,7 +644,7 @@ func (s LifeCyclePoliciesServiceOp) RemoveSchedules(ctx context.Context, lifeCyc
 		return nil, nil, err
 	}
 
-	rawLifeCyclePolicy := new(rawLifecyclePolicy)
+	rawLifeCyclePolicy := new(rawLifeCyclePolicy)
 
 	resp, err := s.client.Do(ctx, req, rawLifeCyclePolicy)
 	if err != nil {
@@ -659,7 +659,7 @@ func (s LifeCyclePoliciesServiceOp) RemoveSchedules(ctx context.Context, lifeCyc
 }
 
 // AddVolumes adds a volumes to lifecycle policy with specified unique id.
-func (s LifeCyclePoliciesServiceOp) AddVolumes(ctx context.Context, lifeCyclePolicyID int, reqBody *LifeCyclePolicyAddVolumesRequest) (*LifecyclePolicy, *Response, error) {
+func (s LifeCyclePoliciesServiceOp) AddVolumes(ctx context.Context, lifeCyclePolicyID int, reqBody *LifeCyclePolicyAddVolumesRequest) (*LifeCyclePolicy, *Response, error) {
 	if resp, err := s.client.Validate(); err != nil {
 		return nil, resp, err
 	}
@@ -675,7 +675,7 @@ func (s LifeCyclePoliciesServiceOp) AddVolumes(ctx context.Context, lifeCyclePol
 		return nil, nil, err
 	}
 
-	rawLifeCyclePolicy := new(rawLifecyclePolicy)
+	rawLifeCyclePolicy := new(rawLifeCyclePolicy)
 
 	resp, err := s.client.Do(ctx, req, rawLifeCyclePolicy)
 	if err != nil {
@@ -690,7 +690,7 @@ func (s LifeCyclePoliciesServiceOp) AddVolumes(ctx context.Context, lifeCyclePol
 }
 
 // RemoveVolumes removes a volumes from lifecycle policy with specified unique id.
-func (s LifeCyclePoliciesServiceOp) RemoveVolumes(ctx context.Context, lifeCyclePolicyID int, reqBody *LifeCyclePolicyRemoveVolumesRequest) (*LifecyclePolicy, *Response, error) {
+func (s LifeCyclePoliciesServiceOp) RemoveVolumes(ctx context.Context, lifeCyclePolicyID int, reqBody *LifeCyclePolicyRemoveVolumesRequest) (*LifeCyclePolicy, *Response, error) {
 	if resp, err := s.client.Validate(); err != nil {
 		return nil, resp, err
 	}
@@ -706,7 +706,7 @@ func (s LifeCyclePoliciesServiceOp) RemoveVolumes(ctx context.Context, lifeCycle
 		return nil, nil, err
 	}
 
-	rawLifeCyclePolicy := new(rawLifecyclePolicy)
+	rawLifeCyclePolicy := new(rawLifeCyclePolicy)
 
 	resp, err := s.client.Do(ctx, req, rawLifeCyclePolicy)
 	if err != nil {

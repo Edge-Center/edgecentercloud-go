@@ -23,8 +23,8 @@ func TestLifeCyclePoliciesServiceOp_List(t *testing.T) {
 	setup()
 	defer teardown()
 
-	expectedSchedules := make([]Schedule, 0, 1)
-	expectedResp := []LifecyclePolicy{{ID: testResourceIntID, Schedules: expectedSchedules}}
+	expectedSchedules := make([]LifeCyclePolicySchedule, 0, 1)
+	expectedResp := []LifeCyclePolicy{{ID: testResourceIntID, Schedules: expectedSchedules}}
 	URL := path.Join(lifecyclePoliciesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID))
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
@@ -45,9 +45,9 @@ func TestLifeCyclePoliciesServiceOp_Get(t *testing.T) {
 	setup()
 	defer teardown()
 
-	expectedSchedules := make([]Schedule, 0, 1)
-	expectedResp := LifecyclePolicy{ID: testResourceIntID, Schedules: expectedSchedules}
-	rawResp := rawLifecyclePolicy{ID: testResourceIntID}
+	expectedSchedules := make([]LifeCyclePolicySchedule, 0, 1)
+	expectedResp := LifeCyclePolicy{ID: testResourceIntID, Schedules: expectedSchedules}
+	rawResp := rawLifeCyclePolicy{ID: testResourceIntID}
 	URL := path.Join(lifecyclePoliciesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), strconv.Itoa(testResourceIntID))
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
@@ -68,9 +68,9 @@ func TestLifeCyclePoliciesServiceOp_Create(t *testing.T) {
 	setup()
 	defer teardown()
 
-	expectedSchedules := make([]Schedule, 0, 1)
-	expectedResp := LifecyclePolicy{ID: testResourceIntID, Name: lifePolicyName, Schedules: expectedSchedules, Action: actionVolumeSnapshot}
-	rawResp := rawLifecyclePolicy{ID: testResourceIntID, Name: lifePolicyName, Action: actionVolumeSnapshot}
+	expectedSchedules := make([]LifeCyclePolicySchedule, 0, 1)
+	expectedResp := LifeCyclePolicy{ID: testResourceIntID, Name: lifePolicyName, Schedules: expectedSchedules, Action: actionVolumeSnapshot}
+	rawResp := rawLifeCyclePolicy{ID: testResourceIntID, Name: lifePolicyName, Action: actionVolumeSnapshot}
 	URL := path.Join(lifecyclePoliciesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID))
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
@@ -98,17 +98,17 @@ func TestLifeCyclePoliciesServiceOp_CreateWithSched(t *testing.T) {
 	setup()
 	defer teardown()
 
-	expectedSchedules := make([]Schedule, 0, 1)
-	sched := IntervalSchedule{
-		CommonSchedule: CommonSchedule{OwnerID: 928, Type: ScheduleTypeInterval},
+	expectedSchedules := make([]LifeCyclePolicySchedule, 0, 1)
+	sched := LifeCyclePolicyIntervalSchedule{
+		LifeCyclePolicyCommonSchedule: LifeCyclePolicyCommonSchedule{OwnerID: 928, Type: LifeCyclePolicyScheduleTypeInterval},
 	}
 	expectedSchedules = append(expectedSchedules, sched)
-	expectedRawSchedules := make([]RawSchedule, 0, 1)
-	// rawSched := RawSchedule{json.RawMessage(`{"owner_id": 928, "user_id": 342026, "resource_name_template": "reserve snap of the volume {volume_id}", "max_quantity": 5, "retention_time": {"weeks": 1, "hours": 1, "days": 1, "minutes": 1}, "owner": "lifecycle_policy", "id": "2a4dbd33-9d89-466d-9ce0-08beaf9d70ea", "type": "interval", "hours": 1, "minutes": 1, "weeks": 1, "days": 1}`)}
-	rawSched := RawSchedule{json.RawMessage(`{"owner_id": 928, "type": "interval"}`)}
+	expectedRawSchedules := make([]LifeCyclePolicyRawSchedule, 0, 1)
+	// rawSched := LifeCyclePolicyRawSchedule{json.RawMessage(`{"owner_id": 928, "user_id": 342026, "resource_name_template": "reserve snap of the volume {volume_id}", "max_quantity": 5, "retention_time": {"weeks": 1, "hours": 1, "days": 1, "minutes": 1}, "owner": "lifecycle_policy", "id": "2a4dbd33-9d89-466d-9ce0-08beaf9d70ea", "type": "interval", "hours": 1, "minutes": 1, "weeks": 1, "days": 1}`)}
+	rawSched := LifeCyclePolicyRawSchedule{json.RawMessage(`{"owner_id": 928, "type": "interval"}`)}
 	expectedRawSchedules = append(expectedRawSchedules, rawSched)
-	expectedResp := LifecyclePolicy{ID: testResourceIntID, Name: lifePolicyName, Schedules: expectedSchedules, Action: actionVolumeSnapshot}
-	rawResp := rawLifecyclePolicy{ID: testResourceIntID, Name: lifePolicyName, Action: actionVolumeSnapshot, Schedules: expectedRawSchedules}
+	expectedResp := LifeCyclePolicy{ID: testResourceIntID, Name: lifePolicyName, Schedules: expectedSchedules, Action: actionVolumeSnapshot}
+	rawResp := rawLifeCyclePolicy{ID: testResourceIntID, Name: lifePolicyName, Action: actionVolumeSnapshot, Schedules: expectedRawSchedules}
 	URL := path.Join(lifecyclePoliciesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID))
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
@@ -136,9 +136,9 @@ func TestLifeCyclePoliciesServiceOp_Update(t *testing.T) {
 	setup()
 	defer teardown()
 
-	expectedSchedules := make([]Schedule, 0, 1)
-	expectedResp := LifecyclePolicy{ID: testResourceIntID, Name: lifePolicyName, Schedules: expectedSchedules, Action: actionVolumeSnapshot, Status: statusPaused}
-	rawResp := rawLifecyclePolicy{ID: testResourceIntID, Name: lifePolicyName, Action: actionVolumeSnapshot, Status: statusPaused}
+	expectedSchedules := make([]LifeCyclePolicySchedule, 0, 1)
+	expectedResp := LifeCyclePolicy{ID: testResourceIntID, Name: lifePolicyName, Schedules: expectedSchedules, Action: actionVolumeSnapshot, Status: statusPaused}
+	rawResp := rawLifeCyclePolicy{ID: testResourceIntID, Name: lifePolicyName, Action: actionVolumeSnapshot, Status: statusPaused}
 	URL := path.Join(lifecyclePoliciesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), strconv.Itoa(testResourceIntID))
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
@@ -185,9 +185,9 @@ func TestLifeCyclePoliciesServiceOp_AddSchedules(t *testing.T) {
 	setup()
 	defer teardown()
 
-	expectedSchedules := make([]Schedule, 0, 1)
-	expectedResp := LifecyclePolicy{ID: testResourceIntID, Name: lifePolicyName, Schedules: expectedSchedules, Action: actionVolumeSnapshot, Status: statusPaused}
-	rawResp := rawLifecyclePolicy{ID: testResourceIntID, Name: lifePolicyName, Action: actionVolumeSnapshot, Status: statusPaused}
+	expectedSchedules := make([]LifeCyclePolicySchedule, 0, 1)
+	expectedResp := LifeCyclePolicy{ID: testResourceIntID, Name: lifePolicyName, Schedules: expectedSchedules, Action: actionVolumeSnapshot, Status: statusPaused}
+	rawResp := rawLifeCyclePolicy{ID: testResourceIntID, Name: lifePolicyName, Action: actionVolumeSnapshot, Status: statusPaused}
 	URL := path.Join(lifecyclePoliciesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), strconv.Itoa(testResourceIntID), addSchedulesSubPath)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
@@ -215,9 +215,9 @@ func TestLifeCyclePoliciesServiceOp_RemoveSchedules(t *testing.T) {
 	setup()
 	defer teardown()
 
-	expectedSchedules := make([]Schedule, 0, 1)
-	expectedResp := LifecyclePolicy{ID: testResourceIntID, Name: lifePolicyName, Schedules: expectedSchedules, Action: actionVolumeSnapshot, Status: statusPaused}
-	rawResp := rawLifecyclePolicy{ID: testResourceIntID, Name: lifePolicyName, Action: actionVolumeSnapshot, Status: statusPaused}
+	expectedSchedules := make([]LifeCyclePolicySchedule, 0, 1)
+	expectedResp := LifeCyclePolicy{ID: testResourceIntID, Name: lifePolicyName, Schedules: expectedSchedules, Action: actionVolumeSnapshot, Status: statusPaused}
+	rawResp := rawLifeCyclePolicy{ID: testResourceIntID, Name: lifePolicyName, Action: actionVolumeSnapshot, Status: statusPaused}
 	URL := path.Join(lifecyclePoliciesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), strconv.Itoa(testResourceIntID), removeSchedulesSubPath)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
@@ -241,9 +241,9 @@ func TestLifeCyclePoliciesServiceOp_AddVolumes(t *testing.T) {
 	setup()
 	defer teardown()
 
-	expectedSchedules := make([]Schedule, 0, 1)
-	expectedResp := LifecyclePolicy{ID: testResourceIntID, Name: lifePolicyName, Schedules: expectedSchedules, Action: actionVolumeSnapshot, Status: statusPaused}
-	rawResp := rawLifecyclePolicy{ID: testResourceIntID, Name: lifePolicyName, Action: actionVolumeSnapshot, Status: statusPaused}
+	expectedSchedules := make([]LifeCyclePolicySchedule, 0, 1)
+	expectedResp := LifeCyclePolicy{ID: testResourceIntID, Name: lifePolicyName, Schedules: expectedSchedules, Action: actionVolumeSnapshot, Status: statusPaused}
+	rawResp := rawLifeCyclePolicy{ID: testResourceIntID, Name: lifePolicyName, Action: actionVolumeSnapshot, Status: statusPaused}
 	URL := path.Join(lifecyclePoliciesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), strconv.Itoa(testResourceIntID), addVolumesSubPath)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
@@ -267,9 +267,9 @@ func TestLifeCyclePoliciesServiceOp_RemoveVolumes(t *testing.T) {
 	setup()
 	defer teardown()
 
-	expectedSchedules := make([]Schedule, 0, 1)
-	expectedResp := LifecyclePolicy{ID: testResourceIntID, Name: lifePolicyName, Schedules: expectedSchedules, Action: actionVolumeSnapshot, Status: statusPaused}
-	rawResp := rawLifecyclePolicy{ID: testResourceIntID, Name: lifePolicyName, Action: actionVolumeSnapshot, Status: statusPaused}
+	expectedSchedules := make([]LifeCyclePolicySchedule, 0, 1)
+	expectedResp := LifeCyclePolicy{ID: testResourceIntID, Name: lifePolicyName, Schedules: expectedSchedules, Action: actionVolumeSnapshot, Status: statusPaused}
+	rawResp := rawLifeCyclePolicy{ID: testResourceIntID, Name: lifePolicyName, Action: actionVolumeSnapshot, Status: statusPaused}
 	URL := path.Join(lifecyclePoliciesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), strconv.Itoa(testResourceIntID), removeVolumesSubPath)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
@@ -299,7 +299,7 @@ func TestLifeCyclePoliciesServiceOp_EstimateCronMaxPolicyUsage(t *testing.T) {
 		SizeUsage:      2,
 		SequenceLength: 2,
 		MaxCost: LifeCyclePolicyPolicyUsageCost{
-			CurrencyCode:  Currency{Currency: &currency.RUB},
+			CurrencyCode:  LifeCyclePolicyCurrency{Currency: &currency.RUB},
 			PricePerHour:  decimal.New(0, 0),
 			PricePerMonth: decimal.New(0, 0),
 		},
@@ -332,7 +332,7 @@ func TestLifeCyclePoliciesServiceOp_EstimateIntervalMaxPolicyUsage(t *testing.T)
 		SizeUsage:      2,
 		SequenceLength: 2,
 		MaxCost: LifeCyclePolicyPolicyUsageCost{
-			CurrencyCode:  Currency{Currency: &currency.RUB},
+			CurrencyCode:  LifeCyclePolicyCurrency{Currency: &currency.RUB},
 			PricePerHour:  decimal.New(0, 0),
 			PricePerMonth: decimal.New(0, 0),
 		},
