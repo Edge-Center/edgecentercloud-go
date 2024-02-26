@@ -239,21 +239,6 @@ type rawLifeCyclePolicy struct {
 	Schedules []LifeCyclePolicyRawSchedule `json:"schedules"`
 }
 
-//
-// type MaxPolicyUsage struct {
-// 	CountUsage     int             `json:"max_volume_snapshot_count_usage"`
-// 	SizeUsage      int             `json:"max_volume_snapshot_size_usage"`
-// 	SequenceLength int             `json:"max_volume_snapshot_sequence_length"`
-// 	MaxCost        PolicyUsageCost `json:"max_cost"`
-// }
-//
-// type PolicyUsageCost struct {
-// 	CurrencyCode  edgecloud.LifeCyclePolicyCurrency `json:"currency_code"`
-// 	PricePerHour  decimal.Decimal    `json:"price_per_hour"`
-// 	PricePerMonth decimal.Decimal    `json:"price_per_month"`
-// 	PriceStatus   string             `json:"price_status"`
-// }
-
 // cook is internal method for unmarshalling rawLifeCyclePolicy into LifeCyclePolicy.
 func (rawPolicy rawLifeCyclePolicy) cook() (*LifeCyclePolicy, error) {
 	schedules := make([]LifeCyclePolicySchedule, len(rawPolicy.Schedules))

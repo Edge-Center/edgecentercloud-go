@@ -60,6 +60,7 @@ type InstancesService interface {
 	InstanceFlavor
 	InstanceSecurityGroup
 	InstanceMetadata
+	BareMetalService
 }
 
 type InstanceAction interface {
