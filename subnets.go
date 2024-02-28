@@ -73,7 +73,7 @@ type SubnetworkCreateRequest struct {
 	ConnectToNetworkRouter bool        `json:"connect_to_network_router"`
 	DNSNameservers         []net.IP    `json:"dns_nameservers,omitempty"`
 	GatewayIP              *net.IP     `json:"gateway_ip,omitempty"`
-	Metadata               Metadata    `json:"metadata"`
+	Metadata               Metadata    `json:"metadata,omitempty"`
 	HostRoutes             []HostRoute `json:"host_routes,omitempty"`
 }
 
