@@ -40,6 +40,17 @@ type Port struct {
 	PortID              string                `json:"port_id"`
 }
 
+type InstanceSubPort struct {
+	PortID            string            `json:"port_id"`
+	MacAddress        string            `json:"mac_address"`
+	NetworkID         string            `json:"network_id"`
+	IPAssignments     []PortIP          `json:"ip_assignments"`
+	NetworkDetails    NetworkSubnetwork `json:"network_details"`
+	FloatingIPDetails []FloatingIP      `json:"floatingip_details"`
+	SegmentationID    int               `json:"segmentation_id"`
+	SegmentationType  string            `json:"segmentation_type"`
+}
+
 // AllowedAddressPairs represents allowed port address pair and/or subnet masks.
 type AllowedAddressPairs struct {
 	IPAddress  string `json:"ip_address"`
@@ -61,6 +72,7 @@ type InstancePortInterface struct {
 	MacAddress          string            `json:"mac_address"`
 	NetworkID           string            `json:"network_id"`
 	IPAssignments       []PortIP          `json:"ip_assignments"`
+	SubPorts            []InstanceSubPort `json:"sub_ports,omitempty"`
 }
 
 // PortIP represents an IPAddress and a SubnetID.
