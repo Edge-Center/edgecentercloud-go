@@ -299,8 +299,8 @@ type DiskMetrics struct {
 }
 
 type AssignSecurityGroupRequest struct {
-	Name                    string                    `json:"name"`
-	PortsSecurityGroupNames []PortsSecurityGroupNames `json:"ports_security_group_names"`
+	Name                    string                    `json:"name,omitempty"`
+	PortsSecurityGroupNames []PortsSecurityGroupNames `json:"ports_security_group_names,omitempty"`
 }
 
 type PortsSecurityGroupNames struct {
