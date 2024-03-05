@@ -127,9 +127,9 @@ type Instance struct {
 // InstanceVolume represent an instance volume struct.
 type InstanceVolume struct {
 	ID                  string `json:"id"`
-	DeleteOnTermination bool   `json:"delete_on_termination"`
-	BootIndex           int    `json:"boot_index"`
-	Size                int    `json:"size"`
+	DeleteOnTermination bool   `json:"delete_on_termination,omitempty"`
+	BootIndex           int    `json:"boot_index,omitempty"`
+	Size                int    `json:"size,omitempty"`
 }
 
 type AddressType string
