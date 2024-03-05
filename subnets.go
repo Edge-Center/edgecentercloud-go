@@ -79,7 +79,7 @@ type SubnetworkCreateRequest struct {
 
 // SubnetworkUpdateRequest represents a request to update a Subnetwork properties.
 type SubnetworkUpdateRequest struct {
-	Name           string      `json:"name" required:"true"`
+	Name           string      `json:"name,omitempty"`
 	DNSNameservers []net.IP    `json:"dns_nameservers"`
 	EnableDHCP     bool        `json:"enable_dhcp"`
 	HostRoutes     []HostRoute `json:"host_routes"`
