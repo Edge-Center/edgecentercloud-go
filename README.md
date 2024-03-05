@@ -9,7 +9,7 @@ You can view Edgecenter Cloud API docs here: [https://apidocs.edgecenter.ru/clou
 |---------|------------|--------------------|---------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------|
 | master  | ✅          | _                  | :x:                       | `import "github.com/Edge-Center/edgecentercloud-go/v2"`  and choose version at go.mod file as commit sha like `b193c6019f9a196442db420ac20644772c064c65` | New features and bug fixes arrive here first            |
 | v2      | ✅          | _                  | :x:                       | `import "github.com/Edge-Center/edgecentercloud-go/v2"`  and choose version at go.mod file as release version like `v2.X.Y`                              | Used for stable releases                                |                         
-| v1      | ✅          | 15.02.2024         | ✅                         | `import "github.com/Edge-Center/edgecentercloud-go"`     and choose version at go.mod file as release version like `v1.X.Y`                              | Not recommended. Use only for edgecloud ec_client usage |   
+| v1      | ❌          | 05.03.2024         | ✅                         | `import "github.com/Edge-Center/edgecentercloud-go"`     and choose version at go.mod file as release version like `v1.X.Y`                              | Not recommended. Use only for edgecloud ec_client usage |   
 
 ## Install
 ```sh
