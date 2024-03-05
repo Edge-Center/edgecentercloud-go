@@ -128,6 +128,7 @@ type Instance struct {
 type InstanceVolume struct {
 	ID                  string `json:"id"`
 	DeleteOnTermination bool   `json:"delete_on_termination"`
+	BootIndex           int    `json:"boot_index"`
 }
 
 type AddressType string
