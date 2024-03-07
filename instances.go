@@ -130,6 +130,10 @@ type InstanceVolume struct {
 	DeleteOnTermination bool   `json:"delete_on_termination,omitempty"`
 	BootIndex           int    `json:"boot_index,omitempty"`
 	Size                int    `json:"size,omitempty"`
+	ImageID		    string `json:"image_id"`
+	Name		    string `json:"name"`
+	TypeName	    string `json:"type_name"`
+	AttachmentTag       string `json:"attachment_tag"`
 }
 
 type AddressType string
