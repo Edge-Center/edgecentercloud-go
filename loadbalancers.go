@@ -141,9 +141,9 @@ type Pool struct {
 	OperatingStatus       OperatingStatus                 `json:"operating_status"`
 	CreatorTaskID         string                          `json:"creator_task_id"`
 	TaskID                string                          `json:"task_id"`
-	TimeoutClientData     *int                            `json:"timeout_client_data"`
+	TimeoutClientData     *int                            `json:"timeout_client_data,omitempty"`
 	TimeoutMemberData     *int                            `json:"timeout_member_data,omitempty"`
-	TimeoutMemberConnect  *int                            `json:"timeout_member_connect"`
+	TimeoutMemberConnect  *int                            `json:"timeout_member_connect,omitempty"`
 }
 
 // PoolMember represents an EdgecenterCloud Loadbalancer Pool PoolMember.
