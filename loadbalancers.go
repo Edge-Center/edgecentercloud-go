@@ -142,7 +142,7 @@ type Pool struct {
 	CreatorTaskID         string                          `json:"creator_task_id"`
 	TaskID                string                          `json:"task_id"`
 	TimeoutClientData     int                             `json:"timeout_client_data"`
-	TimeoutMemberData     int                             `json:"timeout_member_data"`
+	TimeoutMemberData     int                             `json:"timeout_member_data,omitempty"`
 	TimeoutMemberConnect  int                             `json:"timeout_member_connect"`
 }
 
