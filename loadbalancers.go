@@ -141,9 +141,9 @@ type Pool struct {
 	OperatingStatus       OperatingStatus                 `json:"operating_status"`
 	CreatorTaskID         string                          `json:"creator_task_id"`
 	TaskID                string                          `json:"task_id"`
-	TimeoutClientData     *int                            `json:"timeout_client_data,omitempty"`
-	TimeoutMemberData     *int                            `json:"timeout_member_data,omitempty"`
-	TimeoutMemberConnect  *int                            `json:"timeout_member_connect,omitempty"`
+	TimeoutClientData     int                             `json:"timeout_client_data,omitempty"`
+	TimeoutMemberData     int                             `json:"timeout_member_data,omitempty"`
+	TimeoutMemberConnect  int                             `json:"timeout_member_connect,omitempty"`
 }
 
 // PoolMember represents an EdgecenterCloud Loadbalancer Pool PoolMember.
@@ -433,9 +433,9 @@ type PoolUpdateRequest struct {
 	SessionPersistence    *LoadbalancerSessionPersistence `json:"session_persistence,omitempty"`
 	Members               []PoolMemberCreateRequest       `json:"members,omitempty"`
 	HealthMonitor         *HealthMonitorCreateRequest     `json:"healthmonitor,omitempty"`
-	TimeoutClientData     int                             `json:"timeout_client_data,omitempty"`
-	TimeoutMemberData     int                             `json:"timeout_member_data,omitempty"`
-	TimeoutMemberConnect  int                             `json:"timeout_member_connect,omitempty"`
+	TimeoutClientData     *int                            `json:"timeout_client_data,omitempty"`
+	TimeoutMemberData     *int                            `json:"timeout_member_data,omitempty"`
+	TimeoutMemberConnect  *int                            `json:"timeout_member_connect,omitempty"`
 }
 
 type PoolListOptions struct {
