@@ -433,9 +433,9 @@ type PoolUpdateRequest struct {
 	SessionPersistence    *LoadbalancerSessionPersistence `json:"session_persistence,omitempty"`
 	Members               []PoolMemberCreateRequest       `json:"members,omitempty"`
 	HealthMonitor         *HealthMonitorCreateRequest     `json:"healthmonitor,omitempty"`
-	TimeoutClientData     *int                            `json:"timeout_client_data,omitempty"`
-	TimeoutMemberData     *int                            `json:"timeout_member_data,omitempty"`
-	TimeoutMemberConnect  *int                            `json:"timeout_member_connect,omitempty"`
+	TimeoutClientData     *int                            `json:"timeout_client_data"`
+	TimeoutMemberData     *int                            `json:"timeout_member_data"`
+	TimeoutMemberConnect  *int                            `json:"timeout_member_connect"`
 }
 
 type PoolListOptions struct {
