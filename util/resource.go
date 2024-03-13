@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"time"
 
 	edgecloud "github.com/Edge-Center/edgecentercloud-go/v2"
 )
@@ -43,7 +44,7 @@ func ResourceIsExist[T any](ctx context.Context, getResourceFunc GetResourceFunc
 	}
 }
 
-func DeleteResourceIfExist(ctx context.Context, client *edgecloud.Client, resource interface{}, resourceID string) error {
+func DeleteResourceIfExist(ctx context.Context, client *edgecloud.Client, resource interface{}, resourceID string, timeouts ...time.Duration) error {
 	deleteAndWait := func(
 		deleter func(ctx context.Context, resourceID string) (*edgecloud.TaskResponse, *edgecloud.Response, error),
 	) error {
@@ -51,7 +52,7 @@ func DeleteResourceIfExist(ctx context.Context, client *edgecloud.Client, resour
 		if err != nil {
 			return err
 		}
-		return WaitForTaskComplete(ctx, client, task.Tasks[0])
+		return WaitForTaskComplete(ctx, client, task.Tasks[0], timeouts...)
 	}
 
 	switch v := resource.(type) {
