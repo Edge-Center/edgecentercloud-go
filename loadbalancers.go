@@ -345,7 +345,7 @@ type ListenerUpdateRequest struct {
 	Name         string   `json:"name,omitempty"`
 	SecretID     string   `json:"secret_id,omitempty"`
 	SNISecretID  []string `json:"sni_secret_id,omitempty"`
-	AllowedCIDRs []string `json:"allowed_cidrs,omitempty"`
+	AllowedCIDRs []string `json:"allowed_cidrs"`
 }
 
 type LoadbalancerListenerProtocol string
