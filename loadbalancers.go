@@ -341,10 +341,10 @@ type LoadbalancerListenerCreateRequest struct {
 
 // ListenerUpdateRequest represents a request to update a Loadbalancer Listener.
 type ListenerUpdateRequest struct {
-	Name         string   `json:"name,omitempty"`
-	SecretID     string   `json:"secret_id,omitempty"`
-	SNISecretID  []string `json:"sni_secret_id,omitempty"`
-	AllowedCIDRs []string `json:"allowed_cidrs,omitempty"`
+	Name         string    `json:"name,omitempty"`
+	SecretID     string    `json:"secret_id,omitempty"`
+	SNISecretID  []string  `json:"sni_secret_id,omitempty"`
+	AllowedCIDRs *[]string `json:"allowed_cidrs,omitempty"`
 }
 
 type LoadbalancerListenerProtocol string
