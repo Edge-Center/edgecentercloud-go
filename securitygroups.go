@@ -405,9 +405,9 @@ type RuleCreateRequest struct {
 	Description     *string                    `json:"description"`
 	RemoteIPPrefix  *string                    `json:"remote_ip_prefix,omitempty"`
 	SecurityGroupID *string                    `json:"security_group_id,omitempty"`
-	PortRangeMax    *int                       `json:"port_range_max,omitempty"`
+	PortRangeMax    *int                       `json:"port_range_max"`
 	Protocol        SecurityGroupRuleProtocol  `json:"protocol,omitempty"`
-	PortRangeMin    *int                       `json:"port_range_min,omitempty"`
+	PortRangeMin    *int                       `json:"port_range_min"`
 	EtherType       EtherType                  `json:"ethertype,omitempty" required:"true"`
 	RemoteGroupID   *string                    `json:"remote_group_id,omitempty"`
 	Direction       SecurityGroupRuleDirection `json:"direction"`
