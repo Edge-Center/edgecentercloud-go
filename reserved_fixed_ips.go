@@ -39,24 +39,24 @@ var _ ReservedFixedIPsService = &ReservedFixedIPsServiceOp{}
 
 // ReservedFixedIP represents an EdgecenterCloud ReservedFixedIP.
 type ReservedFixedIP struct {
-	Region              string                `json:"region"`
-	CreatedAt           string                `json:"created_at"`
-	UpdatedAt           string                `json:"updated_at"`
-	Name                string                `json:"name"`
-	RegionID            int                   `json:"region_id"`
-	PortID              string                `json:"port_id,omitempty"`
-	FixedIPAddress      net.IP                `json:"fixed_ip_address,omitempty"`
-	TaskID              string                `json:"task_id"`
-	IsVIP               bool                  `json:"is_vip"`
-	IsExternal          bool                  `json:"is_external"`
-	ProjectID           int                   `json:"project_id"`
-	NetworkID           string                `json:"network_id"`
-	CreatorTaskID       string                `json:"creator_task_id"`
-	Status              string                `json:"status"`
-	SubnetID            string                `json:"subnet_id"`
-	AllowedAddressPairs []AllowedAddressPairs `json:"allowed_address_pairs"`
-	Network             Network               `json:"network"`
-	Reservation         Reservation           `json:"reservation"`
+	Region              string                     `json:"region"`
+	CreatedAt           string                     `json:"created_at"`
+	UpdatedAt           string                     `json:"updated_at"`
+	Name                string                     `json:"name"`
+	RegionID            int                        `json:"region_id"`
+	PortID              string                     `json:"port_id,omitempty"`
+	FixedIPAddress      net.IP                     `json:"fixed_ip_address,omitempty"`
+	TaskID              string                     `json:"task_id"`
+	IsVIP               bool                       `json:"is_vip"`
+	IsExternal          bool                       `json:"is_external"`
+	ProjectID           int                        `json:"project_id"`
+	NetworkID           string                     `json:"network_id"`
+	CreatorTaskID       string                     `json:"creator_task_id"`
+	Status              string                     `json:"status"`
+	SubnetID            string                     `json:"subnet_id"`
+	AllowedAddressPairs []PortsAllowedAddressPairs `json:"allowed_address_pairs"`
+	Network             Network                    `json:"network"`
+	Reservation         Reservation                `json:"reservation"`
 }
 
 type Reservation struct {

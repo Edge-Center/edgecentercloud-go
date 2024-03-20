@@ -20,7 +20,7 @@ const (
 // PortsService is an interface for creating and managing Ports with the EdgecenterCloud API.
 // See: https://apidocs.edgecenter.ru/cloud#tag/ports
 type PortsService interface {
-	Assign(context.Context, string, *AllowedAddressPairsRequest) (*Port, *Response, error)
+	Assign(context.Context, string, *PortsAllowedAddressPairsRequest) (*Port, *Response, error)
 	EnablePortSecurity(context.Context, string) (*InstancePortInterface, *Response, error)
 	DisablePortSecurity(context.Context, string) (*InstancePortInterface, *Response, error)
 }
@@ -34,10 +34,10 @@ var _ PortsService = &PortsServiceOp{}
 
 // Port represents an EdgecenterCloud Port.
 type Port struct {
-	NetworkID           string                `json:"network_id"`
-	AllowedAddressPairs []AllowedAddressPairs `json:"allowed_address_pairs"`
-	InstanceID          string                `json:"instance_id"`
-	PortID              string                `json:"port_id"`
+	NetworkID           string                     `json:"network_id"`
+	AllowedAddressPairs []PortsAllowedAddressPairs `json:"allowed_address_pairs"`
+	InstanceID          string                     `json:"instance_id"`
+	PortID              string                     `json:"port_id"`
 }
 
 type InstanceSubPort struct {
@@ -51,16 +51,15 @@ type InstanceSubPort struct {
 	SegmentationType  string            `json:"segmentation_type"`
 }
 
-// AllowedAddressPairs represents allowed port address pair and/or subnet masks.
-type AllowedAddressPairs struct {
+// PortsAllowedAddressPairs represents allowed port address pair and/or subnet masks.
+type PortsAllowedAddressPairs struct {
 	IPAddress  string `json:"ip_address"`
 	MacAddress string `json:"mac_address"`
 }
 
-// AllowedAddressPairsRequest represents a request to assign allowed address pairs for an instance port.
-type AllowedAddressPairsRequest struct {
-	IPAddress  string `json:"ip_address"`
-	MacAddress string `json:"mac_address"`
+// PortsAllowedAddressPairsRequest represents a request to assign allowed address pairs for an instance port.
+type PortsAllowedAddressPairsRequest struct {
+	AllowedAddressPairs []PortsAllowedAddressPairs `json:"allowed_address_pairs"`
 }
 
 // InstancePortInterface represents an instance port interface.
@@ -82,7 +81,7 @@ type PortIP struct {
 }
 
 // Assign allowed address pairs for an instance port.
-func (s *PortsServiceOp) Assign(ctx context.Context, portID string, reqBody *AllowedAddressPairsRequest) (*Port, *Response, error) {
+func (s *PortsServiceOp) Assign(ctx context.Context, portID string, reqBody *PortsAllowedAddressPairsRequest) (*Port, *Response, error) {
 	if reqBody == nil {
 		return nil, nil, NewArgError("reqBody", "cannot be nil")
 	}
