@@ -16,13 +16,13 @@ func TestPorts_Assign(t *testing.T) {
 	setup()
 	defer teardown()
 
-	request := &AllowedAddressPairsRequest{IPAddress: "192.168.0.1"}
+	request := &PortsAllowedAddressPairsRequest{AllowedAddressPairs: []PortsAllowedAddressPairs{{IPAddress: "192.168.0.2"}}}
 	expectedResp := &Port{PortID: testResourceID}
 	URL := path.Join(portsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, portsAllowAddressPairs)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPut)
-		reqBody := new(AllowedAddressPairsRequest)
+		reqBody := new(PortsAllowedAddressPairsRequest)
 		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
 			t.Errorf("failed to decode request body: %v", err)
 		}
