@@ -17,10 +17,11 @@ import (
 )
 
 const (
-	testResourceID = "f0d19cec-5c3f-4853-886e-304915960ff6"
-	testName       = "test-name"
-	projectID      = 2750
-	regionID       = 8
+	testResourceID  = "f0d19cec-5c3f-4853-886e-304915960ff6"
+	testResourceID2 = "40d19cec-5c3f-4853-886e-a6g6g3k95543"
+	testName        = "test-name"
+	projectID       = 2750
+	regionID        = 8
 )
 
 func TestResourceIsDeleted(t *testing.T) {

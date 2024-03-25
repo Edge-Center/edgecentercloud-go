@@ -3,6 +3,7 @@ package util
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	edgecloud "github.com/Edge-Center/edgecentercloud-go/v2"
 )
@@ -28,4 +29,29 @@ func L7PoliciesListByListenerID(ctx context.Context, client *edgecloud.Client, l
 	}
 
 	return L7Polices, nil
+}
+
+func GetLbL7PolicyFromName(ctx context.Context, client *edgecloud.Client, name string) (*edgecloud.L7Policy, error) {
+	allPolicies, _, err := client.L7Policies.List(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("error from getting list of l7 policies: %w", err)
+	}
+	var resultPolicies []edgecloud.L7Policy
+	for _, policy := range allPolicies {
+		if policy.Name == name {
+			resultPolicies = append(resultPolicies, policy)
+		}
+	}
+
+	var l7Policy *edgecloud.L7Policy
+	switch len(resultPolicies) {
+	case 1:
+		l7Policy = &resultPolicies[0]
+	case 0:
+		return nil, fmt.Errorf("%w: resource \"l7policy\"; name \"%s\"", edgecloud.ErrResourceDoesntExist, name)
+	default:
+		return nil, fmt.Errorf("%w: resource \"l7policy\"; name \"%s\"", edgecloud.ErrMultipleResourcesWithTheSameName, name)
+	}
+
+	return l7Policy, nil
 }
