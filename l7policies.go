@@ -35,17 +35,19 @@ type L7Policy struct {
 	Region             string         `json:"region"`
 	ID                 string         `json:"id"`
 	TaskID             string         `json:"task_id"`
-	RedirectHTTPCode   int            `json:"redirect_http_code"`
+	RedirectHTTPCode   *int           `json:"redirect_http_code"`
 	Tags               []string       `json:"tags"`
 	ListenerID         string         `json:"listener_id"`
-	RedirectPoolID     string         `json:"redirect_pool_id"`
+	RedirectPoolID     *string        `json:"redirect_pool_id"`
 	OperatingStatus    string         `json:"operating_status"`
 	ProvisioningStatus string         `json:"provisioning_status"`
-	RedirectURL        string         `json:"redirect_url"`
+	RedirectURL        *string        `json:"redirect_url"`
 	Position           int            `json:"position"`
-	RedirectPrefix     string         `json:"redirect_prefix"`
+	RedirectPrefix     *string        `json:"redirect_prefix"`
 	Action             L7PolicyAction `json:"action"`
 	Rules              []L7Rule       `json:"rules"`
+	CreatedAt          string         `json:"created_at"`
+	UpdatedAt          string         `json:"updated_at,omitempty"`
 }
 
 type L7PolicyAction string
@@ -62,7 +64,7 @@ type L7PolicyCreateRequest struct {
 	RedirectHTTPCode int            `json:"redirect_http_code,omitempty"`
 	ListenerID       string         `json:"listener_id" required:"true" validate:"required"`
 	Position         int            `json:"position,omitempty"`
-	Name             string         `json:"name"`
+	Name             string         `json:"name,omitempty"`
 	Action           L7PolicyAction `json:"action" required:"true" validate:"required"`
 	RedirectURL      string         `json:"redirect_url,omitempty"`
 	RedirectPrefix   string         `json:"redirect_prefix,omitempty"`
