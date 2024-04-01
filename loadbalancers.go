@@ -232,7 +232,6 @@ const (
 	LoadbalancerAlgorithmRoundRobin       LoadbalancerAlgorithm = "ROUND_ROBIN"
 	LoadbalancerAlgorithmLeastConnections LoadbalancerAlgorithm = "LEAST_CONNECTIONS"
 	LoadbalancerAlgorithmSourceIP         LoadbalancerAlgorithm = "SOURCE_IP"
-	LoadbalancerAlgorithmSourceIPPort     LoadbalancerAlgorithm = "SOURCE_IP_PORT"
 )
 
 type LoadbalancerPoolProtocol string
