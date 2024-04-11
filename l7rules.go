@@ -68,12 +68,12 @@ const (
 )
 
 type L7RuleUpdateRequest struct {
-	Tags        []string          `json:"tags,omitempty"`
-	CompareType L7RuleCompareType `json:"compare_type,omitempty"`
-	Value       string            `json:"value,omitempty"`
-	Key         string            `json:"key,omitempty"`
-	Type        L7RuleType        `json:"type,omitempty"`
-	Invert      bool              `json:"invert,omitempty"`
+	Tags        *[]string          `json:"tags,omitempty"`
+	CompareType *L7RuleCompareType `json:"compare_type,omitempty"`
+	Value       *string            `json:"value,omitempty"`
+	Key         *string            `json:"key,omitempty"`
+	Type        *L7RuleType        `json:"type,omitempty"`
+	Invert      *bool              `json:"invert,omitempty"`
 }
 
 type L7RuleCreateRequest struct {
