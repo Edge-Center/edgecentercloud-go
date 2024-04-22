@@ -95,6 +95,8 @@ func TestInstances_Create(t *testing.T) {
 	setup()
 	defer teardown()
 
+	bootIndex := 0
+
 	request := &InstanceCreateRequest{
 		Names:          []string{"test-instance"},
 		Flavor:         "g1-standard-1-2",
@@ -104,7 +106,7 @@ func TestInstances_Create(t *testing.T) {
 			{
 				TypeName:  VolumeTypeSsdHiIops,
 				Size:      5,
-				BootIndex: 0,
+				BootIndex: &bootIndex,
 				Source:    VolumeSourceImage,
 				ImageID:   "f0d19cec-5c3f-4853-886e-304915960ff6",
 			},

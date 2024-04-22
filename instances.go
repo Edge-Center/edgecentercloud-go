@@ -166,7 +166,7 @@ type InstanceInterface struct {
 // InstanceVolumeCreate represent a instance volume create struct.
 type InstanceVolumeCreate struct {
 	Source        VolumeSource `json:"source" required:"true" validate:"required,enum"`
-	BootIndex     int          `json:"boot_index"`
+	BootIndex     *int         `json:"boot_index,omitempty" mapstructure:",omitempty"`
 	TypeName      VolumeType   `json:"type_name,omitempty" validate:"omitempty"`
 	Size          int          `json:"size,omitempty" validate:"rfe=Source:image;new-volume,sfe=Source:snapshot;existing-volume"`
 	Name          string       `json:"name,omitempty" validate:"omitempty"`
