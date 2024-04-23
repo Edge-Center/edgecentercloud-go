@@ -93,7 +93,13 @@ func waitTask(ctx context.Context, client *edgecloud.Client, taskID string) (*ed
 		case edgecloud.TaskStateRunning, edgecloud.TaskStateNew:
 			<-time.After(taskGetInfoRetrySecond * time.Second)
 		case edgecloud.TaskStateError:
-			return nil, edgecloud.NewArgError("taskID", errTaskWithErrorState.Error())
+			if taskInfo.Error != nil {
+				err = fmt.Errorf("%w; task_type: %s; err: %s", errTaskWithErrorState, taskInfo.TaskType, *taskInfo.Error)
+			} else {
+				err = fmt.Errorf("%w; task_type: %s", errTaskWithErrorState, taskInfo.TaskType)
+			}
+
+			return nil, err
 		case edgecloud.TaskStateFinished:
 			return taskInfo, nil
 		default:
@@ -144,6 +150,6 @@ func WaitAndGetTaskInfo(ctx context.Context, client *edgecloud.Client, taskID st
 	case <-done:
 		return taskInfo, taskErr
 	case <-time.After(timeout):
-		return nil, edgecloud.NewArgError("taskID", errTaskWaitTimeout.Error())
+		return nil, edgecloud.NewArgError("task error", errTaskWaitTimeout.Error())
 	}
 }

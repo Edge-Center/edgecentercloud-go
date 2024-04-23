@@ -17,7 +17,8 @@ import (
 )
 
 const (
-	timeout = 6 * time.Second
+	timeout  = 6 * time.Second
+	taskType = "create_vm"
 )
 
 func TestWaitTask(t *testing.T) {
@@ -29,7 +30,7 @@ func TestWaitTask(t *testing.T) {
 		{
 			name: "Task finishes successfully",
 			serverHandler: func(w http.ResponseWriter, r *http.Request) {
-				resp, err := json.Marshal(&edgecloud.Task{ID: testResourceID, State: edgecloud.TaskStateFinished})
+				resp, err := json.Marshal(&edgecloud.Task{ID: testResourceID, State: edgecloud.TaskStateFinished, TaskType: taskType})
 				if err != nil {
 					t.Fatalf("failed to marshal JSON: %v", err)
 				}
@@ -40,7 +41,7 @@ func TestWaitTask(t *testing.T) {
 		{
 			name: "Task state is unknown",
 			serverHandler: func(w http.ResponseWriter, r *http.Request) {
-				resp, err := json.Marshal(&edgecloud.Task{ID: testResourceID, State: "UnknownState"})
+				resp, err := json.Marshal(&edgecloud.Task{ID: testResourceID, State: "UnknownState", TaskType: taskType})
 				if err != nil {
 					t.Fatalf("failed to marshal JSON: %v", err)
 				}
@@ -51,13 +52,13 @@ func TestWaitTask(t *testing.T) {
 		{
 			name: "Task with error state",
 			serverHandler: func(w http.ResponseWriter, r *http.Request) {
-				resp, err := json.Marshal(&edgecloud.Task{ID: testResourceID, State: edgecloud.TaskStateError})
+				resp, err := json.Marshal(&edgecloud.Task{ID: testResourceID, State: edgecloud.TaskStateError, TaskType: taskType})
 				if err != nil {
 					t.Fatalf("failed to marshal JSON: %v", err)
 				}
 				_, _ = fmt.Fprint(w, string(resp))
 			},
-			expectedError: edgecloud.NewArgError("taskID", errTaskWithErrorState.Error()),
+			expectedError: fmt.Errorf("%w; task_type: %s", errTaskWithErrorState, taskType),
 		},
 	}
 
