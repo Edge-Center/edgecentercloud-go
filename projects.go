@@ -59,7 +59,6 @@ type ProjectUpdateRequest struct {
 type ProjectCreateRequest struct {
 	Name        string `json:"name" required:"true"`
 	ClientID    string `json:"client_id"`
-	State       string `json:"state"`
 	Description string `json:"description"`
 }
 
