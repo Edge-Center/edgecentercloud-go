@@ -172,3 +172,7 @@ if err := util.ResourceIsDeleted(ctx, cloud.Loadbalancers.Get, loadBalancerID); 
 ```
 and others helpers
 
+### How to run tests 
+```
+make test
+```
