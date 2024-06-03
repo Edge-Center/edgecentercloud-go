@@ -100,24 +100,24 @@ type CreatePoolOpts struct {
 	HealthMonitor         *CreateHealthMonitorOpts      `json:"healthmonitor,omitempty"`
 	LoadBalancerAlgorithm types.LoadBalancerAlgorithm   `json:"lb_algorithm,omitempty"`
 	SessionPersistence    *CreateSessionPersistenceOpts `json:"session_persistence,omitempty"`
-	TimeoutClientData     int                           `json:"timeout_client_data,omitempty"`
-	TimeoutMemberData     int                           `json:"timeout_member_data,omitempty"`
-	TimeoutMemberConnect  int                           `json:"timeout_member_connect,omitempty"`
 }
 
 // CreateListenerOpts represents options used to create a loadbalancer listener.
 type CreateListenerOpts struct {
-	Name             string             `json:"name" required:"true" validate:"required,name"`
-	ProtocolPort     int                `json:"protocol_port" required:"true"`
-	Protocol         types.ProtocolType `json:"protocol" required:"true"`
-	Certificate      string             `json:"certificate,omitempty"`
-	CertificateChain string             `json:"certificate_chain,omitempty"`
-	PrivateKey       string             `json:"private_key,omitempty"`
-	Pools            []CreatePoolOpts   `json:"pools,omitempty" validate:"omitempty,dive"`
-	SecretID         string             `json:"secret_id,omitempty"`
-	SNISecretID      []string           `json:"sni_secret_id,omitempty"`
-	InsertXForwarded bool               `json:"insert_x_forwarded"`
-	AllowedCIDRs     []string           `json:"allowed_cidrs,omitempty"`
+	Name                 string             `json:"name" required:"true" validate:"required,name"`
+	ProtocolPort         int                `json:"protocol_port" required:"true"`
+	Protocol             types.ProtocolType `json:"protocol" required:"true"`
+	Certificate          string             `json:"certificate,omitempty"`
+	CertificateChain     string             `json:"certificate_chain,omitempty"`
+	PrivateKey           string             `json:"private_key,omitempty"`
+	Pools                []CreatePoolOpts   `json:"pools,omitempty" validate:"omitempty,dive"`
+	SecretID             string             `json:"secret_id,omitempty"`
+	SNISecretID          []string           `json:"sni_secret_id,omitempty"`
+	InsertXForwarded     bool               `json:"insert_x_forwarded"`
+	AllowedCIDRs         []string           `json:"allowed_cidrs,omitempty"`
+	TimeoutClientData    int                `json:"timeout_client_data,omitempty"`
+	TimeoutMemberData    int                `json:"timeout_member_data,omitempty"`
+	TimeoutMemberConnect int                `json:"timeout_member_connect,omitempty"`
 }
 
 // CreateOpts represents options used to create a loadbalancer.

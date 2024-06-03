@@ -38,18 +38,21 @@ type UpdateResult struct {
 
 // Listener represents a listener structure.
 type Listener struct {
-	PoolCount          int                      `json:"pool_count"`
-	ProtocolPort       int                      `json:"protocol_port"`
-	Protocol           types.ProtocolType       `json:"protocol"`
-	Name               string                   `json:"name"`
-	ID                 string                   `json:"id"`
-	ProvisioningStatus types.ProvisioningStatus `json:"provisioning_status"`
-	OperationStatus    types.OperatingStatus    `json:"operating_status"`
-	CreatorTaskID      *string                  `json:"creator_task_id"`
-	TaskID             *string                  `json:"task_id"`
-	SecretID           *string                  `json:"secret_id"`
-	SNISecretID        []string                 `json:"sni_secret_id,omitempty"`
-	AllowedCIDRs       []string                 `json:"allowed_cidrs,omitempty"`
+	PoolCount            int                      `json:"pool_count"`
+	ProtocolPort         int                      `json:"protocol_port"`
+	Protocol             types.ProtocolType       `json:"protocol"`
+	Name                 string                   `json:"name"`
+	ID                   string                   `json:"id"`
+	ProvisioningStatus   types.ProvisioningStatus `json:"provisioning_status"`
+	OperationStatus      types.OperatingStatus    `json:"operating_status"`
+	CreatorTaskID        *string                  `json:"creator_task_id"`
+	TaskID               *string                  `json:"task_id"`
+	SecretID             *string                  `json:"secret_id"`
+	SNISecretID          []string                 `json:"sni_secret_id,omitempty"`
+	AllowedCIDRs         []string                 `json:"allowed_cidrs,omitempty"`
+	TimeoutClientData    int                      `json:"timeout_client_data"`
+	TimeoutMemberData    int                      `json:"timeout_member_data"`
+	TimeoutMemberConnect int                      `json:"timeout_member_connect"`
 }
 
 func (l Listener) IsDeleted() bool {
