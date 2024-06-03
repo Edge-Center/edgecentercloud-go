@@ -99,6 +99,24 @@ var listenerCreateSubCommand = cli.Command{
 			Usage:    fmt.Sprintf("output in %s", strings.Join(protocolTypes, ", ")),
 			Required: true,
 		},
+		&cli.IntFlag{
+			Name:     "timeout-client-data",
+			Aliases:  []string{"tcd"},
+			Usage:    "frontend client inactivity timeout in milliseconds",
+			Required: false,
+		},
+		&cli.IntFlag{
+			Name:     "timeout-member-connect",
+			Aliases:  []string{"tmc"},
+			Usage:    "backend member connection timeout in milliseconds",
+			Required: false,
+		},
+		&cli.IntFlag{
+			Name:     "timeout-member-data",
+			Aliases:  []string{"tmd"},
+			Usage:    "backend member inactivity timeout in milliseconds",
+			Required: false,
+		},
 	}, flags.WaitCommandFlags...),
 	Action: func(c *cli.Context) error {
 		client, err := client.NewLBListenerClientV1(c)
@@ -106,6 +124,9 @@ var listenerCreateSubCommand = cli.Command{
 			_ = cli.ShowAppHelp(c)
 			return cli.Exit(err, 1)
 		}
+		timeoutClientData := c.Int("timeout-client-data")
+		timeoutMemberConnect := c.Int("timeout-member-connect")
+		timeoutMemberData := c.Int("timeout-member-data")
 
 		pt := types.ProtocolType(c.String("protocol-type"))
 		if err := pt.IsValid(); err != nil {
@@ -113,13 +134,16 @@ var listenerCreateSubCommand = cli.Command{
 		}
 
 		opts := listeners.CreateOpts{
-			Name:           c.String("name"),
-			Protocol:       pt,
-			ProtocolPort:   c.Int("port"),
-			LoadBalancerID: c.String("loadbalancer-id"),
-			SecretID:       c.String("secret-id"),
-			SNISecretID:    c.StringSlice("sni-secret-id"),
-			AllowedCIDRs:   c.StringSlice("allowed-cidrs"),
+			Name:                 c.String("name"),
+			Protocol:             pt,
+			ProtocolPort:         c.Int("port"),
+			LoadBalancerID:       c.String("loadbalancer-id"),
+			SecretID:             c.String("secret-id"),
+			SNISecretID:          c.StringSlice("sni-secret-id"),
+			AllowedCIDRs:         c.StringSlice("allowed-cidrs"),
+			TimeoutClientData:    timeoutClientData,
+			TimeoutMemberConnect: timeoutMemberConnect,
+			TimeoutMemberData:    timeoutMemberData,
 		}
 
 		results, err := listeners.Create(client, opts).Extract()
@@ -238,7 +262,16 @@ var listenerUpdateSubCommand = cli.Command{
 			return cli.Exit(err, 1)
 		}
 
-		opts := listeners.UpdateOpts{Name: c.String("name")}
+		timeoutClientData := c.Int("timeout-client-data")
+		timeoutMemberConnect := c.Int("timeout-member-connect")
+		timeoutMemberData := c.Int("timeout-member-data")
+
+		opts := listeners.UpdateOpts{
+			Name:                 c.String("name"),
+			TimeoutClientData:    timeoutClientData,
+			TimeoutMemberConnect: timeoutMemberConnect,
+			TimeoutMemberData:    timeoutMemberData,
+		}
 
 		result, err := listeners.Update(client, clusterID, opts).Extract()
 		if err != nil {
