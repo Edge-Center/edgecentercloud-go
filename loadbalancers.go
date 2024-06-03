@@ -109,21 +109,24 @@ type Loadbalancer struct {
 
 // Listener represents an EdgecenterCloud Loadbalancer Listener.
 type Listener struct {
-	ID                 string                       `json:"id"`
-	LoadbalancerID     string                       `json:"loadbalancer_id"`
-	CreatorTaskID      string                       `json:"creator_task_id"`
-	TaskID             string                       `json:"task_id"`
-	Name               string                       `json:"name"`
-	Protocol           LoadbalancerListenerProtocol `json:"protocol"`
-	ProtocolPort       int                          `json:"protocol_port"`
-	PoolCount          int                          `json:"pool_count"`
-	OperatingStatus    OperatingStatus              `json:"operating_status"`
-	ProvisioningStatus ProvisioningStatus           `json:"provisioning_status"`
-	AllowedCIDRs       []string                     `json:"allowed_cidrs"`
-	SNISecretID        []string                     `json:"sni_secret_id"`
-	SecretID           string                       `json:"secret_id"`
-	InsertHeaders      map[string]string            `json:"insert_headers"`
-	Stats              LoadbalancerStats            `json:"stats"`
+	ID                   string                       `json:"id"`
+	LoadbalancerID       string                       `json:"loadbalancer_id"`
+	CreatorTaskID        string                       `json:"creator_task_id"`
+	TaskID               string                       `json:"task_id"`
+	Name                 string                       `json:"name"`
+	Protocol             LoadbalancerListenerProtocol `json:"protocol"`
+	ProtocolPort         int                          `json:"protocol_port"`
+	PoolCount            int                          `json:"pool_count"`
+	OperatingStatus      OperatingStatus              `json:"operating_status"`
+	ProvisioningStatus   ProvisioningStatus           `json:"provisioning_status"`
+	AllowedCIDRs         []string                     `json:"allowed_cidrs"`
+	SNISecretID          []string                     `json:"sni_secret_id"`
+	SecretID             string                       `json:"secret_id"`
+	InsertHeaders        map[string]string            `json:"insert_headers"`
+	Stats                LoadbalancerStats            `json:"stats"`
+	TimeoutClientData    int                          `json:"timeout_client_data"`
+	TimeoutMemberData    int                          `json:"timeout_member_data"`
+	TimeoutMemberConnect int                          `json:"timeout_member_connect"`
 }
 
 // Pool represents an EdgecenterCloud Loadbalancer Pool.
@@ -141,9 +144,6 @@ type Pool struct {
 	OperatingStatus       OperatingStatus                 `json:"operating_status"`
 	CreatorTaskID         string                          `json:"creator_task_id"`
 	TaskID                string                          `json:"task_id"`
-	TimeoutClientData     int                             `json:"timeout_client_data"`
-	TimeoutMemberData     int                             `json:"timeout_member_data"`
-	TimeoutMemberConnect  int                             `json:"timeout_member_connect"`
 }
 
 // PoolMember represents an EdgecenterCloud Loadbalancer Pool PoolMember.
@@ -253,9 +253,6 @@ type LoadbalancerPoolCreateRequest struct {
 	Protocol              LoadbalancerPoolProtocol        `json:"protocol" required:"true"`
 	LoadbalancerID        string                          `json:"loadbalancer_id,omitempty"`
 	ListenerID            string                          `json:"listener_id,omitempty"`
-	TimeoutClientData     int                             `json:"timeout_client_data,omitempty"`
-	TimeoutMemberData     int                             `json:"timeout_member_data,omitempty"`
-	TimeoutMemberConnect  int                             `json:"timeout_member_connect,omitempty"`
 	Members               []PoolMemberCreateRequest       `json:"members,omitempty"`
 	HealthMonitor         *HealthMonitorCreateRequest     `json:"healthmonitor,omitempty"`
 	SessionPersistence    *LoadbalancerSessionPersistence `json:"session_persistence,omitempty"`
@@ -326,25 +323,31 @@ type HealthMonitor struct {
 // LoadbalancerListenerCreateRequest represents a request to create a Loadbalancer Listener.
 // Used as part of a request to create a Loadbalancer.
 type LoadbalancerListenerCreateRequest struct {
-	Name             string                          `json:"name" required:"true" validate:"required,name"`
-	Protocol         LoadbalancerListenerProtocol    `json:"protocol" required:"true"`
-	ProtocolPort     int                             `json:"protocol_port" required:"true"`
-	Certificate      string                          `json:"certificate,omitempty"`
-	CertificateChain string                          `json:"certificate_chain,omitempty"`
-	PrivateKey       string                          `json:"private_key,omitempty"`
-	SecretID         string                          `json:"secret_id,omitempty"`
-	InsertXForwarded bool                            `json:"insert_x_forwarded"`
-	SNISecretID      []string                        `json:"sni_secret_id,omitempty"`
-	Pools            []LoadbalancerPoolCreateRequest `json:"pools,omitempty" validate:"omitempty,dive"`
-	AllowedCIDRs     []string                        `json:"allowed_cidrs,omitempty"`
+	Name                 string                          `json:"name" required:"true" validate:"required,name"`
+	Protocol             LoadbalancerListenerProtocol    `json:"protocol" required:"true"`
+	ProtocolPort         int                             `json:"protocol_port" required:"true"`
+	Certificate          string                          `json:"certificate,omitempty"`
+	CertificateChain     string                          `json:"certificate_chain,omitempty"`
+	PrivateKey           string                          `json:"private_key,omitempty"`
+	SecretID             string                          `json:"secret_id,omitempty"`
+	InsertXForwarded     bool                            `json:"insert_x_forwarded"`
+	SNISecretID          []string                        `json:"sni_secret_id,omitempty"`
+	Pools                []LoadbalancerPoolCreateRequest `json:"pools,omitempty" validate:"omitempty,dive"`
+	AllowedCIDRs         []string                        `json:"allowed_cidrs,omitempty"`
+	TimeoutClientData    int                             `json:"timeout_client_data,omitempty"`
+	TimeoutMemberData    int                             `json:"timeout_member_data,omitempty"`
+	TimeoutMemberConnect int                             `json:"timeout_member_connect,omitempty"`
 }
 
 // ListenerUpdateRequest represents a request to update a Loadbalancer Listener.
 type ListenerUpdateRequest struct {
-	Name         string    `json:"name,omitempty"`
-	SecretID     string    `json:"secret_id,omitempty"`
-	SNISecretID  []string  `json:"sni_secret_id,omitempty"`
-	AllowedCIDRs *[]string `json:"allowed_cidrs,omitempty"`
+	Name                 string    `json:"name,omitempty"`
+	SecretID             string    `json:"secret_id,omitempty"`
+	SNISecretID          []string  `json:"sni_secret_id,omitempty"`
+	AllowedCIDRs         *[]string `json:"allowed_cidrs,omitempty"`
+	TimeoutClientData    int       `json:"timeout_client_data,omitempty"`
+	TimeoutMemberData    int       `json:"timeout_member_data,omitempty"`
+	TimeoutMemberConnect int       `json:"timeout_member_connect,omitempty"`
 }
 
 type LoadbalancerListenerProtocol string
@@ -432,9 +435,6 @@ type PoolUpdateRequest struct {
 	SessionPersistence    *LoadbalancerSessionPersistence `json:"session_persistence,omitempty"`
 	Members               []PoolMemberCreateRequest       `json:"members,omitempty"`
 	HealthMonitor         *HealthMonitorCreateRequest     `json:"healthmonitor,omitempty"`
-	TimeoutClientData     int                             `json:"timeout_client_data,omitempty"`
-	TimeoutMemberData     int                             `json:"timeout_member_data,omitempty"`
-	TimeoutMemberConnect  int                             `json:"timeout_member_connect,omitempty"`
 }
 
 type PoolListOptions struct {
