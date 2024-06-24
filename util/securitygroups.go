@@ -1,8 +1,14 @@
 package util
 
 import (
+	"context"
+	"errors"
+	"slices"
+
 	edgecloud "github.com/Edge-Center/edgecentercloud-go/v2"
 )
+
+var ErrDefaultSGNotFound = errors.New("default security group is not found")
 
 type SecurityGroupRuleProtocol edgecloud.SecurityGroupRuleProtocol
 
@@ -36,4 +42,19 @@ func (s SecurityGroupRuleProtocol) StringList() []string {
 	}
 
 	return strings
+}
+
+func FindDefaultSG(ctx context.Context, client *edgecloud.Client) (*edgecloud.SecurityGroup, error) {
+	allSGs, _, err := client.SecurityGroups.List(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	defaultSGIndex := slices.IndexFunc(allSGs, func(group edgecloud.SecurityGroup) bool {
+		return group.Name == "default"
+	})
+	if defaultSGIndex >= 0 {
+		return &allSGs[defaultSGIndex], nil
+	}
+
+	return nil, ErrDefaultSGNotFound
 }
