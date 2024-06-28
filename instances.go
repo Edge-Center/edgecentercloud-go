@@ -2,6 +2,7 @@ package edgecloud
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net"
 	"net/http"
@@ -11,6 +12,8 @@ const (
 	instancesBasePathV1 = "/v1/instances"
 	instancesBasePathV2 = "/v2/instances"
 )
+
+var ErrMultipleIfaceWithSameSubnet = errors.New("multiple instance interfaces in the same subnet")
 
 const (
 	instancesCheckLimits           = "check_limits"
