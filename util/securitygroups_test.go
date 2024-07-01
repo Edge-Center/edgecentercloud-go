@@ -1,9 +1,18 @@
 package util
 
 import (
+	"context"
+	"encoding/json"
+	"fmt"
+	"net/http"
+	"net/http/httptest"
+	"net/url"
+	"path"
+	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	edgecloud "github.com/Edge-Center/edgecentercloud-go/v2"
 )
@@ -58,4 +67,33 @@ func TestSecurityGroupsStringList(t *testing.T) {
 	SGPString := SecurityGroupRuleProtocol("").StringList()
 
 	assert.Equal(t, result, SGPString)
+}
+
+func TestSecurityGroupListByIDs(t *testing.T) {
+	ctx := context.Background()
+	mux := http.NewServeMux()
+	server := httptest.NewServer(mux)
+	defer server.Close()
+
+	sgs := []edgecloud.SecurityGroup{{ID: testResourceID}, {ID: testResourceID2}}
+	URL := path.Join("/v1/securitygroups/", strconv.Itoa(projectID), strconv.Itoa(regionID))
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		resp, err := json.Marshal(sgs)
+		if err != nil {
+			t.Fatalf("failed to marshal JSON: %v", err)
+		}
+		_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))
+	})
+
+	client := edgecloud.NewClient(nil)
+	baseURL, _ := url.Parse(server.URL)
+	client.BaseURL = baseURL
+	client.Project = projectID
+	client.Region = regionID
+
+	filteredSGs, err := SecurityGroupListByIDs(ctx, client, []string{testResourceID})
+	require.NoError(t, err)
+	assert.Equal(t, 1, len(filteredSGs))
+	assert.Equal(t, testResourceID, filteredSGs[0].ID)
 }
