@@ -7,13 +7,17 @@ import (
 )
 
 const (
-	projectsBasePath = "/v1/projects"
+	projectsBasePath                = "/v1/projects"
+	projectsScheduleDeletion        = "schedule_deletion"
+	projectsCancelScheduledDeletion = "cancel_scheduled_deletion"
 )
 
 // ProjectsService is an interface for creating and managing Projects with the EdgecenterCloud API.
 // See: https://apidocs.edgecenter.ru/cloud#tag/projects
 type ProjectsService interface {
 	Get(context.Context, string) (*Project, *Response, error)
+	ScheduleDeletion(context.Context, string) (*Project, *Response, error)
+	CancelScheduledDeletion(context.Context, string) (*Project, *Response, error)
 	Delete(context.Context, string) (*TaskResponse, *Response, error)
 	Update(context.Context, string, *ProjectUpdateRequest) (*Project, *Response, error)
 	List(context.Context, *ProjectListOptions) ([]Project, *Response, error)
@@ -32,21 +36,23 @@ type ProjectState string
 
 // List of ProjectState.
 const (
-	ProjectStateActive   ProjectState = "ACTIVE"
-	ProjectStateDeleted  ProjectState = "DELETED"
-	ProjectStateDeleting ProjectState = "DELETING"
+	ProjectStateActive               ProjectState = "ACTIVE"
+	ProjectStateScheduledForDeletion ProjectState = "SCHEDULED_FOR_DELETION"
+	ProjectStateDeleted              ProjectState = "DELETED"
+	ProjectStateDeleting             ProjectState = "DELETING"
 )
 
 // Project represents a EdgecenterCloud Project configuration.
 type Project struct {
-	ID          int          `json:"id"`
-	ClientID    int          `json:"client_id"`
-	CreatedAt   string       `json:"created_at"`
-	Description string       `json:"description"`
-	IsDefault   bool         `json:"is_default"`
-	Name        string       `json:"name"`
-	State       ProjectState `json:"state"`
-	TaskID      *string      `json:"task_id"`
+	ID                     int          `json:"id"`
+	ClientID               int          `json:"client_id"`
+	CreatedAt              string       `json:"created_at"`
+	ScheduledForDeletionAt *string      `json:"scheduled_for_deletion_at"`
+	Description            string       `json:"description"`
+	IsDefault              bool         `json:"is_default"`
+	Name                   string       `json:"name"`
+	State                  ProjectState `json:"state"`
+	TaskID                 *string      `json:"task_id"`
 }
 
 // ProjectUpdateRequest represents a request to update a Project.
@@ -80,6 +86,42 @@ func (s *ProjectsServiceOp) Get(ctx context.Context, projectID string) (*Project
 	path := fmt.Sprintf("%s/%s", projectsBasePath, projectID)
 
 	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	project := new(Project)
+	resp, err := s.client.Do(ctx, req, project)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return project, resp, err
+}
+
+// ScheduleDeletion schedule project deletion.
+func (s *ProjectsServiceOp) ScheduleDeletion(ctx context.Context, projectID string) (*Project, *Response, error) {
+	path := fmt.Sprintf("%s/%s/%s", projectsBasePath, projectID, projectsScheduleDeletion)
+
+	req, err := s.client.NewRequest(ctx, http.MethodPatch, path, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	project := new(Project)
+	resp, err := s.client.Do(ctx, req, project)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return project, resp, err
+}
+
+// CancelScheduledDeletion cancel scheduled project deletion.
+func (s *ProjectsServiceOp) CancelScheduledDeletion(ctx context.Context, projectID string) (*Project, *Response, error) {
+	path := fmt.Sprintf("%s/%s/%s", projectsBasePath, projectID, projectsCancelScheduledDeletion)
+
+	req, err := s.client.NewRequest(ctx, http.MethodPatch, path, nil)
 	if err != nil {
 		return nil, nil, err
 	}

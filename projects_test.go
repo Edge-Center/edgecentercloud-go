@@ -36,6 +36,61 @@ func TestProjects_Get(t *testing.T) {
 	require.Equal(t, respActual, expectedResp)
 }
 
+func TestProjects_ScheduleDeletion(t *testing.T) {
+	setup()
+	defer teardown()
+
+	scheduledForDeletionAt := "2024-08-06T17:40:32"
+	expectedResp := &Project{
+		ID:                     1,
+		Name:                   "project-scheduled-for-deletion",
+		State:                  ProjectStateScheduledForDeletion,
+		ScheduledForDeletionAt: &scheduledForDeletionAt,
+	}
+	URL := path.Join(projectsBasePath, "1", projectsScheduleDeletion)
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodPatch)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
+		_, _ = fmt.Fprint(w, string(resp))
+	})
+
+	respActual, resp, err := client.Projects.ScheduleDeletion(ctx, "1")
+	require.NoError(t, err)
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
+}
+
+func TestProjects_CancelScheduledDeletion(t *testing.T) {
+	setup()
+	defer teardown()
+
+	expectedResp := &Project{
+		ID:                     1,
+		Name:                   "active-project",
+		State:                  ProjectStateActive,
+		ScheduledForDeletionAt: nil,
+	}
+	URL := path.Join(projectsBasePath, "1", projectsScheduleDeletion)
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodPatch)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
+		_, _ = fmt.Fprint(w, string(resp))
+	})
+
+	respActual, resp, err := client.Projects.ScheduleDeletion(ctx, "1")
+	require.NoError(t, err)
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
+}
+
 func TestProjects_Delete(t *testing.T) {
 	setup()
 	defer teardown()
