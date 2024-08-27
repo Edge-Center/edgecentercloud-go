@@ -72,7 +72,7 @@ type SubnetworkCreateRequest struct {
 	CIDR                   string      `json:"cidr" required:"true"`
 	ConnectToNetworkRouter bool        `json:"connect_to_network_router"`
 	DNSNameservers         []net.IP    `json:"dns_nameservers,omitempty"`
-	GatewayIP              *net.IP     `json:"gateway_ip,omitempty"`
+	GatewayIP              *net.IP     `json:"gateway_ip"`
 	Metadata               Metadata    `json:"metadata,omitempty"`
 	HostRoutes             []HostRoute `json:"host_routes,omitempty"`
 }
