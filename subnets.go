@@ -10,6 +10,7 @@ import (
 
 const (
 	subnetsBasePathV1 = "/v1/subnets"
+	gatewayIPTag      = "gateway_ip"
 )
 
 // SubnetworksService is an interface for creating and managing Subnetworks with the EdgecenterCloud API.
@@ -72,9 +73,32 @@ type SubnetworkCreateRequest struct {
 	CIDR                   string      `json:"cidr" required:"true"`
 	ConnectToNetworkRouter bool        `json:"connect_to_network_router"`
 	DNSNameservers         []net.IP    `json:"dns_nameservers,omitempty"`
-	GatewayIP              *net.IP     `json:"gateway_ip,omitempty"`
+	GatewayIP              *net.IP     `json:"gateway_ip"`
 	Metadata               Metadata    `json:"metadata,omitempty"`
 	HostRoutes             []HostRoute `json:"host_routes,omitempty"`
+}
+
+func (scr *SubnetworkCreateRequest) MarshalJSON() ([]byte, error) {
+	type alias SubnetworkCreateRequest
+
+	scrJSON, err := json.Marshal((*alias)(scr))
+	if err != nil {
+		return nil, fmt.Errorf("SubnetworkCreateRequest marshal error: %w", err)
+	}
+
+	if !(scr.GatewayIP == nil && scr.ConnectToNetworkRouter) {
+		return scrJSON, nil
+	}
+
+	scrMap := make(map[string]any)
+	err = json.Unmarshal(scrJSON, &scrMap)
+	if err != nil {
+		return nil, fmt.Errorf("SubnetworkCreateRequest Json unmarshal error: %w", err)
+	}
+
+	delete(scrMap, gatewayIPTag)
+
+	return json.Marshal(scrMap)
 }
 
 // SubnetworkUpdateRequest represents a request to update a Subnetwork properties.
