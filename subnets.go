@@ -83,7 +83,7 @@ func (scr *SubnetworkCreateRequest) MarshalJSON() ([]byte, error) {
 
 	scrJSON, err := json.Marshal((*alias)(scr))
 	if err != nil {
-		return nil, fmt.Errorf("SubnetworkCreateRequest marshal error: %w", err)
+		return nil, fmt.Errorf("json.Marshal error: %w", err)
 	}
 
 	if !(scr.GatewayIP == nil && scr.ConnectToNetworkRouter) {
@@ -93,7 +93,7 @@ func (scr *SubnetworkCreateRequest) MarshalJSON() ([]byte, error) {
 	scrMap := make(map[string]any)
 	err = json.Unmarshal(scrJSON, &scrMap)
 	if err != nil {
-		return nil, fmt.Errorf("SubnetworkCreateRequest Json unmarshal error: %w", err)
+		return nil, fmt.Errorf("json.Unmarshal error: %w", err)
 	}
 
 	delete(scrMap, gatewayIPTag)
