@@ -72,6 +72,7 @@ type InstancePortInterface struct {
 	NetworkID           string            `json:"network_id"`
 	IPAssignments       []PortIP          `json:"ip_assignments"`
 	SubPorts            []InstanceSubPort `json:"sub_ports,omitempty"`
+	Name                string            `json:"name,omitempty"`
 }
 
 // PortIP represents an IPAddress and a SubnetID.
