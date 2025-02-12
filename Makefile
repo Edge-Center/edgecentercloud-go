@@ -3,7 +3,7 @@ BIN_DIR = $(PROJECT_DIR)/bin
 
 .PHONY: lint
 lint:
-	test -f $(BIN_DIR)/golangci-lint || curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v1.54.2
+	test -f $(BIN_DIR)/golangci-lint || curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s
 	$(BIN_DIR)/golangci-lint run
 
 .PHONY: test
