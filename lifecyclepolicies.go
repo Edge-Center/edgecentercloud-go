@@ -180,7 +180,7 @@ func (r LifeCyclePolicyRawSchedule) Cook() (LifeCyclePolicySchedule, error) {
 	var typeStruct struct {
 		LifeCyclePolicyScheduleType `json:"type"`
 	}
-	//nolint:staticcheck
+
 	if err := json.Unmarshal(r.RawMessage, &typeStruct); err != nil {
 		return nil, err
 	}
