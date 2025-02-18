@@ -116,6 +116,7 @@ const (
 	VolumeTypeSsdLocal  VolumeType = "ssd_local"
 	VolumeTypeCold      VolumeType = "cold"
 	VolumeTypeUltra     VolumeType = "ultra"
+	VolumeTypeInfraSsd  VolumeType = "infra_ssd"
 )
 
 var ErrVolumeTypeStatus = fmt.Errorf("invalid VolumeType type")
@@ -245,7 +246,7 @@ func (vt VolumeType) String() string {
 
 func (vt VolumeType) IsValid() error {
 	switch vt {
-	case VolumeTypeStandard, VolumeTypeCold, VolumeTypeSsdHiIops, VolumeTypeUltra, VolumeTypeSsdLocal:
+	case VolumeTypeStandard, VolumeTypeCold, VolumeTypeSsdHiIops, VolumeTypeUltra, VolumeTypeSsdLocal, VolumeTypeInfraSsd:
 		return nil
 	}
 	return fmt.Errorf("%w: %v", ErrVolumeTypeStatus, vt)
