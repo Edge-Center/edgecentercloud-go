@@ -62,7 +62,6 @@ type RouterInterface struct {
 type ExternalGatewayInfo struct {
 	ExternalFixedIPs []ExternalFixedIP `json:"external_fixed_ips"`
 	NetworkID        string            `json:"network_id"`
-	EnableSnat       bool              `json:"enable_snat"`
 }
 
 type ExternalFixedIP struct {
@@ -71,16 +70,16 @@ type ExternalFixedIP struct {
 }
 
 type RouterCreateRequest struct {
-	Interfaces          []RouterInterfaceCreate   `json:"interfaces"`
-	ExternalGatewayInfo ExternalGatewayInfoCreate `json:"external_gateway_info"`
-	Name                string                    `json:"name" required:"true" validate:"required"`
-	Routes              []HostRoute               `json:"routes"`
+	Interfaces          []RouterInterfaceCreate    `json:"interfaces"`
+	ExternalGatewayInfo *ExternalGatewayInfoCreate `json:"external_gateway_info,omitempty"`
+	Name                string                     `json:"name" required:"true" validate:"required"`
+	Routes              []HostRoute                `json:"routes"`
 }
 
 type RouterUpdateRequest struct {
-	ExternalGatewayInfo ExternalGatewayInfoCreate `json:"external_gateway_info"`
-	Name                string                    `json:"name" required:"true" validate:"required"`
-	Routes              []HostRoute               `json:"routes"`
+	ExternalGatewayInfo *ExternalGatewayInfoCreate `json:"external_gateway_info,omitempty"`
+	Name                string                     `json:"name" required:"true" validate:"required"`
+	Routes              []HostRoute                `json:"routes"`
 }
 
 type RouterInterfaceCreate struct {
@@ -89,9 +88,8 @@ type RouterInterfaceCreate struct {
 }
 
 type ExternalGatewayInfoCreate struct {
-	EnableSnat *bool  `json:"enable_snat"`
-	Type       string `json:"type,omitempty" validate:"omitempty,enum"`
-	NetworkID  string `json:"network_id,omitempty" validate:"rfe=Type:manual,omitempty,uuid4"`
+	Type      string `json:"type,omitempty" validate:"omitempty,enum"`
+	NetworkID string `json:"network_id,omitempty" validate:"rfe=Type:manual,omitempty,uuid4"`
 }
 
 type RouterAttachRequest struct {
