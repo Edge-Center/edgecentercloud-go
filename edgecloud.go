@@ -77,6 +77,7 @@ type Client struct {
 	UserActions       UserActionsService
 	LifeCyclePolicies LifeCyclePoliciesService
 	ResellerImage     ResellerImageService
+	ResellerNetworks  ResellerNetworksService
 
 	// Optional function called after every successful request made to the DO APIs
 	onRequestCompleted RequestCompletionCallback
@@ -240,6 +241,7 @@ func NewClient(httpClient *http.Client) *Client {
 	c.UserActions = &UserActionsServiceOp{client: c}
 	c.LifeCyclePolicies = &LifeCyclePoliciesServiceOp{client: c}
 	c.ResellerImage = &ResellerImageServiceOp{client: c}
+	c.ResellerNetworks = &ResellerNetworksServiceOp{client: c}
 
 	c.headers = make(map[string]string)
 
