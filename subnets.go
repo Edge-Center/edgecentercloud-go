@@ -69,7 +69,7 @@ type Subnetwork struct {
 type SubnetworkCreateRequest struct {
 	Name                   string      `json:"name" required:"true"`
 	NetworkID              string      `json:"network_id" required:"true"`
-	EnableDHCP             bool        `json:"enable_dhcp,omitempty"`
+	EnableDHCP             bool        `json:"enable_dhcp"`
 	CIDR                   string      `json:"cidr" required:"true"`
 	ConnectToNetworkRouter bool        `json:"connect_to_network_router"`
 	DNSNameservers         []net.IP    `json:"dns_nameservers,omitempty"`
