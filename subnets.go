@@ -40,6 +40,12 @@ type SubnetworksServiceOp struct {
 
 var _ SubnetworksService = &SubnetworksServiceOp{}
 
+// AllocationPool A allocation pool for DHCP.
+type AllocationPool struct {
+	Start string `json:"start"`
+	End   string `json:"end"`
+}
+
 // Subnetwork represents an EdgecenterCloud Subnetwork.
 type Subnetwork struct {
 	ID                     string             `json:"id"`
@@ -63,19 +69,21 @@ type Subnetwork struct {
 	Region                 string             `json:"region"`
 	ProjectID              int                `json:"project_id"`
 	RegionID               int                `json:"region_id"`
+	AllocationPools        []AllocationPool   `json:"allocation_pools,omitempty"`
 }
 
 // SubnetworkCreateRequest represents a request to create a Subnetwork.
 type SubnetworkCreateRequest struct {
-	Name                   string      `json:"name" required:"true"`
-	NetworkID              string      `json:"network_id" required:"true"`
-	EnableDHCP             bool        `json:"enable_dhcp"`
-	CIDR                   string      `json:"cidr" required:"true"`
-	ConnectToNetworkRouter bool        `json:"connect_to_network_router"`
-	DNSNameservers         []net.IP    `json:"dns_nameservers,omitempty"`
-	GatewayIP              *net.IP     `json:"gateway_ip"`
-	Metadata               Metadata    `json:"metadata,omitempty"`
-	HostRoutes             []HostRoute `json:"host_routes,omitempty"`
+	Name                   string           `json:"name" required:"true"`
+	NetworkID              string           `json:"network_id" required:"true"`
+	EnableDHCP             bool             `json:"enable_dhcp"`
+	CIDR                   string           `json:"cidr" required:"true"`
+	ConnectToNetworkRouter bool             `json:"connect_to_network_router"`
+	DNSNameservers         []net.IP         `json:"dns_nameservers,omitempty"`
+	GatewayIP              *net.IP          `json:"gateway_ip"`
+	Metadata               Metadata         `json:"metadata,omitempty"`
+	HostRoutes             []HostRoute      `json:"host_routes,omitempty"`
+	AllocationPools        []AllocationPool `json:"allocation_pools,omitempty"`
 }
 
 func (scr *SubnetworkCreateRequest) MarshalJSON() ([]byte, error) {
@@ -103,11 +111,12 @@ func (scr *SubnetworkCreateRequest) MarshalJSON() ([]byte, error) {
 
 // SubnetworkUpdateRequest represents a request to update a Subnetwork properties.
 type SubnetworkUpdateRequest struct {
-	Name           string      `json:"name,omitempty"`
-	DNSNameservers []net.IP    `json:"dns_nameservers"`
-	EnableDHCP     bool        `json:"enable_dhcp"`
-	HostRoutes     []HostRoute `json:"host_routes"`
-	GatewayIP      *net.IP     `json:"gateway_ip"`
+	Name            string           `json:"name,omitempty"`
+	DNSNameservers  []net.IP         `json:"dns_nameservers"`
+	EnableDHCP      bool             `json:"enable_dhcp"`
+	HostRoutes      []HostRoute      `json:"host_routes"`
+	GatewayIP       *net.IP          `json:"gateway_ip"`
+	AllocationPools []AllocationPool `json:"allocation_pools,omitempty"`
 }
 
 type CIDR struct {
