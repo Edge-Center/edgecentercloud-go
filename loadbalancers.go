@@ -2,6 +2,7 @@ package edgecloud
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net"
 	"net/http"
@@ -432,12 +433,40 @@ type PoolCreateRequest struct {
 
 // PoolUpdateRequest represents a request to update a Loadbalancer Listener Pool.
 type PoolUpdateRequest struct {
-	ID                    string                          `json:"id,omitempty"`
-	Name                  string                          `json:"name,omitempty"`
-	LoadbalancerAlgorithm LoadbalancerAlgorithm           `json:"lb_algorithm,omitempty"`
-	SessionPersistence    *LoadbalancerSessionPersistence `json:"session_persistence,omitempty"`
-	Members               []PoolMemberCreateRequest       `json:"members,omitempty"`
-	HealthMonitor         *HealthMonitorCreateRequest     `json:"healthmonitor,omitempty"`
+	ID                        string                          `json:"id,omitempty"`
+	Name                      string                          `json:"name,omitempty"`
+	LoadbalancerAlgorithm     LoadbalancerAlgorithm           `json:"lb_algorithm,omitempty"`
+	DisableSessionPersistence bool                            `json:"-"`
+	SessionPersistence        *LoadbalancerSessionPersistence `json:"session_persistence,omitempty"`
+	Members                   []PoolMemberCreateRequest       `json:"members,omitempty"`
+	HealthMonitor             *HealthMonitorCreateRequest     `json:"healthmonitor,omitempty"`
+}
+
+// MarshalJSON Custom MarshalJSON is needed because:
+// - session_persistence has some data, it will be updated.
+// - session_persistence is null, it will be deleted.
+// - session_persistence is not in the body, it will not be changed.
+// We had to add a field so that we could process a variant with `session_persistence` is null.
+func (scr *PoolUpdateRequest) MarshalJSON() ([]byte, error) {
+	type alias PoolUpdateRequest
+
+	scrJSON, err := json.Marshal((*alias)(scr))
+	if err != nil {
+		return nil, fmt.Errorf("json.Marshal error: %w", err)
+	}
+	if !scr.DisableSessionPersistence {
+		return scrJSON, nil
+	}
+
+	scrMap := make(map[string]any)
+	err = json.Unmarshal(scrJSON, &scrMap)
+	if err != nil {
+		return nil, fmt.Errorf("json.Unmarshal error: %w", err)
+	}
+
+	scrMap["session_persistence"] = nil
+
+	return json.Marshal(scrMap)
 }
 
 type PoolListOptions struct {
