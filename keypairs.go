@@ -22,7 +22,7 @@ type KeyPairsService interface {
 	ListV2(context.Context) ([]KeyPairV2, *Response, error)
 	Get(context.Context, string) (*KeyPair, *Response, error)
 	GetV2(context.Context, string) (*KeyPairV2, *Response, error)
-	Create(context.Context, *KeyPairCreateRequest) (*TaskResponse, *Response, error)
+	Create(context.Context, *KeyPairCreateRequest) (*KeyPair, *Response, error)
 	CreateV2(context.Context, *KeyPairCreateRequestV2) (*KeyPairV2, *Response, error)
 	Delete(context.Context, string) (*TaskResponse, *Response, error)
 	DeleteV2(context.Context, string) (*Response, error)
@@ -61,7 +61,7 @@ type KeyPairV2 struct {
 // KeyPairCreateRequest represents a request to create a Key Pair.
 type KeyPairCreateRequest struct {
 	SSHKeyName      string `json:"sshkey_name" required:"true"`
-	PublicKey       string `json:"public_key"`
+	PublicKey       string `json:"public_key,omitempty"`
 	SharedInProject bool   `json:"shared_in_project"`
 }
 
@@ -201,7 +201,7 @@ func (s *KeyPairsServiceOp) GetV2(ctx context.Context, keypairID string) (*KeyPa
 }
 
 // Create a Key Pair.
-func (s *KeyPairsServiceOp) Create(ctx context.Context, reqBody *KeyPairCreateRequest) (*TaskResponse, *Response, error) {
+func (s *KeyPairsServiceOp) Create(ctx context.Context, reqBody *KeyPairCreateRequest) (*KeyPair, *Response, error) {
 	if reqBody == nil {
 		return nil, nil, NewArgError("reqBody", "cannot be nil")
 	}
@@ -217,13 +217,13 @@ func (s *KeyPairsServiceOp) Create(ctx context.Context, reqBody *KeyPairCreateRe
 		return nil, nil, err
 	}
 
-	tasks := new(TaskResponse)
-	resp, err := s.client.Do(ctx, req, tasks)
+	keyPair := new(KeyPair)
+	resp, err := s.client.Do(ctx, req, keyPair)
 	if err != nil {
 		return nil, resp, err
 	}
 
-	return tasks, resp, err
+	return keyPair, resp, err
 }
 
 func (s *KeyPairsServiceOp) CreateV2(ctx context.Context, reqBody *KeyPairCreateRequestV2) (*KeyPairV2, *Response, error) {
