@@ -49,6 +49,7 @@ type InstanceSubPort struct {
 	FloatingIPDetails []FloatingIP      `json:"floatingip_details"`
 	SegmentationID    int               `json:"segmentation_id"`
 	SegmentationType  string            `json:"segmentation_type"`
+	Name              string            `json:"name,omitempty"`
 }
 
 // PortsAllowedAddressPairs represents allowed port address pair and/or subnet masks.
