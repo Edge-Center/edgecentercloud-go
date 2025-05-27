@@ -105,7 +105,7 @@ func TestKeyPairs_Create(t *testing.T) {
 	defer teardown()
 
 	request := &KeyPairCreateRequest{SSHKeyName: "ssh-key"}
-	expectedResp := &TaskResponse{Tasks: []string{taskID}}
+	expectedResp := &KeyPair{SSHKeyName: "ssh-key"}
 	URL := path.Join(keypairsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID))
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
