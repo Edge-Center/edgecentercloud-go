@@ -51,11 +51,15 @@ type KeyPair struct {
 
 // KeyPairV2 represents an EdgecenterCloud Key Pair.
 type KeyPairV2 struct {
-	Fingerprint     string `json:"fingerprint"`
 	PublicKey       string `json:"public_key"`
+	Fingerprint     string `json:"fingerprint"`
+	CreatedAt       string `json:"created_at"`
+	State           string `json:"state"`
+	ProjectID       int    `json:"project_id"`
 	SSHKeyID        string `json:"sshkey_id"`
-	SSHKeyName      string `json:"sshkey_name"`
 	SharedInProject bool   `json:"shared_in_project"`
+	PrivateKey      string `json:"private_key"`
+	SSHKeyName      string `json:"sshkey_name"`
 }
 
 // KeyPairCreateRequest represents a request to create a Key Pair.
