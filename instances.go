@@ -954,7 +954,7 @@ func (s *InstancesServiceOp) FilterBySecurityGroup(ctx context.Context, security
 		return nil, resp, err
 	}
 
-	path := fmt.Sprintf("%s/%s/%s", s.client.addProjectRegionPath(instancesBasePathV1), securityGroupID, instancesInstances)
+	path := fmt.Sprintf("%s/%s/%s", s.client.addProjectRegionPath(securitygroupsBasePathV1), securityGroupID, instancesInstances)
 
 	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
 	if err != nil {
