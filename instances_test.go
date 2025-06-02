@@ -989,7 +989,7 @@ func TestInstances_FilterBySecurityGroup(t *testing.T) {
 	defer teardown()
 
 	expectedResp := []Instance{{}}
-	URL := path.Join(instancesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, instancesInstances)
+	URL := path.Join(securitygroupsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, instancesInstances)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
