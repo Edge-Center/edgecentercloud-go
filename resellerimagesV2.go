@@ -42,6 +42,8 @@ type ResellerImageV2List struct {
 	Results []ResellerImageV2 `json:"results"`
 }
 
+type ImageIDs []string
+
 // ResellerImageV2 represents an EdgecenterCloud reseller images.
 type ResellerImageV2 struct {
 	ImageIDs   *ImageIDs  `json:"image_ids"`
