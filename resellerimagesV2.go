@@ -25,6 +25,7 @@ const (
 // See: https://apidocs.edgecenter.ru/cloud_resellers#tag/Images
 type ResellerImageV2Service interface {
 	List(context.Context, EntityType, EntityID) (*ResellerImageV2List, *Response, error)
+	ListByRole(context.Context) (*ResellerImageV2List, *Response, error)
 	Delete(context.Context, EntityType, EntityID, *ResellerImageV2DeleteOptions) (*Response, error)
 	Update(context.Context, *ResellerImageV2UpdateRequest) (*ResellerImageV2, *Response, error)
 }
@@ -59,6 +60,22 @@ type ResellerImageV2UpdateRequest ResellerImageV2
 
 type ResellerImageV2DeleteOptions struct {
 	RegionID int `url:"region_id"`
+}
+
+// ListByRole get available shared image IDs by role in APIKey.
+func (s *ResellerImageV2ServiceOp) ListByRole(ctx context.Context) (*ResellerImageV2List, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, resellerImageBasePathV2, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	ril := new(ResellerImageV2List)
+	resp, err := s.client.Do(ctx, req, ril)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return ril, resp, nil
 }
 
 // List get available image IDs limits for a reseller, client, project.
