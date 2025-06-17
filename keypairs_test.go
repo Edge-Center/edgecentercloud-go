@@ -50,7 +50,7 @@ func TestKeyPairsV2_List(t *testing.T) {
 		_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))
 	})
 
-	respActual, resp, err := client.KeyPairs.ListV2(ctx)
+	respActual, resp, err := client.KeyPairs.ListV2(ctx, nil)
 	require.NoError(t, err)
 	require.Equal(t, resp.StatusCode, 200)
 	require.Equal(t, respActual, expectedResp)

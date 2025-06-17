@@ -19,7 +19,7 @@ const (
 // See: https://apidocs.edgecenter.ru/cloud#tag/keypairs
 type KeyPairsService interface {
 	List(context.Context) ([]KeyPair, *Response, error)
-	ListV2(context.Context) ([]KeyPairV2, *Response, error)
+	ListV2(ctx context.Context, opts *KeyPairsListOptionsV2) ([]KeyPairV2, *Response, error)
 	Get(context.Context, string) (*KeyPair, *Response, error)
 	GetV2(context.Context, string) (*KeyPairV2, *Response, error)
 	Create(context.Context, *KeyPairCreateRequest) (*KeyPair, *Response, error)
@@ -124,13 +124,7 @@ func (s *KeyPairsServiceOp) List(ctx context.Context) ([]KeyPair, *Response, err
 }
 
 // ListV2 get KeyPairs.
-func (s *KeyPairsServiceOp) ListV2(ctx context.Context) ([]KeyPairV2, *Response, error) {
-	if resp, err := s.client.Validate(); err != nil {
-		return nil, resp, err
-	}
-
-	opts := KeyPairsListOptionsV2{ProjectID: s.client.Project}
-
+func (s *KeyPairsServiceOp) ListV2(ctx context.Context, opts *KeyPairsListOptionsV2) ([]KeyPairV2, *Response, error) {
 	path, err := addOptions(keypairsBasePathV2, opts)
 	if err != nil {
 		return nil, nil, err
