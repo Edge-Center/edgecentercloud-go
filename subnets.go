@@ -75,8 +75,9 @@ type Subnetwork struct {
 
 // SubnetworkCreateRequest represents a request to create a Subnetwork.
 //
-// AutoAssignGatewayIP when true, the gateway_ip field will be excluded from the JSON payload during marshaling,
-// and the resulting subnet will be non-routed with a default gateway IP.
+// AutoAssignGatewayIP When AutoAssignGatewayIP is set to true,
+// the gateway_ip field will be excluded from the JSON payload during marshaling.
+// As a result, the subnet will not be connected to the network router but will have a default gateway IP.
 type SubnetworkCreateRequest struct {
 	Name                   string           `json:"name" required:"true"`
 	NetworkID              string           `json:"network_id" required:"true"`
