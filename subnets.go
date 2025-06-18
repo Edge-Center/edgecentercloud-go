@@ -3,6 +3,7 @@ package edgecloud
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net"
 	"net/http"
@@ -73,6 +74,10 @@ type Subnetwork struct {
 }
 
 // SubnetworkCreateRequest represents a request to create a Subnetwork.
+//
+// IsForNonRoutedNetwork indicates whether this subnet is for a non-routed network.
+// When true, the gateway_ip field will be excluded from the JSON payload during marshaling,
+// and the resulting subnet will be non-routed with a default gateway IP.
 type SubnetworkCreateRequest struct {
 	Name                   string           `json:"name" required:"true"`
 	NetworkID              string           `json:"network_id" required:"true"`
@@ -84,6 +89,32 @@ type SubnetworkCreateRequest struct {
 	Metadata               Metadata         `json:"metadata,omitempty"`
 	HostRoutes             []HostRoute      `json:"host_routes,omitempty"`
 	AllocationPools        []AllocationPool `json:"allocation_pools,omitempty"`
+	IsForNonRoutedNetwork  bool             `json:"-"`
+}
+
+func (scr *SubnetworkCreateRequest) deleteGatewayIPTag(source []byte) ([]byte, error) {
+	scrMap := make(map[string]any)
+	err := json.Unmarshal(source, &scrMap)
+	if err != nil {
+		return nil, fmt.Errorf("json.Unmarshal error: %w", err)
+	}
+
+	delete(scrMap, gatewayIPTag)
+
+	return json.Marshal(scrMap)
+}
+
+func (scr *SubnetworkCreateRequest) validate() error {
+	if scr.IsForNonRoutedNetwork {
+		switch {
+		case scr.ConnectToNetworkRouter:
+			return errors.New("ConnectToNetworkRouter must be false when IsForNonRoutedNetwork is true")
+		case scr.GatewayIP != nil:
+			return errors.New("GatewayIP must be nil when IsForNonRoutedNetwork is true")
+		}
+	}
+
+	return nil
 }
 
 func (scr *SubnetworkCreateRequest) MarshalJSON() ([]byte, error) {
@@ -94,19 +125,15 @@ func (scr *SubnetworkCreateRequest) MarshalJSON() ([]byte, error) {
 		return nil, fmt.Errorf("json.Marshal error: %w", err)
 	}
 
-	if !(scr.GatewayIP == nil && scr.ConnectToNetworkRouter) {
+	if scr.IsForNonRoutedNetwork {
+		return scr.deleteGatewayIPTag(scrJSON)
+	}
+
+	if scr.GatewayIP != nil || !scr.ConnectToNetworkRouter {
 		return scrJSON, nil
 	}
 
-	scrMap := make(map[string]any)
-	err = json.Unmarshal(scrJSON, &scrMap)
-	if err != nil {
-		return nil, fmt.Errorf("json.Unmarshal error: %w", err)
-	}
-
-	delete(scrMap, gatewayIPTag)
-
-	return json.Marshal(scrMap)
+	return scr.deleteGatewayIPTag(scrJSON)
 }
 
 // SubnetworkUpdateRequest represents a request to update a Subnetwork properties.
@@ -236,6 +263,10 @@ func (s *SubnetworksServiceOp) Create(ctx context.Context, reqBody *SubnetworkCr
 
 	if resp, err := s.client.Validate(); err != nil {
 		return nil, resp, err
+	}
+
+	if err := reqBody.validate(); err != nil {
+		return nil, nil, err
 	}
 
 	path := s.client.addProjectRegionPath(subnetsBasePathV1)
