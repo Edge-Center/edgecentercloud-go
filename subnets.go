@@ -75,8 +75,7 @@ type Subnetwork struct {
 
 // SubnetworkCreateRequest represents a request to create a Subnetwork.
 //
-// IsForNonRoutedNetwork indicates whether this subnet is for a non-routed network.
-// When true, the gateway_ip field will be excluded from the JSON payload during marshaling,
+// AutoAssignGatewayIP when true, the gateway_ip field will be excluded from the JSON payload during marshaling,
 // and the resulting subnet will be non-routed with a default gateway IP.
 type SubnetworkCreateRequest struct {
 	Name                   string           `json:"name" required:"true"`
@@ -89,28 +88,16 @@ type SubnetworkCreateRequest struct {
 	Metadata               Metadata         `json:"metadata,omitempty"`
 	HostRoutes             []HostRoute      `json:"host_routes,omitempty"`
 	AllocationPools        []AllocationPool `json:"allocation_pools,omitempty"`
-	IsForNonRoutedNetwork  bool             `json:"-"`
-}
-
-func (scr *SubnetworkCreateRequest) deleteGatewayIPTag(source []byte) ([]byte, error) {
-	scrMap := make(map[string]any)
-	err := json.Unmarshal(source, &scrMap)
-	if err != nil {
-		return nil, fmt.Errorf("json.Unmarshal error: %w", err)
-	}
-
-	delete(scrMap, gatewayIPTag)
-
-	return json.Marshal(scrMap)
+	AutoAssignGatewayIP    bool             `json:"-"`
 }
 
 func (scr *SubnetworkCreateRequest) validate() error {
-	if scr.IsForNonRoutedNetwork {
+	if scr.AutoAssignGatewayIP {
 		switch {
 		case scr.ConnectToNetworkRouter:
-			return errors.New("ConnectToNetworkRouter must be false when IsForNonRoutedNetwork is true")
+			return errors.New("ConnectToNetworkRouter must be false when AutoAssignGatewayIP is true")
 		case scr.GatewayIP != nil:
-			return errors.New("GatewayIP must be nil when IsForNonRoutedNetwork is true")
+			return errors.New("GatewayIP must be nil when AutoAssignGatewayIP is true")
 		}
 	}
 
@@ -125,15 +112,20 @@ func (scr *SubnetworkCreateRequest) MarshalJSON() ([]byte, error) {
 		return nil, fmt.Errorf("json.Marshal error: %w", err)
 	}
 
-	if scr.IsForNonRoutedNetwork {
-		return scr.deleteGatewayIPTag(scrJSON)
+	if (scr.GatewayIP == nil && scr.ConnectToNetworkRouter) ||
+		(scr.GatewayIP == nil && scr.AutoAssignGatewayIP && !scr.ConnectToNetworkRouter) {
+		scrMap := make(map[string]any)
+		err = json.Unmarshal(scrJSON, &scrMap)
+		if err != nil {
+			return nil, fmt.Errorf("json.Unmarshal error: %w", err)
+		}
+
+		delete(scrMap, gatewayIPTag)
+
+		return json.Marshal(scrMap)
 	}
 
-	if scr.GatewayIP != nil || !scr.ConnectToNetworkRouter {
-		return scrJSON, nil
-	}
-
-	return scr.deleteGatewayIPTag(scrJSON)
+	return scrJSON, nil
 }
 
 // SubnetworkUpdateRequest represents a request to update a Subnetwork properties.
