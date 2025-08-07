@@ -8,8 +8,10 @@ require (
 	github.com/google/go-querystring v1.1.0
 	github.com/google/uuid v1.6.0
 	github.com/hashicorp/go-retryablehttp v0.7.7
+	github.com/joho/godotenv v1.5.1
 	github.com/ladydascalie/currency v1.6.0
 	github.com/mitchellh/mapstructure v1.5.0
+	github.com/samber/lo v1.51.0
 	github.com/shopspring/decimal v1.4.0
 	github.com/stretchr/testify v1.9.0
 )
@@ -25,6 +27,6 @@ require (
 	golang.org/x/crypto v0.24.0 // indirect
 	golang.org/x/net v0.26.0 // indirect
 	golang.org/x/sys v0.21.0 // indirect
-	golang.org/x/text v0.16.0 // indirect
+	golang.org/x/text v0.22.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
