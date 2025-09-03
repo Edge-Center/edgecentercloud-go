@@ -6,14 +6,15 @@ package cloud
 import (
 	"context"
 	"fmt"
+	"log"
 	"net/http"
-	"os"
 	"sync"
 	"testing"
 	"time"
 
 	edgecloud "github.com/Edge-Center/edgecentercloud-go/v2"
 	"github.com/Edge-Center/edgecentercloud-go/v2/util"
+	"github.com/ilyakaznacheev/cleanenv"
 	"github.com/joho/godotenv"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/suite"
@@ -24,20 +25,22 @@ const (
 	poolCreateTimeout    = 10 * time.Minute
 	poolUpdateTimeout    = 10 * time.Minute
 	poolDeleteTimeout    = 3 * time.Minute
-	mkaaSE2EProjectID    = 1350231
-	mkaaSE2ENetworkID    = "62179813-5c87-4637-ad0e-7aba92cd3f70"
-	mkaaSE2ESubnetID     = "b0a55566-aaff-46df-abad-e3506bf879e5"
-	mkaaSE2EKeypairName  = "129662_test_cloud_common_edgecenter_ru_1753109908"
 	mkaaSE2EFlavor       = "g1-standard-2-4"
 )
+
+type Config struct {
+	BaseCloudURL string `env:"E2E_TEST_BASE_URL" env-required:"true"`
+	ApiKey       string `env:"E2E_TEST_APIKEY" env-required:"true"`
+	ProjectID    int    `env:"MKAAS_E2E_TEST_PROJECT_ID" env-required:"true"`
+	NetworkID    string `env:"MKAAS_E2E_TEST_NETWORK_ID" env-required:"true"`
+	SubnetID     string `env:"MKAAS_E2E_TEST_SUBNET_ID" env-required:"true"`
+	KeyPaitName  string `env:"MKAAS_E2E_TEST_KEYPAIR_NAME" env-required:"true"`
+}
 
 var (
 	randomString, _      = util.GenerateRandomString(6, true, true, false)
 	clusterCreateRequest = edgecloud.MkaaSClusterCreateRequest{
-		Name:           fmt.Sprintf("Cluster_from_go_client_%s", randomString),
-		SSHKeyPairName: mkaaSE2EKeypairName,
-		NetworkID:      mkaaSE2ENetworkID,
-		SubnetID:       mkaaSE2ESubnetID,
+		Name: fmt.Sprintf("Cluster_from_go_client_%s", randomString),
 		ControlPlane: edgecloud.ControlPlaneCreateRequest{
 			Flavor:     mkaaSE2EFlavor,
 			NodeCount:  1,
@@ -84,10 +87,42 @@ var (
 
 type MkaasSuite struct {
 	suite.Suite
-	cloudAPIUrl   string
-	cloudAPIToken string
-	clusterID     int
-	client        *edgecloud.Client
+	cfg       Config
+	clusterID int
+	client    *edgecloud.Client
+}
+
+func (s *MkaasSuite) SetupSuite() {
+	if err := godotenv.Load("../.env"); err != nil {
+		s.T().Fatal(err)
+	}
+
+	cfg := Config{}
+	if err := cleanenv.ReadConfig("e2e/cloud/.env", &cfg); err != nil {
+		if err := cleanenv.ReadEnv(&cfg); err != nil {
+			log.Panic("can't read config", err)
+		}
+	}
+
+	client, err := edgecloud.NewWithRetries(nil,
+		edgecloud.SetAPIKey(cfg.ApiKey),
+		edgecloud.SetBaseURL(cfg.BaseCloudURL),
+		edgecloud.SetRegion(8),
+		edgecloud.SetProject(cfg.ProjectID))
+	s.Require().NoError(err)
+
+	s.client = client
+	s.cfg = cfg
+
+	s.enrichRequestsVarsWithSecretAttributes()
+}
+
+func (s *MkaasSuite) TearDownSuite() {
+	if s.clusterID != 0 {
+		s.T().Helper()
+		s.T().Logf("Deleting cluster %d", s.clusterID)
+		s.deleteCluster(s.clusterID)
+	}
 }
 
 func Test_MkaaS(t *testing.T) {
@@ -162,36 +197,6 @@ func (s *MkaasSuite) Test_CreateAndDeletePoolSimple() {
 	s.Assert().Equal(poolCreateRequest.Flavor, createdPool.Flavor)
 	s.Assert().Equal(poolCreateRequest.VolumeSize, createdPool.VolumeSize)
 	s.deletePoolAndWait(ctx, createdPool.ID)
-}
-
-func (s *MkaasSuite) SetupSuite() {
-	cloudApiToken := os.Getenv("EC_E2E_TEST_APIKEY")
-	if cloudApiToken == "" {
-		err := godotenv.Load("../.env")
-		s.Require().NoError(err)
-	}
-	cloudApiToken = os.Getenv("EC_E2E_TEST_APIKEY")
-	cloudApiURL := os.Getenv("EC_E2E_TEST_BASE_URL")
-	if cloudApiToken == "" || cloudApiURL == "" {
-		s.Fail("EC_E2E_TEST_APIKEY or EC_E2E_TEST_BASE_URL  env is not found")
-	}
-	client, err := edgecloud.NewWithRetries(nil,
-		edgecloud.SetAPIKey(cloudApiToken),
-		edgecloud.SetBaseURL(cloudApiURL),
-		edgecloud.SetRegion(8),
-		edgecloud.SetProject(mkaaSE2EProjectID))
-	s.Require().NoError(err)
-	s.client = client
-	s.cloudAPIUrl = cloudApiURL
-	s.cloudAPIToken = cloudApiToken
-}
-
-func (s *MkaasSuite) TearDownSuite() {
-	if s.clusterID != 0 {
-		s.T().Helper()
-		s.T().Logf("Deleting cluster %d", s.clusterID)
-		s.deleteCluster(s.clusterID)
-	}
 }
 
 func (s *MkaasSuite) deleteCluster(clusterID int) {
@@ -281,4 +286,10 @@ func (s *MkaasSuite) changePoolsNodeCountTest(ctx context.Context, changeNodeCou
 	s.Require().NoError(err)
 	s.Assert().Equal(http.StatusOK, resp.StatusCode)
 	s.Assert().Equal(*changeNodeCountRequest.NodeCount, cluster.Pools[0].NodeCount)
+}
+
+func (s *MkaasSuite) enrichRequestsVarsWithSecretAttributes() {
+	clusterCreateRequest.SSHKeyPairName = s.cfg.KeyPaitName
+	clusterCreateRequest.NetworkID = s.cfg.NetworkID
+	clusterCreateRequest.SubnetID = s.cfg.SubnetID
 }
