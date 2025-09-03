@@ -2,5 +2,6 @@
 .idea
 .vscode
 bin/
-.env
+**/*.env
 cover.out
+local-tests
