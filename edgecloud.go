@@ -79,6 +79,7 @@ type Client struct {
 	ResellerNetworks  ResellerNetworksService
 	ResellerImageV2   ResellerImageV2Service
 	AvailabilityZones AvailabilityZonesService
+	MkaaS             MkaaSService
 
 	// Optional function called after every successful request made to the DO APIs
 	onRequestCompleted RequestCompletionCallback
@@ -258,6 +259,7 @@ func NewClient(httpClient *http.Client) *Client {
 	c.ResellerNetworks = &ResellerNetworksServiceOp{client: c}
 	c.ResellerImageV2 = &ResellerImageV2ServiceOp{client: c}
 	c.AvailabilityZones = &AvailabilityZonesServiceOp{client: c}
+	c.MkaaS = &MkaasServiceOp{client: c}
 
 	c.headers = make(map[string]string)
 
