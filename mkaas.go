@@ -66,6 +66,8 @@ type MkaaSClusterCreateRequest struct {
 	ServiceSubnet            *string                   `json:"service_subnet,omitempty"`
 	PublishKubeAPIToInternet bool                      `json:"publish_kube_api_to_internet"`
 	ControlPlane             ControlPlaneCreateRequest `json:"control_plane"`
+	Pools          []MkaaSPoolCreateRequest  `json:"pools"`
+
 }
 
 type MkaaSClusterUpdateRequest struct {
@@ -83,6 +85,7 @@ type MkaaSCluster struct {
 	NetworkID      string       `json:"network_id"`
 	SubnetID       string       `json:"subnet_id"`
 	ControlPlane   ControlPlane `json:"control_plane"`
+	Pools          []MkaaSPool  `json:"pools"`
 	InternalIP     string       `json:"internal_ip"`
 	ExternalIP     string       `json:"external_ip"`
 	Existed        string       `json:"existed,omitempty"` // Duration string (e.g., "237h36m46.703341967s")
