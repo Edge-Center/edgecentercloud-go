@@ -26,6 +26,27 @@ func TestSecurityGroupRuleDirection_IsValid(t *testing.T) {
 	require.NoError(t, err)
 }
 
+func TestSecurityGroupRuleProtocol_IsValid_InvalidProtocol(t *testing.T) {
+	invalidProtocol := SecurityGroupRuleProtocol("invalid_protocol")
+	err := invalidProtocol.IsValid()
+	assert.Error(t, err)
+	assert.EqualError(t, err, "invalid Security Group Protocol")
+}
+
+func TestSecurityGroupRuleDirection_IsValid_InvalidDirection(t *testing.T) {
+	invalidDirection := SecurityGroupRuleDirection("invalid_direction")
+	err := invalidDirection.IsValid()
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "invalid Security Group RuleDirection type")
+}
+
+func TestEtherType_IsValid_InvalidEtherType(t *testing.T) {
+	invalidEtherType := EtherType("invalid_ethertype")
+	err := invalidEtherType.IsValid()
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "invalid Security Group EtherType")
+}
+
 func TestSecurityGroups_List(t *testing.T) {
 	setup()
 	defer teardown()
@@ -161,6 +182,90 @@ func TestSecurityGroups_Create_reqBodyNil(t *testing.T) {
 	assert.Nil(t, respActual)
 	assert.Nil(t, resp)
 	assert.EqualError(t, err, NewArgError("reqBody", "cannot be nil").Error())
+}
+
+func TestSecurityGroups_Create_ProtocolValidationError(t *testing.T) {
+	setup()
+	defer teardown()
+
+	// Создаем запрос с недопустимым протоколом
+	invalidProtocol := SecurityGroupRuleProtocol("invalid_protocol")
+	request := &SecurityGroupCreateRequest{
+		SecurityGroup: SecurityGroupCreateRequestInner{
+			Name: "test-security-group",
+			SecurityGroupRules: []RuleCreateRequest{
+				{
+					Direction: SGRuleDirectionIngress,
+					Protocol:  invalidProtocol,
+					EtherType: EtherTypeIPv4,
+				},
+			},
+		},
+	}
+
+	// Попытка создания должна завершиться ошибкой валидации протокола
+	// Ошибка возникает при попытке сериализации JSON в методе NewRequest
+	respActual, resp, err := client.SecurityGroups.Create(ctx, request)
+	assert.Nil(t, respActual)
+	assert.Nil(t, resp)
+	assert.Error(t, err)
+	assert.EqualError(t, err, "json: error calling MarshalJSON for type edgecloud.SecurityGroupRuleProtocol: invalid Security Group Protocol. Current protocol is: invalid_protocol. The protocols that can be used in the rule are: [udp tcp any icmp ah dccp egp esp gre igmp ospf pgm rsvp sctp udplite vrrp ipip ipencap]")
+}
+
+func TestSecurityGroups_Create_DirectionValidationError(t *testing.T) {
+	setup()
+	defer teardown()
+
+	// Создаем запрос с недопустимым направлением
+	invalidDirection := SecurityGroupRuleDirection("invalid_direction")
+	request := &SecurityGroupCreateRequest{
+		SecurityGroup: SecurityGroupCreateRequestInner{
+			Name: "test-security-group",
+			SecurityGroupRules: []RuleCreateRequest{
+				{
+					Direction: invalidDirection,
+					Protocol:  SGRuleProtocolTCP,
+					EtherType: EtherTypeIPv4,
+				},
+			},
+		},
+	}
+
+	// Попытка создания должна завершиться ошибкой валидации направления
+	// Ошибка возникает при попытке сериализации JSON в методе NewRequest
+	respActual, resp, err := client.SecurityGroups.Create(ctx, request)
+	assert.Nil(t, respActual)
+	assert.Nil(t, resp)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "invalid Security Group RuleDirection type")
+}
+
+func TestSecurityGroups_Create_EtherTypeValidationError(t *testing.T) {
+	setup()
+	defer teardown()
+
+	// Создаем запрос с недопустимым типом Ethernet
+	invalidEtherType := EtherType("invalid_ethertype")
+	request := &SecurityGroupCreateRequest{
+		SecurityGroup: SecurityGroupCreateRequestInner{
+			Name: "test-security-group",
+			SecurityGroupRules: []RuleCreateRequest{
+				{
+					Direction: SGRuleDirectionIngress,
+					Protocol:  SGRuleProtocolTCP,
+					EtherType: invalidEtherType,
+				},
+			},
+		},
+	}
+
+	// Попытка создания должна завершиться ошибкой валидации типа Ethernet
+	// Ошибка возникает при попытке сериализации JSON в методе NewRequest
+	respActual, resp, err := client.SecurityGroups.Create(ctx, request)
+	assert.Nil(t, respActual)
+	assert.Nil(t, resp)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "invalid Security Group EtherType")
 }
 
 func TestSecurityGroups_Delete(t *testing.T) {
@@ -350,7 +455,7 @@ func TestSecurityGroups_RuleCreate_ResponseError(t *testing.T) {
 	respActual, resp, err := client.SecurityGroups.RuleCreate(ctx, testResourceID, request)
 	assert.Nil(t, respActual)
 	assert.Error(t, err)
-	assert.Equal(t, resp.StatusCode, 400)
+	assert.Nil(t, resp)
 }
 
 func TestSecurityGroups_RuleCreate_reqBodyNil(t *testing.T) {
@@ -447,7 +552,7 @@ func TestSecurityGroups_RuleUpdate_ResponseError(t *testing.T) {
 	respActual, resp, err := client.SecurityGroups.RuleUpdate(ctx, testResourceID, request)
 	assert.Nil(t, respActual)
 	assert.Error(t, err)
-	assert.Equal(t, resp.StatusCode, 400)
+	assert.Nil(t, resp)
 }
 
 func TestSecurityGroups_RuleUpdate_reqBodyNil(t *testing.T) {
