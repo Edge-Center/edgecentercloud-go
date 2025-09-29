@@ -189,7 +189,7 @@ type InstanceCreateRequest struct {
 	KeypairName    string                 `json:"keypair_name,omitempty"`
 	UserData       string                 `json:"user_data,omitempty" validate:"omitempty,base64"`
 	Username       string                 `json:"username,omitempty" validate:"omitempty,required_with=Password"`
-	Password       string                 `json:"password,omitempty" validate:"omitempty,required_with=Username"`
+	Password       string                 `json:"password,omitempty" validate:"omitempty"`
 	Interfaces     []InstanceInterface    `json:"interfaces" required:"true" validate:"required,dive"`
 	SecurityGroups []ID                   `json:"security_groups,omitempty" validate:"omitempty,dive,uuid4"`
 	Metadata       Metadata               `json:"metadata,omitempty" validate:"omitempty,dive"`
