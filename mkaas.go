@@ -21,6 +21,7 @@ type MkaasClusters interface {
 	ClusterCreate(context.Context, MkaaSClusterCreateRequest) (*TaskResponse, *Response, error)
 	ClustersList(context.Context, *MkaaSClusterListOptions) ([]MkaaSCluster, *Response, error)
 	ClusterGet(context.Context, int) (*MkaaSCluster, *Response, error)
+	ClusterUpdate(ctx context.Context, clusterID int, reqBody MkaaSClusterUpdateRequest) (*TaskResponse, *Response, error)
 	ClusterDelete(context.Context, int) (*TaskResponse, *Response, error)
 }
 
@@ -64,6 +65,11 @@ type MkaaSClusterCreateRequest struct {
 	ControlPlane   ControlPlaneCreateRequest `json:"control_plane"`
 }
 
+type MkaaSClusterUpdateRequest struct {
+	Name         string                    `json:"name"`
+	ControlPlane ControlPlaneUpdateRequest `json:"control_plane"`
+}
+
 // MkaaSCluster represents an EdgecenterCloud MkaaS Cluster.
 type MkaaSCluster struct {
 	ID             int          `json:"id"`
@@ -89,6 +95,10 @@ type ControlPlaneCreateRequest struct {
 	VolumeSize int        `json:"volume_size"`
 	VolumeType VolumeType `json:"volume_type"`
 	Version    string     `json:"version"`
+}
+
+type ControlPlaneUpdateRequest struct {
+	NodeCount int `json:"node_count"`
 }
 
 // ControlPlane configuration.
@@ -220,6 +230,27 @@ func (m *MkaasServiceOp) ClusterGet(ctx context.Context, clusterID int) (*MkaaSC
 	}
 
 	return cluster, resp, err
+}
+
+func (m *MkaasServiceOp) ClusterUpdate(ctx context.Context, clusterID int, reqBody MkaaSClusterUpdateRequest) (*TaskResponse, *Response, error) {
+	if resp, err := m.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	path := fmt.Sprintf("%s/%d", m.client.addProjectRegionPath(MkaaSClustersBasePathV2), clusterID)
+
+	req, err := m.client.NewRequest(ctx, http.MethodPatch, path, reqBody)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	tasks := new(TaskResponse)
+	resp, err := m.client.Do(ctx, req, tasks)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return tasks, resp, err
 }
 
 func (m *MkaasServiceOp) ClusterDelete(ctx context.Context, clusterID int) (*TaskResponse, *Response, error) {
