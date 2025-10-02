@@ -66,8 +66,8 @@ type MkaaSClusterCreateRequest struct {
 }
 
 type MkaaSClusterUpdateRequest struct {
-	Name         string                    `json:"name"`
-	ControlPlane ControlPlaneUpdateRequest `json:"control_plane"`
+	Name            string `json:"name"`
+	MasterNodeCount int    `json:"master_node_count"`
 }
 
 // MkaaSCluster represents an EdgecenterCloud MkaaS Cluster.
@@ -95,10 +95,6 @@ type ControlPlaneCreateRequest struct {
 	VolumeSize int        `json:"volume_size"`
 	VolumeType VolumeType `json:"volume_type"`
 	Version    string     `json:"version"`
-}
-
-type ControlPlaneUpdateRequest struct {
-	NodeCount int `json:"node_count"`
 }
 
 // ControlPlane configuration.
