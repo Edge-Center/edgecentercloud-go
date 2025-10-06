@@ -26,28 +26,28 @@ var (
 )
 
 type TaskResult struct {
-	DdosProfiles   []int    `json:"ddos_profiles"`
-	FloatingIPs    []string `json:"floatingips"`
-	HealthMonitors []string `json:"healthmonitors"`
-	Images         []string `json:"images"`
-	Instances      []string `json:"instances"`
-	L7Polices      []string `json:"l7polices"`
-	L7Rules        []string `json:"l7rules"`
-	Listeners      []string `json:"listeners"`
-	Loadbalancers  []string `json:"loadbalancers"`
-	Members        []string `json:"members"`
-	Networks       []string `json:"networks"`
-	Pools          []string `json:"pools"`
-	Ports          []string `json:"ports"`
-	Projects       []string `json:"projects"`
-	Routers        []string `json:"routers"`
-	Secrets        []string `json:"secrets"`
-	ServerGroups   []string `json:"servergroups"`
-	Snapshots      []string `json:"snapshots"`
-	Subnets        []string `json:"subnets"`
-	Volumes        []string `json:"volumes"`
-	MkaasClusters  []string `json:"mkaasclusters"`
-	MkaasPools     []string `json:"mkaaspools"`
+	DdosProfiles   []int     `json:"ddos_profiles"`
+	FloatingIPs    []string  `json:"floatingips"`
+	HealthMonitors []string  `json:"healthmonitors"`
+	Images         []string  `json:"images"`
+	Instances      []string  `json:"instances"`
+	L7Polices      []string  `json:"l7polices"`
+	L7Rules        []string  `json:"l7rules"`
+	Listeners      []string  `json:"listeners"`
+	Loadbalancers  []string  `json:"loadbalancers"`
+	Members        []string  `json:"members"`
+	Networks       []string  `json:"networks"`
+	Pools          []string  `json:"pools"`
+	Ports          []string  `json:"ports"`
+	Projects       []string  `json:"projects"`
+	Routers        []string  `json:"routers"`
+	Secrets        []string  `json:"secrets"`
+	ServerGroups   []string  `json:"servergroups"`
+	Snapshots      []string  `json:"snapshots"`
+	Subnets        []string  `json:"subnets"`
+	Volumes        []string  `json:"volumes"`
+	MkaasClusters  []float64 `json:"mkaasclusters"`
+	MkaasPools     []float64 `json:"mkaaspools"`
 }
 
 type TaskAPIFunc[T any] func(ctx context.Context, opt T) (*edgecloud.TaskResponse, *edgecloud.Response, error)
