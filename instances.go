@@ -143,8 +143,8 @@ const (
 // InstanceAddress represent an instance network struct.
 type InstanceAddress struct {
 	Type       string `json:"type"`
-	SubnetName string `json:"subnet_name"`
-	SubnetID   string `json:"subnet_id"`
+	SubnetName string `json:"subnet_name,omitempty"`
+	SubnetID   string `json:"subnet_id,omitempty"`
 	Address    net.IP `json:"addr"`
 }
 
