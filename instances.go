@@ -124,6 +124,7 @@ type Instance struct {
 	TaskID           string                       `json:"task_id"`
 	TaskState        string                       `json:"task_state,omitempty"`
 	VMState          string                       `json:"vm_state,omitempty"` // todo: need to implement new vm_state type
+	AvailabilityZone string                       `json:"availability_zone"`
 	Volumes          []InstanceVolume             `json:"volumes"`
 }
 
@@ -183,20 +184,21 @@ type InstanceVolumeCreate struct {
 
 // InstanceCreateRequest represents a request to create an Instance.
 type InstanceCreateRequest struct {
-	Names          []string               `json:"names,omitempty" validate:"required_without=NameTemplates"`
-	Flavor         string                 `json:"flavor" required:"true"`
-	NameTemplates  []string               `json:"name_templates,omitempty" validate:"required_without=Names"`
-	KeypairName    string                 `json:"keypair_name,omitempty"`
-	UserData       string                 `json:"user_data,omitempty" validate:"omitempty,base64"`
-	Username       string                 `json:"username,omitempty" validate:"omitempty,required_with=Password"`
-	Password       string                 `json:"password,omitempty" validate:"omitempty"`
-	Interfaces     []InstanceInterface    `json:"interfaces" required:"true" validate:"required,dive"`
-	SecurityGroups []ID                   `json:"security_groups,omitempty" validate:"omitempty,dive,uuid4"`
-	Metadata       Metadata               `json:"metadata,omitempty" validate:"omitempty,dive"`
-	Configuration  map[string]interface{} `json:"configuration,omitempty" validate:"omitempty,dive"`
-	ServerGroupID  string                 `json:"servergroup_id,omitempty" validate:"omitempty,uuid4"`
-	AllowAppPorts  bool                   `json:"allow_app_ports,omitempty"`
-	Volumes        []InstanceVolumeCreate `json:"volumes" required:"true" validate:"required,dive"`
+	Names            []string               `json:"names,omitempty" validate:"required_without=NameTemplates"`
+	Flavor           string                 `json:"flavor" required:"true"`
+	NameTemplates    []string               `json:"name_templates,omitempty" validate:"required_without=Names"`
+	KeypairName      string                 `json:"keypair_name,omitempty"`
+	UserData         string                 `json:"user_data,omitempty" validate:"omitempty,base64"`
+	Username         string                 `json:"username,omitempty" validate:"omitempty,required_with=Password"`
+	Password         string                 `json:"password,omitempty" validate:"omitempty"`
+	Interfaces       []InstanceInterface    `json:"interfaces" required:"true" validate:"required,dive"`
+	SecurityGroups   []ID                   `json:"security_groups,omitempty" validate:"omitempty,dive,uuid4"`
+	Metadata         Metadata               `json:"metadata,omitempty" validate:"omitempty,dive"`
+	Configuration    map[string]interface{} `json:"configuration,omitempty" validate:"omitempty,dive"`
+	ServerGroupID    string                 `json:"servergroup_id,omitempty" validate:"omitempty,uuid4"`
+	AvailabilityZone string                 `json:"availability_zone,omitempty" validate:"omitempty"`
+	AllowAppPorts    bool                   `json:"allow_app_ports,omitempty"`
+	Volumes          []InstanceVolumeCreate `json:"volumes" required:"true" validate:"required,dive"`
 }
 
 // InstanceDeleteOptions specifies the optional query parameters to Delete method.
