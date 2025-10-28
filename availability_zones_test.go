@@ -16,6 +16,7 @@ func TestAvailabilityZonesServiceOp_List(t *testing.T) {
 	setup()
 	defer teardown()
 
+	client.Project = 0
 	URL := path.Join(AvailabilityZoneBasePath, strconv.Itoa(regionID))
 	expResp := AvailabilityZonesList{
 		RegionID:          regionID,
@@ -36,7 +37,7 @@ func TestAvailabilityZonesServiceOp_List(t *testing.T) {
 
 	respActual, resp, err := client.AvailabilityZones.List(ctx)
 	require.NoError(t, err)
-	require.Equal(t, 200, resp.StatusCode)
+	require.Equal(t, http.StatusOK, resp.StatusCode)
 	require.Equal(t, expResp, *respActual)
 }
 
@@ -55,5 +56,19 @@ func TestAvailabilityZonesServiceOp_List_NotFoundError(t *testing.T) {
 	respActual, resp, err := client.AvailabilityZones.List(ctx)
 	assert.Nil(t, respActual)
 	assert.Error(t, err)
-	assert.Equal(t, 404, resp.StatusCode)
+	assert.Equal(t, http.StatusNotFound, resp.StatusCode)
+}
+
+func TestAvailabilityZonesServiceOp_List_ClientWithoutRegion(t *testing.T) {
+	setup()
+	defer teardown()
+
+	client.Region = 0
+	expectedError := NewArgError("Client.Region", "is not set")
+
+	respActual, resp, err := client.AvailabilityZones.List(ctx)
+	assert.Nil(t, respActual)
+	assert.Error(t, err)
+	assert.Equal(t, err, expectedError)
+	assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
 }
