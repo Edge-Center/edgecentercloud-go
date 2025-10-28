@@ -30,7 +30,7 @@ type AvailabilityZonesList struct {
 
 // List get availability zones in a region.
 func (s *AvailabilityZonesServiceOp) List(ctx context.Context) (*AvailabilityZonesList, *Response, error) {
-	if resp, err := s.client.Validate(); err != nil {
+	if resp, err := s.client.ValidateRegion(); err != nil {
 		return nil, resp, err
 	}
 

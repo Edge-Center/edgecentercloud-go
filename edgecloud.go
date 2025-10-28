@@ -147,6 +147,20 @@ func (c *Client) Validate() (*Response, error) {
 	return nil, nil //nolint:all
 }
 
+func (c *Client) ValidateRegion() (*Response, error) {
+	badResponse := &Response{
+		Response: &http.Response{
+			Status:     http.StatusText(http.StatusBadRequest),
+			StatusCode: http.StatusBadRequest,
+		},
+	}
+	if c.Region == 0 {
+		return badResponse, NewArgError("Client.Region", "is not set")
+	}
+
+	return nil, nil //nolint:all
+}
+
 // Response is a EdgecenterCloud response. This wraps the standard http.Response returned from EdgecenterCloud.
 type Response struct {
 	*http.Response
