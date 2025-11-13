@@ -58,11 +58,12 @@ type MkaaSClusterListOptions struct {
 }
 
 type MkaaSClusterCreateRequest struct {
-	Name           string                    `json:"name"`
-	SSHKeyPairName string                    `json:"ssh_keypair_name"`
-	NetworkID      string                    `json:"network_id"`
-	SubnetID       string                    `json:"subnet_id"`
-	ControlPlane   ControlPlaneCreateRequest `json:"control_plane"`
+	Name                     string                    `json:"name"`
+	SSHKeyPairName           string                    `json:"ssh_keypair_name"`
+	NetworkID                string                    `json:"network_id"`
+	SubnetID                 string                    `json:"subnet_id"`
+	PublishKubeAPIToInternet bool                      `json:"publish_kube_api_to_internet"`
+	ControlPlane             ControlPlaneCreateRequest `json:"control_plane"`
 }
 
 type MkaaSClusterUpdateRequest struct {
