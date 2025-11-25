@@ -144,3 +144,87 @@ func TestUserActions_UnsubscribeAMQP(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, resp.StatusCode, 204)
 }
+
+func TestUserActions_ListAMQPSubscriptionsWithOpts_ClientID(t *testing.T) {
+	setup()
+	defer teardown()
+
+	amqps := AMQPSubscription{
+		ConnectionString:         "amqps://guest:guest@192.168.123.20:5671/user_action_events",
+		ReceiveChildClientEvents: false,
+		RoutingKey:               "foo",
+		ID:                       17,
+	}
+
+	expectedResp := AMQPSubscriptions{
+		Count:   1,
+		Results: []AMQPSubscription{amqps},
+	}
+
+	URL := path.Join(userActionsBasePathV1, "/", listAMQPSubscriptions)
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodGet)
+		q := r.URL.Query().Get("client_id")
+		if q != "123" {
+			t.Fatalf("expected client_id=123, got %q (raw query: %s)", q, r.URL.RawQuery)
+		}
+
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
+		if _, err = w.Write(resp); err != nil {
+			t.Errorf("failed to write response: %v", err)
+		}
+	})
+
+	opts := &UserActionsOpts{ClientID: 123}
+	respActual, resp, err := client.UserActions.ListAMQPSubscriptionsWithOpts(ctx, opts)
+	require.NoError(t, err)
+	require.Equal(t, 200, resp.StatusCode)
+	require.Equal(t, *respActual, expectedResp)
+}
+
+func TestUserActions_SubscribeAMQPWithOpts_ClientID(t *testing.T) {
+	setup()
+	defer teardown()
+
+	URL := path.Join(userActionsBasePathV1, "/", subscribeAMQP)
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodPost)
+		q := r.URL.Query().Get("client_id")
+		if q != "123" {
+			t.Fatalf("expected client_id=123, got %q (raw query: %s)", q, r.URL.RawQuery)
+		}
+		w.WriteHeader(204)
+	})
+
+	opts := &UserActionsOpts{ClientID: 123}
+	reqBody := &AMQPSubscriptionCreateRequest{}
+	resp, err := client.UserActions.SubscribeAMQPWithOpts(ctx, opts, reqBody)
+	require.NoError(t, err)
+	require.Equal(t, 204, resp.StatusCode)
+}
+
+func TestUserActions_UnsubscribeAMQPWithOpts_ClientID(t *testing.T) {
+	setup()
+	defer teardown()
+
+	URL := path.Join(userActionsBasePathV1, "/", unsubscribeAMQP)
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodPost)
+		q := r.URL.Query().Get("client_id")
+		if q != "123" {
+			t.Fatalf("expected client_id=123, got %q (raw query: %s)", q, r.URL.RawQuery)
+		}
+		w.WriteHeader(204)
+	})
+
+	opts := &UserActionsOpts{ClientID: 123}
+	resp, err := client.UserActions.UnsubscribeAMQPWithOpts(ctx, opts)
+	require.NoError(t, err)
+	require.Equal(t, 204, resp.StatusCode)
+}

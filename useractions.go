@@ -42,7 +42,7 @@ var _ UserActionsService = &UserActionsServiceOp{}
 
 // UserActionsOpts allows working with a specific client.
 type UserActionsOpts struct {
-	ClientId int
+	ClientID int `url:"client_id,omitempty"`
 }
 
 // LogSubscriptions represents an EdgecenterCloud user action  log subscriptions.
