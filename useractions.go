@@ -40,8 +40,11 @@ type UserActionsServiceOp struct {
 
 var _ UserActionsService = &UserActionsServiceOp{}
 
-// UserActionsOpts allows working with a specific client.
+// UserActionsOpts represents the optional parameters for the User Actions methods.
 type UserActionsOpts struct {
+	// ClientID specifies the ID of a sub-client for reseller accounts.
+	// When set, operations target the specified client instead of the current authenticated client.
+	// Regular account has no sub-clients, so this parameter is ignored.
 	ClientID int `url:"client_id,omitempty"`
 }
 
@@ -154,17 +157,12 @@ func (s *UserActionsServiceOp) ListAMQPSubscriptions(ctx context.Context) (*AMQP
 
 // ListAMQPSubscriptionsWithOpts get a list of AMQP user subscriptions.
 func (s *UserActionsServiceOp) ListAMQPSubscriptionsWithOpts(ctx context.Context, opts *UserActionsOpts) (*AMQPSubscriptions, *Response, error) {
-	pathReq := fmt.Sprintf("%s/%s", userActionsBasePathV1, listAMQPSubscriptions)
-
-	var err error
-	if opts != nil {
-		pathReq, err = addOptions(pathReq, opts)
-		if err != nil {
-			return nil, nil, err
-		}
+	reqURL, err := s.buildRequestURL(listAMQPSubscriptions, opts)
+	if err != nil {
+		return nil, nil, err
 	}
 
-	req, err := s.client.NewRequest(ctx, http.MethodGet, pathReq, nil)
+	req, err := s.client.NewRequest(ctx, http.MethodGet, reqURL, nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -191,17 +189,12 @@ func (s *UserActionsServiceOp) SubscribeAMQPWithOpts(ctx context.Context, opts *
 		return nil, NewArgError("reqBody", "cannot be nil")
 	}
 
-	pathReq := fmt.Sprintf("%s/%s", userActionsBasePathV1, subscribeAMQP)
-
-	var err error
-	if opts != nil {
-		pathReq, err = addOptions(pathReq, opts)
-		if err != nil {
-			return nil, err
-		}
+	reqURL, err := s.buildRequestURL(subscribeAMQP, opts)
+	if err != nil {
+		return nil, err
 	}
 
-	req, err := s.client.NewRequest(ctx, http.MethodPost, pathReq, reqBody)
+	req, err := s.client.NewRequest(ctx, http.MethodPost, reqURL, reqBody)
 	if err != nil {
 		return nil, err
 	}
@@ -223,17 +216,12 @@ func (s *UserActionsServiceOp) UnsubscribeAMQP(ctx context.Context) (*Response, 
 
 // UnsubscribeAMQPWithOpts unsubscribe from the user action log over AMQP.
 func (s *UserActionsServiceOp) UnsubscribeAMQPWithOpts(ctx context.Context, opts *UserActionsOpts) (*Response, error) {
-	pathReq := fmt.Sprintf("%s/%s", userActionsBasePathV1, unsubscribeAMQP)
-
-	var err error
-	if opts != nil {
-		pathReq, err = addOptions(pathReq, opts)
-		if err != nil {
-			return nil, err
-		}
+	reqURL, err := s.buildRequestURL(unsubscribeAMQP, opts)
+	if err != nil {
+		return nil, err
 	}
 
-	req, err := s.client.NewRequest(ctx, http.MethodPost, pathReq, nil)
+	req, err := s.client.NewRequest(ctx, http.MethodPost, reqURL, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -244,4 +232,19 @@ func (s *UserActionsServiceOp) UnsubscribeAMQPWithOpts(ctx context.Context, opts
 	}
 
 	return resp, nil
+}
+
+// buildRequestURL builds a request URL based on the given path and options.
+func (s *UserActionsServiceOp) buildRequestURL(path string, opts *UserActionsOpts) (string, error) {
+	pathReq := fmt.Sprintf("%s/%s", userActionsBasePathV1, path)
+
+	var err error
+	if opts != nil {
+		pathReq, err = addOptions(pathReq, opts)
+		if err != nil {
+			return "", err
+		}
+	}
+
+	return pathReq, nil
 }

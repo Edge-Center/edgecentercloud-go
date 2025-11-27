@@ -65,6 +65,9 @@ func TestUserActions_ListAMQPSubscriptions(t *testing.T) {
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
+		if r.URL.RawQuery != "" {
+			t.Fatalf("expected no query params, got %q", r.URL.RawQuery)
+		}
 		resp, err := json.Marshal(expectedResp)
 		if err != nil {
 			t.Errorf("failed to marshal response: %v", err)
@@ -121,6 +124,9 @@ func TestUserActions_SubscribeAMQP(t *testing.T) {
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
+		if r.URL.RawQuery != "" {
+			t.Fatalf("expected no query params, got %q", r.URL.RawQuery)
+		}
 		w.WriteHeader(204)
 	})
 
@@ -137,6 +143,9 @@ func TestUserActions_UnsubscribeAMQP(t *testing.T) {
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
+		if r.URL.RawQuery != "" {
+			t.Fatalf("expected no query params, got %q", r.URL.RawQuery)
+		}
 		w.WriteHeader(204)
 	})
 
