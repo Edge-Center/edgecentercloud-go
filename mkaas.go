@@ -62,8 +62,8 @@ type MkaaSClusterCreateRequest struct {
 	SSHKeyPairName           string                    `json:"ssh_keypair_name"`
 	NetworkID                string                    `json:"network_id"`
 	SubnetID                 string                    `json:"subnet_id"`
-	PodSubnet                *string                   `json:"pod_subnet,"`
-	ServiceSubnet            *string                   `json:"service_subnet"`
+	PodSubnet                *string                   `json:"pod_subnet,omitempty"`
+	ServiceSubnet            *string                   `json:"service_subnet,omitempty"`
 	PublishKubeAPIToInternet bool                      `json:"publish_kube_api_to_internet"`
 	ControlPlane             ControlPlaneCreateRequest `json:"control_plane"`
 }
