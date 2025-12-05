@@ -38,6 +38,7 @@ const (
 	instancesInterfaces            = "interfaces"
 	instancesPutIntoServerGroup    = "put_into_servergroup"
 	instancesRemoveFromServerGroup = "remove_from_servergroup"
+	instancesLiveMigration         = "migrate"
 )
 
 // InstancesService is an interface for creating and managing Instances with the EdgecenterCloud API.
@@ -58,6 +59,7 @@ type InstancesService interface {
 	InterfaceList(context.Context, string) ([]InstancePortInterface, *Response, error)
 	PutIntoServerGroup(context.Context, string, *InstancePutIntoServerGroupRequest) (*TaskResponse, *Response, error)
 	RemoveFromServerGroup(context.Context, string) (*TaskResponse, *Response, error)
+	Migrate(context.Context, string, *InstanceMigrateRequest) (*TaskResponse, *Response, error)
 
 	InstanceAction
 	InstanceFlavor
@@ -262,6 +264,11 @@ type InstanceCheckFlavorVolumeRequest struct {
 	Volumes []InstanceVolumeCreate `json:"volumes" required:"true" validate:"required,dive"`
 }
 
+// InstanceMigrateRequest represents a request to migrate an Instance to another availability zone.
+type InstanceMigrateRequest struct {
+	AvailabilityZone string `json:"availability_zone"  required:"true"`
+}
+
 type InstanceAvailableNames struct {
 	AllowedBMNameWinTemplates []string `json:"allowed_bm_name_win_templates"`
 	NameTemplatesLimited      bool     `json:"name_templates_limited"`
@@ -458,6 +465,37 @@ func (s *InstancesServiceOp) Delete(ctx context.Context, instanceID string, opts
 	}
 
 	req, err := s.client.NewRequest(ctx, http.MethodDelete, path, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	tasks := new(TaskResponse)
+	resp, err := s.client.Do(ctx, req, tasks)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return tasks, resp, err
+}
+
+// Migrate the Instance to another availability zone.
+func (s *InstancesServiceOp) Migrate(ctx context.Context, instanceID string, reqBody *InstanceMigrateRequest) (*TaskResponse, *Response, error) {
+	if resp, err := isValidUUID(instanceID, "instanceID"); err != nil {
+		return nil, resp, err
+	}
+
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	path := fmt.Sprintf(
+		"%s/%s/%s",
+		s.client.addProjectRegionPath(instancesBasePathV1),
+		instanceID,
+		instancesLiveMigration,
+	)
+
+	req, err := s.client.NewRequest(ctx, http.MethodPost, path, reqBody)
 	if err != nil {
 		return nil, nil, err
 	}
