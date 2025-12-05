@@ -1411,3 +1411,45 @@ func TestInstances_RemoveFromServerGroup_ResponseError(t *testing.T) {
 	assert.Error(t, err)
 	assert.Equal(t, resp.StatusCode, 400)
 }
+
+func TestInstances_Migrate(t *testing.T) {
+	setup()
+	defer teardown()
+
+	request := &InstanceMigrateRequest{AvailabilityZone: "ru-1"}
+	expectedResp := &TaskResponse{Tasks: []string{taskID}}
+	URL := path.Join(instancesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, instancesLiveMigration)
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodPost)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
+		_, _ = fmt.Fprint(w, string(resp))
+	})
+
+	respActual, resp, err := client.Instances.Migrate(ctx, testResourceID, request)
+	require.NoError(t, err)
+	require.Equal(t, resp.StatusCode, 200)
+	assert.Equal(t, expectedResp, respActual)
+}
+
+func TestInstances_Migrate_ResponseError(t *testing.T) {
+	setup()
+	defer teardown()
+
+	request := &InstanceMigrateRequest{AvailabilityZone: "ru-1"}
+
+	URL := path.Join(instancesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, instancesLiveMigration)
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodPost)
+		w.WriteHeader(http.StatusBadRequest)
+		_, _ = fmt.Fprint(w, "Bad request")
+	})
+
+	respActual, resp, err := client.Instances.Migrate(ctx, testResourceID, request)
+	assert.Nil(t, respActual)
+	assert.Error(t, err)
+	assert.Equal(t, resp.StatusCode, 400)
+}
