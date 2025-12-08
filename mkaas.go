@@ -66,7 +66,7 @@ type MkaaSClusterCreateRequest struct {
 	ServiceSubnet            *string                   `json:"service_subnet,omitempty"`
 	PublishKubeAPIToInternet bool                      `json:"publish_kube_api_to_internet"`
 	ControlPlane             ControlPlaneCreateRequest `json:"control_plane"`
-	Pools                    []MkaaSPoolCreateRequest  `json:"pools"`
+	Pools                    []MkaaSPoolCreateRequest  `json:"pools,omitempty"`
 }
 
 type MkaaSClusterUpdateRequest struct {
