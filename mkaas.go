@@ -238,7 +238,8 @@ func (m *MKaaSServiceOp) ClusterGet(ctx context.Context, clusterID int) (*MKaaSC
 }
 
 func (m *MKaaSServiceOp) ClusterUpdate(ctx context.Context, clusterID int,
-	reqBody MKaaSClusterUpdateRequest) (*TaskResponse, *Response, error) {
+	reqBody MKaaSClusterUpdateRequest,
+) (*TaskResponse, *Response, error) {
 	if resp, err := m.client.Validate(); err != nil {
 		return nil, resp, err
 	}
