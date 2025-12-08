@@ -237,12 +237,13 @@ func (m *MKaaSServiceOp) ClusterGet(ctx context.Context, clusterID int) (*MKaaSC
 	return cluster, resp, err
 }
 
-func (m *MKaaSServiceOp) ClusterUpdate(ctx context.Context, clusterID int, reqBody MkaaSClusterUpdateRequest) (*TaskResponse, *Response, error) {
+func (m *MKaaSServiceOp) ClusterUpdate(ctx context.Context, clusterID int,
+	reqBody MKaaSClusterUpdateRequest) (*TaskResponse, *Response, error) {
 	if resp, err := m.client.Validate(); err != nil {
 		return nil, resp, err
 	}
 
-	path := fmt.Sprintf("%s/%d", m.client.addProjectRegionPath(MkaaSClustersBasePathV2), clusterID)
+	path := fmt.Sprintf("%s/%d", m.client.addProjectRegionPath(MKaaSClustersBasePathV2), clusterID)
 
 	req, err := m.client.NewRequest(ctx, http.MethodPatch, path, reqBody)
 	if err != nil {
