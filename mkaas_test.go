@@ -22,11 +22,11 @@ const (
 	mkaasVersion       = "v1.31.0"
 )
 
-func TestMkaasServiceOp_ClusterCreate(t *testing.T) {
+func TestMKaaSServiceOp_ClusterCreate(t *testing.T) {
 	setup()
 	defer teardown()
 
-	request := MkaaSClusterCreateRequest{
+	request := MKaaSClusterCreateRequest{
 		Name:           mkaasClusterName,
 		SSHKeyPairName: mkaasKeypairName,
 		NetworkID:      mkaasTestNetworkID,
@@ -37,7 +37,7 @@ func TestMkaasServiceOp_ClusterCreate(t *testing.T) {
 			VolumeSize: 10,
 			Version:    mkaasVersion,
 		},
-		Pools: []MkaaSPoolCreateRequest{
+		Pools: []MKaaSPoolCreateRequest{
 			{
 				Name:         mkaasPoolName,
 				Flavor:       mkaasFlavor,
@@ -51,11 +51,11 @@ func TestMkaasServiceOp_ClusterCreate(t *testing.T) {
 		},
 	}
 	expectedResp := &TaskResponse{Tasks: []string{taskID}}
-	URL := path.Join(MkaaSClustersBasePathV2, strconv.Itoa(projectID), strconv.Itoa(regionID))
+	URL := path.Join(MKaaSClustersBasePathV2, strconv.Itoa(projectID), strconv.Itoa(regionID))
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
-		reqBody := &MkaaSClusterCreateRequest{}
+		reqBody := &MKaaSClusterCreateRequest{}
 		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
 			t.Errorf("failed to decode request body: %v", err)
 		}
@@ -73,12 +73,12 @@ func TestMkaasServiceOp_ClusterCreate(t *testing.T) {
 	require.Equal(t, respActual, expectedResp)
 }
 
-func TestMkaasServiceOp_ClustersList(t *testing.T) {
+func TestMKaaSServiceOp_ClustersList(t *testing.T) {
 	setup()
 	defer teardown()
 
-	expectedResp := []MkaaSCluster{{ID: testResourceIntID}}
-	URL := path.Join(MkaaSClustersBasePathV2, strconv.Itoa(projectID), strconv.Itoa(regionID))
+	expectedResp := []MKaaSCluster{{ID: testResourceIntID}}
+	URL := path.Join(MKaaSClustersBasePathV2, strconv.Itoa(projectID), strconv.Itoa(regionID))
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
@@ -95,11 +95,11 @@ func TestMkaasServiceOp_ClustersList(t *testing.T) {
 	require.Equal(t, respActual, expectedResp)
 }
 
-func TestMkaasServiceOp_ClustersList_ResponseError(t *testing.T) {
+func TestMKaaSServiceOp_ClustersList_ResponseError(t *testing.T) {
 	setup()
 	defer teardown()
 
-	URL := path.Join(MkaaSClustersBasePathV2, strconv.Itoa(projectID), strconv.Itoa(regionID))
+	URL := path.Join(MKaaSClustersBasePathV2, strconv.Itoa(projectID), strconv.Itoa(regionID))
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
@@ -113,14 +113,14 @@ func TestMkaasServiceOp_ClustersList_ResponseError(t *testing.T) {
 	assert.Equal(t, resp.StatusCode, 400)
 }
 
-func TestMkaasServiceOp_ClustersGet(t *testing.T) {
+func TestMKaaSServiceOp_ClustersGet(t *testing.T) {
 	setup()
 	defer teardown()
 
-	expectedResp := &MkaaSCluster{
+	expectedResp := &MKaaSCluster{
 		ID: testResourceIntID,
 	}
-	URL := path.Join(MkaaSClustersBasePathV2, strconv.Itoa(projectID), strconv.Itoa(regionID), strconv.Itoa(testResourceIntID))
+	URL := path.Join(MKaaSClustersBasePathV2, strconv.Itoa(projectID), strconv.Itoa(regionID), strconv.Itoa(testResourceIntID))
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
@@ -134,12 +134,12 @@ func TestMkaasServiceOp_ClustersGet(t *testing.T) {
 	require.Equal(t, respActual, expectedResp)
 }
 
-func TestMkaasServiceOp_ClustersDelete(t *testing.T) {
+func TestMKaaSServiceOp_ClustersDelete(t *testing.T) {
 	setup()
 	defer teardown()
 
 	expectedResp := &TaskResponse{Tasks: []string{taskID}}
-	URL := path.Join(MkaaSClustersBasePathV2, strconv.Itoa(projectID), strconv.Itoa(regionID), strconv.Itoa(testResourceIntID))
+	URL := path.Join(MKaaSClustersBasePathV2, strconv.Itoa(projectID), strconv.Itoa(regionID), strconv.Itoa(testResourceIntID))
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodDelete)
@@ -156,11 +156,11 @@ func TestMkaasServiceOp_ClustersDelete(t *testing.T) {
 	require.Equal(t, respActual, expectedResp)
 }
 
-func TestMkaasServiceOp_PoolCreate(t *testing.T) {
+func TestMKaaSServiceOp_PoolCreate(t *testing.T) {
 	setup()
 	defer teardown()
 
-	request := MkaaSPoolCreateRequest{
+	request := MKaaSPoolCreateRequest{
 		Name:       mkaasClusterName,
 		Flavor:     mkaasFlavor,
 		NodeCount:  1,
@@ -168,11 +168,11 @@ func TestMkaasServiceOp_PoolCreate(t *testing.T) {
 	}
 
 	expectedResp := &TaskResponse{Tasks: []string{taskID}}
-	URL := path.Join(MkaaSClustersBasePathV2, strconv.Itoa(projectID), strconv.Itoa(regionID), strconv.Itoa(testResourceIntID), "pools")
+	URL := path.Join(MKaaSClustersBasePathV2, strconv.Itoa(projectID), strconv.Itoa(regionID), strconv.Itoa(testResourceIntID), "pools")
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
-		reqBody := &MkaaSPoolCreateRequest{}
+		reqBody := &MKaaSPoolCreateRequest{}
 		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
 			t.Errorf("failed to decode request body: %v", err)
 		}
@@ -190,12 +190,12 @@ func TestMkaasServiceOp_PoolCreate(t *testing.T) {
 	require.Equal(t, respActual, expectedResp)
 }
 
-func TestMkaasServiceOp_PoolsList(t *testing.T) {
+func TestMKaaSServiceOp_PoolsList(t *testing.T) {
 	setup()
 	defer teardown()
 
-	expectedResp := []MkaaSPool{{ID: testResourceIntID}}
-	URL := path.Join(MkaaSClustersBasePathV2, strconv.Itoa(projectID), strconv.Itoa(regionID), strconv.Itoa(testResourceIntID), "pools")
+	expectedResp := []MKaaSPool{{ID: testResourceIntID}}
+	URL := path.Join(MKaaSClustersBasePathV2, strconv.Itoa(projectID), strconv.Itoa(regionID), strconv.Itoa(testResourceIntID), "pools")
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
@@ -212,14 +212,14 @@ func TestMkaasServiceOp_PoolsList(t *testing.T) {
 	require.Equal(t, respActual, expectedResp)
 }
 
-func TestMkaasServiceOp_PoolGet(t *testing.T) {
+func TestMKaaSServiceOp_PoolGet(t *testing.T) {
 	setup()
 	defer teardown()
 
-	expectedResp := &MkaaSPool{
+	expectedResp := &MKaaSPool{
 		ID: testResourceIntID,
 	}
-	URL := path.Join(MkaaSClustersBasePathV2, strconv.Itoa(projectID), strconv.Itoa(regionID), strconv.Itoa(testResourceIntID), "pools", strconv.Itoa(testResourceIntID))
+	URL := path.Join(MKaaSClustersBasePathV2, strconv.Itoa(projectID), strconv.Itoa(regionID), strconv.Itoa(testResourceIntID), "pools", strconv.Itoa(testResourceIntID))
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
@@ -233,12 +233,12 @@ func TestMkaasServiceOp_PoolGet(t *testing.T) {
 	require.Equal(t, respActual, expectedResp)
 }
 
-func TestMkaasServiceOp_PoolDelete(t *testing.T) {
+func TestMKaaSServiceOp_PoolDelete(t *testing.T) {
 	setup()
 	defer teardown()
 
 	expectedResp := &TaskResponse{Tasks: []string{taskID}}
-	URL := path.Join(MkaaSClustersBasePathV2, strconv.Itoa(projectID), strconv.Itoa(regionID),
+	URL := path.Join(MKaaSClustersBasePathV2, strconv.Itoa(projectID), strconv.Itoa(regionID),
 		strconv.Itoa(testResourceIntID), "pools", strconv.Itoa(testResourceIntID))
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
