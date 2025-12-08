@@ -69,7 +69,7 @@ type ProjectCreateRequest struct {
 }
 
 type ProjectListOptions struct {
-	ClientID       string `url:"client_id,omitempty" validate:"omitempty"`
+	ClientID       string `url:"key,omitempty" validate:"omitempty"`
 	OrderBy        string `url:"order_by,omitempty" validate:"omitempty"`
 	Name           string `url:"name,omitempty" validate:"omitempty"`
 	IncludeDeleted bool   `url:"include_deleted,omitempty" validate:"omitempty"`
