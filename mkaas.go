@@ -21,6 +21,7 @@ type MkaasClusters interface {
 	ClusterCreate(context.Context, MkaaSClusterCreateRequest) (*TaskResponse, *Response, error)
 	ClustersList(context.Context, *MkaaSClusterListOptions) ([]MkaaSCluster, *Response, error)
 	ClusterGet(context.Context, int) (*MkaaSCluster, *Response, error)
+	ClusterUpdate(ctx context.Context, clusterID int, reqBody MkaaSClusterUpdateRequest) (*TaskResponse, *Response, error)
 	ClusterDelete(context.Context, int) (*TaskResponse, *Response, error)
 }
 
@@ -57,12 +58,20 @@ type MkaaSClusterListOptions struct {
 }
 
 type MkaaSClusterCreateRequest struct {
-	Name           string                    `json:"name"`
-	SSHKeyPairName string                    `json:"ssh_keypair_name"`
-	NetworkID      string                    `json:"network_id"`
-	SubnetID       string                    `json:"subnet_id"`
-	ControlPlane   ControlPlaneCreateRequest `json:"control_plane"`
-	Pools          []MkaaSPoolCreateRequest  `json:"pools"`
+	Name                     string                    `json:"name"`
+	SSHKeyPairName           string                    `json:"ssh_keypair_name"`
+	NetworkID                string                    `json:"network_id"`
+	SubnetID                 string                    `json:"subnet_id"`
+	PodSubnet                *string                   `json:"pod_subnet,omitempty"`
+	ServiceSubnet            *string                   `json:"service_subnet,omitempty"`
+	PublishKubeAPIToInternet bool                      `json:"publish_kube_api_to_internet"`
+	ControlPlane             ControlPlaneCreateRequest `json:"control_plane"`
+	Pools                    []MkaaSPoolCreateRequest  `json:"pools"`
+}
+
+type MkaaSClusterUpdateRequest struct {
+	Name            string `json:"name"`
+	MasterNodeCount int    `json:"master_node_count"`
 }
 
 // MkaaSCluster represents an EdgecenterCloud MkaaS Cluster.
@@ -83,6 +92,8 @@ type MkaaSCluster struct {
 	Processing     bool         `json:"processing"`
 	Status         string       `json:"status"`
 	State          string       `json:"state"`
+	PodSubnet      string       `json:"pod_subnet"`
+	ServiceSubnet  string       `json:"service_subnet"`
 }
 
 type ControlPlaneCreateRequest struct {
@@ -222,6 +233,27 @@ func (m *MkaasServiceOp) ClusterGet(ctx context.Context, clusterID int) (*MkaaSC
 	}
 
 	return cluster, resp, err
+}
+
+func (m *MkaasServiceOp) ClusterUpdate(ctx context.Context, clusterID int, reqBody MkaaSClusterUpdateRequest) (*TaskResponse, *Response, error) {
+	if resp, err := m.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	path := fmt.Sprintf("%s/%d", m.client.addProjectRegionPath(MkaaSClustersBasePathV2), clusterID)
+
+	req, err := m.client.NewRequest(ctx, http.MethodPatch, path, reqBody)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	tasks := new(TaskResponse)
+	resp, err := m.client.Do(ctx, req, tasks)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return tasks, resp, err
 }
 
 func (m *MkaasServiceOp) ClusterDelete(ctx context.Context, clusterID int) (*TaskResponse, *Response, error) {
