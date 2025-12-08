@@ -7,66 +7,66 @@ import (
 )
 
 const (
-	MkaaSClustersBasePathV2 = "/internal/mkaas/v2/clusters"
+	MKaaSClustersBasePathV2 = "/internal/mkaas/v2/clusters"
 )
 
-// MkaaSService is an interface for creating and managing mkaas clusters with the EdgecenterCloud API.
+// MKaaSService is an interface for creating and managing mkaas clusters with the EdgecenterCloud API.
 // See: https://apidocs.edgecenter.ru/cloud#tag/mkaas
-type MkaaSService interface {
-	MkaasClusters
-	MkaasPools
+type MKaaSService interface {
+	MKaaSClusters
+	MKaaSPools
 }
 
-type MkaasClusters interface {
-	ClusterCreate(context.Context, MkaaSClusterCreateRequest) (*TaskResponse, *Response, error)
-	ClustersList(context.Context, *MkaaSClusterListOptions) ([]MkaaSCluster, *Response, error)
-	ClusterGet(context.Context, int) (*MkaaSCluster, *Response, error)
+type MKaaSClusters interface {
+	ClusterCreate(context.Context, MKaaSClusterCreateRequest) (*TaskResponse, *Response, error)
+	ClustersList(context.Context, *MKaaSClusterListOptions) ([]MKaaSCluster, *Response, error)
+	ClusterGet(context.Context, int) (*MKaaSCluster, *Response, error)
 	ClusterDelete(context.Context, int) (*TaskResponse, *Response, error)
 }
 
-type MkaasPools interface {
-	PoolCreate(ctx context.Context, clusterID int, reqBody MkaaSPoolCreateRequest) (*TaskResponse, *Response, error)
-	PoolsList(ctx context.Context, clusterID int, opts *MkaaSPoolListOptions) ([]MkaaSPool, *Response, error)
-	PoolGet(ctx context.Context, clusterID, poolID int) (*MkaaSPool, *Response, error)
-	PoolUpdate(ctx context.Context, clusterID, poolID int, reqBody MkaaSPoolUpdateRequest) (*TaskResponse, *Response, error)
+type MKaaSPools interface {
+	PoolCreate(ctx context.Context, clusterID int, reqBody MKaaSPoolCreateRequest) (*TaskResponse, *Response, error)
+	PoolsList(ctx context.Context, clusterID int, opts *MKaaSPoolListOptions) ([]MKaaSPool, *Response, error)
+	PoolGet(ctx context.Context, clusterID, poolID int) (*MKaaSPool, *Response, error)
+	PoolUpdate(ctx context.Context, clusterID, poolID int, reqBody MKaaSPoolUpdateRequest) (*TaskResponse, *Response, error)
 	PoolDelete(ctx context.Context, clusterID, poolID int) (*TaskResponse, *Response, error)
 }
 
-// MkaasServiceOp handles communication with mkaas methods of the EdgecenterCloud API.
-type MkaasServiceOp struct {
+// MKaaSServiceOp handles communication with mkaas methods of the EdgecenterCloud API.
+type MKaaSServiceOp struct {
 	client *Client
 }
 
-var _ MkaaSService = &MkaasServiceOp{}
+var _ MKaaSService = &MKaaSServiceOp{}
 
-type MkaaSClustersRoot struct {
+type MKaaSClustersRoot struct {
 	Count    int
-	Clusters []MkaaSCluster `json:"results"`
+	Clusters []MKaaSCluster `json:"results"`
 }
 
-type MkaaSPoolsRoot struct {
+type MKaaSPoolsRoot struct {
 	Count int
-	Pools []MkaaSPool `json:"results"`
+	Pools []MKaaSPool `json:"results"`
 }
 
-type MkaaSClusterListOptions struct {
+type MKaaSClusterListOptions struct {
 	Name   string `url:"name,omitempty"`
 	Status string `url:"status,omitempty"`
 	Limit  int    `url:"limit,omitempty"`
 	Offset int    `url:"offset,omitempty"`
 }
 
-type MkaaSClusterCreateRequest struct {
+type MKaaSClusterCreateRequest struct {
 	Name           string                    `json:"name"`
 	SSHKeyPairName string                    `json:"ssh_keypair_name"`
 	NetworkID      string                    `json:"network_id"`
 	SubnetID       string                    `json:"subnet_id"`
 	ControlPlane   ControlPlaneCreateRequest `json:"control_plane"`
-	Pools          []MkaaSPoolCreateRequest  `json:"pools"`
+	Pools          []MKaaSPoolCreateRequest  `json:"pools"`
 }
 
-// MkaaSCluster represents an EdgecenterCloud MkaaS Cluster.
-type MkaaSCluster struct {
+// MKaaSCluster represents an EdgecenterCloud MKaaS Cluster.
+type MKaaSCluster struct {
 	ID             int          `json:"id"`
 	RegionID       int          `json:"region_id"`
 	ProjectID      int          `json:"project_id"`
@@ -75,7 +75,7 @@ type MkaaSCluster struct {
 	NetworkID      string       `json:"network_id"`
 	SubnetID       string       `json:"subnet_id"`
 	ControlPlane   ControlPlane `json:"control_plane"`
-	Pools          []MkaaSPool  `json:"pools"`
+	Pools          []MKaaSPool  `json:"pools"`
 	InternalIP     string       `json:"internal_ip"`
 	ExternalIP     string       `json:"external_ip"`
 	Existed        string       `json:"existed,omitempty"` // Duration string (e.g., "237h36m46.703341967s")
@@ -102,67 +102,70 @@ type ControlPlane struct {
 	Version    string     `json:"version"`
 }
 
-type MkaaSPoolListOptions struct {
+type MKaaSPoolListOptions struct {
 	Name   string `url:"name,omitempty"`
 	Status string `url:"status,omitempty"`
 	Limit  int    `url:"limit,omitempty"`
 	Offset int    `url:"offset,omitempty"`
 }
 
-type MkaaSPoolCreateRequest struct {
-	Name            string            `json:"name,omitempty"`
-	Flavor          string            `json:"flavor,omitempty"`
-	MaxNodeCount    *int              `json:"max_node_count,omitempty"`
-	MinNodeCount    *int              `json:"min_node_count,omitempty"`
-	NodeCount       int               `json:"node_count,omitempty"`
-	VolumeSize      int               `json:"volume_size,omitempty"`
-	SecurityGroupID *string           `json:"security_group_id,omitempty"`
-	VolumeType      VolumeType        `json:"volume_type,omitempty"`
-	Labels          map[string]string `json:"labels,omitempty"`
-	Taints          []MkaaSTaint      `json:"taints,omitempty"`
+type MKaaSPoolCreateRequest struct {
+	Name             string            `json:"name,omitempty"`
+	Flavor           string            `json:"flavor,omitempty"`
+	MaxNodeCount     *int              `json:"max_node_count,omitempty"`
+	MinNodeCount     *int              `json:"min_node_count,omitempty"`
+	NodeCount        int               `json:"node_count,omitempty"`
+	VolumeSize       int               `json:"volume_size,omitempty"`
+	SecurityGroupID  *string           `json:"security_group_id,omitempty"`
+	VolumeType       VolumeType        `json:"volume_type,omitempty"`
+	Labels           map[string]string `json:"labels,omitempty"`
+	Taints           []MKaaSTaint      `json:"taints,omitempty"`
+	SecurityGroupIds []string          `json:"security_group_ids,omitempty"`
 }
 
-type MkaaSPoolUpdateRequest struct {
-	Name            *string           `json:"name,omitempty"`
-	Flavor          *string           `json:"flavor,omitempty"`
-	MaxNodeCount    *int              `json:"max_node_count,omitempty"`
-	MinNodeCount    *int              `json:"min_node_count,omitempty"`
-	NodeCount       *int              `json:"node_count,omitempty"`
-	VolumeSize      *int              `json:"volume_size,omitempty"`
-	SecurityGroupID *string           `json:"security_group_id,omitempty"`
-	VolumeType      *VolumeType       `json:"volume_type,omitempty"`
-	Labels          map[string]string `json:"labels,omitempty"`
-	Taints          []MkaaSTaint      `json:"taints,omitempty"`
+type MKaaSPoolUpdateRequest struct {
+	Name             *string           `json:"name,omitempty"`
+	Flavor           *string           `json:"flavor,omitempty"`
+	MaxNodeCount     *int              `json:"max_node_count,omitempty"`
+	MinNodeCount     *int              `json:"min_node_count,omitempty"`
+	NodeCount        *int              `json:"node_count,omitempty"`
+	VolumeSize       *int              `json:"volume_size,omitempty"`
+	SecurityGroupID  *string           `json:"security_group_id,omitempty"`
+	VolumeType       *VolumeType       `json:"volume_type,omitempty"`
+	Labels           map[string]string `json:"labels,omitempty"`
+	Taints           []MKaaSTaint      `json:"taints,omitempty"`
+	SecurityGroupIds []string          `json:"security_group_ids,omitempty"`
 }
 
-type MkaaSPool struct {
-	ID           int               `json:"id"`
-	Name         string            `json:"name"`
-	Flavor       string            `json:"flavor"`
-	MaxNodeCount int               `json:"max_node_count"`
-	MinNodeCount int               `json:"min_node_count"`
-	NodeCount    int               `json:"node_count"`
-	VolumeSize   int               `json:"volume_size"`
-	VolumeType   VolumeType        `json:"volume_type"`
-	Labels       map[string]string `json:"labels"`
-	Taints       []MkaaSTaint      `json:"taints"`
-	State        string            `json:"state"`
-	Status       string            `json:"status"`
+type MKaaSPool struct {
+	ID               int               `json:"id"`
+	Name             string            `json:"name"`
+	Flavor           string            `json:"flavor"`
+	MaxNodeCount     int               `json:"max_node_count"`
+	MinNodeCount     int               `json:"min_node_count"`
+	NodeCount        int               `json:"node_count"`
+	VolumeSize       int               `json:"volume_size"`
+	VolumeType       VolumeType        `json:"volume_type"`
+	Labels           map[string]string `json:"labels"`
+	Taints           []MKaaSTaint      `json:"taints"`
+	State            string            `json:"state"`
+	Status           string            `json:"status"`
+	SecurityGroupIds []string          `json:"security_group_ids"`
 }
 
-// MkaaSTaint configuration for nodes.
-type MkaaSTaint struct {
+// MKaaSTaint configuration for nodes.
+type MKaaSTaint struct {
 	Key    string `json:"key"`
 	Value  string `json:"value"`
 	Effect string `json:"effect"`
 }
 
-func (m *MkaasServiceOp) ClusterCreate(ctx context.Context, reqBody MkaaSClusterCreateRequest) (*TaskResponse, *Response, error) {
+func (m *MKaaSServiceOp) ClusterCreate(ctx context.Context, reqBody MKaaSClusterCreateRequest) (*TaskResponse, *Response, error) {
 	if resp, err := m.client.Validate(); err != nil {
 		return nil, resp, err
 	}
 
-	path := m.client.addProjectRegionPath(MkaaSClustersBasePathV2)
+	path := m.client.addProjectRegionPath(MKaaSClustersBasePathV2)
 
 	req, err := m.client.NewRequest(ctx, http.MethodPost, path, reqBody)
 	if err != nil {
@@ -178,12 +181,12 @@ func (m *MkaasServiceOp) ClusterCreate(ctx context.Context, reqBody MkaaSCluster
 	return tasks, resp, err
 }
 
-func (m *MkaasServiceOp) ClustersList(ctx context.Context, opts *MkaaSClusterListOptions) ([]MkaaSCluster, *Response, error) {
+func (m *MKaaSServiceOp) ClustersList(ctx context.Context, opts *MKaaSClusterListOptions) ([]MKaaSCluster, *Response, error) {
 	if resp, err := m.client.Validate(); err != nil {
 		return nil, resp, err
 	}
 
-	path := m.client.addProjectRegionPath(MkaaSClustersBasePathV2)
+	path := m.client.addProjectRegionPath(MKaaSClustersBasePathV2)
 	path, err := addOptions(path, opts)
 	if err != nil {
 		return nil, nil, err
@@ -194,7 +197,7 @@ func (m *MkaasServiceOp) ClustersList(ctx context.Context, opts *MkaaSClusterLis
 		return nil, nil, err
 	}
 
-	root := new(MkaaSClustersRoot)
+	root := new(MKaaSClustersRoot)
 	resp, err := m.client.Do(ctx, req, root)
 	if err != nil {
 		return nil, resp, err
@@ -203,19 +206,19 @@ func (m *MkaasServiceOp) ClustersList(ctx context.Context, opts *MkaaSClusterLis
 	return root.Clusters, resp, err
 }
 
-func (m *MkaasServiceOp) ClusterGet(ctx context.Context, clusterID int) (*MkaaSCluster, *Response, error) {
+func (m *MKaaSServiceOp) ClusterGet(ctx context.Context, clusterID int) (*MKaaSCluster, *Response, error) {
 	if resp, err := m.client.Validate(); err != nil {
 		return nil, resp, err
 	}
 
-	path := fmt.Sprintf("%s/%d", m.client.addProjectRegionPath(MkaaSClustersBasePathV2), clusterID)
+	path := fmt.Sprintf("%s/%d", m.client.addProjectRegionPath(MKaaSClustersBasePathV2), clusterID)
 
 	req, err := m.client.NewRequest(ctx, http.MethodGet, path, nil)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	cluster := new(MkaaSCluster)
+	cluster := new(MKaaSCluster)
 	resp, err := m.client.Do(ctx, req, cluster)
 	if err != nil {
 		return nil, resp, err
@@ -224,12 +227,12 @@ func (m *MkaasServiceOp) ClusterGet(ctx context.Context, clusterID int) (*MkaaSC
 	return cluster, resp, err
 }
 
-func (m *MkaasServiceOp) ClusterDelete(ctx context.Context, clusterID int) (*TaskResponse, *Response, error) {
+func (m *MKaaSServiceOp) ClusterDelete(ctx context.Context, clusterID int) (*TaskResponse, *Response, error) {
 	if resp, err := m.client.Validate(); err != nil {
 		return nil, resp, err
 	}
 
-	path := fmt.Sprintf("%s/%d", m.client.addProjectRegionPath(MkaaSClustersBasePathV2), clusterID)
+	path := fmt.Sprintf("%s/%d", m.client.addProjectRegionPath(MKaaSClustersBasePathV2), clusterID)
 
 	req, err := m.client.NewRequest(ctx, http.MethodDelete, path, nil)
 	if err != nil {
@@ -245,12 +248,12 @@ func (m *MkaasServiceOp) ClusterDelete(ctx context.Context, clusterID int) (*Tas
 	return tasks, resp, err
 }
 
-func (m *MkaasServiceOp) PoolCreate(ctx context.Context, clusterID int, reqBody MkaaSPoolCreateRequest) (*TaskResponse, *Response, error) {
+func (m *MKaaSServiceOp) PoolCreate(ctx context.Context, clusterID int, reqBody MKaaSPoolCreateRequest) (*TaskResponse, *Response, error) {
 	if resp, err := m.client.Validate(); err != nil {
 		return nil, resp, err
 	}
 
-	path := fmt.Sprintf("%s/%d/pools", m.client.addProjectRegionPath(MkaaSClustersBasePathV2), clusterID)
+	path := fmt.Sprintf("%s/%d/pools", m.client.addProjectRegionPath(MKaaSClustersBasePathV2), clusterID)
 
 	req, err := m.client.NewRequest(ctx, http.MethodPost, path, reqBody)
 	if err != nil {
@@ -266,12 +269,12 @@ func (m *MkaasServiceOp) PoolCreate(ctx context.Context, clusterID int, reqBody 
 	return tasks, resp, err
 }
 
-func (m *MkaasServiceOp) PoolUpdate(ctx context.Context, clusterID, poolID int, reqBody MkaaSPoolUpdateRequest) (*TaskResponse, *Response, error) {
+func (m *MKaaSServiceOp) PoolUpdate(ctx context.Context, clusterID, poolID int, reqBody MKaaSPoolUpdateRequest) (*TaskResponse, *Response, error) {
 	if resp, err := m.client.Validate(); err != nil {
 		return nil, resp, err
 	}
 
-	path := fmt.Sprintf("%s/%d/pools/%d", m.client.addProjectRegionPath(MkaaSClustersBasePathV2), clusterID, poolID)
+	path := fmt.Sprintf("%s/%d/pools/%d", m.client.addProjectRegionPath(MKaaSClustersBasePathV2), clusterID, poolID)
 
 	req, err := m.client.NewRequest(ctx, http.MethodPatch, path, reqBody)
 	if err != nil {
@@ -287,12 +290,12 @@ func (m *MkaasServiceOp) PoolUpdate(ctx context.Context, clusterID, poolID int, 
 	return tasks, resp, err
 }
 
-func (m *MkaasServiceOp) PoolsList(ctx context.Context, clusterID int, opts *MkaaSPoolListOptions) ([]MkaaSPool, *Response, error) {
+func (m *MKaaSServiceOp) PoolsList(ctx context.Context, clusterID int, opts *MKaaSPoolListOptions) ([]MKaaSPool, *Response, error) {
 	if resp, err := m.client.Validate(); err != nil {
 		return nil, resp, err
 	}
 
-	path := fmt.Sprintf("%s/%d/pools", m.client.addProjectRegionPath(MkaaSClustersBasePathV2), clusterID)
+	path := fmt.Sprintf("%s/%d/pools", m.client.addProjectRegionPath(MKaaSClustersBasePathV2), clusterID)
 	path, err := addOptions(path, opts)
 	if err != nil {
 		return nil, nil, err
@@ -303,7 +306,7 @@ func (m *MkaasServiceOp) PoolsList(ctx context.Context, clusterID int, opts *Mka
 		return nil, nil, err
 	}
 
-	root := new(MkaaSPoolsRoot)
+	root := new(MKaaSPoolsRoot)
 	resp, err := m.client.Do(ctx, req, root)
 	if err != nil {
 		return nil, resp, err
@@ -312,19 +315,19 @@ func (m *MkaasServiceOp) PoolsList(ctx context.Context, clusterID int, opts *Mka
 	return root.Pools, resp, err
 }
 
-func (m *MkaasServiceOp) PoolGet(ctx context.Context, clusterID, poolID int) (*MkaaSPool, *Response, error) {
+func (m *MKaaSServiceOp) PoolGet(ctx context.Context, clusterID, poolID int) (*MKaaSPool, *Response, error) {
 	if resp, err := m.client.Validate(); err != nil {
 		return nil, resp, err
 	}
 
-	path := fmt.Sprintf("%s/%d/pools/%d", m.client.addProjectRegionPath(MkaaSClustersBasePathV2), clusterID, poolID)
+	path := fmt.Sprintf("%s/%d/pools/%d", m.client.addProjectRegionPath(MKaaSClustersBasePathV2), clusterID, poolID)
 
 	req, err := m.client.NewRequest(ctx, http.MethodGet, path, nil)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	pool := new(MkaaSPool)
+	pool := new(MKaaSPool)
 	resp, err := m.client.Do(ctx, req, pool)
 	if err != nil {
 		return nil, resp, err
@@ -333,12 +336,12 @@ func (m *MkaasServiceOp) PoolGet(ctx context.Context, clusterID, poolID int) (*M
 	return pool, resp, err
 }
 
-func (m *MkaasServiceOp) PoolDelete(ctx context.Context, clusterID, poolID int) (*TaskResponse, *Response, error) {
+func (m *MKaaSServiceOp) PoolDelete(ctx context.Context, clusterID, poolID int) (*TaskResponse, *Response, error) {
 	if resp, err := m.client.Validate(); err != nil {
 		return nil, resp, err
 	}
 
-	path := fmt.Sprintf("%s/%d/pools/%d", m.client.addProjectRegionPath(MkaaSClustersBasePathV2), clusterID, poolID)
+	path := fmt.Sprintf("%s/%d/pools/%d", m.client.addProjectRegionPath(MKaaSClustersBasePathV2), clusterID, poolID)
 
 	req, err := m.client.NewRequest(ctx, http.MethodDelete, path, nil)
 	if err != nil {
