@@ -18,9 +18,9 @@ const (
 )
 
 var (
-	ErrSGEtherTypeNotAllowed     = fmt.Errorf("invalid EtherType, allowed only %s or %s", EtherTypeIPv4, EtherTypeIPv6)
-	ErrSGInvalidProtocol         = fmt.Errorf("invalid Protocol")
-	ErrSGRuleDirectionNotAllowed = fmt.Errorf("invalid RuleDirection type, allowed only %s or %s", SGRuleDirectionIngress, SGRuleDirectionEgress)
+	ErrSGEtherTypeNotAllowed     = fmt.Errorf("invalid Security Group EtherType, allowed only %s or %s", EtherTypeIPv4, EtherTypeIPv6)
+	ErrSGInvalidProtocol         = fmt.Errorf("invalid Security Group Protocol")
+	ErrSGRuleDirectionNotAllowed = fmt.Errorf("invalid Security Group RuleDirection type, allowed only %s or %s", SGRuleDirectionIngress, SGRuleDirectionEgress)
 )
 
 // SecurityGroupsService is an interface for creating and managing Security Groups (Firewalls) with the EdgecenterCloud API.
@@ -191,18 +191,19 @@ func (rd *SecurityGroupRuleDirection) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &s); err != nil {
 		return err
 	}
-	v := SecurityGroupRuleDirection(s)
-	err := v.IsValid()
-	if err != nil {
-		return err
-	}
-	*rd = v
+
+	*rd = SecurityGroupRuleDirection(s)
 
 	return nil
 }
 
 // MarshalJSON - implements Marshaler interface.
 func (rd *SecurityGroupRuleDirection) MarshalJSON() ([]byte, error) {
+	err := rd.IsValid()
+	if err != nil {
+		return nil, err
+	}
+
 	return json.Marshal(rd.String())
 }
 
@@ -253,18 +254,19 @@ func (et *EtherType) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &s); err != nil {
 		return err
 	}
-	v := EtherType(s)
-	err := v.IsValid()
-	if err != nil {
-		return err
-	}
-	*et = v
+
+	*et = EtherType(s)
 
 	return nil
 }
 
 // MarshalJSON - implements Marshaler interface.
 func (et *EtherType) MarshalJSON() ([]byte, error) {
+	err := et.IsValid()
+	if err != nil {
+		return nil, err
+	}
+
 	return json.Marshal(et.String())
 }
 
@@ -349,18 +351,20 @@ func (p *SecurityGroupRuleProtocol) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &s); err != nil {
 		return err
 	}
-	v := SecurityGroupRuleProtocol(s)
-	err := v.IsValid()
-	if err != nil {
-		return err
-	}
-	*p = v
+
+	*p = SecurityGroupRuleProtocol(s)
 
 	return nil
 }
 
 // MarshalJSON - implements Marshaler interface.
 func (p *SecurityGroupRuleProtocol) MarshalJSON() ([]byte, error) {
+	err := p.IsValid()
+	if err != nil {
+		return nil, fmt.Errorf(
+			"%w. Current protocol is: %s. The protocols that can be used in the rule are: %s", err, p.String(), p.StringList())
+	}
+
 	return json.Marshal(p.String())
 }
 
