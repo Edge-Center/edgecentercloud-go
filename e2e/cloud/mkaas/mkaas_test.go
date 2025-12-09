@@ -39,7 +39,7 @@ type Config struct {
 
 var (
 	randomString, _      = util.GenerateRandomString(6, true, true, false)
-	clusterCreateRequest = edgecloud.MkaaSClusterCreateRequest{
+	clusterCreateRequest = edgecloud.MKaaSClusterCreateRequest{
 		Name: fmt.Sprintf("Cluster_from_go_client_%s", randomString),
 		ControlPlane: edgecloud.ControlPlaneCreateRequest{
 			Flavor:     mkaaSE2EFlavor,
@@ -48,7 +48,7 @@ var (
 			VolumeType: "",
 			Version:    "v1.31.0",
 		},
-		Pools: []edgecloud.MkaaSPoolCreateRequest{
+		Pools: []edgecloud.MKaaSPoolCreateRequest{
 			{
 				Name:         fmt.Sprintf("pool_from_go_client_%s", randomString),
 				Flavor:       mkaaSE2EFlavor,
@@ -61,7 +61,7 @@ var (
 				Taints:       nil,
 			},
 		}}
-	poolCreateRequest = edgecloud.MkaaSPoolCreateRequest{
+	poolCreateRequest = edgecloud.MKaaSPoolCreateRequest{
 		Name:            "pool-create",
 		Flavor:          mkaaSE2EFlavor,
 		NodeCount:       3,
@@ -72,13 +72,13 @@ var (
 		Taints:          nil,
 	}
 
-	increaseNodeCountRequest = edgecloud.MkaaSPoolUpdateRequest{
+	increaseNodeCountRequest = edgecloud.MKaaSPoolUpdateRequest{
 		NodeCount:    edgecloud.PtrTo(4),
 		MinNodeCount: edgecloud.PtrTo(1),
 		MaxNodeCount: edgecloud.PtrTo(5),
 	}
 
-	decreaseNodeCountRequest = edgecloud.MkaaSPoolUpdateRequest{
+	decreaseNodeCountRequest = edgecloud.MKaaSPoolUpdateRequest{
 		NodeCount:    edgecloud.PtrTo(1),
 		MinNodeCount: edgecloud.PtrTo(1),
 		MaxNodeCount: edgecloud.PtrTo(5),
@@ -189,7 +189,7 @@ func (s *MkaasSuite) Test_CreateAndDeletePoolSimple() {
 	s.Require().NoError(err)
 	s.Assert().Equal(http.StatusOK, resp.StatusCode)
 	s.Assert().Equal(len(clusterCreateRequest.Pools)+1, len(cluster.Pools))
-	createdPool, found := lo.Find(cluster.Pools, func(pool edgecloud.MkaaSPool) bool {
+	createdPool, found := lo.Find(cluster.Pools, func(pool edgecloud.MKaaSPool) bool {
 		return pool.Name == poolCreateRequest.Name
 	})
 	s.Require().Equal(true, found)
@@ -206,7 +206,7 @@ func (s *MkaasSuite) deleteCluster(clusterID int) {
 	s.Assert().Equal(http.StatusOK, resp.StatusCode)
 }
 
-func (s *MkaasSuite) createClusterAndWait(ctx context.Context, createRequest edgecloud.MkaaSClusterCreateRequest) {
+func (s *MkaasSuite) createClusterAndWait(ctx context.Context, createRequest edgecloud.MKaaSClusterCreateRequest) {
 	client := s.client
 	s.T().Log("Creating cluster started")
 	taskResponse, resp, err := client.MkaaS.ClusterCreate(ctx, createRequest)
@@ -225,7 +225,7 @@ func (s *MkaasSuite) deletePoolAndWait(ctx context.Context, poolID int) {
 	s.waitTaskWithLoggingAndSaveClusterID(ctx, taskResponse, poolDeleteTimeout, clusterCreateRequest.Name)
 }
 
-func (s *MkaasSuite) updatePoolAndWait(ctx context.Context, poolID int, updatedPoolRequest edgecloud.MkaaSPoolUpdateRequest) {
+func (s *MkaasSuite) updatePoolAndWait(ctx context.Context, poolID int, updatedPoolRequest edgecloud.MKaaSPoolUpdateRequest) {
 	client := s.client
 	s.T().Log("Updating pool started")
 	taskResponse, resp, err := client.MkaaS.PoolUpdate(ctx, s.clusterID, poolID, updatedPoolRequest)
@@ -254,7 +254,7 @@ func (s *MkaasSuite) waitTaskWithLoggingAndSaveClusterID(ctx context.Context, ta
 	for !taskProcessed {
 		time.Sleep(5 * time.Second)
 		if s.clusterID == 0 {
-			clusters, resp, err := s.client.MkaaS.ClustersList(ctx, &edgecloud.MkaaSClusterListOptions{
+			clusters, resp, err := s.client.MkaaS.ClustersList(ctx, &edgecloud.MKaaSClusterListOptions{
 				Name: clusterName,
 			})
 			s.Assert().NoError(err)
@@ -270,7 +270,7 @@ func (s *MkaasSuite) waitTaskWithLoggingAndSaveClusterID(ctx context.Context, ta
 	s.T().Logf("task processed")
 }
 
-func (s *MkaasSuite) changePoolsNodeCountTest(ctx context.Context, changeNodeCountRequest edgecloud.MkaaSPoolUpdateRequest) {
+func (s *MkaasSuite) changePoolsNodeCountTest(ctx context.Context, changeNodeCountRequest edgecloud.MKaaSPoolUpdateRequest) {
 	client := s.client
 	cluster, resp, err := client.MkaaS.ClusterGet(ctx, s.clusterID)
 	s.Require().NoError(err)
