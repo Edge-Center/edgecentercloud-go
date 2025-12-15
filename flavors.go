@@ -34,6 +34,9 @@ type Flavor struct {
 	HardwareDescription HardwareDescription `json:"hardware_description,omitempty"`
 	Disabled            bool                `json:"disabled"`
 	ResourceClass       string              `json:"resource_class"`
+	PricePerHour        float64             `json:"price_per_hour,omitempty"`
+	PricePerMonth       float64             `json:"price_per_month,omitempty"`
+	CurrencyCode        string              `json:"currency_code,omitempty"`
 }
 
 type HardwareDescription struct {
@@ -117,6 +120,7 @@ func (s *FlavorsServiceOp) ListBaremetal(ctx context.Context, opts *FlavorListOp
 	return root.Flavors, resp, err
 }
 
+// Deprecated: use ListBaremetal instead.
 // ListBaremetalForClient get baremetal flavors from default project for current client.
 func (s *FlavorsServiceOp) ListBaremetalForClient(ctx context.Context, opts *FlavorListOptions) ([]Flavor, *Response, error) {
 	if resp, err := s.client.Validate(); err != nil {
