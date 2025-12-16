@@ -53,7 +53,7 @@ type HardwareDescription struct {
 // FlavorListOptions specifies the optional query parameters to List method.
 type FlavorListOptions struct {
 	IncludePrices  bool `url:"include_prices,omitempty"  validate:"omitempty"`
-	Disabled       bool `url:"disabled,omitempty"  validate:"omitempty"`
+	Disabled       bool `url:"disabled"`
 	ExcludeWindows bool `url:"exclude_windows,omitempty"  validate:"omitempty"`
 }
 
