@@ -288,21 +288,20 @@ func TestMKaaSServiceOp_ClusterUpdate(t *testing.T) {
 	require.Equal(t, respActual, expectedResp)
 }
 
-func TestMKaaSServiceOp_PoolUpdate(t *testing.T) {
+func TestMKaaSServiceOp_PoolUpdateName(t *testing.T) {
 	setup()
 	defer teardown()
 
-	request := MKaaSPoolUpdateRequest{
-		Name:      PtrTo("updated-pool"),
-		NodeCount: PtrTo(4),
+	request := MKaaSPoolUpdateNameRequest{
+		Name: PtrTo("updated-pool"),
 	}
 
 	expectedResp := &TaskResponse{Tasks: []string{taskID}}
-	URL := path.Join(MKaaSClustersBasePathV2, strconv.Itoa(projectID), strconv.Itoa(regionID), strconv.Itoa(testResourceIntID), "pools", strconv.Itoa(testResourceIntID))
+	URL := path.Join(MKaaSClustersBasePathV2, strconv.Itoa(projectID), strconv.Itoa(regionID), strconv.Itoa(testResourceIntID), "pools", strconv.Itoa(testResourceIntID), "name")
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPatch)
-		reqBody := &MKaaSPoolUpdateRequest{}
+		reqBody := &MKaaSPoolUpdateNameRequest{}
 		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
 			t.Errorf("failed to decode request body: %v", err)
 		}
@@ -310,6 +309,37 @@ func TestMKaaSServiceOp_PoolUpdate(t *testing.T) {
 		if reqBody.Name == nil || *reqBody.Name != *request.Name {
 			t.Errorf("expected name %v, got %v", *request.Name, reqBody.Name)
 		}
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
+		_, _ = fmt.Fprint(w, string(resp))
+	})
+
+	respActual, resp, err := client.MkaaS.PoolUpdateName(ctx, testResourceIntID, testResourceIntID, request)
+	require.NoError(t, err)
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
+}
+
+func TestMKaaSServiceOp_PoolUpdateScale(t *testing.T) {
+	setup()
+	defer teardown()
+
+	request := MKaaSPoolUpdateScaleRequest{
+		NodeCount: PtrTo(4),
+	}
+
+	expectedResp := &TaskResponse{Tasks: []string{taskID}}
+	URL := path.Join(MKaaSClustersBasePathV2, strconv.Itoa(projectID), strconv.Itoa(regionID), strconv.Itoa(testResourceIntID), "pools", strconv.Itoa(testResourceIntID), "scale")
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodPatch)
+		reqBody := &MKaaSPoolUpdateScaleRequest{}
+		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
+			t.Errorf("failed to decode request body: %v", err)
+		}
+		// Compare selected fields because request contains pointer fields
 		if reqBody.NodeCount == nil || *reqBody.NodeCount != *request.NodeCount {
 			t.Errorf("expected node count %v, got %v", *request.NodeCount, reqBody.NodeCount)
 		}
@@ -320,7 +350,7 @@ func TestMKaaSServiceOp_PoolUpdate(t *testing.T) {
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	respActual, resp, err := client.MkaaS.PoolUpdate(ctx, testResourceIntID, testResourceIntID, request)
+	respActual, resp, err := client.MkaaS.PoolUpdateNodeCount(ctx, testResourceIntID, testResourceIntID, request)
 	require.NoError(t, err)
 	require.Equal(t, resp.StatusCode, 200)
 	require.Equal(t, respActual, expectedResp)

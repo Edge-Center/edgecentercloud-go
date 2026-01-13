@@ -29,7 +29,8 @@ type MKaaSPools interface {
 	PoolCreate(ctx context.Context, clusterID int, reqBody MKaaSPoolCreateRequest) (*TaskResponse, *Response, error)
 	PoolsList(ctx context.Context, clusterID int, opts *MKaaSPoolListOptions) ([]MKaaSPool, *Response, error)
 	PoolGet(ctx context.Context, clusterID, poolID int) (*MKaaSPool, *Response, error)
-	PoolUpdate(ctx context.Context, clusterID, poolID int, reqBody MKaaSPoolUpdateRequest) (*TaskResponse, *Response, error)
+	PoolUpdateName(ctx context.Context, clusterID, poolID int, reqBody MKaaSPoolUpdateNameRequest) (*TaskResponse, *Response, error)
+	PoolUpdateNodeCount(ctx context.Context, clusterID, poolID int, reqBody MKaaSPoolUpdateScaleRequest) (*TaskResponse, *Response, error)
 	PoolDelete(ctx context.Context, clusterID, poolID int) (*TaskResponse, *Response, error)
 }
 
@@ -135,17 +136,23 @@ type MKaaSPoolCreateRequest struct {
 }
 
 type MKaaSPoolUpdateRequest struct {
-	Name             *string           `json:"name,omitempty"`
 	Flavor           *string           `json:"flavor,omitempty"`
 	MaxNodeCount     *int              `json:"max_node_count,omitempty"`
 	MinNodeCount     *int              `json:"min_node_count,omitempty"`
-	NodeCount        *int              `json:"node_count,omitempty"`
 	VolumeSize       *int              `json:"volume_size,omitempty"`
 	SecurityGroupID  *string           `json:"security_group_id,omitempty"`
 	VolumeType       *VolumeType       `json:"volume_type,omitempty"`
 	Labels           map[string]string `json:"labels,omitempty"`
 	Taints           []MKaaSTaint      `json:"taints,omitempty"`
 	SecurityGroupIds []string          `json:"security_group_ids,omitempty"`
+}
+
+type MKaaSPoolUpdateNameRequest struct {
+	Name *string `json:"name,omitempty"`
+}
+
+type MKaaSPoolUpdateScaleRequest struct {
+	NodeCount *int `json:"node_count,omitempty"`
 }
 
 type MKaaSPool struct {
@@ -301,12 +308,33 @@ func (m *MKaaSServiceOp) PoolCreate(ctx context.Context, clusterID int, reqBody 
 	return tasks, resp, err
 }
 
-func (m *MKaaSServiceOp) PoolUpdate(ctx context.Context, clusterID, poolID int, reqBody MKaaSPoolUpdateRequest) (*TaskResponse, *Response, error) {
+func (m *MKaaSServiceOp) PoolUpdateName(ctx context.Context, clusterID, poolID int, reqBody MKaaSPoolUpdateNameRequest) (*TaskResponse, *Response, error) {
 	if resp, err := m.client.Validate(); err != nil {
 		return nil, resp, err
 	}
 
-	path := fmt.Sprintf("%s/%d/pools/%d", m.client.addProjectRegionPath(MKaaSClustersBasePathV2), clusterID, poolID)
+	path := fmt.Sprintf("%s/%d/pools/%d/name", m.client.addProjectRegionPath(MKaaSClustersBasePathV2), clusterID, poolID)
+
+	req, err := m.client.NewRequest(ctx, http.MethodPatch, path, reqBody)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	tasks := new(TaskResponse)
+	resp, err := m.client.Do(ctx, req, tasks)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return tasks, resp, err
+}
+
+func (m *MKaaSServiceOp) PoolUpdateNodeCount(ctx context.Context, clusterID, poolID int, reqBody MKaaSPoolUpdateScaleRequest) (*TaskResponse, *Response, error) {
+	if resp, err := m.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	path := fmt.Sprintf("%s/%d/pools/%d/scale", m.client.addProjectRegionPath(MKaaSClustersBasePathV2), clusterID, poolID)
 
 	req, err := m.client.NewRequest(ctx, http.MethodPatch, path, reqBody)
 	if err != nil {
