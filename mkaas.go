@@ -92,7 +92,7 @@ type MKaaSCluster struct {
 	Created        string       `json:"created"`
 	Processing     bool         `json:"processing"`
 	Status         string       `json:"status"`
-	State          string       `json:"state"`
+	Stage          string       `json:"stage"`
 	PodSubnet      string       `json:"pod_subnet"`
 	ServiceSubnet  string       `json:"service_subnet"`
 }
