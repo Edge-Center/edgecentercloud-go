@@ -21,7 +21,8 @@ type MKaaSClusters interface {
 	ClusterCreate(context.Context, MKaaSClusterCreateRequest) (*TaskResponse, *Response, error)
 	ClustersList(context.Context, *MKaaSClusterListOptions) ([]MKaaSCluster, *Response, error)
 	ClusterGet(context.Context, int) (*MKaaSCluster, *Response, error)
-	ClusterUpdate(ctx context.Context, clusterID int, reqBody MKaaSClusterUpdateRequest) (*TaskResponse, *Response, error)
+	ClusterUpdateName(ctx context.Context, clusterID int, reqBody MKaaSClusterUpdateNameRequest) (*TaskResponse, *Response, error)
+	ClusterUpdateMasterNodeCount(ctx context.Context, clusterID int, reqBody MKaaSClusterUpdateMasterNodeCountRequest) (*TaskResponse, *Response, error)
 	ClusterDelete(context.Context, int) (*TaskResponse, *Response, error)
 }
 
@@ -72,9 +73,12 @@ type MKaaSClusterCreateRequest struct {
 	Pools                    []MKaaSPoolCreateRequest  `json:"pools,omitempty"`
 }
 
-type MKaaSClusterUpdateRequest struct {
-	Name            string `json:"name"`
-	MasterNodeCount int    `json:"master_node_count"`
+type MKaaSClusterUpdateNameRequest struct {
+	Name string `json:"name"`
+}
+
+type MKaaSClusterUpdateMasterNodeCountRequest struct {
+	MasterNodeCount int `json:"master_node_count"`
 }
 
 // MKaaSCluster represents an EdgecenterCloud MkaaS Cluster.
@@ -251,12 +255,41 @@ func (m *MKaaSServiceOp) ClusterGet(ctx context.Context, clusterID int) (*MKaaSC
 	return cluster, resp, err
 }
 
-func (m *MKaaSServiceOp) ClusterUpdate(ctx context.Context, clusterID int, reqBody MKaaSClusterUpdateRequest) (*TaskResponse, *Response, error) {
+func (m *MKaaSServiceOp) ClusterUpdateName(
+	ctx context.Context, clusterID int, reqBody MKaaSClusterUpdateNameRequest,
+) (*TaskResponse, *Response, error) {
 	if resp, err := m.client.Validate(); err != nil {
 		return nil, resp, err
 	}
 
-	path := fmt.Sprintf("%s/%d", m.client.addProjectRegionPath(MKaaSClustersBasePathV2), clusterID)
+	path := fmt.Sprintf("%s/%d/name", m.client.addProjectRegionPath(MKaaSClustersBasePathV2), clusterID)
+
+	req, err := m.client.NewRequest(ctx, http.MethodPatch, path, reqBody)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	tasks := new(TaskResponse)
+	resp, err := m.client.Do(ctx, req, tasks)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return tasks, resp, err
+}
+
+func (m *MKaaSServiceOp) ClusterUpdateMasterNodeCount(
+	ctx context.Context, clusterID int, reqBody MKaaSClusterUpdateMasterNodeCountRequest,
+) (*TaskResponse, *Response, error) {
+	if resp, err := m.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	path := fmt.Sprintf(
+		"%s/%d/master_node_count",
+		m.client.addProjectRegionPath(MKaaSClustersBasePathV2),
+		clusterID,
+	)
 
 	req, err := m.client.NewRequest(ctx, http.MethodPatch, path, reqBody)
 	if err != nil {
