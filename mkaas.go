@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	MKaaSClustersBasePathV2 = "/internal/mkaas/v2/clusters"
+	MKaaSClustersBasePathV2 = "/mkaas/v2/clusters"
 )
 
 // MKaaSService is an interface for creating and managing mkaas clusters with the EdgecenterCloud API.
