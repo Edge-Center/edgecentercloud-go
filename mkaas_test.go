@@ -256,21 +256,26 @@ func TestMKaaSServiceOp_PoolDelete(t *testing.T) {
 	require.Equal(t, respActual, expectedResp)
 }
 
-func TestMKaaSServiceOp_ClusterUpdate(t *testing.T) {
+func TestMKaaSServiceOp_ClusterUpdateName(t *testing.T) {
 	setup()
 	defer teardown()
 
-	request := MKaaSClusterUpdateRequest{
-		Name:            "updated-cluster",
-		MasterNodeCount: 3,
+	request := MKaaSClusterUpdateNameRequest{
+		Name: "updated-cluster",
 	}
 
 	expectedResp := &TaskResponse{Tasks: []string{taskID}}
-	URL := path.Join(MKaaSClustersBasePathV2, strconv.Itoa(projectID), strconv.Itoa(regionID), strconv.Itoa(testResourceIntID))
+	URL := path.Join(
+		MKaaSClustersBasePathV2,
+		strconv.Itoa(projectID),
+		strconv.Itoa(regionID),
+		strconv.Itoa(testResourceIntID),
+		"name",
+	)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPatch)
-		reqBody := &MKaaSClusterUpdateRequest{}
+		reqBody := &MKaaSClusterUpdateNameRequest{}
 		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
 			t.Errorf("failed to decode request body: %v", err)
 		}
@@ -282,7 +287,44 @@ func TestMKaaSServiceOp_ClusterUpdate(t *testing.T) {
 		_, _ = fmt.Fprint(w, string(resp))
 	})
 
-	respActual, resp, err := client.MkaaS.ClusterUpdate(ctx, testResourceIntID, request)
+	respActual, resp, err := client.MkaaS.ClusterUpdateName(ctx, testResourceIntID, request)
+	require.NoError(t, err)
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
+}
+
+func TestMKaaSServiceOp_ClusterUpdateMasterNodeCount(t *testing.T) {
+	setup()
+	defer teardown()
+
+	request := MKaaSClusterUpdateMasterNodeCountRequest{
+		MasterNodeCount: 3,
+	}
+
+	expectedResp := &TaskResponse{Tasks: []string{taskID}}
+	URL := path.Join(
+		MKaaSClustersBasePathV2,
+		strconv.Itoa(projectID),
+		strconv.Itoa(regionID),
+		strconv.Itoa(testResourceIntID),
+		"master_node_count",
+	)
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodPatch)
+		reqBody := &MKaaSClusterUpdateMasterNodeCountRequest{}
+		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
+			t.Errorf("failed to decode request body: %v", err)
+		}
+		assert.Equal(t, request, *reqBody)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
+		_, _ = fmt.Fprint(w, string(resp))
+	})
+
+	respActual, resp, err := client.MkaaS.ClusterUpdateMasterNodeCount(ctx, testResourceIntID, request)
 	require.NoError(t, err)
 	require.Equal(t, resp.StatusCode, 200)
 	require.Equal(t, respActual, expectedResp)
