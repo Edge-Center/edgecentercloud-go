@@ -34,6 +34,8 @@ type MKaaSPools interface {
 	PoolUpdateNodeCount(ctx context.Context, clusterID, poolID int, reqBody MKaaSPoolUpdateScaleRequest) (*TaskResponse, *Response, error)
 	PoolUpdateSecurityGroups(ctx context.Context, clusterID, poolID int,
 		reqBody MKaaSPoolUpdateSecurityGroupsRequest) (*TaskResponse, *Response, error)
+	PoolUpdateLabels(ctx context.Context, clusterID, poolID int,
+		reqBody MKaaSPoolUpdateLabelsRequest) (*TaskResponse, *Response, error)
 	PoolDelete(ctx context.Context, clusterID, poolID int) (*TaskResponse, *Response, error)
 }
 
@@ -163,6 +165,10 @@ type MKaaSPoolUpdateScaleRequest struct {
 
 type MKaaSPoolUpdateSecurityGroupsRequest struct {
 	SecurityGroupIds []string `json:"security_groups_ids"`
+}
+
+type MKaaSPoolUpdateLabelsRequest struct {
+	Labels map[string]string `json:"labels,omitempty"`
 }
 
 type MKaaSPool struct {
@@ -464,6 +470,36 @@ func (m *MKaaSServiceOp) PoolUpdateSecurityGroups(ctx context.Context, clusterID
 	}
 
 	path := fmt.Sprintf("%s/%d/pools/%d/secgroups", m.client.addProjectRegionPath(MKaaSClustersBasePathV2), clusterID, poolID)
+
+	req, err := m.client.NewRequest(ctx, http.MethodPut, path, reqBody)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	tasks := new(TaskResponse)
+	resp, err := m.client.Do(ctx, req, tasks)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return tasks, resp, err
+}
+
+func (m *MKaaSServiceOp) PoolUpdateLabels(
+	ctx context.Context,
+	clusterID, poolID int,
+	reqBody MKaaSPoolUpdateLabelsRequest,
+) (*TaskResponse, *Response, error) {
+	if resp, err := m.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	path := fmt.Sprintf(
+		"%s/%d/pools/%d/labels",
+		m.client.addProjectRegionPath(MKaaSClustersBasePathV2),
+		clusterID,
+		poolID,
+	)
 
 	req, err := m.client.NewRequest(ctx, http.MethodPut, path, reqBody)
 	if err != nil {
