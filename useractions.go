@@ -23,11 +23,14 @@ const (
 // See: https://apidocs.edgecenter.online/cloud#tag/User-actions
 type UserActionsService interface {
 	ListLogSubscriptions(context.Context) (*LogSubscriptions, *Response, error)
-	ListAMQPSubscriptions(context.Context) (*AMQPSubscriptions, *Response, error)
 	SubscribeLog(context.Context, *LogSubscriptionCreateRequest) (*Response, error)
 	UnsubscribeLog(context.Context) (*Response, error)
+	ListAMQPSubscriptions(context.Context) (*AMQPSubscriptions, *Response, error)
 	SubscribeAMQP(context.Context, *AMQPSubscriptionCreateRequest) (*Response, error)
 	UnsubscribeAMQP(context.Context) (*Response, error)
+	ListAMQPSubscriptionsWithOpts(context.Context, *UserActionsOpts) (*AMQPSubscriptions, *Response, error)
+	SubscribeAMQPWithOpts(context.Context, *UserActionsOpts, *AMQPSubscriptionCreateRequest) (*Response, error)
+	UnsubscribeAMQPWithOpts(context.Context, *UserActionsOpts) (*Response, error)
 }
 
 // UserActionsServiceOp handles communication with User Actions methods of the EdgecenterCloud API.
@@ -36,6 +39,14 @@ type UserActionsServiceOp struct {
 }
 
 var _ UserActionsService = &UserActionsServiceOp{}
+
+// UserActionsOpts represents the optional parameters for the User Actions methods.
+type UserActionsOpts struct {
+	// ClientID specifies the ID of a sub-client for reseller accounts.
+	// When set, operations target the specified client instead of the current authenticated client.
+	// Regular account has no sub-clients, so this parameter is ignored.
+	ClientID int `url:"client_id,omitempty"`
+}
 
 // LogSubscriptions represents an EdgecenterCloud user action  log subscriptions.
 type LogSubscriptions struct {
@@ -99,24 +110,6 @@ func (s *UserActionsServiceOp) ListLogSubscriptions(ctx context.Context) (*LogSu
 	return logSubs, resp, nil
 }
 
-// ListAMQPSubscriptions get a list of AMQP user subscriptions.
-func (s *UserActionsServiceOp) ListAMQPSubscriptions(ctx context.Context) (*AMQPSubscriptions, *Response, error) {
-	pathReq := fmt.Sprintf("%s/%s", userActionsBasePathV1, listAMQPSubscriptions)
-
-	req, err := s.client.NewRequest(ctx, http.MethodGet, pathReq, nil)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	amqpSubs := new(AMQPSubscriptions)
-	resp, err := s.client.Do(ctx, req, amqpSubs)
-	if err != nil {
-		return nil, resp, err
-	}
-
-	return amqpSubs, resp, nil
-}
-
 // SubscribeLog subscribe to the user action log. Subscription is created for the current client.
 func (s *UserActionsServiceOp) SubscribeLog(ctx context.Context, reqBody *LogSubscriptionCreateRequest) (*Response, error) {
 	if reqBody == nil {
@@ -155,15 +148,53 @@ func (s *UserActionsServiceOp) UnsubscribeLog(ctx context.Context) (*Response, e
 	return resp, nil
 }
 
+// ListAMQPSubscriptions get a list of AMQP user subscriptions.
+//
+// Deprecated: Use ListAMQPSubscriptionsWithOpts instead.
+func (s *UserActionsServiceOp) ListAMQPSubscriptions(ctx context.Context) (*AMQPSubscriptions, *Response, error) {
+	return s.ListAMQPSubscriptionsWithOpts(ctx, nil)
+}
+
+// ListAMQPSubscriptionsWithOpts get a list of AMQP user subscriptions.
+func (s *UserActionsServiceOp) ListAMQPSubscriptionsWithOpts(ctx context.Context, opts *UserActionsOpts) (*AMQPSubscriptions, *Response, error) {
+	reqURL, err := s.buildRequestURL(listAMQPSubscriptions, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	req, err := s.client.NewRequest(ctx, http.MethodGet, reqURL, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	amqpSubs := new(AMQPSubscriptions)
+	resp, err := s.client.Do(ctx, req, amqpSubs)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return amqpSubs, resp, nil
+}
+
 // SubscribeAMQP subscribe to the user action log over AMQP. Subscription is created for the current client.
+//
+// Deprecated: Use SubscribeAMQPWithOpts instead.
 func (s *UserActionsServiceOp) SubscribeAMQP(ctx context.Context, reqBody *AMQPSubscriptionCreateRequest) (*Response, error) {
+	return s.SubscribeAMQPWithOpts(ctx, nil, reqBody)
+}
+
+// SubscribeAMQPWithOpts subscribe to the user action log over AMQP. Subscription is created for the current client.
+func (s *UserActionsServiceOp) SubscribeAMQPWithOpts(ctx context.Context, opts *UserActionsOpts, reqBody *AMQPSubscriptionCreateRequest) (*Response, error) {
 	if reqBody == nil {
 		return nil, NewArgError("reqBody", "cannot be nil")
 	}
 
-	pathReq := fmt.Sprintf("%s/%s", userActionsBasePathV1, subscribeAMQP)
+	reqURL, err := s.buildRequestURL(subscribeAMQP, opts)
+	if err != nil {
+		return nil, err
+	}
 
-	req, err := s.client.NewRequest(ctx, http.MethodPost, pathReq, reqBody)
+	req, err := s.client.NewRequest(ctx, http.MethodPost, reqURL, reqBody)
 	if err != nil {
 		return nil, err
 	}
@@ -177,10 +208,20 @@ func (s *UserActionsServiceOp) SubscribeAMQP(ctx context.Context, reqBody *AMQPS
 }
 
 // UnsubscribeAMQP unsubscribe from the user action log over AMQP.
+//
+// Deprecated: Use UnsubscribeAMQPWithOpts instead.
 func (s *UserActionsServiceOp) UnsubscribeAMQP(ctx context.Context) (*Response, error) {
-	pathReq := fmt.Sprintf("%s/%s", userActionsBasePathV1, unsubscribeAMQP)
+	return s.UnsubscribeAMQPWithOpts(ctx, nil)
+}
 
-	req, err := s.client.NewRequest(ctx, http.MethodPost, pathReq, nil)
+// UnsubscribeAMQPWithOpts unsubscribe from the user action log over AMQP.
+func (s *UserActionsServiceOp) UnsubscribeAMQPWithOpts(ctx context.Context, opts *UserActionsOpts) (*Response, error) {
+	reqURL, err := s.buildRequestURL(unsubscribeAMQP, opts)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := s.client.NewRequest(ctx, http.MethodPost, reqURL, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -191,4 +232,19 @@ func (s *UserActionsServiceOp) UnsubscribeAMQP(ctx context.Context) (*Response, 
 	}
 
 	return resp, nil
+}
+
+// buildRequestURL builds a request URL based on the given path and options.
+func (s *UserActionsServiceOp) buildRequestURL(path string, opts *UserActionsOpts) (string, error) {
+	pathReq := fmt.Sprintf("%s/%s", userActionsBasePathV1, path)
+
+	var err error
+	if opts != nil {
+		pathReq, err = addOptions(pathReq, opts)
+		if err != nil {
+			return "", err
+		}
+	}
+
+	return pathReq, nil
 }
