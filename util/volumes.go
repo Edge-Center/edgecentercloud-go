@@ -3,6 +3,7 @@ package util
 import (
 	"context"
 	"errors"
+	"net/http"
 
 	edgecloud "github.com/Edge-Center/edgecentercloud-go/v2"
 )
@@ -57,7 +58,10 @@ func WaitVolumeAttachedToInstance(ctx context.Context, client *edgecloud.Client,
 func WaitVolumeDetachedFromInstance(ctx context.Context, client *edgecloud.Client, volumeID, instanceID string, attempts *uint) error {
 	return WithRetry(
 		func() error {
-			volume, _, err := client.Volumes.Get(ctx, volumeID)
+			volume, resp, err := client.Volumes.Get(ctx, volumeID)
+			if resp != nil && resp.StatusCode == http.StatusNotFound {
+				return nil
+			}
 			if err != nil {
 				return err
 			}
