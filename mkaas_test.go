@@ -20,6 +20,7 @@ const (
 	mkaasKeypairName   = "keypair"
 	mkaasFlavor        = "g1-standard-2-4"
 	mkaasVersion       = "v1.31.0"
+	mkaasTestPoolID    = 1099
 )
 
 func TestMKaaSServiceOp_ClusterCreate(t *testing.T) {
@@ -492,6 +493,87 @@ func TestMKaaSServiceOp_PoolUpdateTaints(t *testing.T) {
 	})
 
 	respActual, resp, err := client.MkaaS.PoolUpdateTaints(ctx, testResourceIntID, testResourceIntID, request)
+	require.NoError(t, err)
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
+}
+
+func TestMKaaSServiceOp_NodesList(t *testing.T) {
+	setup()
+	defer teardown()
+
+	expectedResp := []MKaaSNode{{ID: testResourceIntID, Name: "test-node", PoolID: mkaasTestPoolID, State: NodeStateReady}}
+	URL := path.Join(MKaaSClustersBasePathV2, strconv.Itoa(projectID), strconv.Itoa(regionID),
+		strconv.Itoa(testResourceIntID), "pools", strconv.Itoa(mkaasTestPoolID), "nodes")
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodGet)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
+		_, _ = fmt.Fprintf(w, `{"nodes":%s}`, string(resp))
+	})
+
+	respActual, resp, err := client.MkaaS.NodesList(ctx, testResourceIntID, mkaasTestPoolID, nil)
+	require.NoError(t, err)
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
+}
+
+func TestMKaaSServiceOp_NodeDelete(t *testing.T) {
+	setup()
+	defer teardown()
+
+	const testNodeID = testResourceIntID + 1
+
+	expectedResp := &TaskResponse{Tasks: []string{taskID}}
+	URL := path.Join(MKaaSClustersBasePathV2, strconv.Itoa(projectID), strconv.Itoa(regionID),
+		strconv.Itoa(testResourceIntID), "pools", strconv.Itoa(mkaasTestPoolID), "nodes", strconv.Itoa(testNodeID))
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodDelete)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
+		_, _ = fmt.Fprint(w, string(resp))
+	})
+
+	respActual, resp, err := client.MkaaS.NodeDelete(ctx, testResourceIntID, mkaasTestPoolID, testNodeID)
+	require.NoError(t, err)
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
+}
+
+func TestMKaaSServiceOp_NodesList_WithOptions(t *testing.T) {
+	setup()
+	defer teardown()
+
+	expectedResp := []MKaaSNode{{ID: testResourceIntID, Name: "test-node", PoolID: mkaasTestPoolID, State: NodeStateReady}}
+	URL := path.Join(MKaaSClustersBasePathV2, strconv.Itoa(projectID), strconv.Itoa(regionID),
+		strconv.Itoa(testResourceIntID), "pools", strconv.Itoa(mkaasTestPoolID), "nodes")
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodGet)
+		assert.Equal(t, r.URL.Query().Get("state"), string(NodeStateReady))
+		assert.Equal(t, r.URL.Query().Get("limit"), "10")
+		assert.Equal(t, r.URL.Query().Get("sort_by"), string(NodeSortKeyName))
+		assert.Equal(t, r.URL.Query().Get("sort_order"), string(SortOrderAsc))
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
+		_, _ = fmt.Fprintf(w, `{"nodes":%s}`, string(resp))
+	})
+
+	opts := &MKaaSNodeListOptions{
+		State:     NodeStateReady,
+		Limit:     10,
+		SortBy:    NodeSortKeyName,
+		SortOrder: SortOrderAsc,
+	}
+	respActual, resp, err := client.MkaaS.NodesList(ctx, testResourceIntID, mkaasTestPoolID, opts)
 	require.NoError(t, err)
 	require.Equal(t, resp.StatusCode, 200)
 	require.Equal(t, respActual, expectedResp)

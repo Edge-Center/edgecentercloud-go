@@ -18,3 +18,10 @@ type idNameRoot struct {
 	Count   int
 	IDNames []IDName `json:"results"`
 }
+
+type SortOrder string
+
+const (
+	SortOrderDesc SortOrder = "desc"
+	SortOrderAsc  SortOrder = "asc"
+)
