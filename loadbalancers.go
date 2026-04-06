@@ -359,6 +359,7 @@ const (
 	ListenerProtocolTCP             LoadbalancerListenerProtocol = "TCP"
 	ListenerProtocolUDP             LoadbalancerListenerProtocol = "UDP"
 	ListenerProtocolTerminatedHTTPS LoadbalancerListenerProtocol = "TERMINATED_HTTPS"
+	ListenerProtocolPrometheus      LoadbalancerListenerProtocol = "PROMETHEUS"
 )
 
 type SessionPersistence string
