@@ -461,3 +461,38 @@ func TestMKaaSServiceOp_PoolUpdateLabels(t *testing.T) {
 	require.Equal(t, resp.StatusCode, 200)
 	require.Equal(t, respActual, expectedResp)
 }
+
+func TestMKaaSServiceOp_PoolUpdateTaints(t *testing.T) {
+	setup()
+	defer teardown()
+
+	request := MKaaSPoolUpdateTaintsRequest{
+		Taints: []MKaaSTaint{
+			{Key: "key1", Value: "value1", Effect: "NoSchedule"},
+			{Key: "key2", Value: "value2", Effect: "NoExecute"},
+		},
+	}
+
+	expectedResp := &TaskResponse{Tasks: []string{taskID}}
+	URL := path.Join(MKaaSClustersBasePathV2, strconv.Itoa(projectID), strconv.Itoa(regionID),
+		strconv.Itoa(testResourceIntID), "pools", strconv.Itoa(testResourceIntID), "taints")
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodPut)
+		reqBody := &MKaaSPoolUpdateTaintsRequest{}
+		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
+			t.Errorf("failed to decode request body: %v", err)
+		}
+		assert.Equal(t, request, *reqBody)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
+		_, _ = fmt.Fprint(w, string(resp))
+	})
+
+	respActual, resp, err := client.MkaaS.PoolUpdateTaints(ctx, testResourceIntID, testResourceIntID, request)
+	require.NoError(t, err)
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
+}
