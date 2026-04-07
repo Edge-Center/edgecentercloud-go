@@ -20,6 +20,7 @@ const (
 // PortsService is an interface for creating and managing Ports with the EdgecenterCloud API.
 // See: https://apidocs.edgecenter.ru/cloud#tag/ports
 type PortsService interface {
+	GetAllowAddressPairs(context.Context, string) (*Port, *Response, error)
 	Assign(context.Context, string, *PortsAllowedAddressPairsRequest) (*Port, *Response, error)
 	EnablePortSecurity(context.Context, string) (*InstancePortInterface, *Response, error)
 	DisablePortSecurity(context.Context, string) (*InstancePortInterface, *Response, error)
@@ -153,4 +154,27 @@ func (s *PortsServiceOp) DisablePortSecurity(ctx context.Context, portID string)
 	}
 
 	return instancePortInterface, resp, err
+}
+
+// GetAllowAddressPairs retrieves allowed address pairs for an instance port.
+func (s *PortsServiceOp) GetAllowAddressPairs(ctx context.Context, portID string) (*Port, *Response, error) {
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	path := s.client.addProjectRegionPath(portsBasePathV1)
+	path = fmt.Sprintf("%s/%s/%s", path, portID, portsAllowAddressPairs)
+
+	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	port := new(Port)
+	resp, err := s.client.Do(ctx, req, port)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return port, resp, err
 }
