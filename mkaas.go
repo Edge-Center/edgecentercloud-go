@@ -93,13 +93,14 @@ type MKaaSNodesList struct {
 }
 
 type MKaaSNode struct {
-	ID        int       `json:"id"`
-	Name      string    `json:"name"`
-	PoolID    int       `json:"pool_id"`
-	State     NodeState `json:"state"`
-	Status    string    `json:"status"`
-	IPAddress string    `json:"ip_address"`
-	CreatedAt string    `json:"created_at"`
+	ID         int       `json:"id"`
+	Name       string    `json:"name"`
+	PoolID     int       `json:"pool_id"`
+	InstanceID string    `json:"instance_id"`
+	State      NodeState `json:"state"`
+	Status     string    `json:"status"`
+	IPAddress  string    `json:"ip_address"`
+	CreatedAt  string    `json:"created_at"`
 }
 
 type MKaaSNodeListOptions struct {
