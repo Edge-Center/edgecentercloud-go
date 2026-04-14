@@ -15,6 +15,7 @@ const (
 type MKaaSService interface {
 	MKaaSClusters
 	MKaaSPools
+	MKaaSNodes
 }
 
 type MKaaSClusters interface {
@@ -24,6 +25,32 @@ type MKaaSClusters interface {
 	ClusterUpdateName(ctx context.Context, clusterID int, reqBody MKaaSClusterUpdateNameRequest) (*TaskResponse, *Response, error)
 	ClusterUpdateMasterNodeCount(ctx context.Context, clusterID int, reqBody MKaaSClusterUpdateMasterNodeCountRequest) (*TaskResponse, *Response, error)
 	ClusterDelete(context.Context, int) (*TaskResponse, *Response, error)
+}
+
+type NodeState string
+
+const (
+	NodeStatePending         NodeState = "PENDING"
+	NodeStateCreating        NodeState = "CREATING"
+	NodeStateReady           NodeState = "READY"
+	NodeStateFailed          NodeState = "FAILED"
+	NodeStateScheduledDelete NodeState = "SCHEDULED_TO_DELETE"
+	NodeStateDeleting        NodeState = "DELETING"
+	NodeStateDeleted         NodeState = "DELETED"
+)
+
+type NodeSortKey string
+
+const (
+	NodeSortKeyID             NodeSortKey = "id"
+	NodeSortKeyName           NodeSortKey = "name"
+	NodeSortKeyCreatedAt      NodeSortKey = "created_at"
+	NodeSortKeySequenceNumber NodeSortKey = "sequence_number"
+)
+
+type MKaaSNodes interface {
+	NodesList(ctx context.Context, clusterID, poolID int, opts *MKaaSNodeListOptions) ([]MKaaSNode, *Response, error)
+	NodeDelete(ctx context.Context, clusterID, poolID, nodeID int) (*TaskResponse, *Response, error)
 }
 
 type MKaaSPools interface {
@@ -56,6 +83,31 @@ type MKaaSClustersRoot struct {
 type MKaaSPoolsRoot struct {
 	Count int
 	Pools []MKaaSPool `json:"results"`
+}
+
+type MKaaSNodesList struct {
+	Nodes  []MKaaSNode `json:"nodes"`
+	Total  int         `json:"total"`
+	Limit  int         `json:"limit"`
+	Offset int         `json:"offset"`
+}
+
+type MKaaSNode struct {
+	ID        int       `json:"id"`
+	Name      string    `json:"name"`
+	PoolID    int       `json:"pool_id"`
+	State     NodeState `json:"state"`
+	Status    string    `json:"status"`
+	IPAddress string    `json:"ip_address"`
+	CreatedAt string    `json:"created_at"`
+}
+
+type MKaaSNodeListOptions struct {
+	State     NodeState   `url:"state,omitempty"`
+	Limit     int         `url:"limit,omitempty"`
+	Offset    int         `url:"offset,omitempty"`
+	SortBy    NodeSortKey `url:"sort_by,omitempty"`
+	SortOrder SortOrder   `url:"sort_order,omitempty"`
 }
 
 type MKaaSClusterListOptions struct {
@@ -538,6 +590,71 @@ func (m *MKaaSServiceOp) PoolUpdateLabels(
 	)
 
 	req, err := m.client.NewRequest(ctx, http.MethodPut, path, reqBody)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	tasks := new(TaskResponse)
+	resp, err := m.client.Do(ctx, req, tasks)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return tasks, resp, err
+}
+
+func (m *MKaaSServiceOp) NodesList(
+	ctx context.Context, clusterID, poolID int, opts *MKaaSNodeListOptions,
+) ([]MKaaSNode, *Response, error) {
+	if resp, err := m.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	path := fmt.Sprintf(
+		"%s/%d/pools/%d/nodes",
+		m.client.addProjectRegionPath(MKaaSClustersBasePathV2),
+		clusterID,
+		poolID,
+	)
+	path, err := addOptions(path, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	req, err := m.client.NewRequest(ctx, http.MethodGet, path, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	root := new(MKaaSNodesList)
+	resp, err := m.client.Do(ctx, req, root)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	if root.Nodes == nil {
+		return []MKaaSNode{}, resp, nil
+	}
+
+	return root.Nodes, resp, nil
+}
+
+func (m *MKaaSServiceOp) NodeDelete(
+	ctx context.Context, clusterID, poolID, nodeID int,
+) (*TaskResponse, *Response, error) {
+	if resp, err := m.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	path := fmt.Sprintf(
+		"%s/%d/pools/%d/nodes/%d",
+		m.client.addProjectRegionPath(MKaaSClustersBasePathV2),
+		clusterID,
+		poolID,
+		nodeID,
+	)
+
+	req, err := m.client.NewRequest(ctx, http.MethodDelete, path, nil)
 	if err != nil {
 		return nil, nil, err
 	}
