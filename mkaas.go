@@ -30,13 +30,22 @@ type MKaaSClusters interface {
 type NodeState string
 
 const (
-	NodeStatePending         NodeState = "PENDING"
-	NodeStateCreating        NodeState = "CREATING"
-	NodeStateReady           NodeState = "READY"
-	NodeStateFailed          NodeState = "FAILED"
-	NodeStateScheduledDelete NodeState = "SCHEDULED_TO_DELETE"
-	NodeStateDeleting        NodeState = "DELETING"
-	NodeStateDeleted         NodeState = "DELETED"
+	NodeStatePending              NodeState = "PENDING"
+	NodeStateVMCreated            NodeState = "VM_CREATED"
+	NodeStateVipAttached          NodeState = "VIP_ATTACHED"
+	NodeStatePrimarilyInitialized NodeState = "PRIMARILY_INITIALIZED"
+	NodeStateReady                NodeState = "READY"
+	NodeStateCordoned             NodeState = "CORDONED"
+	NodeStateDrained              NodeState = "DRAINED"
+	NodeStateDeleted              NodeState = "DELETED"
+	NodeStateScheduledToDelete    NodeState = "SCHEDULED_TO_DELETE"
+	NodeStateNeedToBeReconfigured NodeState = "NEED_TO_BE_RECONFIGURED"
+)
+
+type NodeStatus string
+
+const (
+	NodeStatusError NodeStatus = "ERROR"
 )
 
 type NodeSortKey string
@@ -93,14 +102,14 @@ type MKaaSNodesList struct {
 }
 
 type MKaaSNode struct {
-	ID         int       `json:"id"`
-	Name       string    `json:"name"`
-	PoolID     int       `json:"pool_id"`
-	InstanceID string    `json:"instance_id"`
-	State      NodeState `json:"state"`
-	Status     string    `json:"status"`
-	IPAddress  string    `json:"ip_address"`
-	CreatedAt  string    `json:"created_at"`
+	ID         int        `json:"id"`
+	Name       string     `json:"name"`
+	PoolID     int        `json:"pool_id"`
+	InstanceID string     `json:"instance_id"`
+	State      NodeState  `json:"state"`
+	Status     NodeStatus `json:"status"`
+	IPAddress  string     `json:"ip_address"`
+	CreatedAt  string     `json:"created_at"`
 }
 
 type MKaaSNodeListOptions struct {
