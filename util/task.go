@@ -116,19 +116,19 @@ func WaitForTaskComplete(ctx context.Context, client *edgecloud.Client, taskID s
 		timeout = timeouts[0]
 	}
 
-	done := make(chan error)
-	go func() {
-		_, err := waitTask(ctx, client, taskID)
-		done <- err
-		close(done)
-	}()
+	ctx, cancel := context.WithTimeout(ctx, timeout)
+	defer cancel()
 
-	select {
-	case err := <-done:
+	_, err := waitTask(ctx, client, taskID)
+	if err != nil {
+		if errors.Is(err, context.DeadlineExceeded) {
+			return edgecloud.NewArgError("taskID", errTaskWaitTimeout.Error())
+		}
+
 		return err
-	case <-time.After(timeout):
-		return edgecloud.NewArgError("taskID", errTaskWaitTimeout.Error())
 	}
+
+	return nil
 }
 
 func WaitAndGetTaskInfo(ctx context.Context, client *edgecloud.Client, taskID string, timeouts ...time.Duration) (*edgecloud.Task, error) {
