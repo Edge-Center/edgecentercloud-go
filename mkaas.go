@@ -30,13 +30,22 @@ type MKaaSClusters interface {
 type NodeState string
 
 const (
-	NodeStatePending         NodeState = "PENDING"
-	NodeStateCreating        NodeState = "CREATING"
-	NodeStateReady           NodeState = "READY"
-	NodeStateFailed          NodeState = "FAILED"
-	NodeStateScheduledDelete NodeState = "SCHEDULED_TO_DELETE"
-	NodeStateDeleting        NodeState = "DELETING"
-	NodeStateDeleted         NodeState = "DELETED"
+	NodeStatePending              NodeState = "PENDING"
+	NodeStateVMCreated            NodeState = "VM_CREATED"
+	NodeStateVipAttached          NodeState = "VIP_ATTACHED"
+	NodeStatePrimarilyInitialized NodeState = "PRIMARILY_INITIALIZED"
+	NodeStateReady                NodeState = "READY"
+	NodeStateCordoned             NodeState = "CORDONED"
+	NodeStateDrained              NodeState = "DRAINED"
+	NodeStateDeleted              NodeState = "DELETED"
+	NodeStateScheduledToDelete    NodeState = "SCHEDULED_TO_DELETE"
+	NodeStateNeedToBeReconfigured NodeState = "NEED_TO_BE_RECONFIGURED"
+)
+
+type NodeStatus string
+
+const (
+	NodeStatusError NodeStatus = "ERROR"
 )
 
 type NodeSortKey string
@@ -65,6 +74,8 @@ type MKaaSPools interface {
 		reqBody MKaaSPoolUpdateLabelsRequest) (*TaskResponse, *Response, error)
 	PoolUpdateTaints(ctx context.Context, clusterID, poolID int,
 		reqBody MKaaSPoolUpdateTaintsRequest) (*TaskResponse, *Response, error)
+	PoolUpdateAutoscaling(ctx context.Context, clusterID, poolID int,
+		reqBody MKaaSPoolUpdateAutoscalingRequest) (*TaskResponse, *Response, error)
 	PoolDelete(ctx context.Context, clusterID, poolID int) (*TaskResponse, *Response, error)
 }
 
@@ -93,13 +104,14 @@ type MKaaSNodesList struct {
 }
 
 type MKaaSNode struct {
-	ID        int       `json:"id"`
-	Name      string    `json:"name"`
-	PoolID    int       `json:"pool_id"`
-	State     NodeState `json:"state"`
-	Status    string    `json:"status"`
-	IPAddress string    `json:"ip_address"`
-	CreatedAt string    `json:"created_at"`
+	ID         int        `json:"id"`
+	Name       string     `json:"name"`
+	PoolID     int        `json:"pool_id"`
+	InstanceID string     `json:"instance_id"`
+	State      NodeState  `json:"state"`
+	Status     NodeStatus `json:"status"`
+	IPAddress  string     `json:"ip_address"`
+	CreatedAt  string     `json:"created_at"`
 }
 
 type MKaaSNodeListOptions struct {
@@ -139,24 +151,25 @@ type MKaaSClusterUpdateMasterNodeCountRequest struct {
 
 // MKaaSCluster represents an EdgecenterCloud MkaaS Cluster.
 type MKaaSCluster struct {
-	ID             int          `json:"id"`
-	RegionID       int          `json:"region_id"`
-	ProjectID      int          `json:"project_id"`
-	SSHKeypairName string       `json:"ssh_keypair_name"`
-	Name           string       `json:"name"`
-	NetworkID      string       `json:"network_id"`
-	SubnetID       string       `json:"subnet_id"`
-	ControlPlane   ControlPlane `json:"control_plane"`
-	Pools          []MKaaSPool  `json:"pools"`
-	InternalIP     string       `json:"internal_ip"`
-	ExternalIP     string       `json:"external_ip"`
-	Existed        string       `json:"existed,omitempty"` // Duration string (e.g., "237h36m46.703341967s")
-	Created        string       `json:"created"`
-	Processing     bool         `json:"processing"`
-	Status         string       `json:"status"`
-	Stage          string       `json:"stage"`
-	PodSubnet      string       `json:"pod_subnet"`
-	ServiceSubnet  string       `json:"service_subnet"`
+	ID                int          `json:"id"`
+	RegionID          int          `json:"region_id"`
+	ProjectID         int          `json:"project_id"`
+	SSHKeypairName    string       `json:"ssh_keypair_name"`
+	Name              string       `json:"name"`
+	NetworkID         string       `json:"network_id"`
+	SubnetID          string       `json:"subnet_id"`
+	ControlPlane      ControlPlane `json:"control_plane"`
+	Pools             []MKaaSPool  `json:"pools"`
+	InternalIP        string       `json:"internal_ip"`
+	ExternalIP        string       `json:"external_ip"`
+	Existed           string       `json:"existed,omitempty"` // Duration string (e.g., "237h36m46.703341967s")
+	Created           string       `json:"created"`
+	Processing        bool         `json:"processing"`
+	Status            string       `json:"status"`
+	Stage             string       `json:"stage"`
+	PodSubnet         string       `json:"pod_subnet"`
+	ServiceSubnet     string       `json:"service_subnet"`
+	AutoscalerEnabled bool         `json:"autoscaler_enabled"`
 }
 
 type ControlPlaneCreateRequest struct {
@@ -177,24 +190,26 @@ type ControlPlane struct {
 }
 
 type MKaaSPoolListOptions struct {
-	Name   string `url:"name,omitempty"`
-	Status string `url:"status,omitempty"`
-	Limit  int    `url:"limit,omitempty"`
-	Offset int    `url:"offset,omitempty"`
+	Name       string `url:"name,omitempty"`
+	Status     string `url:"status,omitempty"`
+	Limit      int    `url:"limit,omitempty"`
+	Offset     int    `url:"offset,omitempty"`
+	Autoscaled bool   `url:"autoscaled,omitempty"`
 }
 
 type MKaaSPoolCreateRequest struct {
-	Name             string            `json:"name,omitempty"`
-	Flavor           string            `json:"flavor,omitempty"`
-	MaxNodeCount     *int              `json:"max_node_count,omitempty"`
-	MinNodeCount     *int              `json:"min_node_count,omitempty"`
-	NodeCount        int               `json:"node_count,omitempty"`
-	VolumeSize       int               `json:"volume_size,omitempty"`
-	SecurityGroupID  *string           `json:"security_group_id,omitempty"`
-	VolumeType       VolumeType        `json:"volume_type,omitempty"`
-	Labels           map[string]string `json:"labels,omitempty"`
-	Taints           []MKaaSTaint      `json:"taints,omitempty"`
-	SecurityGroupIds []string          `json:"security_group_ids,omitempty"`
+	Name               string            `json:"name,omitempty"`
+	Flavor             string            `json:"flavor,omitempty"`
+	AutoscalingEnabled bool              `json:"autoscaling_enabled,omitempty"`
+	MaxNodeCount       *int              `json:"max_node_count,omitempty"`
+	MinNodeCount       *int              `json:"min_node_count,omitempty"`
+	NodeCount          int               `json:"node_count,omitempty"`
+	VolumeSize         int               `json:"volume_size,omitempty"`
+	SecurityGroupID    *string           `json:"security_group_id,omitempty"`
+	VolumeType         VolumeType        `json:"volume_type,omitempty"`
+	Labels             map[string]string `json:"labels,omitempty"`
+	Taints             []MKaaSTaint      `json:"taints,omitempty"`
+	SecurityGroupIds   []string          `json:"security_group_ids,omitempty"`
 }
 
 type MKaaSPoolUpdateRequest struct {
@@ -229,20 +244,27 @@ type MKaaSPoolUpdateTaintsRequest struct {
 	Taints []MKaaSTaint `json:"taints"`
 }
 
+type MKaaSPoolUpdateAutoscalingRequest struct {
+	EnableAutoscaling *bool `json:"enable_autoscaling,omitempty"`
+	MinNodeCount      *int  `json:"min_node_count,omitempty"`
+	MaxNodeCount      *int  `json:"max_node_count,omitempty"`
+}
+
 type MKaaSPool struct {
-	ID               int               `json:"id"`
-	Name             string            `json:"name"`
-	Flavor           string            `json:"flavor"`
-	MaxNodeCount     int               `json:"max_node_count"`
-	MinNodeCount     int               `json:"min_node_count"`
-	NodeCount        int               `json:"node_count"`
-	VolumeSize       int               `json:"volume_size"`
-	VolumeType       VolumeType        `json:"volume_type"`
-	Labels           map[string]string `json:"labels"`
-	Taints           []MKaaSTaint      `json:"taints"`
-	State            string            `json:"state"`
-	Status           string            `json:"status"`
-	SecurityGroupIds []string          `json:"security_group_ids"`
+	ID                 int               `json:"id"`
+	Name               string            `json:"name"`
+	Flavor             string            `json:"flavor"`
+	AutoscalingEnabled bool              `json:"autoscaling_enabled"`
+	MaxNodeCount       int               `json:"max_node_count"`
+	MinNodeCount       int               `json:"min_node_count"`
+	NodeCount          int               `json:"node_count"`
+	VolumeSize         int               `json:"volume_size"`
+	VolumeType         VolumeType        `json:"volume_type"`
+	Labels             map[string]string `json:"labels"`
+	Taints             []MKaaSTaint      `json:"taints"`
+	State              string            `json:"state"`
+	Status             string            `json:"status"`
+	SecurityGroupIds   []string          `json:"security_group_ids"`
 }
 
 // MKaaSTaint configuration for nodes.
@@ -584,6 +606,36 @@ func (m *MKaaSServiceOp) PoolUpdateLabels(
 
 	path := fmt.Sprintf(
 		"%s/%d/pools/%d/labels",
+		m.client.addProjectRegionPath(MKaaSClustersBasePathV2),
+		clusterID,
+		poolID,
+	)
+
+	req, err := m.client.NewRequest(ctx, http.MethodPut, path, reqBody)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	tasks := new(TaskResponse)
+	resp, err := m.client.Do(ctx, req, tasks)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return tasks, resp, err
+}
+
+func (m *MKaaSServiceOp) PoolUpdateAutoscaling(
+	ctx context.Context,
+	clusterID, poolID int,
+	reqBody MKaaSPoolUpdateAutoscalingRequest,
+) (*TaskResponse, *Response, error) {
+	if resp, err := m.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	path := fmt.Sprintf(
+		"%s/%d/pools/%d/autoscaling",
 		m.client.addProjectRegionPath(MKaaSClustersBasePathV2),
 		clusterID,
 		poolID,
