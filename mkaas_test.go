@@ -498,6 +498,48 @@ func TestMKaaSServiceOp_PoolUpdateTaints(t *testing.T) {
 	require.Equal(t, respActual, expectedResp)
 }
 
+func TestMKaaSServiceOp_PoolUpdateAutoscaling(t *testing.T) {
+	setup()
+	defer teardown()
+
+	request := MKaaSPoolUpdateAutoscalingRequest{
+		EnableAutoscaling: PtrTo(true),
+		MinNodeCount:      PtrTo(1),
+		MaxNodeCount:      PtrTo(5),
+	}
+
+	expectedResp := &TaskResponse{Tasks: []string{taskID}}
+	URL := path.Join(MKaaSClustersBasePathV2, strconv.Itoa(projectID), strconv.Itoa(regionID),
+		strconv.Itoa(testResourceIntID), "pools", strconv.Itoa(testResourceIntID), "autoscaling")
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodPut)
+		reqBody := &MKaaSPoolUpdateAutoscalingRequest{}
+		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
+			t.Errorf("failed to decode request body: %v", err)
+		}
+		if reqBody.EnableAutoscaling == nil || *reqBody.EnableAutoscaling != *request.EnableAutoscaling {
+			t.Errorf("expected enable_autoscaling %v, got %v", *request.EnableAutoscaling, reqBody.EnableAutoscaling)
+		}
+		if reqBody.MinNodeCount == nil || *reqBody.MinNodeCount != *request.MinNodeCount {
+			t.Errorf("expected min_node_count %v, got %v", *request.MinNodeCount, reqBody.MinNodeCount)
+		}
+		if reqBody.MaxNodeCount == nil || *reqBody.MaxNodeCount != *request.MaxNodeCount {
+			t.Errorf("expected max_node_count %v, got %v", *request.MaxNodeCount, reqBody.MaxNodeCount)
+		}
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
+		_, _ = fmt.Fprint(w, string(resp))
+	})
+
+	respActual, resp, err := client.MkaaS.PoolUpdateAutoscaling(ctx, testResourceIntID, testResourceIntID, request)
+	require.NoError(t, err)
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
+}
+
 func TestMKaaSServiceOp_NodesList(t *testing.T) {
 	setup()
 	defer teardown()

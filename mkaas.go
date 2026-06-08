@@ -74,6 +74,8 @@ type MKaaSPools interface {
 		reqBody MKaaSPoolUpdateLabelsRequest) (*TaskResponse, *Response, error)
 	PoolUpdateTaints(ctx context.Context, clusterID, poolID int,
 		reqBody MKaaSPoolUpdateTaintsRequest) (*TaskResponse, *Response, error)
+	PoolUpdateAutoscaling(ctx context.Context, clusterID, poolID int,
+		reqBody MKaaSPoolUpdateAutoscalingRequest) (*TaskResponse, *Response, error)
 	PoolDelete(ctx context.Context, clusterID, poolID int) (*TaskResponse, *Response, error)
 }
 
@@ -196,17 +198,18 @@ type MKaaSPoolListOptions struct {
 }
 
 type MKaaSPoolCreateRequest struct {
-	Name             string            `json:"name,omitempty"`
-	Flavor           string            `json:"flavor,omitempty"`
-	MaxNodeCount     *int              `json:"max_node_count,omitempty"`
-	MinNodeCount     *int              `json:"min_node_count,omitempty"`
-	NodeCount        int               `json:"node_count,omitempty"`
-	VolumeSize       int               `json:"volume_size,omitempty"`
-	SecurityGroupID  *string           `json:"security_group_id,omitempty"`
-	VolumeType       VolumeType        `json:"volume_type,omitempty"`
-	Labels           map[string]string `json:"labels,omitempty"`
-	Taints           []MKaaSTaint      `json:"taints,omitempty"`
-	SecurityGroupIds []string          `json:"security_group_ids,omitempty"`
+	Name               string            `json:"name,omitempty"`
+	Flavor             string            `json:"flavor,omitempty"`
+	AutoscalingEnabled bool              `json:"autoscaling_enabled,omitempty"`
+	MaxNodeCount       *int              `json:"max_node_count,omitempty"`
+	MinNodeCount       *int              `json:"min_node_count,omitempty"`
+	NodeCount          int               `json:"node_count,omitempty"`
+	VolumeSize         int               `json:"volume_size,omitempty"`
+	SecurityGroupID    *string           `json:"security_group_id,omitempty"`
+	VolumeType         VolumeType        `json:"volume_type,omitempty"`
+	Labels             map[string]string `json:"labels,omitempty"`
+	Taints             []MKaaSTaint      `json:"taints,omitempty"`
+	SecurityGroupIds   []string          `json:"security_group_ids,omitempty"`
 }
 
 type MKaaSPoolUpdateRequest struct {
@@ -239,6 +242,12 @@ type MKaaSPoolUpdateLabelsRequest struct {
 
 type MKaaSPoolUpdateTaintsRequest struct {
 	Taints []MKaaSTaint `json:"taints"`
+}
+
+type MKaaSPoolUpdateAutoscalingRequest struct {
+	EnableAutoscaling *bool `json:"enable_autoscaling,omitempty"`
+	MinNodeCount      *int  `json:"min_node_count,omitempty"`
+	MaxNodeCount      *int  `json:"max_node_count,omitempty"`
 }
 
 type MKaaSPool struct {
@@ -597,6 +606,36 @@ func (m *MKaaSServiceOp) PoolUpdateLabels(
 
 	path := fmt.Sprintf(
 		"%s/%d/pools/%d/labels",
+		m.client.addProjectRegionPath(MKaaSClustersBasePathV2),
+		clusterID,
+		poolID,
+	)
+
+	req, err := m.client.NewRequest(ctx, http.MethodPut, path, reqBody)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	tasks := new(TaskResponse)
+	resp, err := m.client.Do(ctx, req, tasks)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return tasks, resp, err
+}
+
+func (m *MKaaSServiceOp) PoolUpdateAutoscaling(
+	ctx context.Context,
+	clusterID, poolID int,
+	reqBody MKaaSPoolUpdateAutoscalingRequest,
+) (*TaskResponse, *Response, error) {
+	if resp, err := m.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	path := fmt.Sprintf(
+		"%s/%d/pools/%d/autoscaling",
 		m.client.addProjectRegionPath(MKaaSClustersBasePathV2),
 		clusterID,
 		poolID,
