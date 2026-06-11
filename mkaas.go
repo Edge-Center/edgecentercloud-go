@@ -8,6 +8,7 @@ import (
 
 const (
 	MKaaSClustersBasePathV2 = "/mkaas/v2/clusters"
+	MKaaSBasePathV2         = "/mkaas/v2"
 )
 
 // MKaaSService is an interface for creating and managing mkaas clusters with the EdgecenterCloud API.
@@ -16,6 +17,11 @@ type MKaaSService interface {
 	MKaaSClusters
 	MKaaSPools
 	MKaaSNodes
+	MKaaSFlavors
+}
+
+type MKaaSFlavors interface {
+	FlavorsList(ctx context.Context, opts *MKaaSFlavorListOptions) ([]MKaaSFlavor, []MKaaSFlavor, *Response, error)
 }
 
 type MKaaSClusters interface {
@@ -120,6 +126,24 @@ type MKaaSNodeListOptions struct {
 	Offset    int         `url:"offset,omitempty"`
 	SortBy    NodeSortKey `url:"sort_by,omitempty"`
 	SortOrder SortOrder   `url:"sort_order,omitempty"`
+}
+
+type mkaasFlavorsRoot struct {
+	MasterFlavors []MKaaSFlavor `json:"master_flavors"`
+	WorkerFlavors []MKaaSFlavor `json:"worker_flavors"`
+}
+
+type MKaaSFlavorListOptions struct {
+	ExcludeSGX    *bool `url:"exclude_sgx,omitempty"`
+	ExcludeGPU    *bool `url:"exclude_gpu,omitempty"`
+	IncludePrices bool  `url:"include_prices,omitempty"`
+}
+
+type MKaaSFlavor struct {
+	FlavorID   string `json:"flavor_id"`
+	FlavorName string `json:"flavor_name"`
+	VCPUS      int    `json:"vcpus"`
+	RAM        int    `json:"ram"`
 }
 
 type MKaaSClusterListOptions struct {
@@ -718,4 +742,40 @@ func (m *MKaaSServiceOp) NodeDelete(
 	}
 
 	return tasks, resp, err
+}
+
+func (m *MKaaSServiceOp) FlavorsList(
+	ctx context.Context, opts *MKaaSFlavorListOptions,
+) ([]MKaaSFlavor, []MKaaSFlavor, *Response, error) {
+	if resp, err := m.client.Validate(); err != nil {
+		return nil, nil, resp, err
+	}
+
+	path := fmt.Sprintf("%s/flavors", m.client.addProjectRegionPath(MKaaSBasePathV2))
+	path, err := addOptions(path, opts)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	req, err := m.client.NewRequest(ctx, http.MethodGet, path, nil)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	root := new(mkaasFlavorsRoot)
+	resp, err := m.client.Do(ctx, req, root)
+	if err != nil {
+		return nil, nil, resp, err
+	}
+
+	master := root.MasterFlavors
+	if master == nil {
+		master = []MKaaSFlavor{}
+	}
+	worker := root.WorkerFlavors
+	if worker == nil {
+		worker = []MKaaSFlavor{}
+	}
+
+	return master, worker, resp, nil
 }
