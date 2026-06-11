@@ -21,7 +21,7 @@ type MKaaSService interface {
 }
 
 type MKaaSFlavors interface {
-	FlavorsList(ctx context.Context, opts *MKaaSFlavorListOptions) ([]MKaaSFlavor, []MKaaSFlavor, *Response, error)
+	FlavorsList(ctx context.Context, opts *MKaaSFlavorListOptions) (*MKaaSFlavorsList, *Response, error)
 }
 
 type MKaaSClusters interface {
@@ -131,6 +131,11 @@ type MKaaSNodeListOptions struct {
 type mkaasFlavorsRoot struct {
 	MasterFlavors []MKaaSFlavor `json:"master_flavors"`
 	WorkerFlavors []MKaaSFlavor `json:"worker_flavors"`
+}
+
+type MKaaSFlavorsList struct {
+	Masters []MKaaSFlavor
+	Workers []MKaaSFlavor
 }
 
 type MKaaSFlavorListOptions struct {
@@ -746,36 +751,38 @@ func (m *MKaaSServiceOp) NodeDelete(
 
 func (m *MKaaSServiceOp) FlavorsList(
 	ctx context.Context, opts *MKaaSFlavorListOptions,
-) ([]MKaaSFlavor, []MKaaSFlavor, *Response, error) {
+) (*MKaaSFlavorsList, *Response, error) {
 	if resp, err := m.client.Validate(); err != nil {
-		return nil, nil, resp, err
+		return nil, resp, err
 	}
 
 	path := fmt.Sprintf("%s/flavors", m.client.addProjectRegionPath(MKaaSBasePathV2))
 	path, err := addOptions(path, opts)
 	if err != nil {
-		return nil, nil, nil, err
+		return nil, nil, err
 	}
 
 	req, err := m.client.NewRequest(ctx, http.MethodGet, path, nil)
 	if err != nil {
-		return nil, nil, nil, err
+		return nil, nil, err
 	}
 
 	root := new(mkaasFlavorsRoot)
 	resp, err := m.client.Do(ctx, req, root)
 	if err != nil {
-		return nil, nil, resp, err
+		return nil, resp, err
 	}
 
-	master := root.MasterFlavors
-	if master == nil {
-		master = []MKaaSFlavor{}
+	flavors := &MKaaSFlavorsList{
+		Masters: root.MasterFlavors,
+		Workers: root.WorkerFlavors,
 	}
-	worker := root.WorkerFlavors
-	if worker == nil {
-		worker = []MKaaSFlavor{}
+	if flavors.Masters == nil {
+		flavors.Masters = []MKaaSFlavor{}
+	}
+	if flavors.Workers == nil {
+		flavors.Workers = []MKaaSFlavor{}
 	}
 
-	return master, worker, resp, nil
+	return flavors, resp, nil
 }

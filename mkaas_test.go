@@ -656,11 +656,11 @@ func TestMKaaSServiceOp_FlavorsList(t *testing.T) {
 		_, _ = fmt.Fprint(w, string(jsonData))
 	})
 
-	masterActual, workerActual, resp, err := client.MkaaS.FlavorsList(ctx, nil)
+	actual, resp, err := client.MkaaS.FlavorsList(ctx, nil)
 	require.NoError(t, err)
 	require.Equal(t, resp.StatusCode, 200)
-	require.Equal(t, masterActual, expectedMaster)
-	require.Equal(t, workerActual, expectedWorker)
+	require.Equal(t, actual.Masters, expectedMaster)
+	require.Equal(t, actual.Workers, expectedWorker)
 }
 
 func TestMKaaSServiceOp_FlavorsList_WithOptions(t *testing.T) {
@@ -682,9 +682,9 @@ func TestMKaaSServiceOp_FlavorsList_WithOptions(t *testing.T) {
 		ExcludeGPU:    PtrTo(true),
 		IncludePrices: true,
 	}
-	masterActual, workerActual, resp, err := client.MkaaS.FlavorsList(ctx, opts)
+	actual, resp, err := client.MkaaS.FlavorsList(ctx, opts)
 	require.NoError(t, err)
 	require.Equal(t, resp.StatusCode, 200)
-	require.Empty(t, masterActual)
-	require.Empty(t, workerActual)
+	require.Empty(t, actual.Masters)
+	require.Empty(t, actual.Workers)
 }
