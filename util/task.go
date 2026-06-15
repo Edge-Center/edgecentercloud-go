@@ -48,6 +48,7 @@ type TaskResult struct {
 	Volumes        []string  `json:"volumes"`
 	MkaasClusters  []float64 `json:"mkaasclusters"`
 	MkaasPools     []float64 `json:"mkaaspools"`
+	DbaasClusters  []string  `json:"dbaasclusters"`
 }
 
 type TaskAPIFunc[T any] func(ctx context.Context, opt T) (*edgecloud.TaskResponse, *edgecloud.Response, error)
