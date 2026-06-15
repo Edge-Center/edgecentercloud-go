@@ -620,3 +620,71 @@ func TestMKaaSServiceOp_NodesList_WithOptions(t *testing.T) {
 	require.Equal(t, resp.StatusCode, 200)
 	require.Equal(t, respActual, expectedResp)
 }
+
+func TestMKaaSServiceOp_FlavorsList(t *testing.T) {
+	setup()
+	defer teardown()
+
+	expectedMaster := []MKaaSFlavor{
+		{
+			FlavorID:   "mkaas-master-g3-standard-2-4",
+			FlavorName: "mkaas-master-g3-standard-2-4",
+			VCPUS:      2,
+			RAM:        4096,
+		},
+	}
+	expectedWorker := []MKaaSFlavor{
+		{
+			FlavorID:   "mkaas-worker-g3-standard-4-8",
+			FlavorName: "mkaas-worker-g3-standard-4-8",
+			VCPUS:      4,
+			RAM:        8192,
+		},
+	}
+	URL := path.Join(MKaaSBasePathV2, strconv.Itoa(projectID), strconv.Itoa(regionID), "flavors")
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodGet)
+		root := mkaasFlavorsRoot{
+			MasterFlavors: expectedMaster,
+			WorkerFlavors: expectedWorker,
+		}
+		jsonData, err := json.Marshal(root)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
+		_, _ = fmt.Fprint(w, string(jsonData))
+	})
+
+	actual, resp, err := client.MkaaS.FlavorsList(ctx, nil)
+	require.NoError(t, err)
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, actual.Masters, expectedMaster)
+	require.Equal(t, actual.Workers, expectedWorker)
+}
+
+func TestMKaaSServiceOp_FlavorsList_WithOptions(t *testing.T) {
+	setup()
+	defer teardown()
+
+	URL := path.Join(MKaaSBasePathV2, strconv.Itoa(projectID), strconv.Itoa(regionID), "flavors")
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodGet)
+		assert.Equal(t, "false", r.URL.Query().Get("exclude_sgx"))
+		assert.Equal(t, "true", r.URL.Query().Get("exclude_gpu"))
+		assert.Equal(t, "true", r.URL.Query().Get("include_prices"))
+		_, _ = fmt.Fprint(w, `{"master_flavors":[],"worker_flavors":[]}`)
+	})
+
+	opts := &MKaaSFlavorListOptions{
+		ExcludeSGX:    PtrTo(false),
+		ExcludeGPU:    PtrTo(true),
+		IncludePrices: true,
+	}
+	actual, resp, err := client.MkaaS.FlavorsList(ctx, opts)
+	require.NoError(t, err)
+	require.Equal(t, resp.StatusCode, 200)
+	require.Empty(t, actual.Masters)
+	require.Empty(t, actual.Workers)
+}
