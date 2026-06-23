@@ -34,6 +34,7 @@ type LoadbalancersService interface {
 	Rename(context.Context, string, *Name) (*Loadbalancer, *Response, error)
 	MetricsList(context.Context, string, *LoadbalancerMetricsListRequest) ([]LoadbalancerMetrics, *Response, error)
 	FlavorList(context.Context, *FlavorsOptions) ([]Flavor, *Response, error)
+	ChangeFlavor(context.Context, string, *LoadbalancerChangeFlavorRequest) (*TaskResponse, *Response, error)
 
 	LoadbalancerListeners
 	LoadbalancerPools
@@ -225,6 +226,10 @@ type LoadbalancerCreateRequest struct {
 	Metadata     Metadata                            `json:"metadata,omitempty" validate:"omitempty,dive"`
 	Tags         []string                            `json:"tag,omitempty"`
 	FloatingIP   *InterfaceFloatingIP                `json:"floating_ip,omitempty" validate:"omitempty,dive"`
+}
+
+type LoadbalancerChangeFlavorRequest struct {
+	Flavor string `json:"flavor" required:"true"`
 }
 
 type LoadbalancerAlgorithm string
@@ -1074,6 +1079,36 @@ func (s *LoadbalancersServiceOp) MetricsList(ctx context.Context, loadbalancerID
 	}
 
 	return root.LoadbalancerMetrics, resp, err
+}
+
+// ChangeFlavor a load balancer flavor.
+func (s *LoadbalancersServiceOp) ChangeFlavor(ctx context.Context, loadbalancerID string, reqBody *LoadbalancerChangeFlavorRequest) (*TaskResponse, *Response, error) {
+	if resp, err := isValidUUID(loadbalancerID, "loadbalancerID"); err != nil {
+		return nil, resp, err
+	}
+
+	if reqBody == nil {
+		return nil, nil, NewArgError("reqBody", "cannot be nil")
+	}
+
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	path := fmt.Sprintf("%s/%s/%s", s.client.addProjectRegionPath(loadbalancersBasePathV1), loadbalancerID, "change_flavor")
+
+	req, err := s.client.NewRequest(ctx, http.MethodPost, path, reqBody)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	tasks := new(TaskResponse)
+	resp, err := s.client.Do(ctx, req, tasks)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return tasks, resp, err
 }
 
 // FlavorList get load balancer flavors.

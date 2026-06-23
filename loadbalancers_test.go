@@ -152,6 +152,65 @@ func TestLoadbalancers_Create_reqBodyNil(t *testing.T) {
 	assert.EqualError(t, err, NewArgError("reqBody", "cannot be nil").Error())
 }
 
+func TestLoadbalancers_ChangeFlavor(t *testing.T) {
+	setup()
+	defer teardown()
+
+	request := &LoadbalancerChangeFlavorRequest{
+		Flavor: "lb1-2-4",
+	}
+	expectedResp := &TaskResponse{Tasks: []string{taskID}}
+	URL := path.Join(loadbalancersBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, "change_flavor")
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodPost)
+		reqBody := new(LoadbalancerChangeFlavorRequest)
+		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
+			t.Errorf("failed to decode request body: %v", err)
+		}
+		assert.Equal(t, request, reqBody)
+		resp, err := json.Marshal(expectedResp)
+		if err != nil {
+			t.Errorf("failed to marshal response: %v", err)
+		}
+		_, _ = fmt.Fprint(w, string(resp))
+	})
+
+	respActual, resp, err := client.Loadbalancers.ChangeFlavor(ctx, testResourceID, request)
+	require.NoError(t, err)
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
+}
+
+func TestLoadbalancers_ChangeFlavor_ResponseError(t *testing.T) {
+	setup()
+	defer teardown()
+
+	request := &LoadbalancerChangeFlavorRequest{Flavor: "lb1-2-4"}
+	URL := path.Join(loadbalancersBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, "change_flavor")
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodPost)
+		w.WriteHeader(http.StatusBadRequest)
+		_, _ = fmt.Fprint(w, "Bad request")
+	})
+
+	respActual, resp, err := client.Loadbalancers.ChangeFlavor(ctx, testResourceID, request)
+	assert.Nil(t, respActual)
+	assert.Error(t, err)
+	assert.Equal(t, resp.StatusCode, 400)
+}
+
+func TestLoadbalancers_ChangeFlavor_reqBodyNil(t *testing.T) {
+	setup()
+	defer teardown()
+
+	respActual, resp, err := client.Loadbalancers.ChangeFlavor(ctx, testResourceID, nil)
+	assert.Nil(t, respActual)
+	assert.Nil(t, resp)
+	assert.EqualError(t, err, NewArgError("reqBody", "cannot be nil").Error())
+}
+
 func TestLoadbalancers_Delete(t *testing.T) {
 	setup()
 	defer teardown()
@@ -1407,6 +1466,16 @@ func TestLoadbalancers_Metadata_isValidUUID_Error_Return_Response(t *testing.T) 
 			require.EqualError(t, err, NewArgError("loadbalancerID", NotCorrectUUID).Error())
 		})
 	}
+}
+
+func TestLoadbalancers_ChangeFlavor_isValidUUID_Error(t *testing.T) {
+	setup()
+	defer teardown()
+
+	respActual, resp, err := client.Loadbalancers.ChangeFlavor(ctx, testResourceIDNotValidUUID, nil)
+	require.Nil(t, respActual)
+	require.Equal(t, 400, resp.StatusCode)
+	require.EqualError(t, err, NewArgError("loadbalancerID", NotCorrectUUID).Error())
 }
 
 func TestLoadbalancers_MetadataList_isValidUUID_Error(t *testing.T) {
