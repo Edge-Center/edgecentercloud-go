@@ -8,6 +8,7 @@ import (
 
 const (
 	MKaaSClustersBasePathV2 = "/mkaas/v2/clusters"
+	MKaaSRegionsBasePathV2  = "/mkaas/v2/regions"
 	MKaaSBasePathV2         = "/mkaas/v2"
 )
 
@@ -17,7 +18,15 @@ type MKaaSService interface {
 	MKaaSClusters
 	MKaaSPools
 	MKaaSNodes
+	MKaaSRegions
 	MKaaSFlavors
+}
+
+type MKaaSRegions interface {
+	VersionsList(
+		ctx context.Context,
+		regionID int,
+	) (*MKaaSKubernetesVersionsResult, *Response, error)
 }
 
 type MKaaSFlavors interface {
@@ -91,6 +100,15 @@ type MKaaSServiceOp struct {
 }
 
 var _ MKaaSService = &MKaaSServiceOp{}
+
+type MKaaSKubernetesVersion struct {
+	Version  string `json:"version"`
+	IsLatest bool   `json:"is_latest"`
+}
+
+type MKaaSKubernetesVersionsResult struct {
+	Versions []MKaaSKubernetesVersion `json:"versions"`
+}
 
 type MKaaSClustersRoot struct {
 	Count    int
@@ -785,4 +803,27 @@ func (m *MKaaSServiceOp) FlavorsList(
 	}
 
 	return flavors, resp, nil
+}
+
+func (m *MKaaSServiceOp) VersionsList(
+	ctx context.Context,
+	regionID int,
+) (*MKaaSKubernetesVersionsResult, *Response, error) {
+	if resp, err := m.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	reqURL := fmt.Sprintf("%s/%d/versions", MKaaSRegionsBasePathV2, regionID)
+	req, err := m.client.NewRequest(ctx, http.MethodGet, reqURL, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	versions := new(MKaaSKubernetesVersionsResult)
+	resp, err := m.client.Do(ctx, req, versions)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return versions, resp, nil
 }

@@ -135,6 +135,40 @@ func TestMKaaSServiceOp_ClustersGet(t *testing.T) {
 	require.Equal(t, respActual, expectedResp)
 }
 
+func TestMKaaSServiceOp_VersionsList(t *testing.T) {
+	setup()
+	defer teardown()
+
+	const requestedRegionID = 42
+	expectedURL := fmt.Sprintf("%s/%d/versions", MKaaSRegionsBasePathV2, requestedRegionID)
+	expectedResp := &MKaaSKubernetesVersionsResult{
+		Versions: []MKaaSKubernetesVersion{
+			{Version: "v1.31.0", IsLatest: true},
+			{Version: "v1.32.13", IsLatest: false},
+			{Version: "v1.33.10", IsLatest: false},
+			{Version: "v1.34.8", IsLatest: true},
+		},
+	}
+
+	mux.HandleFunc(expectedURL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodGet)
+		require.Equal(t, expectedURL, r.URL.Path)
+		_, _ = fmt.Fprint(w, `{
+			"versions": [
+				{"is_latest": true, "version": "v1.31.0"},
+				{"is_latest": false, "version": "v1.32.13"},
+				{"is_latest": false, "version": "v1.33.10"},
+				{"is_latest": true, "version": "v1.34.8"}
+			]
+		}`)
+	})
+
+	actual, resp, err := client.MkaaS.VersionsList(ctx, requestedRegionID)
+	require.NoError(t, err)
+	require.Equal(t, http.StatusOK, resp.StatusCode)
+	require.Equal(t, expectedResp, actual)
+}
+
 func TestMKaaSServiceOp_ClustersDelete(t *testing.T) {
 	setup()
 	defer teardown()
