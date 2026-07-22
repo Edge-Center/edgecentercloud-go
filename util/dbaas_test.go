@@ -291,3 +291,241 @@ func TestCreateDBaaSClusterAndWait_EmptyTaskIDs(t *testing.T) {
 	assert.EqualError(t, err, "DBaaS cluster create returned no task IDs")
 	assert.Nil(t, cluster)
 }
+
+func TestWaitDBaaSBackupStatusActive(t *testing.T) {
+	mux := http.NewServeMux()
+	server := httptest.NewServer(mux)
+	defer server.Close()
+
+	backupID := testResourceID
+	getURL := path.Join(edgecloud.DBaaSBackupsBasePathV3, strconv.Itoa(projectID), strconv.Itoa(regionID), backupID)
+	mux.HandleFunc(getURL, func(w http.ResponseWriter, r *http.Request) {
+		resp, err := json.Marshal(&edgecloud.DBaaSBackup{
+			ID:     backupID,
+			Status: "FINISHED",
+		})
+		if err != nil {
+			t.Fatalf("failed to marshal JSON: %v", err)
+		}
+		_, _ = fmt.Fprint(w, string(resp))
+	})
+
+	client := edgecloud.NewClient(nil)
+	baseURL, _ := url.Parse(server.URL)
+	client.BaseURL = baseURL
+	client.Project = projectID
+	client.Region = regionID
+
+	backup, err := WaitDBaaSBackupStatusActive(context.Background(), client, backupID)
+	assert.NoError(t, err)
+	assert.NotNil(t, backup)
+	assert.Equal(t, backupID, backup.ID)
+}
+
+func TestWaitDBaaSBackupStatusActive_Error(t *testing.T) {
+	mux := http.NewServeMux()
+	server := httptest.NewServer(mux)
+	defer server.Close()
+
+	backupID := testResourceID
+	getURL := path.Join(edgecloud.DBaaSBackupsBasePathV3, strconv.Itoa(projectID), strconv.Itoa(regionID), backupID)
+	mux.HandleFunc(getURL, func(w http.ResponseWriter, r *http.Request) {
+		resp, err := json.Marshal(&edgecloud.DBaaSBackup{
+			ID:     backupID,
+			Status: "ERROR",
+		})
+		if err != nil {
+			t.Fatalf("failed to marshal JSON: %v", err)
+		}
+		_, _ = fmt.Fprint(w, string(resp))
+	})
+
+	client := edgecloud.NewClient(nil)
+	baseURL, _ := url.Parse(server.URL)
+	client.BaseURL = baseURL
+	client.Project = projectID
+	client.Region = regionID
+
+	backup, err := WaitDBaaSBackupStatusActive(context.Background(), client, backupID, 20*time.Millisecond)
+	assert.EqualError(t, err, "DBaaS backup entered ERROR status")
+	assert.Nil(t, backup)
+}
+
+func TestWaitDBaaSBackupStatusActive_Timeout(t *testing.T) {
+	mux := http.NewServeMux()
+	server := httptest.NewServer(mux)
+	defer server.Close()
+
+	backupID := testResourceID
+	getURL := path.Join(edgecloud.DBaaSBackupsBasePathV3, strconv.Itoa(projectID), strconv.Itoa(regionID), backupID)
+	mux.HandleFunc(getURL, func(w http.ResponseWriter, r *http.Request) {
+		resp, err := json.Marshal(&edgecloud.DBaaSBackup{
+			ID:     backupID,
+			Status: "BUILDING",
+		})
+		if err != nil {
+			t.Fatalf("failed to marshal JSON: %v", err)
+		}
+		_, _ = fmt.Fprint(w, string(resp))
+	})
+
+	client := edgecloud.NewClient(nil)
+	baseURL, _ := url.Parse(server.URL)
+	client.BaseURL = baseURL
+	client.Project = projectID
+	client.Region = regionID
+
+	backup, err := WaitDBaaSBackupStatusActive(context.Background(), client, backupID, time.Millisecond)
+	assert.ErrorIs(t, err, ErrDBaaSBackupNotReady)
+	assert.Nil(t, backup)
+}
+
+func TestCreateDBaaSBackupAndWait(t *testing.T) {
+	mux := http.NewServeMux()
+	server := httptest.NewServer(mux)
+	defer server.Close()
+
+	reqBody := edgecloud.DBaaSBackupCreateRequest{
+		Name:      "my-backup",
+		ClusterID: testResourceID,
+	}
+
+	createURL := path.Join(edgecloud.DBaaSBackupsBasePathV3, strconv.Itoa(projectID), strconv.Itoa(regionID))
+	getURL := path.Join(edgecloud.DBaaSBackupsBasePathV3, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID2)
+
+	mux.HandleFunc(createURL, func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodPost {
+			got := &edgecloud.DBaaSBackupCreateRequest{}
+			if err := json.NewDecoder(r.Body).Decode(got); err != nil {
+				t.Fatalf("failed to decode request body: %v", err)
+			}
+			assert.Equal(t, reqBody, *got)
+
+			resp, err := json.Marshal(&edgecloud.TaskResponse{Tasks: []string{testResourceID2}})
+			if err != nil {
+				t.Fatalf("failed to marshal JSON: %v", err)
+			}
+			_, _ = fmt.Fprint(w, string(resp))
+
+			return
+		}
+
+		// GET on createURL = BackupsList
+		backups := []edgecloud.DBaaSBackup{
+			{
+				ID:            testResourceID,
+				CreatorTaskID: testResourceID,
+				Status:        "BUILDING",
+			},
+			{
+				ID:            testResourceID2,
+				CreatorTaskID: testResourceID2,
+				Status:        "BUILDING",
+			},
+		}
+		resp, err := json.Marshal(backups)
+		if err != nil {
+			t.Fatalf("failed to marshal JSON: %v", err)
+		}
+		_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))
+	})
+
+	mux.HandleFunc(getURL, func(w http.ResponseWriter, r *http.Request) {
+		resp, err := json.Marshal(&edgecloud.DBaaSBackup{
+			ID:     testResourceID2,
+			Status: "FINISHED",
+		})
+		if err != nil {
+			t.Fatalf("failed to marshal JSON: %v", err)
+		}
+		_, _ = fmt.Fprint(w, string(resp))
+	})
+
+	client := edgecloud.NewClient(nil)
+	baseURL, _ := url.Parse(server.URL)
+	client.BaseURL = baseURL
+	client.Project = projectID
+	client.Region = regionID
+
+	backup, err := CreateDBaaSBackupAndWait(context.Background(), client, reqBody)
+	assert.NoError(t, err)
+	assert.NotNil(t, backup)
+	assert.Equal(t, testResourceID2, backup.ID)
+	assert.Equal(t, "FINISHED", backup.Status)
+}
+
+func TestCreateDBaaSBackupAndWait_EmptyTaskIDs(t *testing.T) {
+	mux := http.NewServeMux()
+	server := httptest.NewServer(mux)
+	defer server.Close()
+
+	createURL := path.Join(edgecloud.DBaaSBackupsBasePathV3, strconv.Itoa(projectID), strconv.Itoa(regionID))
+	mux.HandleFunc(createURL, func(w http.ResponseWriter, r *http.Request) {
+		resp, err := json.Marshal(&edgecloud.TaskResponse{})
+		if err != nil {
+			t.Fatalf("failed to marshal JSON: %v", err)
+		}
+		_, _ = fmt.Fprint(w, string(resp))
+	})
+
+	client := edgecloud.NewClient(nil)
+	baseURL, _ := url.Parse(server.URL)
+	client.BaseURL = baseURL
+	client.Project = projectID
+	client.Region = regionID
+
+	backup, err := CreateDBaaSBackupAndWait(context.Background(), client, edgecloud.DBaaSBackupCreateRequest{Name: "test"})
+	assert.EqualError(t, err, "DBaaS backup create returned no task IDs")
+	assert.Nil(t, backup)
+}
+
+func TestWaitDBaaSBackupByCreatorTaskID_Timeout(t *testing.T) {
+	mux := http.NewServeMux()
+	server := httptest.NewServer(mux)
+	defer server.Close()
+
+	listURL := path.Join(edgecloud.DBaaSBackupsBasePathV3, strconv.Itoa(projectID), strconv.Itoa(regionID))
+	mux.HandleFunc(listURL, func(w http.ResponseWriter, r *http.Request) {
+		_, _ = fmt.Fprint(w, `{"results":[]}`)
+	})
+
+	client := edgecloud.NewClient(nil)
+	baseURL, _ := url.Parse(server.URL)
+	client.BaseURL = baseURL
+	client.Project = projectID
+	client.Region = regionID
+
+	backup, err := WaitDBaaSBackupByCreatorTaskID(context.Background(), client, testResourceID, time.Millisecond)
+	assert.ErrorIs(t, err, ErrDBaaSBackupNotReady)
+	assert.Nil(t, backup)
+}
+
+func TestWaitDBaaSBackupByCreatorTaskID_Found(t *testing.T) {
+	mux := http.NewServeMux()
+	server := httptest.NewServer(mux)
+	defer server.Close()
+
+	listURL := path.Join(edgecloud.DBaaSBackupsBasePathV3, strconv.Itoa(projectID), strconv.Itoa(regionID))
+	mux.HandleFunc(listURL, func(w http.ResponseWriter, r *http.Request) {
+		backups := []edgecloud.DBaaSBackup{
+			{ID: testResourceID, CreatorTaskID: testResourceID2, Status: "BUILDING"},
+			{ID: testResourceID2, CreatorTaskID: testResourceID, Status: "FINISHED"},
+		}
+		resp, err := json.Marshal(backups)
+		if err != nil {
+			t.Fatalf("failed to marshal JSON: %v", err)
+		}
+		_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))
+	})
+
+	client := edgecloud.NewClient(nil)
+	baseURL, _ := url.Parse(server.URL)
+	client.BaseURL = baseURL
+	client.Project = projectID
+	client.Region = regionID
+
+	backup, err := WaitDBaaSBackupByCreatorTaskID(context.Background(), client, testResourceID)
+	assert.NoError(t, err)
+	assert.NotNil(t, backup)
+	assert.Equal(t, testResourceID2, backup.ID)
+}
