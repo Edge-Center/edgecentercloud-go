@@ -98,6 +98,13 @@ func DeleteResourceIfExist(ctx context.Context, client *edgecloud.Client, resour
 			return err
 		}
 		return ResourceIsDeleted(ctx, v.Get, resourceID)
+	case edgecloud.DBaaSBackups:
+		if err := deleteAndWait(v.BackupDelete); err != nil {
+			return err
+		}
+		return ResourceIsDeleted(ctx, func(ctx context.Context, id string) (*edgecloud.DBaaSBackup, *edgecloud.Response, error) {
+			return v.BackupGet(ctx, id, false)
+		}, resourceID)
 	default:
 		return errDeleteResourceIfExistIsNotSupported
 	}

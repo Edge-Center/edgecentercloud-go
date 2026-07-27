@@ -20,6 +20,7 @@ const (
 	dbaasClusterID    = "123e4567-e89b-12d3-a456-426614174000"
 	dbaasUserName     = "user_name"
 	dbaasDatabaseName = "user_analytics"
+	testBackupID      = "e13bd88d-79c8-4871-a9c2-a4baca741d0f"
 )
 
 func TestDBaaSServiceOp_ClusterCreate(t *testing.T) {
@@ -423,6 +424,122 @@ func TestDBaaSServiceOp_DbmsList(t *testing.T) {
 	})
 
 	respActual, resp, err := client.DBaaS.DbmsList(ctx, nil)
+	require.NoError(t, err)
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
+}
+
+func TestDBaaSServiceOp_BackupCreate(t *testing.T) {
+	setup()
+	defer teardown()
+
+	request := DBaaSBackupCreateRequest{
+		Name:      "my-backup",
+		ClusterID: dbaasClusterID,
+	}
+	expectedResp := &TaskResponse{Tasks: []string{taskID}}
+	URL := path.Join(DBaaSBackupsBasePathV3, strconv.Itoa(projectID), strconv.Itoa(regionID))
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodPost)
+		reqBody := &DBaaSBackupCreateRequest{}
+		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
+			t.Errorf("failed to decode request body: %v", err)
+		}
+		assert.Equal(t, request, *reqBody)
+		resp, _ := json.Marshal(expectedResp)
+		_, _ = fmt.Fprint(w, string(resp))
+	})
+
+	respActual, resp, err := client.DBaaS.BackupCreate(ctx, request)
+	require.NoError(t, err)
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
+}
+
+func TestDBaaSServiceOp_BackupsList(t *testing.T) {
+	setup()
+	defer teardown()
+
+	expectedResp := []DBaaSBackup{{ID: testBackupID, Name: "my-backup"}}
+	URL := path.Join(DBaaSBackupsBasePathV3, strconv.Itoa(projectID), strconv.Itoa(regionID))
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodGet)
+		resp, _ := json.Marshal(expectedResp)
+		_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))
+	})
+
+	respActual, resp, err := client.DBaaS.BackupsList(ctx, nil)
+	require.NoError(t, err)
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
+}
+
+func TestDBaaSServiceOp_BackupGet(t *testing.T) {
+	setup()
+	defer teardown()
+
+	backupID := testBackupID
+	expectedResp := &DBaaSBackup{ID: backupID, Name: "my-backup"}
+	URL := path.Join(DBaaSBackupsBasePathV3, strconv.Itoa(projectID), strconv.Itoa(regionID), backupID)
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodGet)
+		resp, _ := json.Marshal(expectedResp)
+		_, _ = fmt.Fprint(w, string(resp))
+	})
+
+	respActual, resp, err := client.DBaaS.BackupGet(ctx, backupID, false)
+	require.NoError(t, err)
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
+}
+
+func TestDBaaSServiceOp_BackupUpdate(t *testing.T) {
+	setup()
+	defer teardown()
+
+	newName := "new-backup-name"
+	request := DBaaSBackupUpdateRequest{
+		Name: &newName,
+	}
+	backupID := testBackupID
+	expectedResp := &DBaaSBackup{ID: backupID, Name: "new-backup-name"}
+	URL := path.Join(DBaaSBackupsBasePathV3, strconv.Itoa(projectID), strconv.Itoa(regionID), backupID)
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodPatch)
+		reqBody := &DBaaSBackupUpdateRequest{}
+		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
+			t.Errorf("failed to decode request body: %v", err)
+		}
+		assert.Equal(t, request, *reqBody)
+		resp, _ := json.Marshal(expectedResp)
+		_, _ = fmt.Fprint(w, string(resp))
+	})
+
+	respActual, resp, err := client.DBaaS.BackupUpdate(ctx, backupID, request)
+	require.NoError(t, err)
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
+}
+
+func TestDBaaSServiceOp_BackupDelete(t *testing.T) {
+	setup()
+	defer teardown()
+
+	backupID := testBackupID
+	expectedResp := &TaskResponse{Tasks: []string{taskID}}
+	URL := path.Join(DBaaSBackupsBasePathV3, strconv.Itoa(projectID), strconv.Itoa(regionID), backupID)
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodDelete)
+		resp, _ := json.Marshal(expectedResp)
+		_, _ = fmt.Fprint(w, string(resp))
+	})
+
+	respActual, resp, err := client.DBaaS.BackupDelete(ctx, backupID)
 	require.NoError(t, err)
 	require.Equal(t, resp.StatusCode, 200)
 	require.Equal(t, respActual, expectedResp)

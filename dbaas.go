@@ -9,12 +9,14 @@ import (
 const (
 	DBaaSClustersBasePathV3 = "/dbaas/v3/clusters"
 	DBaaSDbmsBasePathV3     = "/dbaas/v3/dbms"
+	DBaaSBackupsBasePathV3  = "/dbaas/v3/backups"
 )
 
 type DBaaSService interface {
 	DBaaSClusters
 	DBaaSUsers
 	DBaaSDatabases
+	DBaaSBackups
 	DBaaSDbmsService
 }
 
@@ -40,6 +42,15 @@ type DBaaSDatabases interface {
 	DatabasesList(ctx context.Context, clusterID string, opts *DBaaSDatabaseListOptions) ([]DBaaSDatabase, *Response, error)
 	DatabaseCreate(ctx context.Context, clusterID string, reqBody DBaaSDatabaseCreateRequest) (*DBaaSDatabase, *Response, error)
 	DatabaseDelete(ctx context.Context, clusterID string, databaseName string) (*DBaaSDatabase, *Response, error)
+}
+
+type DBaaSBackups interface {
+	BackupCreate(ctx context.Context, reqBody DBaaSBackupCreateRequest) (*TaskResponse, *Response, error)
+	BackupsList(ctx context.Context, opts *DBaaSBackupListOptions) ([]DBaaSBackup, *Response, error)
+	BackupsListPage(ctx context.Context, opts *DBaaSBackupListOptions) (*DBaaSBackupsPage, *Response, error)
+	BackupGet(ctx context.Context, backupID string, includePrices bool) (*DBaaSBackup, *Response, error)
+	BackupUpdate(ctx context.Context, backupID string, reqBody DBaaSBackupUpdateRequest) (*DBaaSBackup, *Response, error)
+	BackupDelete(ctx context.Context, backupID string) (*TaskResponse, *Response, error)
 }
 
 type DBaaSDbmsService interface {
@@ -184,6 +195,55 @@ type DBaaSDbms struct {
 	ID      int    `json:"id"`
 	Type    string `json:"type"`
 	Version string `json:"version"`
+}
+
+type DBaaSBackup struct {
+	ID            string         `json:"id"`
+	Name          string         `json:"name"`
+	Description   string         `json:"description"`
+	BackupType    string         `json:"backup_type"`
+	ClusterID     string         `json:"cluster_id"`
+	ParentID      string         `json:"parent_id"`
+	Status        string         `json:"status"`
+	Size          float64        `json:"size"`
+	IsService     bool           `json:"is_service"`
+	HasChild      bool           `json:"has_child,omitempty"`
+	DBMS          *DBaaSDbmsType `json:"dbms"`
+	CreatedAt     string         `json:"created_at"`
+	UpdatedAt     string         `json:"updated_at"`
+	FinishedAt    string         `json:"finished_at"`
+	TaskID        string         `json:"task_id"`
+	CreatorTaskID string         `json:"creator_task_id"`
+}
+
+type DBaaSBackupCreateRequest struct {
+	Name        string `json:"name"`
+	Description string `json:"description,omitempty"`
+	ClusterID   string `json:"cluster_id"`
+	ParentID    string `json:"parent_id,omitempty"`
+}
+
+type DBaaSBackupUpdateRequest struct {
+	Name        *string `json:"name,omitempty"`
+	Description *string `json:"description,omitempty"`
+}
+
+type DBaaSBackupListOptions struct {
+	ClusterID     string `url:"cluster_id,omitempty"`
+	BackupType    string `url:"backup_type,omitempty"`
+	IsService     *bool  `url:"is_service,omitempty"`
+	CreatedFrom   string `url:"created_from,omitempty"`
+	CreatedTo     string `url:"created_to,omitempty"`
+	DbmsID        int    `url:"dbms_id,omitempty"`
+	Search        string `url:"search,omitempty"`
+	IncludePrices bool   `url:"include_prices,omitempty"`
+	Limit         int    `url:"limit,omitempty"`
+	Offset        int    `url:"offset,omitempty"`
+}
+
+type DBaaSBackupsPage struct {
+	Count   int           `json:"count"`
+	Results []DBaaSBackup `json:"results"`
 }
 
 func (s *DBaaSServiceOp) ClusterCreate(ctx context.Context, reqBody DBaaSClusterCreateRequest) (*TaskResponse, *Response, error) {
@@ -532,4 +592,125 @@ func (s *DBaaSServiceOp) DbmsList(ctx context.Context, opts *DBaaSDbmsListOption
 	}
 
 	return root.Dbms, resp, err
+}
+
+func (s *DBaaSServiceOp) BackupCreate(ctx context.Context, reqBody DBaaSBackupCreateRequest) (*TaskResponse, *Response, error) {
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	path := s.client.addProjectRegionPath(DBaaSBackupsBasePathV3)
+
+	req, err := s.client.NewRequest(ctx, http.MethodPost, path, reqBody)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	tasks := new(TaskResponse)
+	resp, err := s.client.Do(ctx, req, tasks)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return tasks, resp, err
+}
+
+func (s *DBaaSServiceOp) BackupsList(ctx context.Context, opts *DBaaSBackupListOptions) ([]DBaaSBackup, *Response, error) {
+	page, resp, err := s.BackupsListPage(ctx, opts)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return page.Results, resp, nil
+}
+
+func (s *DBaaSServiceOp) BackupsListPage(ctx context.Context, opts *DBaaSBackupListOptions) (*DBaaSBackupsPage, *Response, error) {
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	path := s.client.addProjectRegionPath(DBaaSBackupsBasePathV3)
+	path, err := addOptions(path, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	page := new(DBaaSBackupsPage)
+	resp, err := s.client.Do(ctx, req, page)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return page, resp, nil
+}
+
+func (s *DBaaSServiceOp) BackupGet(ctx context.Context, backupID string, includePrices bool) (*DBaaSBackup, *Response, error) {
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	path := fmt.Sprintf("%s/%s", s.client.addProjectRegionPath(DBaaSBackupsBasePathV3), backupID)
+	if includePrices {
+		path += "?include_prices=true"
+	}
+
+	req, err := s.client.NewRequest(ctx, http.MethodGet, path, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	backup := new(DBaaSBackup)
+	resp, err := s.client.Do(ctx, req, backup)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return backup, resp, err
+}
+
+func (s *DBaaSServiceOp) BackupUpdate(ctx context.Context, backupID string, reqBody DBaaSBackupUpdateRequest) (*DBaaSBackup, *Response, error) {
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	path := fmt.Sprintf("%s/%s", s.client.addProjectRegionPath(DBaaSBackupsBasePathV3), backupID)
+
+	req, err := s.client.NewRequest(ctx, http.MethodPatch, path, reqBody)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	backup := new(DBaaSBackup)
+	resp, err := s.client.Do(ctx, req, backup)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return backup, resp, err
+}
+
+func (s *DBaaSServiceOp) BackupDelete(ctx context.Context, backupID string) (*TaskResponse, *Response, error) {
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	path := fmt.Sprintf("%s/%s", s.client.addProjectRegionPath(DBaaSBackupsBasePathV3), backupID)
+
+	req, err := s.client.NewRequest(ctx, http.MethodDelete, path, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	tasks := new(TaskResponse)
+	resp, err := s.client.Do(ctx, req, tasks)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return tasks, resp, err
 }
