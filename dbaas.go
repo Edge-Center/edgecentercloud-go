@@ -95,8 +95,8 @@ type DBaaSClusterCreateRequest struct {
 }
 
 type DBaaSClusterUpdateRequest struct {
-	Name        string       `json:"name,omitempty"`
-	Description string       `json:"description,omitempty"`
+	Name        *string      `json:"name,omitempty"`
+	Description *string      `json:"description,omitempty"`
 	Flavor      string       `json:"flavor,omitempty"`
 	Volume      *DBaaSVolume `json:"volume,omitempty"`
 }
