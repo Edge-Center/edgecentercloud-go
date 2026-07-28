@@ -137,8 +137,9 @@ func TestDBaaSServiceOp_ClusterUpdate(t *testing.T) {
 	setup()
 	defer teardown()
 
+	name := "updated-cluster"
 	request := DBaaSClusterUpdateRequest{
-		Name: "updated-cluster",
+		Name: &name,
 	}
 	expectedResp := &TaskResponse{Tasks: []string{taskID}}
 	clusterID := dbaasClusterID
@@ -159,6 +160,60 @@ func TestDBaaSServiceOp_ClusterUpdate(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, resp.StatusCode, 200)
 	require.Equal(t, respActual, expectedResp)
+}
+
+func TestDBaaSServiceOp_ClusterUpdateClearDescription(t *testing.T) {
+	setup()
+	defer teardown()
+
+	name := "my-cluster"
+	emptyDesc := ""
+	request := DBaaSClusterUpdateRequest{
+		Name:        &name,
+		Description: &emptyDesc,
+	}
+	expectedResp := &TaskResponse{Tasks: []string{taskID}}
+	clusterID := dbaasClusterID
+	URL := path.Join(DBaaSClustersBasePathV3, strconv.Itoa(projectID), strconv.Itoa(regionID), clusterID)
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodPatch)
+		reqBody := &DBaaSClusterUpdateRequest{}
+		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
+			t.Errorf("failed to decode request body: %v", err)
+		}
+		assert.Equal(t, request, *reqBody)
+
+		body, _ := json.Marshal(reqBody)
+		assert.Contains(t, string(body), `"description":""`, "empty description must be serialized as empty string, not omitted")
+
+		resp, _ := json.Marshal(expectedResp)
+		_, _ = fmt.Fprint(w, string(resp))
+	})
+
+	respActual, resp, err := client.DBaaS.ClusterUpdate(ctx, clusterID, request)
+	require.NoError(t, err)
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
+}
+
+func TestDBaaSClusterUpdateRequest_EmptyDescriptionSerialization(t *testing.T) {
+	emptyDesc := ""
+	req := DBaaSClusterUpdateRequest{
+		Name:        &emptyDesc,
+		Description: &emptyDesc,
+	}
+
+	data, err := json.Marshal(req)
+	require.NoError(t, err)
+	assert.Contains(t, string(data), `"name":""`, "empty name pointer must be serialized")
+	assert.Contains(t, string(data), `"description":""`, "empty description pointer must be serialized")
+
+	nilReq := DBaaSClusterUpdateRequest{}
+	nilData, err := json.Marshal(nilReq)
+	require.NoError(t, err)
+	assert.NotContains(t, string(nilData), `"name"`, "nil name must be omitted")
+	assert.NotContains(t, string(nilData), `"description"`, "nil description must be omitted")
 }
 
 func TestDBaaSServiceOp_UsersList(t *testing.T) {
