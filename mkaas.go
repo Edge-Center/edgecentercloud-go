@@ -39,6 +39,7 @@ type MKaaSClusters interface {
 	ClusterGet(context.Context, int) (*MKaaSCluster, *Response, error)
 	ClusterUpdateName(ctx context.Context, clusterID int, reqBody MKaaSClusterUpdateNameRequest) (*TaskResponse, *Response, error)
 	ClusterUpdateMasterNodeCount(ctx context.Context, clusterID int, reqBody MKaaSClusterUpdateMasterNodeCountRequest) (*TaskResponse, *Response, error)
+	ClusterUpgradeVersion(ctx context.Context, clusterID int, reqBody MKaaSClusterUpgradeVersionRequest) (*TaskResponse, *Response, error)
 	ClusterDelete(context.Context, int) (*TaskResponse, *Response, error)
 }
 
@@ -194,6 +195,10 @@ type MKaaSClusterUpdateNameRequest struct {
 
 type MKaaSClusterUpdateMasterNodeCountRequest struct {
 	MasterNodeCount int `json:"master_node_count"`
+}
+
+type MKaaSClusterUpgradeVersionRequest struct {
+	TargetVersion string `json:"target_version"`
 }
 
 // MKaaSCluster represents an EdgecenterCloud MkaaS Cluster.
@@ -425,6 +430,29 @@ func (m *MKaaSServiceOp) ClusterUpdateMasterNodeCount(
 	)
 
 	req, err := m.client.NewRequest(ctx, http.MethodPatch, path, reqBody)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	tasks := new(TaskResponse)
+	resp, err := m.client.Do(ctx, req, tasks)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return tasks, resp, err
+}
+
+func (m *MKaaSServiceOp) ClusterUpgradeVersion(
+	ctx context.Context, clusterID int, reqBody MKaaSClusterUpgradeVersionRequest,
+) (*TaskResponse, *Response, error) {
+	if resp, err := m.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	path := fmt.Sprintf("%s/%d/upgrade_version", m.client.addProjectRegionPath(MKaaSClustersBasePathV2), clusterID)
+
+	req, err := m.client.NewRequest(ctx, http.MethodPost, path, reqBody)
 	if err != nil {
 		return nil, nil, err
 	}
