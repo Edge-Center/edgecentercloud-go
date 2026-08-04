@@ -597,31 +597,6 @@ func TestMKaaSServiceOp_NodesList(t *testing.T) {
 	require.Equal(t, respActual, expectedResp)
 }
 
-func TestMKaaSServiceOp_NodeDelete(t *testing.T) {
-	setup()
-	defer teardown()
-
-	const testNodeID = testResourceIntID + 1
-
-	expectedResp := &TaskResponse{Tasks: []string{taskID}}
-	URL := path.Join(MKaaSClustersBasePathV2, strconv.Itoa(projectID), strconv.Itoa(regionID),
-		strconv.Itoa(testResourceIntID), "pools", strconv.Itoa(mkaasTestPoolID), "nodes", strconv.Itoa(testNodeID))
-
-	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
-		testMethod(t, r, http.MethodDelete)
-		resp, err := json.Marshal(expectedResp)
-		if err != nil {
-			t.Errorf("failed to marshal response: %v", err)
-		}
-		_, _ = fmt.Fprint(w, string(resp))
-	})
-
-	respActual, resp, err := client.MkaaS.NodeDelete(ctx, testResourceIntID, mkaasTestPoolID, testNodeID)
-	require.NoError(t, err)
-	require.Equal(t, resp.StatusCode, 200)
-	require.Equal(t, respActual, expectedResp)
-}
-
 func TestMKaaSServiceOp_NodesDelete(t *testing.T) {
 	setup()
 	defer teardown()

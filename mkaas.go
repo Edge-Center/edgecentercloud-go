@@ -75,9 +75,6 @@ const (
 type MKaaSNodes interface {
 	NodesList(ctx context.Context, clusterID, poolID int, opts *MKaaSNodeListOptions) ([]MKaaSNode, *Response, error)
 
-	// Deprecated: Use NodesDelete instead.
-	NodeDelete(ctx context.Context, clusterID, poolID, nodeID int) (*TaskResponse, *Response, error)
-
 	NodesDelete(ctx context.Context, clusterID, poolID int,
 		reqBody MKaaSNodesDeleteRequest) (*TaskResponse, *Response, error)
 }
@@ -745,38 +742,6 @@ func (m *MKaaSServiceOp) NodesList(
 	}
 
 	return root.Nodes, resp, nil
-}
-
-// NodeDelete deletes a single node from a pool.
-//
-// Deprecated: Use NodesDelete instead.
-func (m *MKaaSServiceOp) NodeDelete(
-	ctx context.Context, clusterID, poolID, nodeID int,
-) (*TaskResponse, *Response, error) {
-	if resp, err := m.client.Validate(); err != nil {
-		return nil, resp, err
-	}
-
-	path := fmt.Sprintf(
-		"%s/%d/pools/%d/nodes/%d",
-		m.client.addProjectRegionPath(MKaaSClustersBasePathV2),
-		clusterID,
-		poolID,
-		nodeID,
-	)
-
-	req, err := m.client.NewRequest(ctx, http.MethodDelete, path, nil)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	tasks := new(TaskResponse)
-	resp, err := m.client.Do(ctx, req, tasks)
-	if err != nil {
-		return nil, resp, err
-	}
-
-	return tasks, resp, err
 }
 
 // NodesDelete deletes the specified nodes from a pool.
