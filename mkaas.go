@@ -74,7 +74,9 @@ const (
 
 type MKaaSNodes interface {
 	NodesList(ctx context.Context, clusterID, poolID int, opts *MKaaSNodeListOptions) ([]MKaaSNode, *Response, error)
-	NodeDelete(ctx context.Context, clusterID, poolID, nodeID int) (*TaskResponse, *Response, error)
+
+	NodesDelete(ctx context.Context, clusterID, poolID int,
+		reqBody MKaaSNodesDeleteRequest) (*TaskResponse, *Response, error)
 }
 
 type MKaaSPools interface {
@@ -285,6 +287,10 @@ type MKaaSPoolUpdateSecurityGroupsRequest struct {
 
 type MKaaSPoolUpdateLabelsRequest struct {
 	Labels map[string]string `json:"labels,omitempty"`
+}
+
+type MKaaSNodesDeleteRequest struct {
+	NodeIDs []int `json:"node_ids"`
 }
 
 type MKaaSPoolUpdateTaintsRequest struct {
@@ -738,22 +744,22 @@ func (m *MKaaSServiceOp) NodesList(
 	return root.Nodes, resp, nil
 }
 
-func (m *MKaaSServiceOp) NodeDelete(
-	ctx context.Context, clusterID, poolID, nodeID int,
+// NodesDelete deletes the specified nodes from a pool.
+func (m *MKaaSServiceOp) NodesDelete(
+	ctx context.Context, clusterID, poolID int, reqBody MKaaSNodesDeleteRequest,
 ) (*TaskResponse, *Response, error) {
 	if resp, err := m.client.Validate(); err != nil {
 		return nil, resp, err
 	}
 
 	path := fmt.Sprintf(
-		"%s/%d/pools/%d/nodes/%d",
+		"%s/%d/pools/%d/nodes/delete",
 		m.client.addProjectRegionPath(MKaaSClustersBasePathV2),
 		clusterID,
 		poolID,
-		nodeID,
 	)
 
-	req, err := m.client.NewRequest(ctx, http.MethodDelete, path, nil)
+	req, err := m.client.NewRequest(ctx, http.MethodPost, path, reqBody)
 	if err != nil {
 		return nil, nil, err
 	}
