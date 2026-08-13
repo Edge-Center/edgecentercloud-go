@@ -95,6 +95,7 @@ type DBaaSClusterCreateRequest struct {
 	Flavor           string                `json:"flavor"`
 	Volume           DBaaSVolume           `json:"volume"`
 	Interface        DBaaSClusterInterface `json:"interface"`
+	FromBackupID     *string               `json:"from_backup_id,omitempty"`
 	Access           *DBaaSClusterAccess   `json:"access,omitempty"`
 }
 
