@@ -18,6 +18,8 @@ const (
 	dbaasNetworkID    = "f0d19cec-5c3f-4853-886e-304915960ff4"
 	dbaasSubnetID     = "rtb19cec-5c3f-4853-886e-3045fk9g5kg9"
 	dbaasClusterID    = "123e4567-e89b-12d3-a456-426614174000"
+	dbaasPrivateHost  = "postgres.internal.example"
+	dbaasPublicHost   = "postgres.public.example"
 	dbaasUserName     = "user_name"
 	dbaasDatabaseName = "user_analytics"
 	testBackupID      = "e13bd88d-79c8-4871-a9c2-a4baca741d0f"
@@ -43,6 +45,10 @@ func TestDBaaSServiceOp_ClusterCreate(t *testing.T) {
 		Interface: DBaaSClusterInterface{
 			NetworkID: dbaasNetworkID,
 			SubnetID:  dbaasSubnetID,
+		},
+		Access: &DBaaSClusterAccess{
+			AllowedCIDRs: []string{"10.0.0.0/24"},
+			IsPublic:     true,
 		},
 	}
 	expectedResp := &TaskResponse{Tasks: []string{taskID}}
@@ -97,6 +103,16 @@ func TestDBaaSServiceOp_ClusterGet(t *testing.T) {
 	expectedResp := &DBaaSCluster{
 		ID:   dbaasClusterID,
 		Name: "my-db-cluster",
+		Access: &DBaaSClusterAccess{
+			AllowedCIDRs: []string{"10.0.0.0/24"},
+			IsPublic:     true,
+		},
+		Connection: &DBaaSConnection{
+			Method:      "DIRECT",
+			PrivateHost: dbaasPrivateHost,
+			PublicHost:  dbaasPublicHost,
+			Port:        5432,
+		},
 	}
 	clusterID := dbaasClusterID
 	URL := path.Join(DBaaSClustersBasePathV3, strconv.Itoa(projectID), strconv.Itoa(regionID), clusterID)
@@ -197,6 +213,42 @@ func TestDBaaSServiceOp_ClusterUpdateClearDescription(t *testing.T) {
 	require.Equal(t, respActual, expectedResp)
 }
 
+func TestDBaaSServiceOp_ClusterUpdateAccessControl(t *testing.T) {
+	setup()
+	defer teardown()
+
+	allowedCIDRs := []string{}
+	isPublic := false
+	request := DBaaSClusterAccessControlUpdateRequest{
+		AllowedCIDRs: &allowedCIDRs,
+		IsPublic:     &isPublic,
+	}
+	expectedResp := &TaskResponse{Tasks: []string{taskID}}
+	clusterID := dbaasClusterID
+	URL := path.Join(DBaaSClustersBasePathV3, strconv.Itoa(projectID), strconv.Itoa(regionID), clusterID, dbaasAccessControlPath)
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodPatch)
+		reqBody := &DBaaSClusterAccessControlUpdateRequest{}
+		if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
+			t.Errorf("failed to decode request body: %v", err)
+		}
+		assert.Equal(t, request, *reqBody)
+
+		body, _ := json.Marshal(reqBody)
+		assert.Contains(t, string(body), `"allowed_cidrs":[]`, "empty allowed_cidrs must be serialized as empty array, not omitted")
+		assert.Contains(t, string(body), `"is_public":false`, "false is_public must be serialized when explicitly provided")
+
+		resp, _ := json.Marshal(expectedResp)
+		_, _ = fmt.Fprint(w, string(resp))
+	})
+
+	respActual, resp, err := client.DBaaS.ClusterUpdateAccessControl(ctx, clusterID, request)
+	require.NoError(t, err)
+	require.Equal(t, resp.StatusCode, 200)
+	require.Equal(t, respActual, expectedResp)
+}
+
 func TestDBaaSClusterUpdateRequest_EmptyDescriptionSerialization(t *testing.T) {
 	emptyDesc := ""
 	req := DBaaSClusterUpdateRequest{
@@ -214,6 +266,26 @@ func TestDBaaSClusterUpdateRequest_EmptyDescriptionSerialization(t *testing.T) {
 	require.NoError(t, err)
 	assert.NotContains(t, string(nilData), `"name"`, "nil name must be omitted")
 	assert.NotContains(t, string(nilData), `"description"`, "nil description must be omitted")
+}
+
+func TestDBaaSClusterAccessControlUpdateRequest_EmptyAllowedCIDRsSerialization(t *testing.T) {
+	allowedCIDRs := []string{}
+	isPublic := false
+	req := DBaaSClusterAccessControlUpdateRequest{
+		AllowedCIDRs: &allowedCIDRs,
+		IsPublic:     &isPublic,
+	}
+
+	data, err := json.Marshal(req)
+	require.NoError(t, err)
+	assert.Contains(t, string(data), `"allowed_cidrs":[]`, "empty allowed_cidrs pointer must be serialized")
+	assert.Contains(t, string(data), `"is_public":false`, "false is_public pointer must be serialized")
+
+	nilReq := DBaaSClusterAccessControlUpdateRequest{}
+	nilData, err := json.Marshal(nilReq)
+	require.NoError(t, err)
+	assert.NotContains(t, string(nilData), `"allowed_cidrs"`, "nil allowed_cidrs must be omitted")
+	assert.NotContains(t, string(nilData), `"is_public"`, "nil is_public must be omitted")
 }
 
 func TestDBaaSServiceOp_UsersList(t *testing.T) {

@@ -10,6 +10,7 @@ const (
 	DBaaSClustersBasePathV3 = "/dbaas/v3/clusters"
 	DBaaSDbmsBasePathV3     = "/dbaas/v3/dbms"
 	DBaaSBackupsBasePathV3  = "/dbaas/v3/backups"
+	dbaasAccessControlPath  = "access-control"
 )
 
 type DBaaSService interface {
@@ -26,6 +27,7 @@ type DBaaSClusters interface {
 	ClusterGet(context.Context, string) (*DBaaSCluster, *Response, error)
 	ClusterDelete(context.Context, string) (*TaskResponse, *Response, error)
 	ClusterUpdate(context.Context, string, DBaaSClusterUpdateRequest) (*TaskResponse, *Response, error)
+	ClusterUpdateAccessControl(context.Context, string, DBaaSClusterAccessControlUpdateRequest) (*TaskResponse, *Response, error)
 }
 
 type DBaaSUsers interface {
@@ -81,6 +83,7 @@ type DBaaSCluster struct {
 	Flavor           string                 `json:"flavor,omitempty"`
 	Volume           *DBaaSVolume           `json:"volume,omitempty"`
 	Interface        *DBaaSClusterInterface `json:"interface,omitempty"`
+	Access           *DBaaSClusterAccess    `json:"access,omitempty"`
 	Connection       *DBaaSConnection       `json:"connection,omitempty"`
 }
 
@@ -93,6 +96,7 @@ type DBaaSClusterCreateRequest struct {
 	Volume           DBaaSVolume           `json:"volume"`
 	Interface        DBaaSClusterInterface `json:"interface"`
 	FromBackupID     *string               `json:"from_backup_id,omitempty"`
+	Access           *DBaaSClusterAccess   `json:"access,omitempty"`
 }
 
 type DBaaSClusterUpdateRequest struct {
@@ -117,6 +121,16 @@ type DBaaSClusterInterface struct {
 	SubnetID  string `json:"subnet_id"`
 }
 
+type DBaaSClusterAccess struct {
+	AllowedCIDRs []string `json:"allowed_cidrs,omitempty"`
+	IsPublic     bool     `json:"is_public"`
+}
+
+type DBaaSClusterAccessControlUpdateRequest struct {
+	AllowedCIDRs *[]string `json:"allowed_cidrs,omitempty"`
+	IsPublic     *bool     `json:"is_public,omitempty"`
+}
+
 type DBaaSClusterListOptions struct {
 	Limit  int `url:"limit,omitempty"`
 	Offset int `url:"offset,omitempty"`
@@ -128,9 +142,11 @@ type dbaasClustersRoot struct {
 }
 
 type DBaaSConnection struct {
-	Method string `json:"method"`
-	Host   string `json:"host"`
-	Port   int    `json:"port"`
+	Method      string `json:"method"`
+	Host        string `json:"host,omitempty"`
+	PrivateHost string `json:"private_host,omitempty"`
+	PublicHost  string `json:"public_host,omitempty"`
+	Port        int    `json:"port"`
 }
 
 type DBaaSUserListOptions struct {
@@ -341,6 +357,27 @@ func (s *DBaaSServiceOp) ClusterUpdate(ctx context.Context, clusterID string, re
 	}
 
 	path := fmt.Sprintf("%s/%s", s.client.addProjectRegionPath(DBaaSClustersBasePathV3), clusterID)
+
+	req, err := s.client.NewRequest(ctx, http.MethodPatch, path, reqBody)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	tasks := new(TaskResponse)
+	resp, err := s.client.Do(ctx, req, tasks)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return tasks, resp, err
+}
+
+func (s *DBaaSServiceOp) ClusterUpdateAccessControl(ctx context.Context, clusterID string, reqBody DBaaSClusterAccessControlUpdateRequest) (*TaskResponse, *Response, error) {
+	if resp, err := s.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	path := fmt.Sprintf("%s/%s/%s", s.client.addProjectRegionPath(DBaaSClustersBasePathV3), clusterID, dbaasAccessControlPath)
 
 	req, err := s.client.NewRequest(ctx, http.MethodPatch, path, reqBody)
 	if err != nil {
