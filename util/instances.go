@@ -53,6 +53,20 @@ func InstanceNetworkInterfaceByID(ctx context.Context, client *edgecloud.Client,
 	return nil, fmt.Errorf("%w :there is no interface port with id %s in instance with id %s", ErrInstanceInterfaceNotFound, portID, instanceID)
 }
 
+func InstanceNetworkInterfaceByIDWithResponse(ctx context.Context, client *edgecloud.Client, instanceID string, portID string) (*edgecloud.InstancePortInterface, *edgecloud.Response, error) {
+	instanceIfaceList, resp, err := client.Instances.InterfaceList(ctx, instanceID)
+	if err != nil {
+		return nil, resp, err
+	}
+	for _, iface := range instanceIfaceList {
+		if iface.PortID == portID {
+			return &iface, resp, nil
+		}
+	}
+
+	return nil, resp, fmt.Errorf("%w :there is no interface port with id %s in instance with id %s", ErrInstanceInterfaceNotFound, portID, instanceID)
+}
+
 func InstanceNetworkPortByID(ctx context.Context, client *edgecloud.Client, instanceID string, portID string) (*edgecloud.InstancePort, error) {
 	instancePortList, _, err := client.Instances.PortsList(ctx, instanceID)
 	if err != nil {
