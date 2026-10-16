@@ -196,10 +196,11 @@ func TestMKaaSServiceOp_PoolCreate(t *testing.T) {
 	defer teardown()
 
 	request := MKaaSPoolCreateRequest{
-		Name:       mkaasClusterName,
-		Flavor:     mkaasFlavor,
-		NodeCount:  1,
-		VolumeSize: 10,
+		Name:            mkaasClusterName,
+		Flavor:          mkaasFlavor,
+		NodeCount:       1,
+		VolumeSize:      10,
+		PublicIPEnabled: true,
 	}
 
 	expectedResp := &TaskResponse{Tasks: []string{taskID}}
@@ -229,7 +230,7 @@ func TestMKaaSServiceOp_PoolsList(t *testing.T) {
 	setup()
 	defer teardown()
 
-	expectedResp := []MKaaSPool{{ID: testResourceIntID}}
+	expectedResp := []MKaaSPool{{ID: testResourceIntID, PublicIPEnabled: true}}
 	URL := path.Join(MKaaSClustersBasePathV2, strconv.Itoa(projectID), strconv.Itoa(regionID), strconv.Itoa(testResourceIntID), "pools")
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
@@ -252,7 +253,8 @@ func TestMKaaSServiceOp_PoolGet(t *testing.T) {
 	defer teardown()
 
 	expectedResp := &MKaaSPool{
-		ID: testResourceIntID,
+		ID:              testResourceIntID,
+		PublicIPEnabled: true,
 	}
 	URL := path.Join(MKaaSClustersBasePathV2, strconv.Itoa(projectID), strconv.Itoa(regionID), strconv.Itoa(testResourceIntID), "pools", strconv.Itoa(testResourceIntID))
 
@@ -609,6 +611,51 @@ func TestMKaaSServiceOp_PoolUpdateAutoscaling(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, resp.StatusCode, 200)
 	require.Equal(t, respActual, expectedResp)
+}
+
+func TestMKaaSServiceOp_PoolConfigurePublicIP(t *testing.T) {
+	for _, publicIPEnabled := range []bool{true, false} {
+		t.Run(fmt.Sprintf("enabled_%t", publicIPEnabled), func(t *testing.T) {
+			setup()
+			defer teardown()
+
+			request := MKaaSPoolConfigurePublicIPRequest{PublicIPEnabled: publicIPEnabled}
+			expectedResp := &TaskResponse{Tasks: []string{taskID}}
+			URL := path.Join(MKaaSClustersBasePathV2, strconv.Itoa(projectID), strconv.Itoa(regionID),
+				strconv.Itoa(testResourceIntID), "pools", strconv.Itoa(testResourceIntID), "configure_public_ip")
+
+			mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+				testMethod(t, r, http.MethodPut)
+
+				var rawBody map[string]json.RawMessage
+				if err := json.NewDecoder(r.Body).Decode(&rawBody); err != nil {
+					t.Fatalf("failed to decode request body: %v", err)
+				}
+				rawValue, ok := rawBody["public_ip_enabled"]
+				if !ok {
+					t.Fatal("public_ip_enabled is missing from request body")
+				}
+				var actualValue bool
+				if err := json.Unmarshal(rawValue, &actualValue); err != nil {
+					t.Fatalf("failed to decode public_ip_enabled: %v", err)
+				}
+				assert.Equal(t, request.PublicIPEnabled, actualValue)
+
+				resp, err := json.Marshal(expectedResp)
+				if err != nil {
+					t.Errorf("failed to marshal response: %v", err)
+				}
+				_, _ = fmt.Fprint(w, string(resp))
+			})
+
+			respActual, resp, err := client.MkaaS.PoolConfigurePublicIP(
+				ctx, testResourceIntID, testResourceIntID, request,
+			)
+			require.NoError(t, err)
+			require.Equal(t, resp.StatusCode, 200)
+			require.Equal(t, respActual, expectedResp)
+		})
+	}
 }
 
 func TestMKaaSServiceOp_NodesList(t *testing.T) {

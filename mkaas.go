@@ -94,6 +94,8 @@ type MKaaSPools interface {
 		reqBody MKaaSPoolUpdateTaintsRequest) (*TaskResponse, *Response, error)
 	PoolUpdateAutoscaling(ctx context.Context, clusterID, poolID int,
 		reqBody MKaaSPoolUpdateAutoscalingRequest) (*TaskResponse, *Response, error)
+	PoolConfigurePublicIP(ctx context.Context, clusterID, poolID int,
+		reqBody MKaaSPoolConfigurePublicIPRequest) (*TaskResponse, *Response, error)
 	PoolDelete(ctx context.Context, clusterID, poolID int) (*TaskResponse, *Response, error)
 }
 
@@ -264,6 +266,7 @@ type MKaaSPoolCreateRequest struct {
 	Labels             map[string]string `json:"labels,omitempty"`
 	Taints             []MKaaSTaint      `json:"taints,omitempty"`
 	SecurityGroupIds   []string          `json:"security_group_ids,omitempty"`
+	PublicIPEnabled    bool              `json:"public_ip_enabled,omitempty"`
 }
 
 type MKaaSPoolUpdateRequest struct {
@@ -308,6 +311,10 @@ type MKaaSPoolUpdateAutoscalingRequest struct {
 	MaxNodeCount      *int  `json:"max_node_count,omitempty"`
 }
 
+type MKaaSPoolConfigurePublicIPRequest struct {
+	PublicIPEnabled bool `json:"public_ip_enabled"`
+}
+
 type MKaaSPool struct {
 	ID                 int               `json:"id"`
 	Name               string            `json:"name"`
@@ -323,6 +330,7 @@ type MKaaSPool struct {
 	State              string            `json:"state"`
 	Status             string            `json:"status"`
 	SecurityGroupIds   []string          `json:"security_group_ids"`
+	PublicIPEnabled    bool              `json:"public_ip_enabled"`
 }
 
 // MKaaSTaint configuration for nodes.
@@ -734,6 +742,36 @@ func (m *MKaaSServiceOp) PoolUpdateAutoscaling(
 	}
 
 	return tasks, resp, err
+}
+
+func (m *MKaaSServiceOp) PoolConfigurePublicIP(
+	ctx context.Context,
+	clusterID, poolID int,
+	reqBody MKaaSPoolConfigurePublicIPRequest,
+) (*TaskResponse, *Response, error) {
+	if resp, err := m.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	path := fmt.Sprintf(
+		"%s/%d/pools/%d/configure_public_ip",
+		m.client.addProjectRegionPath(MKaaSClustersBasePathV2),
+		clusterID,
+		poolID,
+	)
+
+	req, err := m.client.NewRequest(ctx, http.MethodPut, path, reqBody)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	tasks := new(TaskResponse)
+	resp, err := m.client.Do(ctx, req, tasks)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return tasks, resp, nil
 }
 
 func (m *MKaaSServiceOp) NodesList(
