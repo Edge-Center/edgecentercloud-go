@@ -166,3 +166,61 @@ func TestInstanceNetworkInterfaceByID(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, testResourceID2, iface.PortID)
 }
+
+func TestInstanceNetworkInterfaceByIDWithResponse_NotFound(t *testing.T) {
+	ctx := context.Background()
+	mux := http.NewServeMux()
+	server := httptest.NewServer(mux)
+	defer server.Close()
+
+	instanceID := testResourceID
+	URL := path.Join("/v1/instances/", strconv.Itoa(projectID), strconv.Itoa(regionID), instanceID, "interfaces")
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusNotFound)
+		_, _ = fmt.Fprint(w, `{"message":"instance not found"}`)
+	})
+
+	client := edgecloud.NewClient(nil)
+	baseURL, _ := url.Parse(server.URL)
+	client.BaseURL = baseURL
+	client.Project = projectID
+	client.Region = regionID
+
+	iface, resp, err := InstanceNetworkInterfaceByIDWithResponse(ctx, client, instanceID, testResourceID2)
+	require.Error(t, err)
+	assert.Nil(t, iface)
+	require.NotNil(t, resp)
+	assert.Equal(t, http.StatusNotFound, resp.StatusCode)
+}
+
+func TestInstanceNetworkInterfaceByIDWithResponse_InterfaceNotFound(t *testing.T) {
+	ctx := context.Background()
+	mux := http.NewServeMux()
+	server := httptest.NewServer(mux)
+	defer server.Close()
+
+	instanceID := testResourceID
+	instanceIfaces := []edgecloud.InstanceInterface{{PortID: testResourceID}}
+	URL := path.Join("/v1/instances/", strconv.Itoa(projectID), strconv.Itoa(regionID), instanceID, "interfaces")
+
+	mux.HandleFunc(URL, func(w http.ResponseWriter, _ *http.Request) {
+		resp, err := json.Marshal(instanceIfaces)
+		if err != nil {
+			t.Fatalf("failed to marshal JSON: %v", err)
+		}
+		_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))
+	})
+
+	client := edgecloud.NewClient(nil)
+	baseURL, _ := url.Parse(server.URL)
+	client.BaseURL = baseURL
+	client.Project = projectID
+	client.Region = regionID
+
+	iface, resp, err := InstanceNetworkInterfaceByIDWithResponse(ctx, client, instanceID, testResourceID2)
+	require.ErrorIs(t, err, ErrInstanceInterfaceNotFound)
+	assert.Nil(t, iface)
+	require.NotNil(t, resp)
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
+}
