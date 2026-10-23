@@ -295,6 +295,8 @@ func New(httpClient *http.Client, opts ...ClientOpt) (*Client, error) {
 		// By default, this is nil and does not log.
 		retryableClient.Logger = c.RetryConfig.Logger
 
+		retryableClient.CheckRetry = retryPolicy
+
 		// if timeout is set, it is maintained before overwriting client with StandardClient()
 		retryableClient.HTTPClient.Timeout = c.HTTPClient.Timeout
 
