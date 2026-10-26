@@ -40,6 +40,7 @@ type MKaaSClusters interface {
 	ClusterUpdateName(ctx context.Context, clusterID int, reqBody MKaaSClusterUpdateNameRequest) (*TaskResponse, *Response, error)
 	ClusterUpdateMasterNodeCount(ctx context.Context, clusterID int, reqBody MKaaSClusterUpdateMasterNodeCountRequest) (*TaskResponse, *Response, error)
 	ClusterUpgradeVersion(ctx context.Context, clusterID int, reqBody MKaaSClusterUpgradeVersionRequest) (*TaskResponse, *Response, error)
+	ClusterUpdateAutohealing(ctx context.Context, clusterID int, reqBody MKaaSClusterUpdateAutohealingRequest) (*TaskResponse, *Response, error)
 	ClusterDelete(context.Context, int) (*TaskResponse, *Response, error)
 }
 
@@ -189,6 +190,7 @@ type MKaaSClusterCreateRequest struct {
 	PodSubnet                *string                   `json:"pod_subnet,omitempty"`
 	ServiceSubnet            *string                   `json:"service_subnet,omitempty"`
 	PublishKubeAPIToInternet bool                      `json:"publish_kube_api_to_internet"`
+	AutohealingEnabled       *bool                     `json:"autohealing_enabled,omitempty"`
 	ControlPlane             ControlPlaneCreateRequest `json:"control_plane"`
 	Pools                    []MKaaSPoolCreateRequest  `json:"pools,omitempty"`
 }
@@ -205,27 +207,32 @@ type MKaaSClusterUpgradeVersionRequest struct {
 	TargetVersion string `json:"target_version"`
 }
 
+type MKaaSClusterUpdateAutohealingRequest struct {
+	EnableAutohealing bool `json:"enable_autohealing"`
+}
+
 // MKaaSCluster represents an EdgecenterCloud MkaaS Cluster.
 type MKaaSCluster struct {
-	ID                int          `json:"id"`
-	RegionID          int          `json:"region_id"`
-	ProjectID         int          `json:"project_id"`
-	SSHKeypairName    string       `json:"ssh_keypair_name"`
-	Name              string       `json:"name"`
-	NetworkID         string       `json:"network_id"`
-	SubnetID          string       `json:"subnet_id"`
-	ControlPlane      ControlPlane `json:"control_plane"`
-	Pools             []MKaaSPool  `json:"pools"`
-	InternalIP        string       `json:"internal_ip"`
-	ExternalIP        string       `json:"external_ip"`
-	Existed           string       `json:"existed,omitempty"` // Duration string (e.g., "237h36m46.703341967s")
-	Created           string       `json:"created"`
-	Processing        bool         `json:"processing"`
-	Status            string       `json:"status"`
-	Stage             string       `json:"stage"`
-	PodSubnet         string       `json:"pod_subnet"`
-	ServiceSubnet     string       `json:"service_subnet"`
-	AutoscalerEnabled bool         `json:"autoscaler_enabled"`
+	ID                 int          `json:"id"`
+	RegionID           int          `json:"region_id"`
+	ProjectID          int          `json:"project_id"`
+	SSHKeypairName     string       `json:"ssh_keypair_name"`
+	Name               string       `json:"name"`
+	NetworkID          string       `json:"network_id"`
+	SubnetID           string       `json:"subnet_id"`
+	ControlPlane       ControlPlane `json:"control_plane"`
+	Pools              []MKaaSPool  `json:"pools"`
+	InternalIP         string       `json:"internal_ip"`
+	ExternalIP         string       `json:"external_ip"`
+	Existed            string       `json:"existed,omitempty"` // Duration string (e.g., "237h36m46.703341967s")
+	Created            string       `json:"created"`
+	Processing         bool         `json:"processing"`
+	Status             string       `json:"status"`
+	Stage              string       `json:"stage"`
+	PodSubnet          string       `json:"pod_subnet"`
+	ServiceSubnet      string       `json:"service_subnet"`
+	AutoscalerEnabled  bool         `json:"autoscaler_enabled"`
+	AutohealingEnabled *bool        `json:"autohealing_enabled,omitempty"`
 }
 
 type ControlPlaneCreateRequest struct {
@@ -467,6 +474,33 @@ func (m *MKaaSServiceOp) ClusterUpgradeVersion(
 	path := fmt.Sprintf("%s/%d/upgrade_version", m.client.addProjectRegionPath(MKaaSClustersBasePathV2), clusterID)
 
 	req, err := m.client.NewRequest(ctx, http.MethodPost, path, reqBody)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	tasks := new(TaskResponse)
+	resp, err := m.client.Do(ctx, req, tasks)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return tasks, resp, err
+}
+
+func (m *MKaaSServiceOp) ClusterUpdateAutohealing(
+	ctx context.Context, clusterID int, reqBody MKaaSClusterUpdateAutohealingRequest,
+) (*TaskResponse, *Response, error) {
+	if resp, err := m.client.Validate(); err != nil {
+		return nil, resp, err
+	}
+
+	path := fmt.Sprintf(
+		"%s/%d/autohealing",
+		m.client.addProjectRegionPath(MKaaSClustersBasePathV2),
+		clusterID,
+	)
+
+	req, err := m.client.NewRequest(ctx, http.MethodPut, path, reqBody)
 	if err != nil {
 		return nil, nil, err
 	}
