@@ -28,10 +28,11 @@ func TestMKaaSServiceOp_ClusterCreate(t *testing.T) {
 	defer teardown()
 
 	request := MKaaSClusterCreateRequest{
-		Name:           mkaasClusterName,
-		SSHKeyPairName: mkaasKeypairName,
-		NetworkID:      mkaasTestNetworkID,
-		SubnetID:       mkaasSubnetID,
+		Name:               mkaasClusterName,
+		SSHKeyPairName:     mkaasKeypairName,
+		NetworkID:          mkaasTestNetworkID,
+		SubnetID:           mkaasSubnetID,
+		AutohealingEnabled: PtrTo(true),
 		ControlPlane: ControlPlaneCreateRequest{
 			Flavor:     mkaasFlavor,
 			NodeCount:  1,
@@ -74,11 +75,45 @@ func TestMKaaSServiceOp_ClusterCreate(t *testing.T) {
 	require.Equal(t, respActual, expectedResp)
 }
 
+func TestMKaaSClusterCreateRequest_AutohealingEnabled(t *testing.T) {
+	t.Run("nil is omitted", func(t *testing.T) {
+		body, err := json.Marshal(MKaaSClusterCreateRequest{})
+		require.NoError(t, err)
+
+		var payload map[string]any
+		require.NoError(t, json.Unmarshal(body, &payload))
+
+		require.NotContains(t, payload, "autohealing_enabled")
+	})
+
+	t.Run("false is present", func(t *testing.T) {
+		body, err := json.Marshal(MKaaSClusterCreateRequest{AutohealingEnabled: PtrTo(false)})
+		require.NoError(t, err)
+
+		var payload map[string]any
+		require.NoError(t, json.Unmarshal(body, &payload))
+
+		require.Contains(t, payload, "autohealing_enabled")
+		require.Equal(t, false, payload["autohealing_enabled"])
+	})
+}
+
+func TestMKaaSCluster_AutohealingEnabled(t *testing.T) {
+	var cluster MKaaSCluster
+
+	require.NoError(t, json.Unmarshal([]byte(`{}`), &cluster))
+	require.Nil(t, cluster.AutohealingEnabled)
+
+	require.NoError(t, json.Unmarshal([]byte(`{"autohealing_enabled":false}`), &cluster))
+	require.NotNil(t, cluster.AutohealingEnabled)
+	require.False(t, *cluster.AutohealingEnabled)
+}
+
 func TestMKaaSServiceOp_ClustersList(t *testing.T) {
 	setup()
 	defer teardown()
 
-	expectedResp := []MKaaSCluster{{ID: testResourceIntID}}
+	expectedResp := []MKaaSCluster{{ID: testResourceIntID, AutohealingEnabled: PtrTo(true)}}
 	URL := path.Join(MKaaSClustersBasePathV2, strconv.Itoa(projectID), strconv.Itoa(regionID))
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
@@ -119,7 +154,8 @@ func TestMKaaSServiceOp_ClustersGet(t *testing.T) {
 	defer teardown()
 
 	expectedResp := &MKaaSCluster{
-		ID: testResourceIntID,
+		ID:                 testResourceIntID,
+		AutohealingEnabled: PtrTo(true),
 	}
 	URL := path.Join(MKaaSClustersBasePathV2, strconv.Itoa(projectID), strconv.Itoa(regionID), strconv.Itoa(testResourceIntID))
 
@@ -402,6 +438,62 @@ func TestMKaaSServiceOp_ClusterUpgradeVersion(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, resp.StatusCode, 200)
 	require.Equal(t, respActual, expectedResp)
+}
+
+func TestMKaaSServiceOp_ClusterUpdateAutohealing(t *testing.T) {
+	cases := []struct {
+		name   string
+		enable bool
+	}{
+		{name: "enable", enable: true},
+		{name: "disable", enable: false},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			setup()
+			defer teardown()
+
+			request := MKaaSClusterUpdateAutohealingRequest{
+				EnableAutohealing: tc.enable,
+			}
+
+			expectedResp := &TaskResponse{Tasks: []string{taskID}}
+			URL := path.Join(
+				MKaaSClustersBasePathV2,
+				strconv.Itoa(projectID),
+				strconv.Itoa(regionID),
+				strconv.Itoa(testResourceIntID),
+				"autohealing",
+			)
+
+			mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
+				testMethod(t, r, http.MethodPut)
+
+				reqBody := struct {
+					EnableAutohealing *bool `json:"enable_autohealing"`
+				}{}
+				if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+					t.Errorf("failed to decode request body: %v", err)
+				}
+				if assert.NotNil(t, reqBody.EnableAutohealing,
+					"enable_autohealing must be present in the request body") {
+					assert.Equal(t, tc.enable, *reqBody.EnableAutohealing)
+				}
+
+				resp, err := json.Marshal(expectedResp)
+				if err != nil {
+					t.Errorf("failed to marshal response: %v", err)
+				}
+				_, _ = fmt.Fprint(w, string(resp))
+			})
+
+			respActual, resp, err := client.MkaaS.ClusterUpdateAutohealing(ctx, testResourceIntID, request)
+			require.NoError(t, err)
+			require.Equal(t, resp.StatusCode, 200)
+			require.Equal(t, respActual, expectedResp)
+		})
+	}
 }
 
 func TestMKaaSServiceOp_PoolUpdateName(t *testing.T) {
