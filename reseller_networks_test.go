@@ -16,7 +16,7 @@ func TestResellerNetworks_List(t *testing.T) {
 	expectedResp := ResellerNetworks{
 		Count: 1,
 		Results: []ResellerNetwork{
-			{ID: testResourceID},
+			{ID: testResourceID, NetworkRouterID: PtrTo("router-id")},
 		},
 	}
 

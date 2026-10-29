@@ -62,6 +62,7 @@ type RouterInterface struct {
 type ExternalGatewayInfo struct {
 	ExternalFixedIPs []ExternalFixedIP `json:"external_fixed_ips"`
 	NetworkID        string            `json:"network_id"`
+	Type             *string           `json:"type"`
 }
 
 type ExternalFixedIP struct {

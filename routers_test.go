@@ -16,7 +16,12 @@ func TestRouters_List(t *testing.T) {
 	setup()
 	defer teardown()
 
-	expectedResp := []Router{{ID: testResourceID}}
+	expectedResp := []Router{{
+		ID: testResourceID,
+		ExternalGatewayInfo: ExternalGatewayInfo{
+			Type: PtrTo("default"),
+		},
+	}}
 	URL := path.Join(routersBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID))
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
@@ -66,7 +71,12 @@ func TestRouters_Get(t *testing.T) {
 	setup()
 	defer teardown()
 
-	expectedResp := &Router{ID: testResourceID}
+	expectedResp := &Router{
+		ID: testResourceID,
+		ExternalGatewayInfo: ExternalGatewayInfo{
+			Type: PtrTo("manual"),
+		},
+	}
 	URL := path.Join(routersBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
