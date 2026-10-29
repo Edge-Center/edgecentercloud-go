@@ -25,24 +25,25 @@ var _ ResellerNetworksService = &ResellerNetworksServiceOp{}
 
 // ResellerNetwork represents an EdgecenterCloud reseller network.
 type ResellerNetwork struct {
-	CreatedAt      string             `json:"created_at"`
-	Default        bool               `json:"default"`
-	External       bool               `json:"external"`
-	Shared         bool               `json:"shared"`
-	ID             string             `json:"id"`
-	MTU            int                `json:"mtu"`
-	Name           string             `json:"name"`
-	RegionID       int                `json:"region_id"`
-	Region         string             `json:"region"`
-	Type           string             `json:"type"`
-	Subnets        []Subnetwork       `json:"subnets"`
-	CreatorTaskID  string             `json:"creator_task_id"`
-	TaskID         string             `json:"task_id"`
-	SegmentationID int                `json:"segmentation_id"`
-	UpdatedAt      string             `json:"updated_at"`
-	Metadata       []MetadataDetailed `json:"metadata,omitempty"`
-	ClientID       int                `json:"client_id"`
-	ProjectID      int                `json:"project_id"`
+	CreatedAt       string             `json:"created_at"`
+	Default         bool               `json:"default"`
+	External        bool               `json:"external"`
+	Shared          bool               `json:"shared"`
+	ID              string             `json:"id"`
+	NetworkRouterID *string            `json:"network_router_id"`
+	MTU             int                `json:"mtu"`
+	Name            string             `json:"name"`
+	RegionID        int                `json:"region_id"`
+	Region          string             `json:"region"`
+	Type            string             `json:"type"`
+	Subnets         []Subnetwork       `json:"subnets"`
+	CreatorTaskID   string             `json:"creator_task_id"`
+	TaskID          string             `json:"task_id"`
+	SegmentationID  int                `json:"segmentation_id"`
+	UpdatedAt       string             `json:"updated_at"`
+	Metadata        []MetadataDetailed `json:"metadata,omitempty"`
+	ClientID        int                `json:"client_id"`
+	ProjectID       int                `json:"project_id"`
 }
 
 type ResellerNetworks struct {

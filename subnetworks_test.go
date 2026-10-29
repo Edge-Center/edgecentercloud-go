@@ -16,7 +16,7 @@ func TestSubnetworks_List(t *testing.T) {
 	setup()
 	defer teardown()
 
-	expectedResp := []Subnetwork{{ID: testResourceID}}
+	expectedResp := []Subnetwork{{ID: testResourceID, ConnectedToNetworkRouter: true}}
 	URL := path.Join(subnetsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID))
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
@@ -55,7 +55,7 @@ func TestSubnetworks_Get(t *testing.T) {
 	setup()
 	defer teardown()
 
-	expectedResp := &Subnetwork{ID: testResourceID}
+	expectedResp := &Subnetwork{ID: testResourceID, ConnectedToNetworkRouter: true}
 	URL := path.Join(subnetsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
