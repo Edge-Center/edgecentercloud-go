@@ -19,6 +19,7 @@ jobs:
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
           go-version: "1.27"
+          check-latest: true
 
       - name: Linters
         run: make lint
@@ -32,6 +33,7 @@ jobs:
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
           go-version: "1.27"
+          check-latest: true
 
       - name: Test
         run: go test -race ./...
@@ -45,6 +47,7 @@ jobs:
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
           go-version: "1.27"
+          check-latest: true
 
       - name: Build
         run: go build ./...
@@ -59,6 +62,7 @@ jobs:
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
           go-version: "1.27"
+          check-latest: true
 
       - name: Generate test coverage
         run: go test ./... -coverprofile=./cover.out -covermode=atomic
