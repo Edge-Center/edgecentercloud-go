@@ -319,8 +319,8 @@ func TestFloatingips_MetadataList(t *testing.T) {
 	defer teardown()
 
 	expectedResp := []MetadataDetailed{{
-		Key:      "image_id",
-		Value:    "b3c52ece-147e-4af5-8d7c-84691309b879",
+		Key:      testReadOnlyMetadataKey,
+		Value:    testReadOnlyMetadataValue,
 		ReadOnly: true,
 	}}
 	URL := path.Join(floatingipsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, metadataPath)
@@ -344,7 +344,7 @@ func TestFloatingips_MetadataCreate(t *testing.T) {
 	setup()
 	defer teardown()
 
-	request := &Metadata{"key": "value"}
+	request := &Metadata{testMetadataKey: testMetadataValue}
 	URL := path.Join(floatingipsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, metadataPath)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
@@ -360,7 +360,7 @@ func TestFloatingips_MetadataUpdate(t *testing.T) {
 	setup()
 	defer teardown()
 
-	request := &Metadata{"key": "value"}
+	request := &Metadata{testMetadataKey: testMetadataValue}
 	URL := path.Join(floatingipsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, metadataPath)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
@@ -392,8 +392,8 @@ func TestFloatingips_MetadataGetItem(t *testing.T) {
 	defer teardown()
 
 	expectedResp := &MetadataDetailed{
-		Key:      "image_id",
-		Value:    "b3c52ece-147e-4af5-8d7c-84691309b879",
+		Key:      testReadOnlyMetadataKey,
+		Value:    testReadOnlyMetadataValue,
 		ReadOnly: true,
 	}
 	URL := path.Join(floatingipsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, metadataItemPath)
@@ -422,7 +422,7 @@ func TestFloatingips_isValidUUID_Error(t *testing.T) {
 		testFunc func() (*FloatingIP, *Response, error)
 	}{
 		{
-			name: "Get",
+			name: testCaseGet,
 			testFunc: func() (*FloatingIP, *Response, error) {
 				return client.Floatingips.Get(ctx, testResourceIDNotValidUUID)
 			},
@@ -470,19 +470,19 @@ func TestFloatingips_Metadata_isValidUUID_Error(t *testing.T) {
 		testFunc func() (*Response, error)
 	}{
 		{
-			name: "MetadataCreate",
+			name: testCaseMetadataCreate,
 			testFunc: func() (*Response, error) {
 				return client.Floatingips.MetadataCreate(ctx, testResourceIDNotValidUUID, nil)
 			},
 		},
 		{
-			name: "MetadataUpdate",
+			name: testCaseMetadataUpdate,
 			testFunc: func() (*Response, error) {
 				return client.Floatingips.MetadataUpdate(ctx, testResourceIDNotValidUUID, nil)
 			},
 		},
 		{
-			name: "MetadataDeleteItem",
+			name: testCaseMetadataDeleteItem,
 			testFunc: func() (*Response, error) {
 				return client.Floatingips.MetadataDeleteItem(ctx, testResourceIDNotValidUUID, nil)
 			},

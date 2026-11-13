@@ -17,6 +17,8 @@ import (
 	edgecloud "github.com/Edge-Center/edgecentercloud-go/v2"
 )
 
+const testBackupBuildingStatus = "BUILDING"
+
 func TestDBaaSClusterGetByCreatorTaskID(t *testing.T) {
 	mux := http.NewServeMux()
 	server := httptest.NewServer(mux)
@@ -302,7 +304,7 @@ func TestWaitDBaaSBackupStatusFinished(t *testing.T) {
 	mux.HandleFunc(getURL, func(w http.ResponseWriter, r *http.Request) {
 		resp, err := json.Marshal(&edgecloud.DBaaSBackup{
 			ID:     backupID,
-			Status: "FINISHED",
+			Status: DBaaSBackupFinishedStatus,
 		})
 		if err != nil {
 			t.Fatalf("failed to marshal JSON: %v", err)
@@ -361,7 +363,7 @@ func TestWaitDBaaSBackupStatusFinished_Timeout(t *testing.T) {
 	mux.HandleFunc(getURL, func(w http.ResponseWriter, r *http.Request) {
 		resp, err := json.Marshal(&edgecloud.DBaaSBackup{
 			ID:     backupID,
-			Status: "BUILDING",
+			Status: testBackupBuildingStatus,
 		})
 		if err != nil {
 			t.Fatalf("failed to marshal JSON: %v", err)
@@ -415,12 +417,12 @@ func TestCreateDBaaSBackupAndWait(t *testing.T) {
 			{
 				ID:            testResourceID,
 				CreatorTaskID: testResourceID,
-				Status:        "BUILDING",
+				Status:        testBackupBuildingStatus,
 			},
 			{
 				ID:            testResourceID2,
 				CreatorTaskID: testResourceID2,
-				Status:        "BUILDING",
+				Status:        testBackupBuildingStatus,
 			},
 		}
 		resp, err := json.Marshal(backups)
@@ -433,7 +435,7 @@ func TestCreateDBaaSBackupAndWait(t *testing.T) {
 	mux.HandleFunc(getURL, func(w http.ResponseWriter, r *http.Request) {
 		resp, err := json.Marshal(&edgecloud.DBaaSBackup{
 			ID:     testResourceID2,
-			Status: "FINISHED",
+			Status: DBaaSBackupFinishedStatus,
 		})
 		if err != nil {
 			t.Fatalf("failed to marshal JSON: %v", err)
@@ -451,7 +453,7 @@ func TestCreateDBaaSBackupAndWait(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, backup)
 	assert.Equal(t, testResourceID2, backup.ID)
-	assert.Equal(t, "FINISHED", backup.Status)
+	assert.Equal(t, DBaaSBackupFinishedStatus, backup.Status)
 }
 
 func TestCreateDBaaSBackupAndWait_EmptyTaskIDs(t *testing.T) {
@@ -508,8 +510,8 @@ func TestWaitDBaaSBackupByCreatorTaskID_Found(t *testing.T) {
 	listURL := path.Join(edgecloud.DBaaSBackupsBasePathV3, strconv.Itoa(projectID), strconv.Itoa(regionID))
 	mux.HandleFunc(listURL, func(w http.ResponseWriter, r *http.Request) {
 		backups := []edgecloud.DBaaSBackup{
-			{ID: testResourceID, CreatorTaskID: testResourceID2, Status: "BUILDING"},
-			{ID: testResourceID2, CreatorTaskID: testResourceID, Status: "FINISHED"},
+			{ID: testResourceID, CreatorTaskID: testResourceID2, Status: testBackupBuildingStatus},
+			{ID: testResourceID2, CreatorTaskID: testResourceID, Status: DBaaSBackupFinishedStatus},
 		}
 		resp, err := json.Marshal(backups)
 		if err != nil {

@@ -183,7 +183,7 @@ type ResponseError struct {
 func addOptions(s string, opt interface{}) (string, error) {
 	v := reflect.ValueOf(opt)
 
-	if v.Kind() == reflect.Ptr && v.IsNil() {
+	if v.Kind() == reflect.Pointer && v.IsNil() {
 		return s, nil
 	}
 
@@ -398,7 +398,7 @@ func WithRetryAndBackoffs(retryConfig RetryConfig) ClientOpt {
 // NewRequest creates an API request. A relative URL can be provided in urlStr, which will be resolved to the
 // BaseURL of the Client. Relative URLS should always be specified without a preceding slash. If specified, the
 // value pointed to by body is JSON encoded and included in as the request body.
-func (c *Client) NewRequest(_ context.Context, method, urlStr string, body interface{}) (*http.Request, error) {
+func (c *Client) NewRequest(ctx context.Context, method, urlStr string, body interface{}) (*http.Request, error) {
 	// check urlStr is valid path
 	if _, err := url.Parse(urlStr); err != nil {
 		return nil, err
@@ -413,7 +413,7 @@ func (c *Client) NewRequest(_ context.Context, method, urlStr string, body inter
 	var req *http.Request
 	switch method {
 	case http.MethodGet, http.MethodHead, http.MethodOptions:
-		req, err = http.NewRequest(method, u.String(), nil)
+		req, err = http.NewRequestWithContext(ctx, method, u.String(), nil)
 		if err != nil {
 			return nil, err
 		}
@@ -426,7 +426,7 @@ func (c *Client) NewRequest(_ context.Context, method, urlStr string, body inter
 			}
 		}
 
-		req, err = http.NewRequest(method, u.String(), buf)
+		req, err = http.NewRequestWithContext(ctx, method, u.String(), buf)
 		if err != nil {
 			return nil, err
 		}

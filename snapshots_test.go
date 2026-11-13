@@ -110,7 +110,7 @@ func TestSnapshots_MetadataUpdate(t *testing.T) {
 	setup()
 	defer teardown()
 
-	request := &MetadataCreateRequest{Metadata: Metadata{"key": "value"}}
+	request := &MetadataCreateRequest{Metadata: Metadata{testMetadataKey: testMetadataValue}}
 	expectedResp := &Snapshot{ID: testResourceID}
 	URL := path.Join(snapshotsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, metadataPath)
 

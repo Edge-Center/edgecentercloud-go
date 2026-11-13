@@ -12,6 +12,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+const testSubnetName = "test-subnet"
+
 func TestSubnetworks_List(t *testing.T) {
 	setup()
 	defer teardown()
@@ -95,7 +97,7 @@ func TestSubnetworks_Create(t *testing.T) {
 	defer teardown()
 
 	request := &SubnetworkCreateRequest{
-		Name:      "test-subnet",
+		Name:      testSubnetName,
 		NetworkID: testResourceID,
 	}
 	expectedResp := &TaskResponse{Tasks: []string{taskID}}
@@ -194,7 +196,7 @@ func TestSubnetworks_Update(t *testing.T) {
 	defer teardown()
 
 	request := &SubnetworkUpdateRequest{
-		Name: "test-subnet",
+		Name: testSubnetName,
 	}
 	expectedResp := &Subnetwork{ID: testResourceID}
 	URL := path.Join(subnetsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID)
@@ -253,8 +255,8 @@ func TestSubnetworks_MetadataList(t *testing.T) {
 	defer teardown()
 
 	expectedResp := []MetadataDetailed{{
-		Key:      "image_id",
-		Value:    "b3c52ece-147e-4af5-8d7c-84691309b879",
+		Key:      testReadOnlyMetadataKey,
+		Value:    testReadOnlyMetadataValue,
 		ReadOnly: true,
 	}}
 	URL := path.Join(subnetsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, metadataPath)
@@ -278,7 +280,7 @@ func TestSubnetworks_MetadataCreate(t *testing.T) {
 	setup()
 	defer teardown()
 
-	request := &Metadata{"key": "value"}
+	request := &Metadata{testMetadataKey: testMetadataValue}
 	URL := path.Join(subnetsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, metadataPath)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
@@ -294,7 +296,7 @@ func TestSubnetworks_MetadataUpdate(t *testing.T) {
 	setup()
 	defer teardown()
 
-	request := &Metadata{"key": "value"}
+	request := &Metadata{testMetadataKey: testMetadataValue}
 	URL := path.Join(subnetsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, metadataPath)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
@@ -326,8 +328,8 @@ func TestSubnetworks_MetadataGetItem(t *testing.T) {
 	defer teardown()
 
 	expectedResp := &MetadataDetailed{
-		Key:      "image_id",
-		Value:    "b3c52ece-147e-4af5-8d7c-84691309b879",
+		Key:      testReadOnlyMetadataKey,
+		Value:    testReadOnlyMetadataValue,
 		ReadOnly: true,
 	}
 	URL := path.Join(subnetsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, metadataItemPath)
@@ -356,13 +358,13 @@ func TestSubnetworks_isValidUUID_Error_Return_Subnetwork(t *testing.T) {
 		testFunc func() (*Subnetwork, *Response, error)
 	}{
 		{
-			name: "Get",
+			name: testCaseGet,
 			testFunc: func() (*Subnetwork, *Response, error) {
 				return client.Subnetworks.Get(ctx, testResourceIDNotValidUUID)
 			},
 		},
 		{
-			name: "Update",
+			name: testCaseUpdate,
 			testFunc: func() (*Subnetwork, *Response, error) {
 				return client.Subnetworks.Update(ctx, testResourceIDNotValidUUID, nil)
 			},
@@ -398,19 +400,19 @@ func TestSubnetworks_Metadata_isValidUUID_Error_Return_Response(t *testing.T) {
 		testFunc func() (*Response, error)
 	}{
 		{
-			name: "MetadataCreate",
+			name: testCaseMetadataCreate,
 			testFunc: func() (*Response, error) {
 				return client.Subnetworks.MetadataCreate(ctx, testResourceIDNotValidUUID, nil)
 			},
 		},
 		{
-			name: "MetadataUpdate",
+			name: testCaseMetadataUpdate,
 			testFunc: func() (*Response, error) {
 				return client.Subnetworks.MetadataUpdate(ctx, testResourceIDNotValidUUID, nil)
 			},
 		},
 		{
-			name: "MetadataDeleteItem",
+			name: testCaseMetadataDeleteItem,
 			testFunc: func() (*Response, error) {
 				return client.Subnetworks.MetadataDeleteItem(ctx, testResourceIDNotValidUUID, nil)
 			},

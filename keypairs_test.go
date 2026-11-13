@@ -12,20 +12,18 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+const testSSHKey = "ssh-key"
+
 func TestKeyPairs_List(t *testing.T) {
 	setup()
 	defer teardown()
 
-	expectedResp := []KeyPair{{PublicKey: "ssh-key"}}
+	expectedResp := []KeyPair{{PublicKey: testSSHKey}}
 	URL := path.Join(keypairsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID))
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
-		resp, err := json.Marshal(expectedResp)
-		if err != nil {
-			t.Errorf("failed to marshal response: %v", err)
-		}
-		_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))
+		_, _ = fmt.Fprintf(w, `{"results":[{"public_key":%q}]}`, testSSHKey)
 	})
 
 	respActual, resp, err := client.KeyPairs.List(ctx)
@@ -38,16 +36,12 @@ func TestKeyPairsV2_List(t *testing.T) {
 	setup()
 	defer teardown()
 
-	expectedResp := []KeyPairV2{{PublicKey: "ssh-key"}}
+	expectedResp := []KeyPairV2{{PublicKey: testSSHKey}}
 	URL := path.Join(keypairsBasePathV2)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
-		resp, err := json.Marshal(expectedResp)
-		if err != nil {
-			t.Errorf("failed to marshal response: %v", err)
-		}
-		_, _ = fmt.Fprintf(w, `{"results":%s}`, string(resp))
+		_, _ = fmt.Fprintf(w, `{"results":[{"public_key":%q}]}`, testSSHKey)
 	})
 
 	respActual, resp, err := client.KeyPairs.ListV2(ctx, nil)
@@ -65,11 +59,7 @@ func TestKeyPairs_Get(t *testing.T) {
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
-		resp, err := json.Marshal(expectedResp)
-		if err != nil {
-			t.Errorf("failed to marshal response: %v", err)
-		}
-		_, _ = fmt.Fprint(w, string(resp))
+		_, _ = fmt.Fprintf(w, `{"sshkey_id":%q}`, testResourceID)
 	})
 
 	respActual, resp, err := client.KeyPairs.Get(ctx, testResourceID)
@@ -87,11 +77,7 @@ func TestKeyPairsV2_Get(t *testing.T) {
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
-		resp, err := json.Marshal(expectedResp)
-		if err != nil {
-			t.Errorf("failed to marshal response: %v", err)
-		}
-		_, _ = fmt.Fprint(w, string(resp))
+		_, _ = fmt.Fprintf(w, `{"sshkey_id":%q}`, testResourceID)
 	})
 
 	respActual, resp, err := client.KeyPairs.GetV2(ctx, testResourceID)
@@ -104,8 +90,8 @@ func TestKeyPairs_Create(t *testing.T) {
 	setup()
 	defer teardown()
 
-	request := &KeyPairCreateRequest{SSHKeyName: "ssh-key"}
-	expectedResp := &KeyPair{SSHKeyName: "ssh-key"}
+	request := &KeyPairCreateRequest{SSHKeyName: testSSHKey}
+	expectedResp := &KeyPair{SSHKeyName: testSSHKey}
 	URL := path.Join(keypairsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID))
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
@@ -115,11 +101,7 @@ func TestKeyPairs_Create(t *testing.T) {
 			t.Errorf("failed to decode request body: %v", err)
 		}
 		assert.Equal(t, request, reqBody)
-		resp, err := json.Marshal(expectedResp)
-		if err != nil {
-			t.Errorf("failed to marshal response: %v", err)
-		}
-		_, _ = fmt.Fprint(w, string(resp))
+		_, _ = fmt.Fprintf(w, `{"sshkey_name":%q}`, testSSHKey)
 	})
 
 	respActual, resp, err := client.KeyPairs.Create(ctx, request)
@@ -132,8 +114,8 @@ func TestKeyPairsV2_Create(t *testing.T) {
 	setup()
 	defer teardown()
 
-	request := &KeyPairCreateRequestV2{SSHKeyName: "ssh-key", ProjectID: 1234}
-	expectedResp := &KeyPairV2{SSHKeyName: "ssh-key"}
+	request := &KeyPairCreateRequestV2{SSHKeyName: testSSHKey, ProjectID: 1234}
+	expectedResp := &KeyPairV2{SSHKeyName: testSSHKey}
 	URL := path.Join(keypairsBasePathV2)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
@@ -143,11 +125,7 @@ func TestKeyPairsV2_Create(t *testing.T) {
 			t.Errorf("failed to decode request body: %v", err)
 		}
 		assert.Equal(t, request, reqBody)
-		resp, err := json.Marshal(expectedResp)
-		if err != nil {
-			t.Errorf("failed to marshal response: %v", err)
-		}
-		_, _ = fmt.Fprint(w, string(resp))
+		_, _ = fmt.Fprintf(w, `{"sshkey_name":%q}`, testSSHKey)
 	})
 
 	respActual, resp, err := client.KeyPairs.CreateV2(ctx, request)
@@ -208,11 +186,7 @@ func TestKeyPairs_Share(t *testing.T) {
 			t.Errorf("failed to decode request body: %v", err)
 		}
 		assert.Equal(t, request, reqBody)
-		resp, err := json.Marshal(expectedResp)
-		if err != nil {
-			t.Errorf("failed to marshal response: %v", err)
-		}
-		_, _ = fmt.Fprint(w, string(resp))
+		_, _ = fmt.Fprintf(w, `{"sshkey_id":%q}`, testResourceID)
 	})
 
 	respActual, resp, err := client.KeyPairs.Share(ctx, testResourceID, request)

@@ -5,7 +5,7 @@ CLOUD_ENV_TESTS_FILE = $(CLOUD_TEST_DIR)/.env
 
 .PHONY: lint
 lint:
-	test -f $(BIN_DIR)/golangci-lint || curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v1.64.8
+	test -f $(BIN_DIR)/golangci-lint || curl -sSfL https://golangci-lint.run/install.sh | sh -s v2.15.0
 	$(BIN_DIR)/golangci-lint run
 
 .PHONY: test
@@ -14,7 +14,7 @@ test:
 
 .PHONY: install-go-test-coverage
 install-go-test-coverage:
-	go install github.com/vladopajic/go-test-coverage/v2@v2.11.4
+	go install github.com/vladopajic/go-test-coverage/v2@v2.21.0
 
 .PHONY: check-coverage
 check-coverage: install-go-test-coverage

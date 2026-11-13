@@ -101,14 +101,14 @@ func TestInstances_Create(t *testing.T) {
 		Names:          []string{"test-instance"},
 		Flavor:         "g1-standard-1-2",
 		Interfaces:     []InstanceInterface{{Type: InterfaceTypeExternal}},
-		SecurityGroups: []ID{{ID: "f0d19cec-5c3f-4853-886e-304915960ff6"}},
+		SecurityGroups: []ID{{ID: testResourceID}},
 		Volumes: []InstanceVolumeCreate{
 			{
 				TypeName:  VolumeTypeSsdHiIops,
 				Size:      5,
 				BootIndex: &bootIndex,
 				Source:    VolumeSourceImage,
-				ImageID:   "f0d19cec-5c3f-4853-886e-304915960ff6",
+				ImageID:   testResourceID,
 			},
 		},
 	}
@@ -210,7 +210,7 @@ func TestInstances_DeleteWithOptions(t *testing.T) {
 
 	instanceDeleteOptions := InstanceDeleteOptions{
 		DeleteFloatings: true,
-		Volumes:         []string{"f0d19cec-5c3f-4853-886e-304915960ff6"},
+		Volumes:         []string{testResourceID},
 	}
 	expectedResp := &TaskResponse{Tasks: []string{taskID}}
 	URL := path.Join(instancesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID)
@@ -235,8 +235,8 @@ func TestInstances_MetadataGet(t *testing.T) {
 	defer teardown()
 
 	expectedResp := &MetadataDetailed{
-		Key:      "image_id",
-		Value:    "b3c52ece-147e-4af5-8d7c-84691309b879",
+		Key:      testReadOnlyMetadataKey,
+		Value:    testReadOnlyMetadataValue,
 		ReadOnly: true,
 	}
 	URL := path.Join(instancesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, metadataPath)
@@ -279,8 +279,8 @@ func TestInstances_MetadataList(t *testing.T) {
 	defer teardown()
 
 	expectedResp := []MetadataDetailed{{
-		Key:      "image_id",
-		Value:    "b3c52ece-147e-4af5-8d7c-84691309b879",
+		Key:      testReadOnlyMetadataKey,
+		Value:    testReadOnlyMetadataValue,
 		ReadOnly: true,
 	}}
 
@@ -305,7 +305,7 @@ func TestInstances_MetadataUpdate(t *testing.T) {
 	setup()
 	defer teardown()
 
-	request := &Metadata{"key": "value"}
+	request := &Metadata{testMetadataKey: testMetadataValue}
 	URL := path.Join(instancesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, metadataPath)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
@@ -337,8 +337,8 @@ func TestInstances_MetadataGetItem(t *testing.T) {
 	defer teardown()
 
 	expectedResp := &MetadataDetailed{
-		Key:      "image_id",
-		Value:    "b3c52ece-147e-4af5-8d7c-84691309b879",
+		Key:      testReadOnlyMetadataKey,
+		Value:    testReadOnlyMetadataValue,
 		ReadOnly: true,
 	}
 	URL := path.Join(instancesBasePathV2, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, metadataItemPath)
@@ -362,7 +362,7 @@ func TestInstances_MetadataCreate(t *testing.T) {
 	setup()
 	defer teardown()
 
-	request := &Metadata{"key": "value"}
+	request := &Metadata{testMetadataKey: testMetadataValue}
 	URL := path.Join(instancesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, metadataPath)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {

@@ -11,6 +11,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+const testProjectName = "new-project"
+
 func TestProjects_Get(t *testing.T) {
 	setup()
 	defer teardown()
@@ -117,8 +119,8 @@ func TestProjects_Update(t *testing.T) {
 	setup()
 	defer teardown()
 
-	request := &ProjectUpdateRequest{Name: "new-project"}
-	expectedResp := &Project{Name: "new-project"}
+	request := &ProjectUpdateRequest{Name: testProjectName}
+	expectedResp := &Project{Name: testProjectName}
 	URL := path.Join(projectsBasePath, "1")
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
@@ -166,8 +168,8 @@ func TestProjects_Create(t *testing.T) {
 	setup()
 	defer teardown()
 
-	request := &ProjectCreateRequest{Name: "new-project"}
-	expectedResp := &Project{Name: "new-project"}
+	request := &ProjectCreateRequest{Name: testProjectName}
+	expectedResp := &Project{Name: testProjectName}
 
 	mux.HandleFunc(projectsBasePath, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)

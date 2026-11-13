@@ -32,6 +32,16 @@ const (
 	testResourceIntID          = 999
 	taskID                     = "f0d19cec-5c3f-4853-886e-304915960ff6"
 	testResourceIDNotValidUUID = "123"
+	testMetadataKey            = "key"
+	testMetadataValue          = "value"
+	testReadOnlyMetadataKey    = "image_id"
+	testReadOnlyMetadataValue  = "b3c52ece-147e-4af5-8d7c-84691309b879"
+	testCaseGet                = "Get"
+	testCaseUpdate             = "Update"
+	testCaseRename             = "Rename"
+	testCaseMetadataCreate     = "MetadataCreate"
+	testCaseMetadataUpdate     = "MetadataUpdate"
+	testCaseMetadataDeleteItem = "MetadataDeleteItem"
 )
 
 var NotCorrectUUID = fmt.Sprintf("should be the correct UUID. current value is: %s", testResourceIDNotValidUUID)

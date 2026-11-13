@@ -17,6 +17,8 @@ import (
 	edgecloud "github.com/Edge-Center/edgecentercloud-go/v2"
 )
 
+const testCaseErrMultipleResults = "ErrMultipleResults"
+
 func TestLoadbalancerGetByName(t *testing.T) {
 	mux := http.NewServeMux()
 	server := httptest.NewServer(mux)
@@ -82,7 +84,7 @@ func TestLoadbalancerGetByName_CustomErrors(t *testing.T) {
 			expectErr: ErrLoadbalancersNotFound,
 		},
 		{
-			name: "ErrMultipleResults",
+			name: testCaseErrMultipleResults,
 			lbs: []edgecloud.Loadbalancer{
 				{
 					Name: testName,
@@ -190,7 +192,7 @@ func TestLBListenerGetByName_CustomErrors(t *testing.T) {
 			expectErr: ErrLoadbalancerListenerNotFound,
 		},
 		{
-			name: "ErrMultipleResults",
+			name: testCaseErrMultipleResults,
 			listeners: []edgecloud.Listener{
 				{
 					ID:   testResourceID,
@@ -300,7 +302,7 @@ func TestLBPoolGetByName_CustomErrors(t *testing.T) {
 			expectErr: ErrLoadbalancerPoolsNotFound,
 		},
 		{
-			name: "ErrMultipleResults",
+			name: testCaseErrMultipleResults,
 			pools: []edgecloud.Pool{
 				{
 					ID:   testResourceID,

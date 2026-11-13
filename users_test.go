@@ -11,6 +11,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+const testUserRole = "test-role"
+
 func TestUsers_List(t *testing.T) {
 	setup()
 	defer teardown()
@@ -36,7 +38,7 @@ func TestUsers_ListRoles(t *testing.T) {
 	setup()
 	defer teardown()
 
-	expectedResp := []UserRole{{Role: "test-role"}}
+	expectedResp := []UserRole{{Role: testUserRole}}
 	URL := path.Join(usersBasePathV1, usersRoles)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
@@ -61,7 +63,7 @@ func TestUsers_ListAssignment(t *testing.T) {
 	setup()
 	defer teardown()
 
-	expectedResp := []RoleAssignment{{Role: "test-role"}}
+	expectedResp := []RoleAssignment{{Role: testUserRole}}
 	URL := path.Join(usersBasePathV1, usersAssignments)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
@@ -120,7 +122,7 @@ func TestUsers_AssignRole(t *testing.T) {
 	defer teardown()
 
 	request := &UpdateAssignmentRequest{}
-	expectedResp := &UserRole{Role: "test-role"}
+	expectedResp := &UserRole{Role: testUserRole}
 	URL := path.Join(usersBasePathV1, usersAssignments)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {

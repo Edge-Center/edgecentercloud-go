@@ -342,7 +342,7 @@ func ParseCurrency(s string) (*LifeCyclePolicyCurrency, error) {
 
 // String - implements Stringer.
 func (c LifeCyclePolicyCurrency) String() string {
-	return c.Currency.Code()
+	return c.Code()
 }
 
 // UnmarshalJSON - implements Unmarshaler interface for LifeCyclePolicyCurrency.
