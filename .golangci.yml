@@ -91,6 +91,11 @@ linters:
           - testifylint
           - usestdlibvars
         path: _test\.go
+      - linters:
+          - gosec
+        path: ^edgecloud\.go$
+        text: G704
+        source: ^\s*return client\.Do\(req\)$
     paths:
       - third_party$
       - builtin$

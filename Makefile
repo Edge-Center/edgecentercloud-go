@@ -5,7 +5,7 @@ CLOUD_ENV_TESTS_FILE = $(CLOUD_TEST_DIR)/.env
 
 .PHONY: lint
 lint:
-	test -f $(BIN_DIR)/golangci-lint || curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v2.15.0
+	test -f $(BIN_DIR)/golangci-lint || curl -sSfL https://golangci-lint.run/install.sh | sh -s v2.15.0
 	$(BIN_DIR)/golangci-lint run
 
 .PHONY: test
