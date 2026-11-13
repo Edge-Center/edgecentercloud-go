@@ -11,12 +11,14 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+const testBareMetalName = "test"
+
 func TestBareMetalServiceOp_CheckQuotasForInstanceCreation(t *testing.T) {
 	setup()
 	defer teardown()
 
 	URL := path.Join(bmInstancesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), bmCheckLimitsSupPath)
-	expResp := Quota(map[string]int{"test": 777})
+	expResp := Quota(map[string]int{testBareMetalName: 777})
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodPost)
@@ -64,7 +66,7 @@ func TestBareMetalServiceOp_GetCountAvailableNodes(t *testing.T) {
 	defer teardown()
 
 	URL := path.Join(bmCapacityBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID))
-	expResp := BareMetalCapacity{Capacity: map[string]int{"test": 777}}
+	expResp := BareMetalCapacity{Capacity: map[string]int{testBareMetalName: 777}}
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, http.MethodGet)
@@ -86,7 +88,7 @@ func TestBareMetalServiceOp_ListFlavors(t *testing.T) {
 	defer teardown()
 
 	URL := path.Join(bmInstancesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), bmAvailableFlavorsSubPath)
-	expResp := []BareMetalFlavor{{FlavorName: "test"}}
+	expResp := []BareMetalFlavor{{FlavorName: testBareMetalName}}
 	expRespRoot := bareMetalFlavorsRoot{Count: 1, Flavors: expResp}
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
@@ -111,7 +113,7 @@ func TestBareMetalServiceOp_ListInstances(t *testing.T) {
 	defer teardown()
 
 	URL := path.Join(bmInstancesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID))
-	expResp := []Instance{{Name: "test"}}
+	expResp := []Instance{{Name: testBareMetalName}}
 	expRespRoot := instancesRoot{Count: 1, Instances: expResp}
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {

@@ -528,8 +528,8 @@ func TestVolumes_MetadataList(t *testing.T) {
 	defer teardown()
 
 	expectedResp := []MetadataDetailed{{
-		Key:      "image_id",
-		Value:    "b3c52ece-147e-4af5-8d7c-84691309b879",
+		Key:      testReadOnlyMetadataKey,
+		Value:    testReadOnlyMetadataValue,
 		ReadOnly: true,
 	}}
 	URL := path.Join(volumesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, metadataPath)
@@ -553,7 +553,7 @@ func TestVolumes_MetadataCreate(t *testing.T) {
 	setup()
 	defer teardown()
 
-	request := &Metadata{"key": "value"}
+	request := &Metadata{testMetadataKey: testMetadataValue}
 	URL := path.Join(volumesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, metadataPath)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
@@ -569,7 +569,7 @@ func TestVolumes_MetadataUpdate(t *testing.T) {
 	setup()
 	defer teardown()
 
-	request := &Metadata{"key": "value"}
+	request := &Metadata{testMetadataKey: testMetadataValue}
 	URL := path.Join(volumesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, metadataPath)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
@@ -601,8 +601,8 @@ func TestVolumes_MetadataGetItem(t *testing.T) {
 	defer teardown()
 
 	expectedResp := &MetadataDetailed{
-		Key:      "image_id",
-		Value:    "b3c52ece-147e-4af5-8d7c-84691309b879",
+		Key:      testReadOnlyMetadataKey,
+		Value:    testReadOnlyMetadataValue,
 		ReadOnly: true,
 	}
 	URL := path.Join(volumesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, metadataItemPath)
@@ -631,7 +631,7 @@ func TestVolumes_isValidUUID_Error_Return_Volume(t *testing.T) {
 		testFunc func() (*Volume, *Response, error)
 	}{
 		{
-			name: "Get",
+			name: testCaseGet,
 			testFunc: func() (*Volume, *Response, error) {
 				return client.Volumes.Get(ctx, testResourceIDNotValidUUID)
 			},
@@ -643,7 +643,7 @@ func TestVolumes_isValidUUID_Error_Return_Volume(t *testing.T) {
 			},
 		},
 		{
-			name: "Rename",
+			name: testCaseRename,
 			testFunc: func() (*Volume, *Response, error) {
 				return client.Volumes.Rename(ctx, testResourceIDNotValidUUID, nil)
 			},
@@ -719,19 +719,19 @@ func TestVolumes_Metadata_isValidUUID_Error_Return_Response(t *testing.T) {
 		testFunc func() (*Response, error)
 	}{
 		{
-			name: "MetadataCreate",
+			name: testCaseMetadataCreate,
 			testFunc: func() (*Response, error) {
 				return client.Volumes.MetadataCreate(ctx, testResourceIDNotValidUUID, nil)
 			},
 		},
 		{
-			name: "MetadataUpdate",
+			name: testCaseMetadataUpdate,
 			testFunc: func() (*Response, error) {
 				return client.Volumes.MetadataUpdate(ctx, testResourceIDNotValidUUID, nil)
 			},
 		},
 		{
-			name: "MetadataDeleteItem",
+			name: testCaseMetadataDeleteItem,
 			testFunc: func() (*Response, error) {
 				return client.Volumes.MetadataDeleteItem(ctx, testResourceIDNotValidUUID, nil)
 			},

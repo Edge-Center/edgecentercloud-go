@@ -50,7 +50,7 @@ func TestUserActions_ListAMQPSubscriptions(t *testing.T) {
 	defer teardown()
 
 	amqps := AMQPSubscription{
-		ConnectionString:         "amqps://guest:guest@192.168.123.20:5671/user_action_events",
+		ConnectionString:         "amqps://192.168.123.20:5671/user_action_events",
 		ReceiveChildClientEvents: false,
 		RoutingKey:               "foo",
 		ID:                       17,
@@ -159,7 +159,7 @@ func TestUserActions_ListAMQPSubscriptionsWithOpts_ClientID(t *testing.T) {
 	defer teardown()
 
 	amqps := AMQPSubscription{
-		ConnectionString:         "amqps://guest:guest@192.168.123.20:5671/user_action_events",
+		ConnectionString:         "amqps://192.168.123.20:5671/user_action_events",
 		ReceiveChildClientEvents: false,
 		RoutingKey:               "foo",
 		ID:                       17,

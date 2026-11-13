@@ -35,7 +35,7 @@ func GenerateRandomString(length int, includeLetters, includeDigits, includeSpec
 
 	var sb strings.Builder
 	for _, v := range b {
-		sb.WriteByte(chars[v%byte(len(chars))])
+		sb.WriteByte(chars[int(v)%len(chars)])
 	}
 
 	return sb.String(), nil

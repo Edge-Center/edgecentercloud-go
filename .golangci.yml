@@ -1,13 +1,9 @@
+version: "2"
 run:
   timeout: 10m
-  go: "1.21.3"
-
+  go: "1.27"
 linters:
-  # Disable all linters.
-  # Default: false
-  disable-all: true
-  # Enable specific linter
-  # https://golangci-lint.run/usage/linters/#enabled-by-default
+  default: none
   enable:
     - asasalint
     - asciicheck
@@ -25,7 +21,6 @@ linters:
     - errorlint
     - exhaustive
     - forbidigo
-    - gci
     - ginkgolinter
     - gocheckcompilerdirectives
     - gochecknoinits
@@ -33,15 +28,11 @@ linters:
     - goconst
     - gocritic
     - godot
-    - gofmt
-    - gofumpt
     - goheader
-    - goimports
     - gomoddirectives
-    - gomodguard
+    - gomodguard_v2
     - goprintffuncname
     - gosec
-    - gosimple
     - gosmopolitan
     - govet
     - grouper
@@ -68,8 +59,6 @@ linters:
     - spancheck
     - sqlclosecheck
     - staticcheck
-    - stylecheck
-    - usetesting
     - testableexamples
     - testifylint
     - thelper
@@ -78,63 +67,51 @@ linters:
     - unparam
     - unused
     - usestdlibvars
+    - usetesting
     - varnamelen
+    - wastedassign
     - whitespace
     - zerologlint
-    - wastedassign
-    # complexity: need to refactor
-    # - wsl
-    # - musttag
-    # - perfsprint
-    # - nestif
-    # - mnd
-    # - lll
-    # - ireturn
-    # - intrange
-    # - godox
-    # - gochecknoglobals
-    # - funlen
-    # - forcetypeassert
-    # - fatcontext
-    # - err113
-    # - maintidx
-    # - depguard
-    # - cyclop
-    # - copyloopvar
-    # - revive
-    # - predeclared
-    # - gocognit
-    # - errcheck
-    # - gocyclo
-    # - dupl
-    # - wrapcheck
-    # - tagliatelle
-    # - tagalign
-    # - inamedparam
-    # - nonamedreturns
-    # - recvcheck
-    # - interfacebloat
-    # - iface
-
+  settings:
+    nlreturn:
+      block-size: 5
+    varnamelen:
+      min-name-length: 1
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    rules:
+      - linters:
+          - funlen
+          - paralleltest
+          - testifylint
+          - usestdlibvars
+        path: _test\.go
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
 issues:
   max-same-issues: 0
-  exclude-rules:
-    - path: _test\.go
-      linters:
-        - funlen
-        - usestdlibvars
-        - testifylint
-        - paralleltest
-
-linters-settings:
-  nlreturn:
-    block-size: 5
-  gci:
-    sections:
-      - standard # Standard section: captures all standard packages.
-      - default  # Default section: contains all imports that could not be matched to another section type.
-      - prefix(github.com/Edge-Center)
-  varnamelen:
-    min-name-length: 1
-
-
+formatters:
+  enable:
+    - gci
+    - gofmt
+    - gofumpt
+    - goimports
+  settings:
+    gci:
+      sections:
+        - standard
+        - default
+        - prefix(github.com/Edge-Center)
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$

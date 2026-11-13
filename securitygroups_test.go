@@ -12,6 +12,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+const testSecurityGroupName = "test-security-group"
+
 func TestEtherType_List(t *testing.T) {
 	require.Equal(t, len(EtherTypeIPv4.List()), 2)
 }
@@ -192,7 +194,7 @@ func TestSecurityGroups_Create_ProtocolValidationError(t *testing.T) {
 	invalidProtocol := SecurityGroupRuleProtocol("invalid_protocol")
 	request := &SecurityGroupCreateRequest{
 		SecurityGroup: SecurityGroupCreateRequestInner{
-			Name: "test-security-group",
+			Name: testSecurityGroupName,
 			SecurityGroupRules: []RuleCreateRequest{
 				{
 					Direction: SGRuleDirectionIngress,
@@ -209,7 +211,7 @@ func TestSecurityGroups_Create_ProtocolValidationError(t *testing.T) {
 	assert.Nil(t, respActual)
 	assert.Nil(t, resp)
 	assert.Error(t, err)
-	assert.EqualError(t, err, "json: error calling MarshalJSON for type edgecloud.SecurityGroupRuleProtocol: invalid Security Group Protocol. Current protocol is: invalid_protocol. The protocols that can be used in the rule are: [udp tcp any icmp ah dccp egp esp gre igmp ospf pgm rsvp sctp udplite vrrp ipip ipencap]")
+	assert.ErrorContains(t, err, "invalid Security Group Protocol. Current protocol is: invalid_protocol. The protocols that can be used in the rule are: [udp tcp any icmp ah dccp egp esp gre igmp ospf pgm rsvp sctp udplite vrrp ipip ipencap]")
 }
 
 func TestSecurityGroups_Create_DirectionValidationError(t *testing.T) {
@@ -220,7 +222,7 @@ func TestSecurityGroups_Create_DirectionValidationError(t *testing.T) {
 	invalidDirection := SecurityGroupRuleDirection("invalid_direction")
 	request := &SecurityGroupCreateRequest{
 		SecurityGroup: SecurityGroupCreateRequestInner{
-			Name: "test-security-group",
+			Name: testSecurityGroupName,
 			SecurityGroupRules: []RuleCreateRequest{
 				{
 					Direction: invalidDirection,
@@ -248,7 +250,7 @@ func TestSecurityGroups_Create_EtherTypeValidationError(t *testing.T) {
 	invalidEtherType := EtherType("invalid_ethertype")
 	request := &SecurityGroupCreateRequest{
 		SecurityGroup: SecurityGroupCreateRequestInner{
-			Name: "test-security-group",
+			Name: testSecurityGroupName,
 			SecurityGroupRules: []RuleCreateRequest{
 				{
 					Direction: SGRuleDirectionIngress,
@@ -570,8 +572,8 @@ func TestSecurityGroups_MetadataList(t *testing.T) {
 	defer teardown()
 
 	expectedResp := []MetadataDetailed{{
-		Key:      "image_id",
-		Value:    "b3c52ece-147e-4af5-8d7c-84691309b879",
+		Key:      testReadOnlyMetadataKey,
+		Value:    testReadOnlyMetadataValue,
 		ReadOnly: true,
 	}}
 	URL := path.Join(securitygroupsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, metadataPath)
@@ -595,7 +597,7 @@ func TestSecurityGroups_MetadataCreate(t *testing.T) {
 	setup()
 	defer teardown()
 
-	request := &Metadata{"key": "value"}
+	request := &Metadata{testMetadataKey: testMetadataValue}
 	URL := path.Join(securitygroupsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, metadataPath)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
@@ -611,7 +613,7 @@ func TestSecurityGroups_MetadataUpdate(t *testing.T) {
 	setup()
 	defer teardown()
 
-	request := &Metadata{"key": "value"}
+	request := &Metadata{testMetadataKey: testMetadataValue}
 	URL := path.Join(securitygroupsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, metadataPath)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
@@ -643,8 +645,8 @@ func TestSecurityGroups_MetadataGetItem(t *testing.T) {
 	defer teardown()
 
 	expectedResp := &MetadataDetailed{
-		Key:      "image_id",
-		Value:    "b3c52ece-147e-4af5-8d7c-84691309b879",
+		Key:      testReadOnlyMetadataKey,
+		Value:    testReadOnlyMetadataValue,
 		ReadOnly: true,
 	}
 	URL := path.Join(securitygroupsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, metadataItemPath)
@@ -673,13 +675,13 @@ func TestSecurityGroups_isValidUUID_Error_Return_SecurityGroup(t *testing.T) {
 		testFunc func() (*SecurityGroup, *Response, error)
 	}{
 		{
-			name: "Get",
+			name: testCaseGet,
 			testFunc: func() (*SecurityGroup, *Response, error) {
 				return client.SecurityGroups.Get(ctx, testResourceIDNotValidUUID)
 			},
 		},
 		{
-			name: "Update",
+			name: testCaseUpdate,
 			testFunc: func() (*SecurityGroup, *Response, error) {
 				return client.SecurityGroups.Update(ctx, testResourceIDNotValidUUID, nil)
 			},
@@ -765,19 +767,19 @@ func TestSecurityGroups_Metadata_isValidUUID_Error_Return_Response(t *testing.T)
 		testFunc func() (*Response, error)
 	}{
 		{
-			name: "MetadataCreate",
+			name: testCaseMetadataCreate,
 			testFunc: func() (*Response, error) {
 				return client.SecurityGroups.MetadataCreate(ctx, testResourceIDNotValidUUID, nil)
 			},
 		},
 		{
-			name: "MetadataUpdate",
+			name: testCaseMetadataUpdate,
 			testFunc: func() (*Response, error) {
 				return client.SecurityGroups.MetadataUpdate(ctx, testResourceIDNotValidUUID, nil)
 			},
 		},
 		{
-			name: "MetadataDeleteItem",
+			name: testCaseMetadataDeleteItem,
 			testFunc: func() (*Response, error) {
 				return client.SecurityGroups.MetadataDeleteItem(ctx, testResourceIDNotValidUUID, nil)
 			},

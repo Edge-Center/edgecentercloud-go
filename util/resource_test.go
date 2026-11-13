@@ -56,8 +56,7 @@ func TestResourceIsDeleted(t *testing.T) {
 			URL := path.Join("/v1/floatingips", strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID)
 			mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(tt.statusCode)
-				resp, _ := json.MarshalIndent(edgecloud.Response{}, "", "    ")
-				_, _ = fmt.Fprint(w, string(resp))
+				_, _ = fmt.Fprint(w, "{}")
 			})
 
 			client := edgecloud.NewClient(nil)
@@ -112,8 +111,7 @@ func TestResourceIsExist(t *testing.T) {
 			URL := path.Join("/v1/networks", strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID)
 			mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(tt.statusCode)
-				resp, _ := json.MarshalIndent(edgecloud.Response{}, "", "    ")
-				_, _ = fmt.Fprint(w, string(resp))
+				_, _ = fmt.Fprint(w, "{}")
 			})
 
 			client := edgecloud.NewClient(nil)
@@ -191,8 +189,7 @@ func TestDeleteResourceIfExist(t *testing.T) {
 					_, _ = fmt.Fprint(w, string(resp))
 				case http.MethodGet:
 					w.WriteHeader(http.StatusNotFound)
-					resp, _ := json.MarshalIndent(edgecloud.Response{}, "", "    ")
-					_, _ = fmt.Fprint(w, string(resp))
+					_, _ = fmt.Fprint(w, "{}")
 				}
 			})
 

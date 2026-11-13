@@ -12,6 +12,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+const testBackupName = "my-backup"
+
 const (
 	dbaasClusterName  = "my-db-cluster"
 	dbaasFlavor       = "db-g2-standard-2-4-30"
@@ -561,7 +563,7 @@ func TestDBaaSServiceOp_BackupCreate(t *testing.T) {
 	defer teardown()
 
 	request := DBaaSBackupCreateRequest{
-		Name:      "my-backup",
+		Name:      testBackupName,
 		ClusterID: dbaasClusterID,
 	}
 	expectedResp := &TaskResponse{Tasks: []string{taskID}}
@@ -588,7 +590,7 @@ func TestDBaaSServiceOp_BackupsList(t *testing.T) {
 	setup()
 	defer teardown()
 
-	expectedResp := []DBaaSBackup{{ID: testBackupID, Name: "my-backup"}}
+	expectedResp := []DBaaSBackup{{ID: testBackupID, Name: testBackupName}}
 	URL := path.Join(DBaaSBackupsBasePathV3, strconv.Itoa(projectID), strconv.Itoa(regionID))
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
@@ -608,7 +610,7 @@ func TestDBaaSServiceOp_BackupGet(t *testing.T) {
 	defer teardown()
 
 	backupID := testBackupID
-	expectedResp := &DBaaSBackup{ID: backupID, Name: "my-backup"}
+	expectedResp := &DBaaSBackup{ID: backupID, Name: testBackupName}
 	URL := path.Join(DBaaSBackupsBasePathV3, strconv.Itoa(projectID), strconv.Itoa(regionID), backupID)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {

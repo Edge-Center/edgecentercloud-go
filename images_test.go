@@ -12,6 +12,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+const testImageName = "test-image"
+
 func TestImages_List(t *testing.T) {
 	setup()
 	defer teardown()
@@ -56,7 +58,7 @@ func TestImages_Create(t *testing.T) {
 	setup()
 	defer teardown()
 
-	request := &ImageCreateRequest{Name: "test-image"}
+	request := &ImageCreateRequest{Name: testImageName}
 	expectedResp := &TaskResponse{Tasks: []string{taskID}}
 	URL := path.Join(imagesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID))
 
@@ -190,7 +192,7 @@ func TestImages_Update(t *testing.T) {
 	setup()
 	defer teardown()
 
-	request := &ImageUpdateRequest{Name: "test-image"}
+	request := &ImageUpdateRequest{Name: testImageName}
 	expectedResp := &Image{ID: testResourceID}
 	URL := path.Join(imagesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID)
 
@@ -236,7 +238,7 @@ func TestImages_Upload(t *testing.T) {
 	setup()
 	defer teardown()
 
-	request := &ImageUploadRequest{Name: "test-image"}
+	request := &ImageUploadRequest{Name: testImageName}
 	expectedResp := &TaskResponse{Tasks: []string{taskID}}
 	URL := path.Join(downloadimageBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID))
 
@@ -322,7 +324,7 @@ func TestImages_ImagesBaremetalCreate(t *testing.T) {
 	setup()
 	defer teardown()
 
-	request := &ImageCreateRequest{Name: "test-image"}
+	request := &ImageCreateRequest{Name: testImageName}
 	expectedResp := &TaskResponse{Tasks: []string{taskID}}
 	URL := path.Join(bmimagesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID))
 
@@ -420,8 +422,8 @@ func TestImages_MetadataList(t *testing.T) {
 	defer teardown()
 
 	expectedResp := []MetadataDetailed{{
-		Key:      "image_id",
-		Value:    "b3c52ece-147e-4af5-8d7c-84691309b879",
+		Key:      testReadOnlyMetadataKey,
+		Value:    testReadOnlyMetadataValue,
 		ReadOnly: true,
 	}}
 	URL := path.Join(imagesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, metadataPath)
@@ -445,7 +447,7 @@ func TestImages_MetadataCreate(t *testing.T) {
 	setup()
 	defer teardown()
 
-	request := &Metadata{"key": "value"}
+	request := &Metadata{testMetadataKey: testMetadataValue}
 	URL := path.Join(imagesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, metadataPath)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
@@ -461,7 +463,7 @@ func TestImages_MetadataUpdate(t *testing.T) {
 	setup()
 	defer teardown()
 
-	request := &Metadata{"key": "value"}
+	request := &Metadata{testMetadataKey: testMetadataValue}
 	URL := path.Join(imagesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, metadataPath)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
@@ -493,8 +495,8 @@ func TestImages_MetadataGetItem(t *testing.T) {
 	defer teardown()
 
 	expectedResp := &MetadataDetailed{
-		Key:      "image_id",
-		Value:    "b3c52ece-147e-4af5-8d7c-84691309b879",
+		Key:      testReadOnlyMetadataKey,
+		Value:    testReadOnlyMetadataValue,
 		ReadOnly: true,
 	}
 	URL := path.Join(imagesBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, metadataItemPath)
@@ -523,13 +525,13 @@ func TestImages_isValidUUID_Error_Return_Image(t *testing.T) {
 		testFunc func() (*Image, *Response, error)
 	}{
 		{
-			name: "Get",
+			name: testCaseGet,
 			testFunc: func() (*Image, *Response, error) {
 				return client.Images.Get(ctx, testResourceIDNotValidUUID)
 			},
 		},
 		{
-			name: "Update",
+			name: testCaseUpdate,
 			testFunc: func() (*Image, *Response, error) {
 				return client.Images.Update(ctx, testResourceIDNotValidUUID, nil)
 			},
@@ -565,19 +567,19 @@ func TestImages_Metadata_isValidUUID_Error_Return_Response(t *testing.T) {
 		testFunc func() (*Response, error)
 	}{
 		{
-			name: "MetadataCreate",
+			name: testCaseMetadataCreate,
 			testFunc: func() (*Response, error) {
 				return client.Images.MetadataCreate(ctx, testResourceIDNotValidUUID, nil)
 			},
 		},
 		{
-			name: "MetadataUpdate",
+			name: testCaseMetadataUpdate,
 			testFunc: func() (*Response, error) {
 				return client.Images.MetadataUpdate(ctx, testResourceIDNotValidUUID, nil)
 			},
 		},
 		{
-			name: "MetadataDeleteItem",
+			name: testCaseMetadataDeleteItem,
 			testFunc: func() (*Response, error) {
 				return client.Images.MetadataDeleteItem(ctx, testResourceIDNotValidUUID, nil)
 			},

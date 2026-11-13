@@ -12,11 +12,13 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+const testReservedFixedIPName = "test-ReservedFixedIP"
+
 func TestReservedFixedIPs_List(t *testing.T) {
 	setup()
 	defer teardown()
 
-	expectedResp := []ReservedFixedIP{{Name: "test-ReservedFixedIP"}}
+	expectedResp := []ReservedFixedIP{{Name: testReservedFixedIPName}}
 	URL := path.Join(reservedFixedIPsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID))
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
@@ -66,7 +68,7 @@ func TestReservedFixedIPs_Get(t *testing.T) {
 	setup()
 	defer teardown()
 
-	expectedResp := &ReservedFixedIP{Name: "test-ReservedFixedIP"}
+	expectedResp := &ReservedFixedIP{Name: testReservedFixedIPName}
 	URL := path.Join(reservedFixedIPsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
@@ -111,7 +113,7 @@ func TestReservedFixedIPs_SwitchVIPStatus(t *testing.T) {
 	defer teardown()
 
 	request := &SwitchVIPStatusRequest{}
-	expectedResp := &ReservedFixedIP{Name: "test-ReservedFixedIP"}
+	expectedResp := &ReservedFixedIP{Name: testReservedFixedIPName}
 	URL := path.Join(reservedFixedIPsBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {

@@ -12,6 +12,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+const testLoadbalancerName = "test-loadbalancer"
+
 func TestLoadbalancers_List(t *testing.T) {
 	setup()
 	defer teardown()
@@ -97,7 +99,7 @@ func TestLoadbalancers_Create(t *testing.T) {
 	defer teardown()
 
 	request := &LoadbalancerCreateRequest{
-		Name:   "test-loadbalancer",
+		Name:   testLoadbalancerName,
 		Flavor: "lb1-1-2",
 	}
 	expectedResp := &TaskResponse{Tasks: []string{taskID}}
@@ -336,7 +338,7 @@ func TestLoadbalancers_ListenerCreate(t *testing.T) {
 	defer teardown()
 
 	request := &ListenerCreateRequest{
-		Name:           "test-loadbalancer",
+		Name:           testLoadbalancerName,
 		Protocol:       ListenerProtocolTCP,
 		ProtocolPort:   80,
 		LoadbalancerID: testResourceID,
@@ -593,7 +595,7 @@ func TestLoadbalancers_PoolCreate(t *testing.T) {
 
 	request := &PoolCreateRequest{
 		LoadbalancerPoolCreateRequest: LoadbalancerPoolCreateRequest{
-			Name:       "test-loadbalancer",
+			Name:       testLoadbalancerName,
 			ListenerID: testResourceID,
 		},
 	}
@@ -1052,7 +1054,7 @@ func TestLoadbalancers_Rename(t *testing.T) {
 	setup()
 	defer teardown()
 
-	request := &Name{Name: "test-loadbalancer"}
+	request := &Name{Name: testLoadbalancerName}
 	expectedResp := &Loadbalancer{ID: testResourceID}
 	URL := path.Join(loadbalancersBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID)
 
@@ -1100,8 +1102,8 @@ func TestLoadbalancers_MetadataList(t *testing.T) {
 	defer teardown()
 
 	expectedResp := []MetadataDetailed{{
-		Key:      "image_id",
-		Value:    "b3c52ece-147e-4af5-8d7c-84691309b879",
+		Key:      testReadOnlyMetadataKey,
+		Value:    testReadOnlyMetadataValue,
 		ReadOnly: true,
 	}}
 	URL := path.Join(loadbalancersBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, metadataPath)
@@ -1125,7 +1127,7 @@ func TestLoadbalancers_MetadataCreate(t *testing.T) {
 	setup()
 	defer teardown()
 
-	request := &Metadata{"key": "value"}
+	request := &Metadata{testMetadataKey: testMetadataValue}
 	URL := path.Join(loadbalancersBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, metadataPath)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
@@ -1141,7 +1143,7 @@ func TestLoadbalancers_MetadataUpdate(t *testing.T) {
 	setup()
 	defer teardown()
 
-	request := &Metadata{"key": "value"}
+	request := &Metadata{testMetadataKey: testMetadataValue}
 	URL := path.Join(loadbalancersBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, metadataPath)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
@@ -1173,8 +1175,8 @@ func TestLoadbalancers_MetadataGetItem(t *testing.T) {
 	defer teardown()
 
 	expectedResp := &MetadataDetailed{
-		Key:      "image_id",
-		Value:    "b3c52ece-147e-4af5-8d7c-84691309b879",
+		Key:      testReadOnlyMetadataKey,
+		Value:    testReadOnlyMetadataValue,
 		ReadOnly: true,
 	}
 	URL := path.Join(loadbalancersBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, metadataItemPath)
@@ -1242,13 +1244,13 @@ func TestLoadbalancers_isValidUUID_Error_Return_Loadbalancer(t *testing.T) {
 		testFunc func() (*Loadbalancer, *Response, error)
 	}{
 		{
-			name: "Get",
+			name: testCaseGet,
 			testFunc: func() (*Loadbalancer, *Response, error) {
 				return client.Loadbalancers.Get(ctx, testResourceIDNotValidUUID)
 			},
 		},
 		{
-			name: "Rename",
+			name: testCaseRename,
 			testFunc: func() (*Loadbalancer, *Response, error) {
 				return client.Loadbalancers.Rename(ctx, testResourceIDNotValidUUID, nil)
 			},
@@ -1280,7 +1282,7 @@ func TestLoadbalancers_isValidUUID_Error_Return_Listener(t *testing.T) {
 			},
 		},
 		{
-			name: "Rename",
+			name: testCaseRename,
 			testFunc: func() (*Listener, *Response, error) {
 				return client.Loadbalancers.ListenerRename(ctx, testResourceIDNotValidUUID, nil)
 			},
@@ -1440,19 +1442,19 @@ func TestLoadbalancers_Metadata_isValidUUID_Error_Return_Response(t *testing.T) 
 		testFunc func() (*Response, error)
 	}{
 		{
-			name: "MetadataCreate",
+			name: testCaseMetadataCreate,
 			testFunc: func() (*Response, error) {
 				return client.Loadbalancers.MetadataCreate(ctx, testResourceIDNotValidUUID, nil)
 			},
 		},
 		{
-			name: "MetadataUpdate",
+			name: testCaseMetadataUpdate,
 			testFunc: func() (*Response, error) {
 				return client.Loadbalancers.MetadataUpdate(ctx, testResourceIDNotValidUUID, nil)
 			},
 		},
 		{
-			name: "MetadataDeleteItem",
+			name: testCaseMetadataDeleteItem,
 			testFunc: func() (*Response, error) {
 				return client.Loadbalancers.MetadataDeleteItem(ctx, testResourceIDNotValidUUID, nil)
 			},

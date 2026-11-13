@@ -9,13 +9,18 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+const (
+	testResellerImageID1 = "b5b4d65d-945f-4b98-ab6f-332319c724ef"
+	testResellerImageID2 = "0052a312-e6d8-4177-8e29-b017a3a6b588"
+)
+
 func TestResellerImagesV2_ListByRole(t *testing.T) {
 	setup()
 	defer teardown()
 
 	ids := ImageIDs{
-		"b5b4d65d-945f-4b98-ab6f-332319c724ef",
-		"0052a312-e6d8-4177-8e29-b017a3a6b588",
+		testResellerImageID1,
+		testResellerImageID2,
 	}
 
 	ri := ResellerImageV2{
@@ -53,8 +58,8 @@ func TestResellerImagesV2_List(t *testing.T) {
 	defer teardown()
 
 	ids := ImageIDs{
-		"b5b4d65d-945f-4b98-ab6f-332319c724ef",
-		"0052a312-e6d8-4177-8e29-b017a3a6b588",
+		testResellerImageID1,
+		testResellerImageID2,
 	}
 
 	ri := ResellerImageV2{
@@ -94,8 +99,8 @@ func TestResellerImagesV2_Update(t *testing.T) {
 	defer teardown()
 
 	ids := ImageIDs{
-		"b5b4d65d-945f-4b98-ab6f-332319c724ef",
-		"0052a312-e6d8-4177-8e29-b017a3a6b588",
+		testResellerImageID1,
+		testResellerImageID2,
 	}
 
 	updateReq := ResellerImageV2UpdateRequest{

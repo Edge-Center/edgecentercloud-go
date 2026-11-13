@@ -195,8 +195,8 @@ func TestNetworks_MetadataList(t *testing.T) {
 	defer teardown()
 
 	expectedResp := []MetadataDetailed{{
-		Key:      "image_id",
-		Value:    "b3c52ece-147e-4af5-8d7c-84691309b879",
+		Key:      testReadOnlyMetadataKey,
+		Value:    testReadOnlyMetadataValue,
 		ReadOnly: true,
 	}}
 	URL := path.Join(networksBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, metadataPath)
@@ -220,7 +220,7 @@ func TestNetworks_MetadataCreate(t *testing.T) {
 	setup()
 	defer teardown()
 
-	request := &Metadata{"key": "value"}
+	request := &Metadata{testMetadataKey: testMetadataValue}
 	URL := path.Join(networksBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, metadataPath)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
@@ -236,7 +236,7 @@ func TestNetworks_MetadataUpdate(t *testing.T) {
 	setup()
 	defer teardown()
 
-	request := &Metadata{"key": "value"}
+	request := &Metadata{testMetadataKey: testMetadataValue}
 	URL := path.Join(networksBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, metadataPath)
 
 	mux.HandleFunc(URL, func(w http.ResponseWriter, r *http.Request) {
@@ -268,8 +268,8 @@ func TestNetworks_MetadataGetItem(t *testing.T) {
 	defer teardown()
 
 	expectedResp := &MetadataDetailed{
-		Key:      "image_id",
-		Value:    "b3c52ece-147e-4af5-8d7c-84691309b879",
+		Key:      testReadOnlyMetadataKey,
+		Value:    testReadOnlyMetadataValue,
 		ReadOnly: true,
 	}
 	URL := path.Join(networksBasePathV1, strconv.Itoa(projectID), strconv.Itoa(regionID), testResourceID, metadataItemPath)
